@@ -44,10 +44,10 @@ namespace ChapterTool
             //string Culture = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
             //if (Culture != "zh-CN" && Culture != "Zh-TW" && Culture != "Zh-HK" && System.Environment.UserName != "Taut_Cony") { engVersion(); }
         }
-        public Form1(string[] args)
+        public Form1(string args)
         {
             InitializeComponent();
-            paths[0] = args[0];
+            paths[0] = args;
             CTLogger.Log("+从运行参数中载入文件:" + paths[0]);
         }
 
@@ -68,7 +68,7 @@ namespace ChapterTool
             }
 
             setDefault();
-            checkMkvExtract();
+            //checkMkvExtract();
             if (!string.IsNullOrEmpty(paths[0]))
             {
                 Loadfile();
@@ -90,19 +90,28 @@ namespace ChapterTool
             }
         }
 
-        void checkMkvExtract()
-        {
-            if (!File.Exists("mkvextract.exe"))
-            {
-                SchapterFitter = "章节文件(*.txt,*.xml,*.mpls)|*.txt;*.xml;*.mpls";
-            }
-        }
+
 
 
         string SnotLoaded = "尚未载入文件";
         string SFPSShow3 = "就是 ";
         string SFPSShow4 = " fps 不对就是圆盘的锅 ";
-        string SchapterFitter = "所有支持的类型(*.txt,*.xml,*.mpls,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls)|*.txt;*.xml;*.mpls|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
+        string SchapterFitter
+        {
+            get
+            {
+                if (File.Exists("mkvextract.exe"))
+                {
+                    mkvEX = true;
+                    return "所有支持的类型(*.txt,*.xml,*.mpls,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls)|*.txt;*.xml;*.mpls|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
+                }
+                else
+                {
+                    mkvEX = false;
+                    return "章节文件(*.txt,*.xml,*.mpls)|*.txt;*.xml;*.mpls";
+                }
+            }
+        }
         string SnameFitter = "文本文件(*.txt)|*.txt|所有文件(*.*)|*.*";
         string SwhatsThis1 = "请别喂一些奇怪的东西 ( つ⁰﹏⁰)つ";
         string Swhatsthis2 = "当前片段并没有章节 (¬_¬)";
@@ -244,6 +253,9 @@ namespace ChapterTool
         }
 
         bool mplsValid = true;
+
+        bool mkvEX = true;
+
         
         void Loadfile()
         {
@@ -254,13 +266,11 @@ namespace ChapterTool
             {
                 if  (paths[0].IndexOf(".mpls") > 0) { mplsValid = loadMPLS(); }
                 if  (paths[0].IndexOf(".xml" ) > 0) { loadXML(); }
+                //MessageBox.Show(mkvEX.ToString());
                 if ((paths[0].IndexOf(".mkv" ) > 0 || paths[0].IndexOf(".mka") > 0) && 
-                      File.Exists("mkvextract.exe")) { xmlValid = loadMatroska(); }
+                      mkvEX) { xmlValid = loadMatroska(); }
                 if (paths[0].IndexOf(".txt") > 0) { loadOGM(); }
-                if (cbFramCal.Checked)
-                {
-                    cbFramCal.CheckState = CheckState.Unchecked;
-                }
+                if (cbFramCal.Checked) { cbFramCal.CheckState = CheckState.Unchecked; }
             }
             catch (Exception ex)
             {
@@ -290,7 +300,7 @@ namespace ChapterTool
             //fs.Dispose();
             progressBar1.Value = 33;
             Tips.Text = "载入完成 (≧▽≦)";
-            CTLogger.Log("|成功载入OGM格式章节文件，共" + textBox1.GetLineFromCharIndex(textBox1.Text.Length).ToString() + "行");
+            CTLogger.Log("|成功载入OGM格式章节文件，共" + totalLine.ToString() + "行");
         }
 
         void btnLoad_Click(object sender, EventArgs e)                  //载入键
@@ -982,10 +992,11 @@ namespace ChapterTool
                 text += "CHAPTER" + i.ToString("00") + "=" + RTimeFormat.Match(timenode.InnerText) + NewLine;
                 text += "CHAPTER" + i++.ToString("00") + "NAME=" + NameNodes[j++].InnerText + NewLine;
             }
+            CTLogger.Log("tb1在loadXML处更新");
             textBox1.Text = text;
             if (xmlValid)
             {
-                CTLogger.Log("|成功载入XML格式章节文件，共" + textBox1.GetLineFromCharIndex(textBox1.Text.Length).ToString() + "行");
+                CTLogger.Log("|成功载入XML格式章节文件，共" + totalLine.ToString() + "行");
             }
         }
 
