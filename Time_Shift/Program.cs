@@ -18,7 +18,9 @@ namespace ChapterTool
             }
             else
             {
-                Application.Run(new Form1(args));
+                string argsFull = string.Join(" ", args);
+                //argsFull = "\"" + argsFull + "\"";
+                Application.Run(new Form1(argsFull));
             }
         }
     }

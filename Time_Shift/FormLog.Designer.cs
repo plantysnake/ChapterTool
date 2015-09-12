@@ -133,7 +133,7 @@ namespace ChapterTool
         private System.Windows.Forms.GroupBox grpLog;
         private System.Windows.Forms.TableLayoutPanel tlpMain;
         private cTextBox txtLog;
-        private object AnchorStyles;
+        //private object AnchorStyles;
 
         public object DockStyle { get; private set; }
     }

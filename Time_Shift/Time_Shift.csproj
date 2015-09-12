@@ -102,6 +102,9 @@
     <Compile Include="FormLog.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FormLog.Designer.cs">
+      <DependentUpon>FormLog.cs</DependentUpon>
+    </Compile>
     <Compile Include="InputBox.cs">
       <SubType>Form</SubType>
     </Compile>
