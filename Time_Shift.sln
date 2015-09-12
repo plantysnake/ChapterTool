@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Time_Shift", "Time_Shift\Time_Shift.csproj", "{2E6AA275-D1E9-452C-B35E-E7CC6D197441}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C9A11B1F-2189-4B76-AACE-80CE00558FEA}"
+	ProjectSection(SolutionItems) = preProject
+		convertMethod.cs = convertMethod.cs
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E6AA275-D1E9-452C-B35E-E7CC6D197441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E6AA275-D1E9-452C-B35E-E7CC6D197441}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E6AA275-D1E9-452C-B35E-E7CC6D197441}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E6AA275-D1E9-452C-B35E-E7CC6D197441}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
