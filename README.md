@@ -29,7 +29,7 @@ You must have .NET Framework 3.5 available from Windows Update.
  - gMKVExtractGUI
     http://sourceforge.net/projects/gmkvextractgui/
  - Chapter Grabber
-	http://jvance.com/pages/ChapterGrabber.xhtml
+    http://jvance.com/pages/ChapterGrabber.xhtml
 	
 	Source Code
 --------------------
