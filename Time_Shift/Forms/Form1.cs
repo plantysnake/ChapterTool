@@ -177,7 +177,6 @@ namespace ChapterTool
         void Form1_DragDrop(object sender,  DragEventArgs e)
         {
             paths = e.Data.GetData(DataFormats.FileDrop) as string[];
-            label1.Text = paths[0];
             //IsTimeFomat = true;
             if (isPathValid)
             {
@@ -260,6 +259,8 @@ namespace ChapterTool
         void Loadfile()
         {
             if (!isPathValid) { return; }
+            string shortedPath = paths[0].Substring(0, 20)  + "……" + paths[0].Substring(paths[0].Length - 12, 12);
+            label1.Text = shortedPath;
             setDefault();
             Cursor = Cursors.AppStarting;
             try
@@ -314,7 +315,6 @@ namespace ChapterTool
                 textBox1.Clear();
                 paths[0] = openFileDialog1.FileName;
                 CTLogger.Log("+从载入键中载入文件:" + paths[0]);
-                label1.Text = paths[0];
                 //IsTimeFomat = true;
                 comboBox2.Items.Clear();
                 Loadfile();
@@ -1027,8 +1027,9 @@ namespace ChapterTool
                 comboBox2.Items.Clear();
                 foreach (var item in RawData.chapterClips)
                 {
-                    comboBox2.Items.Add(item.Name);
-                    CTLogger.Log(" |+" + item);
+                    comboBox2.Items.Add(item.Name.Replace("M2TS",".m2ts") + "__" + item.timeStamp.Count.ToString());
+                    CTLogger.Log(" |+" + item.Name);
+                    CTLogger.Log("  |+包含 " + item.timeStamp.Count.ToString() + " 个时间戳");
                 }
             }
             bool isValide = mpls2box();
@@ -1052,7 +1053,6 @@ namespace ChapterTool
         {
             textBox1.Clear();
             textBox2.Clear();
-            int _index = mplsFileSeletIndex;
 
             List<int> current;
             if (combineToolStripMenuItem.Checked)
@@ -1061,7 +1061,7 @@ namespace ChapterTool
             }
             else
             {
-                current = RawData.chapterClips[_index].timeStamp;
+                current = RawData.chapterClips[mplsFileSeletIndex].timeStamp;
             }
             
 

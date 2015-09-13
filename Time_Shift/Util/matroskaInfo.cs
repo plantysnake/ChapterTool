@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace ChapterTool
@@ -32,7 +33,7 @@ namespace ChapterTool
         string parseXML(string input)
         {
             if (string.IsNullOrEmpty(input)) { return input; }
-
+            Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(input);
             XmlElement root = doc.DocumentElement;
@@ -44,7 +45,7 @@ namespace ChapterTool
             foreach (XmlNode timenode in TimeNodes)
             {
                 if (convertMethod.string2Time(timenode.InnerText) == new TimeSpan(0) && j != 0) { break; }//防止从mkv中读取两个章节
-                text += "CHAPTER" + i.ToString("00") + "=" + timenode.InnerText + Environment.NewLine;
+                text += "CHAPTER" + i.ToString("00") + "=" + RTimeFormat.Match(timenode.InnerText) + Environment.NewLine;
                 text += "CHAPTER" + i++.ToString("00") + "NAME=" + NameNodes[j++].InnerText + Environment.NewLine;
             }
             return text;
