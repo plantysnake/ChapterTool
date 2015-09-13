@@ -700,7 +700,7 @@ namespace ChapterTool
         {
             if (isPathValid && paths[0].ToLowerInvariant().EndsWith(".mpls") && mplsValid)
             {
-                fps = FrameRate[RawData.fps[comboBox2.SelectedIndex]];
+                fps = FrameRate[RawData.chapterClips[comboBox2.SelectedIndex].fps];
                 
                 btnSave.Enabled = btnSave.Visible = true;
                 btnAUTO.Visible = btnAUTO.Enabled = false;
@@ -1061,7 +1061,7 @@ namespace ChapterTool
             }
             else
             {
-                current = RawData.timeStamp[_index];
+                current = RawData.chapterClips[_index].timeStamp;
             }
             
 
@@ -1088,8 +1088,6 @@ namespace ChapterTool
                 ++default_order;
             }
             textBox1.Text = text;
-            //(RawData.second2time(RawData.lastTime[_index].Value - RawData.lastTime[_index].Key));
-
             return true;
         }
 
@@ -1102,7 +1100,7 @@ namespace ChapterTool
                     switch (mplsValid)
                     {
                         case true:
-                            fps = FrameRate[RawData.fps[comboBox2.SelectedIndex]];
+                            fps = FrameRate[RawData.chapterClips[comboBox2.SelectedIndex].fps];
                             FPS_Transfer();
                             Tips.Text = SFPSShow3 + fps.ToString("00.0000") + SFPSShow4;
                             break;
@@ -1125,7 +1123,13 @@ namespace ChapterTool
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
             combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
-            mpls2box();Transfer();SetScroll();
+            mpls2box();
+            switch (cbFramCal.Checked)
+            {
+                case true:  FPS_Transfer(); break;
+                case false: Transfer();     break;
+            }
+            SetScroll();
         }
 
         //////////matroska support
@@ -1166,7 +1170,6 @@ namespace ChapterTool
                 Fcolor.Focus();
                 Fcolor.Select();
             }
-
         }
         public List<Color> currentColor
         {
@@ -1198,6 +1201,7 @@ namespace ChapterTool
             {
                 textBox1.BackColor = textBox2.BackColor = value;
                 numericUpDown1.BackColor = maskedTextBox1.BackColor = value;
+                comboBox1.BackColor = comboBox2.BackColor = value;
             }
             
         }
@@ -1269,12 +1273,11 @@ namespace ChapterTool
             if (!string.IsNullOrEmpty(paths[0]) && paths[0].ToLowerInvariant().EndsWith(".mpls"))
             {
                 int index = (comboBox2.SelectedIndex == -1) ? 0 : comboBox2.SelectedIndex;
-                if (RawData.timeStamp[index].Count == 2)
+                if (RawData.chapterClips[index].timeStamp.Count == 2)
                 {
-                    //KeyValuePair<int, int> pair = RawData.lastTime[index];
-
-                    string lastTime = convertMethod.time2string(RawData.chapterClips[index].TimeOut - RawData.chapterClips[index].TimeIn);
-                    if (((RawData.chapterClips[index].TimeOut - RawData.chapterClips[index].TimeIn) - (RawData.timeStamp[index][1] - RawData.timeStamp[index][0])) / 45000.0 <= 5.0)
+                    Clip streamClip = RawData.chapterClips[index];
+                    string lastTime = convertMethod.time2string(streamClip.TimeOut - streamClip.TimeIn);
+                    if (((streamClip.TimeOut - streamClip.TimeIn) - (streamClip.timeStamp[1] - streamClip.timeStamp[0])) <= 5 * 45000)
                     {
                         toolTip1.Show(SFakeChapter1 + lastTime + SFakeChapter2, btnSave);
                     }

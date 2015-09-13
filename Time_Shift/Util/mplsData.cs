@@ -6,64 +6,47 @@ using System.Text;
 
 namespace ChapterTool
 {
-
     public class mplsData
     {
         public List<Clip> chapterClips;
-        public List<int> fps;                        //the fps code for each file
-        public List<List<int>> timeStamp;            //the chapters for each file
         public List<int> entireTimeStamp;
 
         private byte[] data;
         private int PlaylistSectionStartAddress;
         private int PlaylistMarkSectionStartAddress;
-        private int PlatItemNumber;
+        private int PlayItemNumber;
         private int PlayItemEntries;
 
         public mplsData(string path)
         {
-            initializeClass();
+            chapterClips    = new List<Clip>();
+            entireTimeStamp = new List<int>();
             data = File.ReadAllBytes(path);
             parseHeader();
             int shift = 0;
-            for (int _ = 0; _ < PlatItemNumber; _++)
+            for (int playItemOrder = 0; playItemOrder < PlayItemNumber; playItemOrder++)
             {
                 int length, itemStartAdress, streamCount;
                 parsePlayItem(PlayItemEntries + shift, out length, out itemStartAdress, out streamCount);
                 for (int streamOrder = 0; streamOrder < streamCount; streamOrder++)
                 {
-                    parseStream(itemStartAdress, streamOrder);
+                    parseStream(itemStartAdress, streamOrder, playItemOrder);
                 }
                 shift += (length + 2);//for that not counting the two length bytes themselves.
             }
-            initializeTimeStampList();
+            //initializeTimeStampList();
             parsePlaylistMark();
         }
-
-        private void initializeClass()
-        {
-            chapterClips = new List<Clip>();
-            fps = new List<int>();
-            timeStamp = new List<List<int>>();
-            entireTimeStamp = new List<int>();
-        }
-
 
         private void parseHeader()
         {
             PlaylistSectionStartAddress = byte2int(data, 0x08, 0x0c);
             PlaylistMarkSectionStartAddress = byte2int(data, 0x0c, 0x10);
-            PlatItemNumber = byte2int(data, PlaylistSectionStartAddress + 0x06, 
+            PlayItemNumber = byte2int(data, PlaylistSectionStartAddress + 0x06, 
                                             PlaylistSectionStartAddress + 0x08);
             PlayItemEntries = PlaylistSectionStartAddress + 0x0a;
         }
-        private void initializeTimeStampList()
-        {
-            for (int _ = 0; _ < chapterClips.Count; _++)
-            {
-                timeStamp.Add(new List<int>()); 
-            }
-        }
+
         private void parsePlayItem(int PlayItemEntries, out int length, out int itemStartAdress, out int streamCount)
         {
             length = byte2int(data, PlayItemEntries + 0x00, PlayItemEntries + 0x02);
@@ -87,7 +70,7 @@ namespace ChapterTool
                 itemStartAdress = PlayItemEntries + 0x3e;
             }
         }
-        private void parseStream(int itemStartAdress,int streamOrder)
+        private void parseStream(int itemStartAdress,int streamOrder,int playItemOrder)
         {
             byte[] Stream = new byte[16];
             for (int adress = 0; adress < 16; adress++)
@@ -95,19 +78,13 @@ namespace ChapterTool
                 Stream[adress] = data[itemStartAdress + streamOrder * 16 + adress];
             }
 
-            //Occultism Oriented Programming Start
-            //玄之又玄，众妙之门
-            //itemStartAdress.ToString();//DO NOT DELETE THIS SENTENCE. IT HAS INDESCRIBABLE MAGIC
-            //玄之又玄，众妙之门
-            //Occultism Oriented Programming End
-
             if (Stream[01] == 0x01)// the stream type is a Play item
             {
                 int streamCodingType = byte2int(Stream, 0x0b, 0x0c);
                 if (streamCodingType == 0x1b)
                 {
                     int attr = byte2int(Stream, 0x0c, 0x0d);
-                    fps.Add(attr & 0xf);//last 4 bits is the fps
+                    chapterClips[playItemOrder].fps = (attr & 0xf);//last 4 bits is the fps
                 }
             }
         }
@@ -130,7 +107,7 @@ namespace ChapterTool
                 Clip streamClip = chapterClips[streamFileIndex];
                 int TimeStamp = byte2int(bytelist, 4, 8);
                 int relativeSeconds = TimeStamp - streamClip.TimeIn + streamClip.RelativeTimeIn;
-                timeStamp[streamFileIndex].Add(TimeStamp);
+                chapterClips[streamFileIndex].timeStamp.Add(TimeStamp);
                 entireTimeStamp.Add(relativeSeconds);
                 PlaylistMarkEntries += 14;
             }
@@ -145,17 +122,21 @@ namespace ChapterTool
             }
             return temp;
         }
-
     }
 
-        public class Clip
+    public class Clip
+    {
+        public Clip()
         {
-            public string Name;
-            public int Length;
-            public int RelativeTimeIn;
-            public int RelativeTimeOut;
-            public int TimeIn;
-            public int TimeOut;
+            timeStamp = new List<int>();
         }
-
+        public string Name;
+        public int fps;
+        public List<int> timeStamp;
+        public int Length;
+        public int RelativeTimeIn;
+        public int RelativeTimeOut;
+        public int TimeIn;
+        public int TimeOut;
+    }
 }
