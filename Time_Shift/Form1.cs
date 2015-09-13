@@ -376,12 +376,12 @@ namespace ChapterTool
                 savePath = CUSTsavingPath + paths[0].Substring(slashPosition, paths[0].LastIndexOf(".") - slashPosition);
             }
 
-            if (paths[0].IndexOf(".mpls") > 0)
+            if (paths[0].ToLowerInvariant().EndsWith(".mpls") && !combineToolStripMenuItem.Checked)
             {
                 savePath += "__" + RawData.chapterClips[mplsFileSeletIndex].Name;
             }
             
-            if (paths[0].IndexOf(".mpls") > 0 && cbFramCal.Checked)
+            if (paths[0].ToLowerInvariant().EndsWith(".mpls") && cbFramCal.Checked)
             {
                 while (File.Exists(savePath + ".qpf")) { savePath += "_"; }
                 savePath += ".qpf";
@@ -698,7 +698,7 @@ namespace ChapterTool
 
         void qpfAbout() //对mpls中fps读取
         {
-            if (isPathValid && paths[0].IndexOf(".mpls") > 0 && mplsValid)
+            if (isPathValid && paths[0].ToLowerInvariant().EndsWith(".mpls") && mplsValid)
             {
                 fps = FrameRate[RawData.fps[comboBox2.SelectedIndex]];
                 
@@ -1266,7 +1266,7 @@ namespace ChapterTool
             string SFakeChapter1 = "本片段时长为";
             string SFakeChapter2 = "，但是第二个章节点\r\n离视频结尾太近了呢，应该没有用处吧 (-｡-;)";
             string SFakeChapter3 = "，虽然只有两个章节点\r\n应该还是能安心的呢 (～￣▽￣)→))*￣▽￣*)o";
-            if (!string.IsNullOrEmpty(paths[0]) && paths[0].IndexOf(".mpls") > 0)
+            if (!string.IsNullOrEmpty(paths[0]) && paths[0].ToLowerInvariant().EndsWith(".mpls"))
             {
                 int index = (comboBox2.SelectedIndex == -1) ? 0 : comboBox2.SelectedIndex;
                 if (RawData.timeStamp[index].Count == 2)
