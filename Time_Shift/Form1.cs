@@ -234,11 +234,11 @@ namespace ChapterTool
                 }
                 else
                 {
-                    if (paths[0].IndexOf(".txt") < 0 &&
-                        paths[0].IndexOf(".xml") < 0 &&
-                        paths[0].IndexOf(".mpls") < 0 &&
-                        paths[0].IndexOf(".mkv") < 0 &&
-                        paths[0].IndexOf(".mka") < 0)
+                    if ( !(paths[0].ToLowerInvariant().EndsWith(".txt") ||
+                        paths[0].ToLowerInvariant().EndsWith(".xml") ||
+                        paths[0].ToLowerInvariant().EndsWith(".mpls") ||
+                        paths[0].ToLowerInvariant().EndsWith(".mkv") ||
+                        paths[0].ToLowerInvariant().EndsWith(".mka")) )
                     {
                         Tips.Text = "这个文件我不认识啊 _ (:3」∠)_";
                         CTLogger.Log("文件格式非法");
@@ -264,12 +264,11 @@ namespace ChapterTool
             Cursor = Cursors.AppStarting;
             try
             {
-                if  (paths[0].IndexOf(".mpls") > 0) { mplsValid = loadMPLS(); }
-                if  (paths[0].IndexOf(".xml" ) > 0) { loadXML(); }
-                //MessageBox.Show(mkvEX.ToString());
-                if ((paths[0].IndexOf(".mkv" ) > 0 || paths[0].IndexOf(".mka") > 0) && 
-                      mkvEX) { xmlValid = loadMatroska(); }
-                if (paths[0].IndexOf(".txt") > 0) { loadOGM(); }
+                if  (paths[0].ToLowerInvariant().EndsWith(".mpls")) { mplsValid = loadMPLS(); }
+                if  (paths[0].ToLowerInvariant().EndsWith(".xml" )) { loadXML(); }
+                if ((paths[0].ToLowerInvariant().EndsWith(".mkv" ) || 
+                     paths[0].ToLowerInvariant().EndsWith(".mka" )) && mkvEX) { xmlValid = loadMatroska(); }
+                if ( paths[0].ToLowerInvariant().EndsWith(".txt" )) { loadOGM(); }
                 if (cbFramCal.Checked) { cbFramCal.CheckState = CheckState.Unchecked; }
             }
             catch (Exception ex)
