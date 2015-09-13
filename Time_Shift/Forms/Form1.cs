@@ -205,7 +205,6 @@ namespace ChapterTool
         void progressBar1_Click(object sender, EventArgs e) 
         {
 
-            //InputBox.Show("请输入密钥", "激活", "");
             ++poi;
             CTLogger.Log("点击了" + poi.ToString() + "次进度条");
             if (poi >= nico)

@@ -31,9 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.btnLoad = new System.Windows.Forms.Button();
-            this.textBox1 = new cTextBox();
             this.btnSave = new System.Windows.Forms.Button();
-            this.textBox2 = new cTextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnTrans = new System.Windows.Forms.Button();
             this.cbReserveName = new System.Windows.Forms.CheckBox();
@@ -67,6 +65,8 @@
             this.btnLog = new System.Windows.Forms.Button();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.combineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.textBox2 = new ChapterTool.cTextBox();
+            this.textBox1 = new ChapterTool.cTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
@@ -88,21 +88,6 @@
             this.btnLoad.UseVisualStyleBackColor = true;
             this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
             // 
-            // textBox1
-            // 
-            this.textBox1.AcceptsReturn = true;
-            this.textBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox1.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.textBox1.Location = new System.Drawing.Point(12, 84);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(12, 4, 3, 4);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(250, 350);
-            this.textBox1.TabIndex = 1;
-            this.textBox1.TabStop = false;
-            this.textBox1.WordWrap = false;
-            // 
             // btnSave
             // 
             this.btnSave.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
@@ -121,23 +106,6 @@
             this.btnSave.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnSave_MouseDown);
             this.btnSave.MouseEnter += new System.EventHandler(this.btnSave_MouseEnter);
             this.btnSave.MouseLeave += new System.EventHandler(this.toolTipRemoveAll);
-            // 
-            // textBox2
-            // 
-            this.textBox2.AcceptsReturn = true;
-            this.textBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.textBox2.Location = new System.Drawing.Point(318, 84);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 4, 3, 4);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(250, 350);
-            this.textBox2.TabIndex = 6;
-            this.textBox2.TabStop = false;
-            this.textBox2.WordWrap = false;
-            this.textBox2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseClick);
             // 
             // label1
             // 
@@ -497,6 +465,41 @@
             this.combineToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.combineToolStripMenuItem.Text = "合并章节";
             this.combineToolStripMenuItem.Click += new System.EventHandler(this.combineToolStripMenuItem_Click);
+            // 
+            // textBox2
+            // 
+            this.textBox2.AcceptsReturn = true;
+            this.textBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox2.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.textBox2.Location = new System.Drawing.Point(318, 84);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 4, 3, 4);
+            this.textBox2.Multiline = true;
+            this.textBox2.Name = "textBox2";
+            this.textBox2.OthercTextBox = null;
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(250, 350);
+            this.textBox2.TabIndex = 6;
+            this.textBox2.TabStop = false;
+            this.textBox2.WordWrap = false;
+            this.textBox2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseClick);
+            // 
+            // textBox1
+            // 
+            this.textBox1.AcceptsReturn = true;
+            this.textBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox1.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.textBox1.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.textBox1.Location = new System.Drawing.Point(12, 84);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(12, 4, 3, 4);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.OthercTextBox = null;
+            this.textBox1.Size = new System.Drawing.Size(250, 350);
+            this.textBox1.TabIndex = 1;
+            this.textBox1.TabStop = false;
+            this.textBox1.WordWrap = false;
             // 
             // Form1
             // 
