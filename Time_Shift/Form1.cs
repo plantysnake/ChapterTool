@@ -379,7 +379,7 @@ namespace ChapterTool
 
             if (paths[0].IndexOf(".mpls") > 0)
             {
-                savePath += "__" + RawData.fileName[mplsFileSeletIndex];
+                savePath += "__" + RawData.chapterClips[mplsFileSeletIndex].Name;
             }
             
             if (paths[0].IndexOf(".mpls") > 0 && cbFramCal.Checked)
@@ -708,7 +708,7 @@ namespace ChapterTool
                 comboBox1.Visible = false;
                 cbRound.CheckState = CheckState.Checked;
                 Tips.Text = SFPSShow3 + fps.ToString("00.0000") + SFPSShow4;
-                CTLogger.Log("|成功读"+RawData.fileName[comboBox2.SelectedIndex] +"的帧率：" + fps.ToString("00.0000") + " fps");
+                CTLogger.Log("|成功读"+RawData.chapterClips[comboBox2.SelectedIndex].Name +"的帧率：" + fps.ToString("00.0000") + " fps");
                 //FPS_Transfer();
             }
             else
@@ -1020,15 +1020,15 @@ namespace ChapterTool
         {
             RawData = new mplsData(paths[0]);
             CTLogger.Log("+成功载入MPLS格式章节文件");
-            CTLogger.Log("|+MPLS中共有" + RawData.fileName.Count.ToString() + "个m2ts片段");
+            CTLogger.Log("|+MPLS中共有" + RawData.chapterClips.Count.ToString() + "个m2ts片段");
 
-            comboBox2.Enabled = comboBox2.Visible = (RawData.fileName.Count >= 1);
+            comboBox2.Enabled = comboBox2.Visible = (RawData.chapterClips.Count >= 1);
             if (comboBox2.Enabled)
             {
                 comboBox2.Items.Clear();
-                foreach (string item in RawData.fileName)
+                foreach (var item in RawData.chapterClips)
                 {
-                    comboBox2.Items.Add(item);
+                    comboBox2.Items.Add(item.Name);
                     CTLogger.Log(" |+" + item);
                 }
             }
@@ -1054,7 +1054,19 @@ namespace ChapterTool
             textBox1.Clear();
             textBox2.Clear();
             int _index = mplsFileSeletIndex;
-            if (RawData.timeStamp[_index].Count < 2)
+
+            List<int> current;
+            if (combineToolStripMenuItem.Checked)
+            {
+                current = RawData.entireTimeStamp;
+            }
+            else
+            {
+                current = RawData.timeStamp[_index];
+            }
+            
+
+            if (current.Count < 2)
             {
                 mplsEnable = false;
                 Tips.Text = Swhatsthis2;
@@ -1065,11 +1077,11 @@ namespace ChapterTool
             mplsEnable = true;
             
 
-            int offset = RawData.timeStamp[_index][0];
+            int offset = current[0];
             
             int default_order = 1;
             string text = string.Empty;
-            foreach (int item in RawData.timeStamp[_index])
+            foreach (int item in current)
             {
                 var sDO = default_order.ToString("00");
                 text += "CHAPTER" + sDO + "=" + convertMethod.time2string(item - offset) + NewLine;
@@ -1101,6 +1113,20 @@ namespace ChapterTool
                 case false:
                     Transfer(); break;
             }
+        }
+
+        private void comboBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                contextMenuStrip2.Show(MousePosition);
+            }
+        }
+
+        private void combineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
+            mpls2box();Transfer();SetScroll();
         }
 
         //////////matroska support
@@ -1246,9 +1272,10 @@ namespace ChapterTool
                 int index = (comboBox2.SelectedIndex == -1) ? 0 : comboBox2.SelectedIndex;
                 if (RawData.timeStamp[index].Count == 2)
                 {
-                    KeyValuePair<int, int> pair = RawData.lastTime[index];
-                    string lastTime = convertMethod.time2string(pair.Value - pair.Key);
-                    if (((pair.Value - pair.Key) - (RawData.timeStamp[index][1] - RawData.timeStamp[index][0])) / 45000.0 <= 5.0)
+                    //KeyValuePair<int, int> pair = RawData.lastTime[index];
+
+                    string lastTime = convertMethod.time2string(RawData.chapterClips[index].TimeOut - RawData.chapterClips[index].TimeIn);
+                    if (((RawData.chapterClips[index].TimeOut - RawData.chapterClips[index].TimeIn) - (RawData.timeStamp[index][1] - RawData.timeStamp[index][0])) / 45000.0 <= 5.0)
                     {
                         toolTip1.Show(SFakeChapter1 + lastTime + SFakeChapter2, btnSave);
                     }

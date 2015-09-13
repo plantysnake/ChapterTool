@@ -65,8 +65,11 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.btnLog = new System.Windows.Forms.Button();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.combineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
+            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnLoad
@@ -381,6 +384,7 @@
             this.comboBox2.TabIndex = 23;
             this.comboBox2.TabStop = false;
             this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
+            this.comboBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.comboBox2_MouseDown);
             this.comboBox2.MouseEnter += new System.EventHandler(this.comboBox2_MouseEnter);
             this.comboBox2.MouseLeave += new System.EventHandler(this.toolTipRemoveAll);
             // 
@@ -410,24 +414,24 @@
             // TSD_0unit
             // 
             this.TSD_0unit.Name = "TSD_0unit";
-            this.TSD_0unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_0unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_0unit.Text = "0.01";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(97, 6);
             // 
             // TSD_1unit
             // 
             this.TSD_1unit.Name = "TSD_1unit";
-            this.TSD_1unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_1unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_1unit.Text = "0.05";
             // 
             // TSD_2unit
             // 
             this.TSD_2unit.Name = "TSD_2unit";
-            this.TSD_2unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_2unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_2unit.Text = "0.10";
             // 
             // TSD_3unit
@@ -435,25 +439,25 @@
             this.TSD_3unit.Checked = true;
             this.TSD_3unit.CheckState = System.Windows.Forms.CheckState.Checked;
             this.TSD_3unit.Name = "TSD_3unit";
-            this.TSD_3unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_3unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_3unit.Text = "0.15";
             // 
             // TSD_4unit
             // 
             this.TSD_4unit.Name = "TSD_4unit";
-            this.TSD_4unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_4unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_4unit.Text = "0.20";
             // 
             // TSD_5unit
             // 
             this.TSD_5unit.Name = "TSD_5unit";
-            this.TSD_5unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_5unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_5unit.Text = "0.25";
             // 
             // TSD_6unit
             // 
             this.TSD_6unit.Name = "TSD_6unit";
-            this.TSD_6unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_6unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_6unit.Text = "0.30";
             // 
             // folderBrowserDialog1
@@ -479,6 +483,20 @@
             this.btnLog.Text = "LOG";
             this.btnLog.UseVisualStyleBackColor = true;
             this.btnLog.Click += new System.EventHandler(this.btnLog_Click);
+            // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.combineToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(153, 48);
+            // 
+            // combineToolStripMenuItem
+            // 
+            this.combineToolStripMenuItem.Name = "combineToolStripMenuItem";
+            this.combineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.combineToolStripMenuItem.Text = "合并章节";
+            this.combineToolStripMenuItem.Click += new System.EventHandler(this.combineToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -524,6 +542,7 @@
             this.Move += new System.EventHandler(this.Form1_Move);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -566,6 +585,8 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Button btnLog;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem combineToolStripMenuItem;
     }
 }
 
