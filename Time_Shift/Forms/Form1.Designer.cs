@@ -551,8 +551,8 @@
         #endregion
 
         private System.Windows.Forms.Button btnLoad;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
+        private cTextBox textBox1;
+        private cTextBox textBox2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnTrans;
         private System.Windows.Forms.CheckBox cbReserveName;

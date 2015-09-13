@@ -53,6 +53,7 @@ namespace ChapterTool
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            textBox1.OthercTextBox = textBox2;
             CTLogger.Log(Environment.UserName + "，你好呀");
             CTLogger.Log(Environment.OSVersion.ToString());
             foreach (var item in Screen.AllScreens)

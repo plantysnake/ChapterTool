@@ -12,7 +12,12 @@ namespace ChapterTool
             base.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             this.DoubleBuffered = true;
         }
-
+        private cTextBox otherRichTextBox;
+        public cTextBox OthercTextBox
+        {
+            get { return otherRichTextBox; }
+            set { otherRichTextBox = value; }
+        }
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
