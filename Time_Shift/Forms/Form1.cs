@@ -53,6 +53,7 @@ namespace ChapterTool
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            textBox1.OthercTextBox = textBox2;
             CTLogger.Log(Environment.UserName + "，你好呀");
             CTLogger.Log(Environment.OSVersion.ToString());
             foreach (var item in Screen.AllScreens)
@@ -204,7 +205,6 @@ namespace ChapterTool
         void progressBar1_Click(object sender, EventArgs e) 
         {
 
-            //InputBox.Show("请输入密钥", "激活", "");
             ++poi;
             CTLogger.Log("点击了" + poi.ToString() + "次进度条");
             if (poi >= nico)
@@ -720,14 +720,6 @@ namespace ChapterTool
             //FPS_Transfer();
         }
 
-        //精度控制 part
-        void cbRound_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                contextMenuStrip1.Show(MousePosition);
-            }
-        }
 
         int TSD
         {
@@ -1112,13 +1104,6 @@ namespace ChapterTool
             }
         }
 
-        private void comboBox2_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                contextMenuStrip2.Show(MousePosition);
-            }
-        }
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1298,7 +1283,15 @@ namespace ChapterTool
         }
         private void comboBox2_MouseEnter(object sender, EventArgs e)
         {
-            toolTip1.Show(comboBox2.Items.Count.ToString(), comboBox2);
+            if (comboBox2.Items.Count > 20)
+            {
+                toolTip1.Show("不用看了，这是播放菜单的mpls", comboBox2);
+            }
+            else
+            {
+                toolTip1.Show(comboBox2.Items.Count.ToString(), comboBox2);
+            }
+            
         }
         private void cbMul1k1_MouseEnter(object sender, EventArgs e)
         {
