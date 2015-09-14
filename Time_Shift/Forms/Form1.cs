@@ -42,8 +42,6 @@ namespace ChapterTool
         public Form1()
         {
             InitializeComponent();
-            //string Culture = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
-            //if (Culture != "zh-CN" && Culture != "Zh-TW" && Culture != "Zh-HK" && System.Environment.UserName != "Taut_Cony") { engVersion(); }
         }
         public Form1(string args)
         {
@@ -70,17 +68,13 @@ namespace ChapterTool
             }
 
             setDefault();
-            //checkMkvExtract();
             if (!string.IsNullOrEmpty(paths[0]))
             {
                 Loadfile();
                 Transfer();
                 registryStorage.Save("你好呀，找到这里来干嘛呀", @"Software\ChapterTool", string.Empty);
             }
-            //Location = new Point()
             moreModeShow = false;
-            //ClientSize = new Size(580, 471);
-            //MessageBox.Show(ClientSize.ToString());
             Size = new Size(Size.Width, Size.Height - 80);
         }
 
@@ -122,13 +116,7 @@ namespace ChapterTool
 
         void setDefault()
         {
-            //if (File.Exists("MediaInfo.dll"))
-            //{
-            //    SchapterFitter  = "章节文件(*.txt,*.xml,*.mpls)|*.txt;*.xml;*.mpls";
-            //}
-            //Form1_Resize();
             cbMore.CheckState = CheckState.Unchecked;
-            //Form1_Resize();
 
             moreModeShow = false;
             comboBox2.Enabled = comboBox2.Visible = false;
@@ -140,24 +128,17 @@ namespace ChapterTool
             btnSave.Enabled = btnSave.Visible = true;
             btnAUTO.Visible = btnAUTO.Enabled = false;
             comboBox1.Visible = false;
+
             progressBar1.Visible = true;
-            //checkBox4.CheckState = System.Windows.Forms.CheckState.Unchecked;
-            //checkBox7.CheckState = System.Windows.Forms.CheckState.Unchecked;//should do after the file is loaded
             cbFramCal.Enabled = true;
             cbMore.Enabled = true;
             mplsValid = true;
             xmlValid = true;
-            //isMPLS = false;
-            //AUTOMODE = false;
 
-            //AccuratePiont = 0;
-            //InAccuratePiont = 0;
             fps = 0;
 
             folderBrowserDialog1.SelectedPath = registryStorage.Load();
-            
         }
-        //Regex RPath    = new Regex(@"^[a-zA-Z];[\\/]((?! )(?![^\\/]*\s+[\\/])[\w -]+[\\/])*(?! )(?![^.]+\s+\.)[\w -]+$")
         Regex RLineOne    = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
         Regex RLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
         Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
@@ -301,20 +282,10 @@ namespace ChapterTool
 
         void loadOGM()
         {
-            //button4.Enabled = true;
             using (StreamReader sr = new StreamReader(paths[0], Encoding.Default))
             {
                 textBox1.Text = sr.ReadToEnd();
             }
-            /*
-            FileStream fs = new FileStream(paths[0], FileMode.Open, FileAccess.Read, FileShare.Read);
-            StreamReader sr = new StreamReader(fs);
-            textBox1.Text = sr.ReadToEnd();
-            textBox1.AcceptsReturn = true;
-            sr.Close();
-            fs.Close();
-            */
-            //fs.Dispose();
             progressBar1.Value = 33;
             Tips.Text = "载入完成 (≧▽≦)";
             CTLogger.Log("|成功载入OGM格式章节文件，共" + totalLine.ToString() + "行");
@@ -322,28 +293,18 @@ namespace ChapterTool
 
         void btnLoad_Click(object sender, EventArgs e)                  //载入键
         {
-            //OpenFileDialog op = new OpenFileDialog();
             openFileDialog1.Filter = SchapterFitter;
-            //openFileDialog1.FilterIndex = 1;
-            //op.ShowDialog();
 
             if(openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 textBox1.Clear();
                 paths[0] = openFileDialog1.FileName;
                 CTLogger.Log("+从载入键中载入文件:" + paths[0]);
-                //IsTimeFomat = true;
                 comboBox2.Items.Clear();
                 Loadfile();
                 SetScroll();
-                //if (checkBox7.Checked)
-                //{
-                //    getChapterNameStream();
-                //}
                 if (mplsValid) { Transfer(); }
-                
             }
-            //op.Dispose();
         }
 
         void btnSave_Click(object sender, EventArgs e) { saveFile(); }  //输出保存键
@@ -368,8 +329,6 @@ namespace ChapterTool
                             Tips.Text = "由于某种原因，它炸了";
                             CTLogger.Log("设置保存路过程中出现错误：" + ex.Message);
                         }
-
-                        //MessageBox.Show(CUSTsavingPath);
                     }
                 }
                 catch (Exception exception)
@@ -417,10 +376,7 @@ namespace ChapterTool
                     sw.Flush();
                     sw.Close();
                 }
-                //FileStream fs = new FileStream(savePath, FileMode.Create);
 
-                //fs.Close();
-                //fs.Dispose();
                 Tips.Text = "保存完成 (≧▽≦)";
                 CTLogger.Log(savePath+"保存成功");
                 progressBar1.Value = 100;
@@ -475,21 +431,6 @@ namespace ChapterTool
                 ++i;
             }
             return string.Empty;
-            /*
-            i = 0;
-            try
-            {
-                while (i < totalLine && string.IsNullOrEmpty(buffer1))
-                { buffer1 = textBox1.Lines[i++]; }
-                
-            }
-            catch
-            {
-                CTLogger.Log("ERROR：文件为空");
-                return string.Empty;
-            }
-            return buffer1;
-            */
         }
 
         void OffsetCal(string line)//获取第一行的时间
@@ -799,15 +740,6 @@ namespace ChapterTool
             }
         }
 
-        /*
-        void TSD_0unit_Click(object sender, EventArgs e) { TSD = 0; }
-        void TSD_1unit_Click(object sender, EventArgs e) { TSD = 1; }
-        void TSD_2unit_Click(object sender, EventArgs e) { TSD = 2; }
-        void TSD_3unit_Click(object sender, EventArgs e) { TSD = 3; }
-        void TSD_4unit_Click(object sender, EventArgs e) { TSD = 4; }
-        void TSD_5unit_Click(object sender, EventArgs e) { TSD = 5; }
-        void TSD_6unit_Click(object sender, EventArgs e) { TSD = 6; }
-        */
 
         bool fpsMode
         {
@@ -863,14 +795,11 @@ namespace ChapterTool
             }
             else
             {
-                //IsTimeFomat = false;
                 Tips.Text = SinvalidTime;
                 return TimeSpan.Zero;
-                //return convertMethod.string2Time("00:00:00.000");
             }
         }
 
-        //DateTime ShiftTime;
         TimeSpan _ShiftTime;
 
 
@@ -925,21 +854,17 @@ namespace ChapterTool
         string ChapterPath;
         bool UseChapter = false;
 
-        //FileStream ChapterFileStream;
         StreamReader ChapterStreamReader;
 
        void loadChapterName()
         {
-            //OpenFileDialog op = new OpenFileDialog();
             openFileDialog1.Filter = SnameFitter;
-            //openFileDialog1.FilterIndex = 1;
-            //op.ShowDialog();
+
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 ChapterPath = openFileDialog1.FileName;
                 CTLogger.Log("+载入自定义章节名模板："+ ChapterPath);
                 UseChapter  = true;
-                //MessageBox.Show(op.FileName);
                 getChapterNameStream();
             }
             else
