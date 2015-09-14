@@ -20,7 +20,6 @@ namespace ChapterTool
         }
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            base.OnKeyDown(e);
             try
             {
                 if (e.Control && (e.KeyCode == Keys.A))
@@ -37,10 +36,9 @@ namespace ChapterTool
                     int charIndex = GetFirstCharIndexFromLine((int)(totalLine / 2));
                     Select(charIndex, Text.Length);
                 }
+                e.Handled = true;
             }
-            catch (Exception)
-            {
-            }
+            catch (Exception)  { }
         }
     }
 

@@ -1298,7 +1298,15 @@ namespace ChapterTool
         }
         private void comboBox2_MouseEnter(object sender, EventArgs e)
         {
-            toolTip1.Show(comboBox2.Items.Count.ToString(), comboBox2);
+            if (comboBox2.Items.Count > 20)
+            {
+                toolTip1.Show("不用看了，这是播放菜单的mpls", comboBox2);
+            }
+            else
+            {
+                toolTip1.Show(comboBox2.Items.Count.ToString(), comboBox2);
+            }
+            
         }
         private void cbMul1k1_MouseEnter(object sender, EventArgs e)
         {
