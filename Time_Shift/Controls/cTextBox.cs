@@ -31,6 +31,12 @@ namespace ChapterTool
                 {
                     Clipboard.SetText(this.SelectedText, TextDataFormat.UnicodeText);
                 }
+                else if (e.Alt && (e.KeyCode == Keys.A))    
+                {
+                    int totalLine = GetLineFromCharIndex(Text.Length);
+                    int charIndex = GetFirstCharIndexFromLine((int)(totalLine / 2));
+                    Select(charIndex, Text.Length);
+                }
             }
             catch (Exception)
             {
