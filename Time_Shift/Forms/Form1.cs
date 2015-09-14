@@ -33,6 +33,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using ChapterTool.Util;
 
 namespace ChapterTool
 {
@@ -103,12 +104,12 @@ namespace ChapterTool
                 if (File.Exists("mkvextract.exe"))
                 {
                     mkvEX = true;
-                    return "所有支持的类型(*.txt,*.xml,*.mpls,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls)|*.txt;*.xml;*.mpls|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
+                    return "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls*.ifo;|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
                 }
                 else
                 {
                     mkvEX = false;
-                    return "章节文件(*.txt,*.xml,*.mpls)|*.txt;*.xml;*.mpls";
+                    return "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls*.ifo;";
                 }
             }
         }
@@ -233,11 +234,12 @@ namespace ChapterTool
                 }
                 else
                 {
-                    if ( !(paths[0].ToLowerInvariant().EndsWith(".txt") ||
+                    if (!(paths[0].ToLowerInvariant().EndsWith(".txt") ||
                         paths[0].ToLowerInvariant().EndsWith(".xml") ||
                         paths[0].ToLowerInvariant().EndsWith(".mpls") ||
                         paths[0].ToLowerInvariant().EndsWith(".mkv") ||
-                        paths[0].ToLowerInvariant().EndsWith(".mka")) )
+                        paths[0].ToLowerInvariant().EndsWith(".mka") ||
+                        paths[0].ToLowerInvariant().EndsWith(".ifo")) )
                     {
                         Tips.Text = "这个文件我不认识啊 _ (:3」∠)_";
                         CTLogger.Log("文件格式非法");
@@ -248,7 +250,6 @@ namespace ChapterTool
                 }
                 return true;
             }
-
         }
 
         bool mplsValid = true;
@@ -270,6 +271,7 @@ namespace ChapterTool
                 if ((paths[0].ToLowerInvariant().EndsWith(".mkv" ) || 
                      paths[0].ToLowerInvariant().EndsWith(".mka" )) && mkvEX) { xmlValid = loadMatroska(); }
                 if ( paths[0].ToLowerInvariant().EndsWith(".txt" )) { loadOGM(); }
+                if (paths[0].ToLowerInvariant().EndsWith(".ifo")) { LoadIFO(); }
                 if (cbFramCal.Checked) { cbFramCal.CheckState = CheckState.Unchecked; }
             }
             catch (Exception ex)
@@ -280,6 +282,21 @@ namespace ChapterTool
             }
             Cursor = Cursors.Default;
             
+        }
+
+        void LoadIFO()
+        {
+            textBox2.Clear();
+            List<ChapterInfo> Rawifo = new ifoData().GetStreams(paths[0]);
+            string text = string.Empty;
+            int i = 1;
+            if (Rawifo[0] == null) { return; }
+            foreach (var item in Rawifo[0].Chapters)    
+            {
+                text += "CHAPTER" + i.ToString("00") + "=" + convertMethod.time2string(item.Time) + NewLine;
+                text += "CHAPTER" + i++.ToString("00") + "NAME=" + item.Name + NewLine;
+            }
+            textBox1.Text = text;
         }
 
         void loadOGM()

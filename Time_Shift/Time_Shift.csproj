@@ -73,6 +73,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Util\ChapterInfo.cs" />
     <Compile Include="Util\convertMethod.cs" />
     <Compile Include="Controls\cTextBox.cs">
       <SubType>Component</SubType>
