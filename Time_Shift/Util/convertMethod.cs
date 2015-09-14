@@ -16,19 +16,9 @@ namespace ChapterTool
         }
         public static string time2string(decimal second)
         {
-            //int Hour        = (int)Math.Floor(second / 3600);
-            //int Minute      = (int)Math.Floor((second - Hour * 3600) / 60);
-            //int Second      = (int)Math.Floor(second  - Hour * 3600 - Minute * 60);
-            //int Millisecond = (int)Math.Floor((second - Hour * 3600 - Minute * 60 - Second + 0.0005M) * 1000);
-
             decimal secondPart = Math.Floor(second);
             decimal millisecondPart = Math.Round((second - secondPart) * 1000M);
             return time2string(new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart));
-
-            //return Hour.ToString("00") + ":" +
-            //     Minute.ToString("00") + ":" +
-            //     Second.ToString("00") + "." +
-            //Millisecond.ToString("000");
         }
         
         

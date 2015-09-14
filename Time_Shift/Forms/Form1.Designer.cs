@@ -31,9 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.btnLoad = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.btnSave = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnTrans = new System.Windows.Forms.Button();
             this.cbReserveName = new System.Windows.Forms.CheckBox();
@@ -42,15 +40,6 @@
             this.cbFramCal = new System.Windows.Forms.CheckBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.cbRound = new System.Windows.Forms.CheckBox();
-            this.btnAUTO = new System.Windows.Forms.Button();
-            this.cbMore = new System.Windows.Forms.CheckBox();
-            this.cbMul1k1 = new System.Windows.Forms.CheckBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
-            this.cbShift = new System.Windows.Forms.CheckBox();
-            this.cbChapterName = new System.Windows.Forms.CheckBox();
-            this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.TSD_0unit = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,12 +50,26 @@
             this.TSD_4unit = new System.Windows.Forms.ToolStripMenuItem();
             this.TSD_5unit = new System.Windows.Forms.ToolStripMenuItem();
             this.TSD_6unit = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnAUTO = new System.Windows.Forms.Button();
+            this.cbMore = new System.Windows.Forms.CheckBox();
+            this.cbMul1k1 = new System.Windows.Forms.CheckBox();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.cbShift = new System.Windows.Forms.CheckBox();
+            this.cbChapterName = new System.Windows.Forms.CheckBox();
+            this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.combineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.btnLog = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            this.textBox2 = new ChapterTool.cTextBox();
+            this.textBox1 = new ChapterTool.cTextBox();
             this.contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnLoad
@@ -84,21 +87,6 @@
             this.btnLoad.Text = "载入";
             this.btnLoad.UseVisualStyleBackColor = true;
             this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
-            // 
-            // textBox1
-            // 
-            this.textBox1.AcceptsReturn = true;
-            this.textBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox1.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.textBox1.Location = new System.Drawing.Point(12, 84);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(12, 4, 3, 4);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(250, 350);
-            this.textBox1.TabIndex = 1;
-            this.textBox1.TabStop = false;
-            this.textBox1.WordWrap = false;
             // 
             // btnSave
             // 
@@ -118,23 +106,6 @@
             this.btnSave.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnSave_MouseDown);
             this.btnSave.MouseEnter += new System.EventHandler(this.btnSave_MouseEnter);
             this.btnSave.MouseLeave += new System.EventHandler(this.toolTipRemoveAll);
-            // 
-            // textBox2
-            // 
-            this.textBox2.AcceptsReturn = true;
-            this.textBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.textBox2.Location = new System.Drawing.Point(318, 84);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 4, 3, 4);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(250, 350);
-            this.textBox2.TabIndex = 6;
-            this.textBox2.TabStop = false;
-            this.textBox2.WordWrap = false;
-            this.textBox2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseClick);
             // 
             // label1
             // 
@@ -209,7 +180,7 @@
             // 
             // comboBox1
             // 
-            this.comboBox1.BackColor = System.Drawing.SystemColors.Window;
+            this.comboBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBox1.ForeColor = System.Drawing.SystemColors.WindowText;
@@ -232,6 +203,7 @@
             // cbRound
             // 
             this.cbRound.AutoSize = true;
+            this.cbRound.ContextMenuStrip = this.contextMenuStrip1;
             this.cbRound.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cbRound.Location = new System.Drawing.Point(318, 7);
             this.cbRound.Name = "cbRound";
@@ -242,7 +214,78 @@
             this.cbRound.UseVisualStyleBackColor = true;
             this.cbRound.Visible = false;
             this.cbRound.CheckedChanged += new System.EventHandler(this.cbRound_CheckedChanged);
-            this.cbRound.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cbRound_MouseDown);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(125, 26);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.TSD_0unit,
+            this.toolStripSeparator1,
+            this.TSD_1unit,
+            this.TSD_2unit,
+            this.TSD_3unit,
+            this.TSD_4unit,
+            this.TSD_5unit,
+            this.TSD_6unit});
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(124, 22);
+            this.toolStripMenuItem1.Text = "误差范围";
+            this.toolStripMenuItem1.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.Accuracy_DropDownItemClicked);
+            // 
+            // TSD_0unit
+            // 
+            this.TSD_0unit.Name = "TSD_0unit";
+            this.TSD_0unit.Size = new System.Drawing.Size(100, 22);
+            this.TSD_0unit.Text = "0.01";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(97, 6);
+            // 
+            // TSD_1unit
+            // 
+            this.TSD_1unit.Name = "TSD_1unit";
+            this.TSD_1unit.Size = new System.Drawing.Size(100, 22);
+            this.TSD_1unit.Text = "0.05";
+            // 
+            // TSD_2unit
+            // 
+            this.TSD_2unit.Name = "TSD_2unit";
+            this.TSD_2unit.Size = new System.Drawing.Size(100, 22);
+            this.TSD_2unit.Text = "0.10";
+            // 
+            // TSD_3unit
+            // 
+            this.TSD_3unit.Checked = true;
+            this.TSD_3unit.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.TSD_3unit.Name = "TSD_3unit";
+            this.TSD_3unit.Size = new System.Drawing.Size(100, 22);
+            this.TSD_3unit.Text = "0.15";
+            // 
+            // TSD_4unit
+            // 
+            this.TSD_4unit.Name = "TSD_4unit";
+            this.TSD_4unit.Size = new System.Drawing.Size(100, 22);
+            this.TSD_4unit.Text = "0.20";
+            // 
+            // TSD_5unit
+            // 
+            this.TSD_5unit.Name = "TSD_5unit";
+            this.TSD_5unit.Size = new System.Drawing.Size(100, 22);
+            this.TSD_5unit.Text = "0.25";
+            // 
+            // TSD_6unit
+            // 
+            this.TSD_6unit.Name = "TSD_6unit";
+            this.TSD_6unit.Size = new System.Drawing.Size(100, 22);
+            this.TSD_6unit.Text = "0.30";
             // 
             // btnAUTO
             // 
@@ -293,6 +336,7 @@
             this.cbMul1k1.TabIndex = 15;
             this.cbMul1k1.TabStop = false;
             this.cbMul1k1.Text = "所有章节的开始时间 x 1.001";
+            this.toolTip1.SetToolTip(this.cbMul1k1, "用于DVD Decrypter提取的Chapter");
             this.cbMul1k1.UseVisualStyleBackColor = true;
             this.cbMul1k1.CheckedChanged += new System.EventHandler(this.contentUpdate);
             this.cbMul1k1.MouseEnter += new System.EventHandler(this.cbMul1k1_MouseEnter);
@@ -359,6 +403,7 @@
             this.maskedTextBox1.Culture = new System.Globalization.CultureInfo("");
             this.maskedTextBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.maskedTextBox1.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.maskedTextBox1.InsertKeyMode = System.Windows.Forms.InsertKeyMode.Overwrite;
             this.maskedTextBox1.Location = new System.Drawing.Point(419, 519);
             this.maskedTextBox1.Mask = "00:00:00.000";
             this.maskedTextBox1.Name = "maskedTextBox1";
@@ -370,7 +415,8 @@
             // 
             // comboBox2
             // 
-            this.comboBox2.BackColor = System.Drawing.SystemColors.Window;
+            this.comboBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            this.comboBox2.ContextMenuStrip = this.contextMenuStrip2;
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBox2.ForeColor = System.Drawing.SystemColors.WindowText;
@@ -384,77 +430,19 @@
             this.comboBox2.MouseEnter += new System.EventHandler(this.comboBox2_MouseEnter);
             this.comboBox2.MouseLeave += new System.EventHandler(this.toolTipRemoveAll);
             // 
-            // contextMenuStrip1
+            // contextMenuStrip2
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(125, 26);
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.combineToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(125, 26);
             // 
-            // toolStripMenuItem1
+            // combineToolStripMenuItem
             // 
-            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.TSD_0unit,
-            this.toolStripSeparator1,
-            this.TSD_1unit,
-            this.TSD_2unit,
-            this.TSD_3unit,
-            this.TSD_4unit,
-            this.TSD_5unit,
-            this.TSD_6unit});
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(124, 22);
-            this.toolStripMenuItem1.Text = "误差范围";
-            this.toolStripMenuItem1.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.Accuracy_DropDownItemClicked);
-            // 
-            // TSD_0unit
-            // 
-            this.TSD_0unit.Name = "TSD_0unit";
-            this.TSD_0unit.Size = new System.Drawing.Size(152, 22);
-            this.TSD_0unit.Text = "0.01";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
-            // 
-            // TSD_1unit
-            // 
-            this.TSD_1unit.Name = "TSD_1unit";
-            this.TSD_1unit.Size = new System.Drawing.Size(152, 22);
-            this.TSD_1unit.Text = "0.05";
-            // 
-            // TSD_2unit
-            // 
-            this.TSD_2unit.Name = "TSD_2unit";
-            this.TSD_2unit.Size = new System.Drawing.Size(152, 22);
-            this.TSD_2unit.Text = "0.10";
-            // 
-            // TSD_3unit
-            // 
-            this.TSD_3unit.Checked = true;
-            this.TSD_3unit.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.TSD_3unit.Name = "TSD_3unit";
-            this.TSD_3unit.Size = new System.Drawing.Size(152, 22);
-            this.TSD_3unit.Text = "0.15";
-            // 
-            // TSD_4unit
-            // 
-            this.TSD_4unit.Name = "TSD_4unit";
-            this.TSD_4unit.Size = new System.Drawing.Size(152, 22);
-            this.TSD_4unit.Text = "0.20";
-            // 
-            // TSD_5unit
-            // 
-            this.TSD_5unit.Name = "TSD_5unit";
-            this.TSD_5unit.Size = new System.Drawing.Size(152, 22);
-            this.TSD_5unit.Text = "0.25";
-            // 
-            // TSD_6unit
-            // 
-            this.TSD_6unit.Name = "TSD_6unit";
-            this.TSD_6unit.Size = new System.Drawing.Size(152, 22);
-            this.TSD_6unit.Text = "0.30";
+            this.combineToolStripMenuItem.Name = "combineToolStripMenuItem";
+            this.combineToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.combineToolStripMenuItem.Text = "合并章节";
+            this.combineToolStripMenuItem.Click += new System.EventHandler(this.combineToolStripMenuItem_Click);
             // 
             // folderBrowserDialog1
             // 
@@ -479,6 +467,41 @@
             this.btnLog.Text = "LOG";
             this.btnLog.UseVisualStyleBackColor = true;
             this.btnLog.Click += new System.EventHandler(this.btnLog_Click);
+            // 
+            // textBox2
+            // 
+            this.textBox2.AcceptsReturn = true;
+            this.textBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox2.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.textBox2.Location = new System.Drawing.Point(318, 84);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 4, 3, 4);
+            this.textBox2.Multiline = true;
+            this.textBox2.Name = "textBox2";
+            this.textBox2.OthercTextBox = null;
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(250, 350);
+            this.textBox2.TabIndex = 6;
+            this.textBox2.TabStop = false;
+            this.textBox2.WordWrap = false;
+            this.textBox2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseClick);
+            // 
+            // textBox1
+            // 
+            this.textBox1.AcceptsReturn = true;
+            this.textBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox1.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.textBox1.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.textBox1.Location = new System.Drawing.Point(12, 84);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(12, 4, 3, 4);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.OthercTextBox = null;
+            this.textBox1.Size = new System.Drawing.Size(250, 350);
+            this.textBox1.TabIndex = 1;
+            this.textBox1.TabStop = false;
+            this.textBox1.WordWrap = false;
             // 
             // Form1
             // 
@@ -522,8 +545,9 @@
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
             this.Move += new System.EventHandler(this.Form1_Move);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -532,8 +556,8 @@
         #endregion
 
         private System.Windows.Forms.Button btnLoad;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
+        private cTextBox textBox1;
+        private cTextBox textBox2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnTrans;
         private System.Windows.Forms.CheckBox cbReserveName;
@@ -566,6 +590,8 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Button btnLog;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem combineToolStripMenuItem;
     }
 }
 

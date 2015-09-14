@@ -1,17 +1,17 @@
 # ChapterTool #
 
 - A simple tool for video chapter
-- ChapterTool is made to extract chapter times from BluRay mpls file or matroska files.
+- ChapterTool is made to extract chapterfile from BluRay mpls file or DVD ifo file or matroska files.
 
 	Feature
 --------------------
-- Can  Adjust first chapter's begining to 0
+-	   Can  Adjust first chapter's begining to 0
 -	   Multiply chapter time with 1.001
 -      Move all time backward e.g. 00:23:23.233
 -      Move all chapter number backward
 -      Load chapter name from other file
 -      Calculate frames by chapter file
-- Latest Version : 2.3.333.1
+-      Latest Version : 2.3.333.2
 
 	Install
 --------------------

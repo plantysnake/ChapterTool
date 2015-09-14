@@ -33,6 +33,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using ChapterTool.Util;
 
 namespace ChapterTool
 {
@@ -41,8 +42,6 @@ namespace ChapterTool
         public Form1()
         {
             InitializeComponent();
-            //string Culture = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
-            //if (Culture != "zh-CN" && Culture != "Zh-TW" && Culture != "Zh-HK" && System.Environment.UserName != "Taut_Cony") { engVersion(); }
         }
         public Form1(string args)
         {
@@ -53,6 +52,7 @@ namespace ChapterTool
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            textBox1.OthercTextBox = textBox2;
             CTLogger.Log(Environment.UserName + "，你好呀");
             CTLogger.Log(Environment.OSVersion.ToString());
             foreach (var item in Screen.AllScreens)
@@ -68,17 +68,13 @@ namespace ChapterTool
             }
 
             setDefault();
-            //checkMkvExtract();
             if (!string.IsNullOrEmpty(paths[0]))
             {
                 Loadfile();
                 Transfer();
                 registryStorage.Save("你好呀，找到这里来干嘛呀", @"Software\ChapterTool", string.Empty);
             }
-            //Location = new Point()
             moreModeShow = false;
-            //ClientSize = new Size(580, 471);
-            //MessageBox.Show(ClientSize.ToString());
             Size = new Size(Size.Width, Size.Height - 80);
         }
 
@@ -103,12 +99,12 @@ namespace ChapterTool
                 if (File.Exists("mkvextract.exe"))
                 {
                     mkvEX = true;
-                    return "所有支持的类型(*.txt,*.xml,*.mpls,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls)|*.txt;*.xml;*.mpls|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
+                    return "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls*.ifo;|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
                 }
                 else
                 {
                     mkvEX = false;
-                    return "章节文件(*.txt,*.xml,*.mpls)|*.txt;*.xml;*.mpls";
+                    return "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls*.ifo;";
                 }
             }
         }
@@ -120,13 +116,7 @@ namespace ChapterTool
 
         void setDefault()
         {
-            //if (File.Exists("MediaInfo.dll"))
-            //{
-            //    SchapterFitter  = "章节文件(*.txt,*.xml,*.mpls)|*.txt;*.xml;*.mpls";
-            //}
-            //Form1_Resize();
             cbMore.CheckState = CheckState.Unchecked;
-            //Form1_Resize();
 
             moreModeShow = false;
             comboBox2.Enabled = comboBox2.Visible = false;
@@ -138,24 +128,17 @@ namespace ChapterTool
             btnSave.Enabled = btnSave.Visible = true;
             btnAUTO.Visible = btnAUTO.Enabled = false;
             comboBox1.Visible = false;
+
             progressBar1.Visible = true;
-            //checkBox4.CheckState = System.Windows.Forms.CheckState.Unchecked;
-            //checkBox7.CheckState = System.Windows.Forms.CheckState.Unchecked;//should do after the file is loaded
             cbFramCal.Enabled = true;
             cbMore.Enabled = true;
             mplsValid = true;
             xmlValid = true;
-            //isMPLS = false;
-            //AUTOMODE = false;
 
-            //AccuratePiont = 0;
-            //InAccuratePiont = 0;
             fps = 0;
 
             folderBrowserDialog1.SelectedPath = registryStorage.Load();
-            
         }
-        //Regex RPath    = new Regex(@"^[a-zA-Z];[\\/]((?! )(?![^\\/]*\s+[\\/])[\w -]+[\\/])*(?! )(?![^.]+\s+\.)[\w -]+$")
         Regex RLineOne    = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
         Regex RLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
         Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
@@ -177,7 +160,6 @@ namespace ChapterTool
         void Form1_DragDrop(object sender,  DragEventArgs e)
         {
             paths = e.Data.GetData(DataFormats.FileDrop) as string[];
-            label1.Text = paths[0];
             //IsTimeFomat = true;
             if (isPathValid)
             {
@@ -205,7 +187,6 @@ namespace ChapterTool
         void progressBar1_Click(object sender, EventArgs e) 
         {
 
-            //InputBox.Show("请输入密钥", "激活", "");
             ++poi;
             CTLogger.Log("点击了" + poi.ToString() + "次进度条");
             if (poi >= nico)
@@ -234,11 +215,12 @@ namespace ChapterTool
                 }
                 else
                 {
-                    if (paths[0].IndexOf(".txt") < 0 &&
-                        paths[0].IndexOf(".xml") < 0 &&
-                        paths[0].IndexOf(".mpls") < 0 &&
-                        paths[0].IndexOf(".mkv") < 0 &&
-                        paths[0].IndexOf(".mka") < 0)
+                    if (!(paths[0].ToLowerInvariant().EndsWith(".txt") ||
+                        paths[0].ToLowerInvariant().EndsWith(".xml") ||
+                        paths[0].ToLowerInvariant().EndsWith(".mpls") ||
+                        paths[0].ToLowerInvariant().EndsWith(".mkv") ||
+                        paths[0].ToLowerInvariant().EndsWith(".mka") ||
+                        paths[0].ToLowerInvariant().EndsWith(".ifo")) )
                     {
                         Tips.Text = "这个文件我不认识啊 _ (:3」∠)_";
                         CTLogger.Log("文件格式非法");
@@ -249,7 +231,6 @@ namespace ChapterTool
                 }
                 return true;
             }
-
         }
 
         bool mplsValid = true;
@@ -260,16 +241,18 @@ namespace ChapterTool
         void Loadfile()
         {
             if (!isPathValid) { return; }
+            string shortedPath = paths[0].Substring(0, 20)  + "……" + paths[0].Substring(paths[0].Length - 12, 12);
+            label1.Text = shortedPath;
             setDefault();
             Cursor = Cursors.AppStarting;
             try
             {
-                if  (paths[0].IndexOf(".mpls") > 0) { mplsValid = loadMPLS(); }
-                if  (paths[0].IndexOf(".xml" ) > 0) { loadXML(); }
-                //MessageBox.Show(mkvEX.ToString());
-                if ((paths[0].IndexOf(".mkv" ) > 0 || paths[0].IndexOf(".mka") > 0) && 
-                      mkvEX) { xmlValid = loadMatroska(); }
-                if (paths[0].IndexOf(".txt") > 0) { loadOGM(); }
+                if  (paths[0].ToLowerInvariant().EndsWith(".mpls")) { mplsValid = loadMPLS(); }
+                if  (paths[0].ToLowerInvariant().EndsWith(".xml" )) { loadXML(); }
+                if ((paths[0].ToLowerInvariant().EndsWith(".mkv" ) || 
+                     paths[0].ToLowerInvariant().EndsWith(".mka" )) && mkvEX) { xmlValid = loadMatroska(); }
+                if ( paths[0].ToLowerInvariant().EndsWith(".txt" )) { loadOGM(); }
+                if (paths[0].ToLowerInvariant().EndsWith(".ifo")) { LoadIFO(); }
                 if (cbFramCal.Checked) { cbFramCal.CheckState = CheckState.Unchecked; }
             }
             catch (Exception ex)
@@ -282,22 +265,27 @@ namespace ChapterTool
             
         }
 
+        void LoadIFO()
+        {
+            textBox2.Clear();
+            List<ChapterInfo> Rawifo = new ifoData().GetStreams(paths[0]);
+            string text = string.Empty;
+            int i = 1;
+            if (Rawifo[0] == null) { return; }
+            foreach (var item in Rawifo[0].Chapters)    
+            {
+                text += "CHAPTER" + i.ToString("00") + "=" + convertMethod.time2string(item.Time) + NewLine;
+                text += "CHAPTER" + i++.ToString("00") + "NAME=" + item.Name + NewLine;
+            }
+            textBox1.Text = text;
+        }
+
         void loadOGM()
         {
-            //button4.Enabled = true;
             using (StreamReader sr = new StreamReader(paths[0], Encoding.Default))
             {
                 textBox1.Text = sr.ReadToEnd();
             }
-            /*
-            FileStream fs = new FileStream(paths[0], FileMode.Open, FileAccess.Read, FileShare.Read);
-            StreamReader sr = new StreamReader(fs);
-            textBox1.Text = sr.ReadToEnd();
-            textBox1.AcceptsReturn = true;
-            sr.Close();
-            fs.Close();
-            */
-            //fs.Dispose();
             progressBar1.Value = 33;
             Tips.Text = "载入完成 (≧▽≦)";
             CTLogger.Log("|成功载入OGM格式章节文件，共" + totalLine.ToString() + "行");
@@ -305,29 +293,18 @@ namespace ChapterTool
 
         void btnLoad_Click(object sender, EventArgs e)                  //载入键
         {
-            //OpenFileDialog op = new OpenFileDialog();
             openFileDialog1.Filter = SchapterFitter;
-            //openFileDialog1.FilterIndex = 1;
-            //op.ShowDialog();
 
             if(openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 textBox1.Clear();
                 paths[0] = openFileDialog1.FileName;
                 CTLogger.Log("+从载入键中载入文件:" + paths[0]);
-                label1.Text = paths[0];
-                //IsTimeFomat = true;
                 comboBox2.Items.Clear();
                 Loadfile();
                 SetScroll();
-                //if (checkBox7.Checked)
-                //{
-                //    getChapterNameStream();
-                //}
                 if (mplsValid) { Transfer(); }
-                
             }
-            //op.Dispose();
         }
 
         void btnSave_Click(object sender, EventArgs e) { saveFile(); }  //输出保存键
@@ -352,8 +329,6 @@ namespace ChapterTool
                             Tips.Text = "由于某种原因，它炸了";
                             CTLogger.Log("设置保存路过程中出现错误：" + ex.Message);
                         }
-
-                        //MessageBox.Show(CUSTsavingPath);
                     }
                 }
                 catch (Exception exception)
@@ -377,12 +352,12 @@ namespace ChapterTool
                 savePath = CUSTsavingPath + paths[0].Substring(slashPosition, paths[0].LastIndexOf(".") - slashPosition);
             }
 
-            if (paths[0].IndexOf(".mpls") > 0)
+            if (paths[0].ToLowerInvariant().EndsWith(".mpls") && !combineToolStripMenuItem.Checked)
             {
-                savePath += "__" + RawData.fileName[mplsFileSeletIndex];
+                savePath += "__" + RawData.chapterClips[mplsFileSeletIndex].Name;
             }
             
-            if (paths[0].IndexOf(".mpls") > 0 && cbFramCal.Checked)
+            if (paths[0].ToLowerInvariant().EndsWith(".mpls") && cbFramCal.Checked)
             {
                 while (File.Exists(savePath + ".qpf")) { savePath += "_"; }
                 savePath += ".qpf";
@@ -401,10 +376,7 @@ namespace ChapterTool
                     sw.Flush();
                     sw.Close();
                 }
-                //FileStream fs = new FileStream(savePath, FileMode.Create);
 
-                //fs.Close();
-                //fs.Dispose();
                 Tips.Text = "保存完成 (≧▽≦)";
                 CTLogger.Log(savePath+"保存成功");
                 progressBar1.Value = 100;
@@ -459,21 +431,6 @@ namespace ChapterTool
                 ++i;
             }
             return string.Empty;
-            /*
-            i = 0;
-            try
-            {
-                while (i < totalLine && string.IsNullOrEmpty(buffer1))
-                { buffer1 = textBox1.Lines[i++]; }
-                
-            }
-            catch
-            {
-                CTLogger.Log("ERROR：文件为空");
-                return string.Empty;
-            }
-            return buffer1;
-            */
         }
 
         void OffsetCal(string line)//获取第一行的时间
@@ -699,16 +656,16 @@ namespace ChapterTool
 
         void qpfAbout() //对mpls中fps读取
         {
-            if (isPathValid && paths[0].IndexOf(".mpls") > 0 && mplsValid)
+            if (isPathValid && paths[0].ToLowerInvariant().EndsWith(".mpls") && mplsValid)
             {
-                fps = FrameRate[RawData.fps[comboBox2.SelectedIndex]];
+                fps = FrameRate[RawData.chapterClips[comboBox2.SelectedIndex].fps];
                 
                 btnSave.Enabled = btnSave.Visible = true;
                 btnAUTO.Visible = btnAUTO.Enabled = false;
                 comboBox1.Visible = false;
                 cbRound.CheckState = CheckState.Checked;
                 Tips.Text = SFPSShow3 + fps.ToString("00.0000") + SFPSShow4;
-                CTLogger.Log("|成功读"+RawData.fileName[comboBox2.SelectedIndex] +"的帧率：" + fps.ToString("00.0000") + " fps");
+                CTLogger.Log("|成功读"+RawData.chapterClips[comboBox2.SelectedIndex].Name +"的帧率：" + fps.ToString("00.0000") + " fps");
                 //FPS_Transfer();
             }
             else
@@ -721,14 +678,6 @@ namespace ChapterTool
             //FPS_Transfer();
         }
 
-        //精度控制 part
-        void cbRound_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                contextMenuStrip1.Show(MousePosition);
-            }
-        }
 
         int TSD
         {
@@ -791,15 +740,6 @@ namespace ChapterTool
             }
         }
 
-        /*
-        void TSD_0unit_Click(object sender, EventArgs e) { TSD = 0; }
-        void TSD_1unit_Click(object sender, EventArgs e) { TSD = 1; }
-        void TSD_2unit_Click(object sender, EventArgs e) { TSD = 2; }
-        void TSD_3unit_Click(object sender, EventArgs e) { TSD = 3; }
-        void TSD_4unit_Click(object sender, EventArgs e) { TSD = 4; }
-        void TSD_5unit_Click(object sender, EventArgs e) { TSD = 5; }
-        void TSD_6unit_Click(object sender, EventArgs e) { TSD = 6; }
-        */
 
         bool fpsMode
         {
@@ -855,14 +795,11 @@ namespace ChapterTool
             }
             else
             {
-                //IsTimeFomat = false;
                 Tips.Text = SinvalidTime;
                 return TimeSpan.Zero;
-                //return convertMethod.string2Time("00:00:00.000");
             }
         }
 
-        //DateTime ShiftTime;
         TimeSpan _ShiftTime;
 
 
@@ -917,21 +854,17 @@ namespace ChapterTool
         string ChapterPath;
         bool UseChapter = false;
 
-        //FileStream ChapterFileStream;
         StreamReader ChapterStreamReader;
 
        void loadChapterName()
         {
-            //OpenFileDialog op = new OpenFileDialog();
             openFileDialog1.Filter = SnameFitter;
-            //openFileDialog1.FilterIndex = 1;
-            //op.ShowDialog();
+
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 ChapterPath = openFileDialog1.FileName;
                 CTLogger.Log("+载入自定义章节名模板："+ ChapterPath);
                 UseChapter  = true;
-                //MessageBox.Show(op.FileName);
                 getChapterNameStream();
             }
             else
@@ -1020,16 +953,17 @@ namespace ChapterTool
         {
             RawData = new mplsData(paths[0]);
             CTLogger.Log("+成功载入MPLS格式章节文件");
-            CTLogger.Log("|+MPLS中共有" + RawData.fileName.Count.ToString() + "个m2ts片段");
+            CTLogger.Log("|+MPLS中共有" + RawData.chapterClips.Count.ToString() + "个m2ts片段");
 
-            comboBox2.Enabled = comboBox2.Visible = (RawData.fileName.Count >= 1);
+            comboBox2.Enabled = comboBox2.Visible = (RawData.chapterClips.Count >= 1);
             if (comboBox2.Enabled)
             {
                 comboBox2.Items.Clear();
-                foreach (string item in RawData.fileName)
+                foreach (var item in RawData.chapterClips)
                 {
-                    comboBox2.Items.Add(item);
-                    CTLogger.Log(" |+" + item);
+                    comboBox2.Items.Add(item.Name.Replace("M2TS",".m2ts") + "__" + item.timeStamp.Count.ToString());
+                    CTLogger.Log(" |+" + item.Name);
+                    CTLogger.Log("  |+包含 " + item.timeStamp.Count.ToString() + " 个时间戳");
                 }
             }
             bool isValide = mpls2box();
@@ -1053,8 +987,19 @@ namespace ChapterTool
         {
             textBox1.Clear();
             textBox2.Clear();
-            int _index = mplsFileSeletIndex;
-            if (RawData.timeStamp[_index].Count < 2)
+
+            List<int> current;
+            if (combineToolStripMenuItem.Checked)
+            {
+                current = RawData.entireTimeStamp;
+            }
+            else
+            {
+                current = RawData.chapterClips[mplsFileSeletIndex].timeStamp;
+            }
+            
+
+            if (current.Count < 2)
             {
                 mplsEnable = false;
                 Tips.Text = Swhatsthis2;
@@ -1065,11 +1010,11 @@ namespace ChapterTool
             mplsEnable = true;
             
 
-            int offset = RawData.timeStamp[_index][0];
+            int offset = current[0];
             
             int default_order = 1;
             string text = string.Empty;
-            foreach (int item in RawData.timeStamp[_index])
+            foreach (int item in current)
             {
                 var sDO = default_order.ToString("00");
                 text += "CHAPTER" + sDO + "=" + convertMethod.time2string(item - offset) + NewLine;
@@ -1077,8 +1022,6 @@ namespace ChapterTool
                 ++default_order;
             }
             textBox1.Text = text;
-            //(RawData.second2time(RawData.lastTime[_index].Value - RawData.lastTime[_index].Key));
-
             return true;
         }
 
@@ -1091,7 +1034,7 @@ namespace ChapterTool
                     switch (mplsValid)
                     {
                         case true:
-                            fps = FrameRate[RawData.fps[comboBox2.SelectedIndex]];
+                            fps = FrameRate[RawData.chapterClips[comboBox2.SelectedIndex].fps];
                             FPS_Transfer();
                             Tips.Text = SFPSShow3 + fps.ToString("00.0000") + SFPSShow4;
                             break;
@@ -1101,6 +1044,19 @@ namespace ChapterTool
                 case false:
                     Transfer(); break;
             }
+        }
+
+
+        private void combineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
+            mpls2box();
+            switch (cbFramCal.Checked)
+            {
+                case true:  FPS_Transfer(); break;
+                case false: Transfer();     break;
+            }
+            SetScroll();
         }
 
         //////////matroska support
@@ -1141,7 +1097,6 @@ namespace ChapterTool
                 Fcolor.Focus();
                 Fcolor.Select();
             }
-
         }
         public List<Color> currentColor
         {
@@ -1173,6 +1128,7 @@ namespace ChapterTool
             {
                 textBox1.BackColor = textBox2.BackColor = value;
                 numericUpDown1.BackColor = maskedTextBox1.BackColor = value;
+                comboBox1.BackColor = comboBox2.BackColor = value;
             }
             
         }
@@ -1241,14 +1197,14 @@ namespace ChapterTool
             string SFakeChapter1 = "本片段时长为";
             string SFakeChapter2 = "，但是第二个章节点\r\n离视频结尾太近了呢，应该没有用处吧 (-｡-;)";
             string SFakeChapter3 = "，虽然只有两个章节点\r\n应该还是能安心的呢 (～￣▽￣)→))*￣▽￣*)o";
-            if (!string.IsNullOrEmpty(paths[0]) && paths[0].IndexOf(".mpls") > 0)
+            if (!string.IsNullOrEmpty(paths[0]) && paths[0].ToLowerInvariant().EndsWith(".mpls"))
             {
                 int index = (comboBox2.SelectedIndex == -1) ? 0 : comboBox2.SelectedIndex;
-                if (RawData.timeStamp[index].Count == 2)
+                if (RawData.chapterClips[index].timeStamp.Count == 2)
                 {
-                    KeyValuePair<int, int> pair = RawData.lastTime[index];
-                    string lastTime = convertMethod.time2string(pair.Value - pair.Key);
-                    if (((pair.Value - pair.Key) - (RawData.timeStamp[index][1] - RawData.timeStamp[index][0])) / 45000.0 <= 5.0)
+                    Clip streamClip = RawData.chapterClips[index];
+                    string lastTime = convertMethod.time2string(streamClip.TimeOut - streamClip.TimeIn);
+                    if (((streamClip.TimeOut - streamClip.TimeIn) - (streamClip.timeStamp[1] - streamClip.timeStamp[0])) <= 5 * 45000)
                     {
                         toolTip1.Show(SFakeChapter1 + lastTime + SFakeChapter2, btnSave);
                     }
@@ -1269,7 +1225,15 @@ namespace ChapterTool
         }
         private void comboBox2_MouseEnter(object sender, EventArgs e)
         {
-            toolTip1.Show(comboBox2.Items.Count.ToString(), comboBox2);
+            if (comboBox2.Items.Count > 20)
+            {
+                toolTip1.Show("不用看了，这是播放菜单的mpls", comboBox2);
+            }
+            else
+            {
+                toolTip1.Show(comboBox2.Items.Count.ToString(), comboBox2);
+            }
+            
         }
         private void cbMul1k1_MouseEnter(object sender, EventArgs e)
         {
