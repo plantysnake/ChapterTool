@@ -16,9 +16,17 @@ namespace ChapterTool.Util
         public TimeSpan Time { get; set; }
         /// <summary>Chapter Name</summary>
         public string Name { get; set; }
+        public override string ToString()
+        {
+            return string.Format("{0} - {1}", Name, convertMethod.time2string(Time));
+        }
     }
     public class ChapterInfo
     {
+        public ChapterInfo()
+        {
+            Chapters = new List<Chapter>();
+        }
         public string Title { get; set; }
         public string LangCode { get; set; }
         public string SourceName { get; set; }
@@ -49,6 +57,17 @@ namespace ChapterTool.Util
             double totalFrames = Duration.TotalSeconds * FramesPerSecond;
             Duration = new TimeSpan((long)Math.Round((totalFrames / fps) * TimeSpan.TicksPerSecond));
             FramesPerSecond = fps;
+        }
+
+        public string getText()
+        {
+            string lines = string.Empty;
+            foreach (Chapter c in Chapters)
+            {
+                lines += ("CHAPTER" + c.Number.ToString("00") + "=" + convertMethod.time2string(c.Time) + Environment.NewLine);
+                lines += ("CHAPTER" + c.Number.ToString("00") + "NAME=" + c.Name + Environment.NewLine);
+            }
+            return string.Concat(lines);
         }
 
         public void SaveText(string filename)

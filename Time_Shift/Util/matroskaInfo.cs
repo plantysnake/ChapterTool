@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChapterTool.Util;
+using System;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -6,7 +7,7 @@ namespace ChapterTool
 {
     class matroskaInfo
     {
-        public string result;
+        public ChapterInfo result;
         public matroskaInfo(string path, string program = "mkvextract.exe")
         {
             string arg = "chapters \"" + path + "\"";
@@ -30,25 +31,29 @@ namespace ChapterTool
             process.Close();
             return output;
         }
-        string parseXML(string input)
+        ChapterInfo parseXML(string input)
         {
-            if (string.IsNullOrEmpty(input)) { return input; }
+            ChapterInfo info = new ChapterInfo();
+            if (string.IsNullOrEmpty(input)) { return info; }
             Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(input);
             XmlElement root = doc.DocumentElement;
             XmlNodeList TimeNodes = root.SelectNodes("/Chapters/EditionEntry/ChapterAtom/ChapterTimeStart");
             XmlNodeList NameNodes = root.SelectNodes("/Chapters/EditionEntry/ChapterAtom/ChapterDisplay/ChapterString");
-            if (TimeNodes.Count == 0 || NameNodes.Count == 0) { return string.Empty; }
-            int i = 1, j = 0;
+            if (TimeNodes.Count == 0 || NameNodes.Count == 0) { return info; }
+            int j = 0;
             string text = string.Empty;
             foreach (XmlNode timenode in TimeNodes)
             {
                 if (convertMethod.string2Time(timenode.InnerText) == new TimeSpan(0) && j != 0) { break; }//防止从mkv中读取两个章节
-                text += "CHAPTER" + i.ToString("00") + "=" + RTimeFormat.Match(timenode.InnerText) + Environment.NewLine;
-                text += "CHAPTER" + i++.ToString("00") + "NAME=" + NameNodes[j++].InnerText + Environment.NewLine;
+                Chapter temp = new Chapter();
+                temp.Time = convertMethod.string2Time(RTimeFormat.Match(timenode.InnerText).ToString());
+                temp.Name = NameNodes[j++].InnerText.ToString();
+                temp.Number = j;
+                info.Chapters.Add(temp);
             }
-            return text;
+            return info;
         }
     }
 }

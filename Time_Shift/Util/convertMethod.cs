@@ -41,6 +41,14 @@ namespace ChapterTool
             int Millisecond = int.Parse(temp.Groups["Millisecond"].Value);
             return new TimeSpan(0, Hour, Minute, Second, Millisecond);
         }
+
+        public static TimeSpan pts2Time(int pts)
+        {
+            decimal total = pts / 45000M;
+            decimal secondPart = Math.Floor(total);
+            decimal millisecondPart = Math.Round((total - secondPart) * 1000M);
+            return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
+        }
         static Regex Rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");
         public static Point string2point(string input)
         {
