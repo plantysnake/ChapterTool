@@ -720,14 +720,6 @@ namespace ChapterTool
             //FPS_Transfer();
         }
 
-        //精度控制 part
-        void cbRound_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                contextMenuStrip1.Show(MousePosition);
-            }
-        }
 
         int TSD
         {
@@ -1112,13 +1104,6 @@ namespace ChapterTool
             }
         }
 
-        private void comboBox2_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                contextMenuStrip2.Show(MousePosition);
-            }
-        }
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
