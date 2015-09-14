@@ -274,7 +274,7 @@ namespace ChapterTool
             if (Rawifo[0] == null) { return; }
             foreach (var item in Rawifo[0].Chapters)    
             {
-                text += "CHAPTER" + i.ToString("00") + "=" + convertMethod.time2string(item.Time) + NewLine;
+                text += "CHAPTER" + i.ToString("00") + "=" + convertMethod.time2string((decimal)item.Time.TotalSeconds * 1.001M) + NewLine;
                 text += "CHAPTER" + i++.ToString("00") + "NAME=" + item.Name + NewLine;
             }
             textBox1.Text = text;
