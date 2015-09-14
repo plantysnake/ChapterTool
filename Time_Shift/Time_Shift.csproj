@@ -108,6 +108,9 @@
     <Compile Include="Controls\InputBox.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Util\ifoData.cs" />
+    <Compile Include="Util\ifoParser.cs" />
+    <Compile Include="Util\LanguageSelectionContainer.cs" />
     <Compile Include="Util\matroskaInfo.cs" />
     <Compile Include="Util\mplsData.cs" />
     <Compile Include="Program.cs" />
