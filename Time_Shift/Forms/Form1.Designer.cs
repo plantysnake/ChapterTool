@@ -65,8 +65,11 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.btnLog = new System.Windows.Forms.Button();
-            this.textBox2 = new ChapterTool.cTextBox();
             this.listView1 = new System.Windows.Forms.ListView();
+            this.order = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.cTimeCode = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.cChapterName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.textBox2 = new ChapterTool.cTextBox();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
@@ -338,7 +341,7 @@
             this.cbMul1k1.Text = "所有章节的开始时间 x 1.001";
             this.toolTip1.SetToolTip(this.cbMul1k1, "用于DVD Decrypter提取的Chapter");
             this.cbMul1k1.UseVisualStyleBackColor = true;
-            this.cbMul1k1.CheckedChanged += new System.EventHandler(this.contentUpdate);
+            this.cbMul1k1.CheckedChanged += new System.EventHandler(this.cbMul1k1_CheckedChanged);
             this.cbMul1k1.MouseEnter += new System.EventHandler(this.cbMul1k1_MouseEnter);
             this.cbMul1k1.MouseLeave += new System.EventHandler(this.toolTipRemoveAll);
             // 
@@ -357,7 +360,7 @@
             this.numericUpDown1.Size = new System.Drawing.Size(82, 23);
             this.numericUpDown1.TabIndex = 16;
             this.numericUpDown1.TabStop = false;
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.contentUpdate);
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
             // 
             // label3
             // 
@@ -468,6 +471,39 @@
             this.btnLog.UseVisualStyleBackColor = true;
             this.btnLog.Click += new System.EventHandler(this.btnLog_Click);
             // 
+            // listView1
+            // 
+            this.listView1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.order,
+            this.cTimeCode,
+            this.cChapterName});
+            this.listView1.FullRowSelect = true;
+            this.listView1.LabelEdit = true;
+            this.listView1.Location = new System.Drawing.Point(15, 84);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(246, 354);
+            this.listView1.TabIndex = 25;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            // 
+            // order
+            // 
+            this.order.Text = "#";
+            this.order.Width = 25;
+            // 
+            // cTimeCode
+            // 
+            this.cTimeCode.Text = "时间点";
+            this.cTimeCode.Width = 90;
+            // 
+            // cChapterName
+            // 
+            this.cChapterName.Text = "章节名";
+            this.cChapterName.Width = 150;
+            // 
             // textBox2
             // 
             this.textBox2.AcceptsReturn = true;
@@ -485,17 +521,6 @@
             this.textBox2.TabStop = false;
             this.textBox2.WordWrap = false;
             this.textBox2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseClick);
-            // 
-            // listView1
-            // 
-            this.listView1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.listView1.Location = new System.Drawing.Point(15, 84);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(246, 354);
-            this.listView1.TabIndex = 25;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
             // 
             // Form1
             // 
@@ -586,6 +611,9 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem combineToolStripMenuItem;
         private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ColumnHeader cTimeCode;
+        private System.Windows.Forms.ColumnHeader cChapterName;
+        private System.Windows.Forms.ColumnHeader order;
     }
 }
 

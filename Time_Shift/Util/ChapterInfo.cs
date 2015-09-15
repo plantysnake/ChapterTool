@@ -26,6 +26,7 @@ namespace ChapterTool.Util
         public ChapterInfo()
         {
             Chapters = new List<Chapter>();
+            offset = TimeSpan.Zero;
         }
         public string Title { get; set; }
         public string LangCode { get; set; }
@@ -36,7 +37,7 @@ namespace ChapterTool.Util
         public double FramesPerSecond { get; set; }
         public TimeSpan Duration { get; set; }
         public List<Chapter> Chapters { get; set; }
-
+        public TimeSpan offset { get; set; }
         public override string ToString()
         {
             if (Chapters.Count != 1)
