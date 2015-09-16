@@ -34,10 +34,9 @@
             this.btnSave = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.btnTrans = new System.Windows.Forms.Button();
-            this.cbReserveName = new System.Windows.Forms.CheckBox();
+            this.cbAutoGenName = new System.Windows.Forms.CheckBox();
             this.Tips = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.cbFramCal = new System.Windows.Forms.CheckBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.cbRound = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -50,7 +49,6 @@
             this.TSD_4unit = new System.Windows.Forms.ToolStripMenuItem();
             this.TSD_5unit = new System.Windows.Forms.ToolStripMenuItem();
             this.TSD_6unit = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnAUTO = new System.Windows.Forms.Button();
             this.cbMore = new System.Windows.Forms.CheckBox();
             this.cbMul1k1 = new System.Windows.Forms.CheckBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
@@ -65,14 +63,15 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.btnLog = new System.Windows.Forms.Button();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.order = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.cTimeCode = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.cChapterName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.textBox2 = new ChapterTool.cTextBox();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.cOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cTimeCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cChapterName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cFrams = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // btnLoad
@@ -97,7 +96,7 @@
             this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Location = new System.Drawing.Point(318, 36);
+            this.btnSave.Location = new System.Drawing.Point(98, 36);
             this.btnSave.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(80, 40);
@@ -125,7 +124,7 @@
             this.btnTrans.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnTrans.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
             this.btnTrans.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnTrans.Location = new System.Drawing.Point(270, 84);
+            this.btnTrans.Location = new System.Drawing.Point(374, 36);
             this.btnTrans.Margin = new System.Windows.Forms.Padding(4);
             this.btnTrans.Name = "btnTrans";
             this.btnTrans.Size = new System.Drawing.Size(40, 40);
@@ -136,18 +135,18 @@
             this.btnTrans.Click += new System.EventHandler(this.btnTrans_Click);
             this.btnTrans.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Color_MouseDown);
             // 
-            // cbReserveName
+            // cbAutoGenName
             // 
-            this.cbReserveName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbReserveName.Location = new System.Drawing.Point(318, 7);
-            this.cbReserveName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.cbReserveName.Name = "cbReserveName";
-            this.cbReserveName.Size = new System.Drawing.Size(180, 21);
-            this.cbReserveName.TabIndex = 3;
-            this.cbReserveName.TabStop = false;
-            this.cbReserveName.Text = "保留原章节名";
-            this.cbReserveName.UseVisualStyleBackColor = true;
-            this.cbReserveName.CheckedChanged += new System.EventHandler(this.cbReserveName_CheckedChanged);
+            this.cbAutoGenName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cbAutoGenName.Location = new System.Drawing.Point(447, 7);
+            this.cbAutoGenName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cbAutoGenName.Name = "cbAutoGenName";
+            this.cbAutoGenName.Size = new System.Drawing.Size(97, 21);
+            this.cbAutoGenName.TabIndex = 3;
+            this.cbAutoGenName.TabStop = false;
+            this.cbAutoGenName.Text = "不使用章节名";
+            this.cbAutoGenName.UseVisualStyleBackColor = true;
+            this.cbAutoGenName.CheckedChanged += new System.EventHandler(this.cbReserveName_CheckedChanged);
             // 
             // Tips
             // 
@@ -168,19 +167,6 @@
             this.progressBar1.TabIndex = 0;
             this.progressBar1.Click += new System.EventHandler(this.progressBar1_Click);
             // 
-            // cbFramCal
-            // 
-            this.cbFramCal.AutoSize = true;
-            this.cbFramCal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbFramCal.Location = new System.Drawing.Point(447, 7);
-            this.cbFramCal.Name = "cbFramCal";
-            this.cbFramCal.Size = new System.Drawing.Size(72, 21);
-            this.cbFramCal.TabIndex = 10;
-            this.cbFramCal.TabStop = false;
-            this.cbFramCal.Text = "帧数计算";
-            this.cbFramCal.UseVisualStyleBackColor = true;
-            this.cbFramCal.CheckedChanged += new System.EventHandler(this.cbFramCal_CheckedChanged);
-            // 
             // comboBox1
             // 
             this.comboBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
@@ -195,12 +181,11 @@
             "30000 / 1001",
             "50000 / 1000",
             "60000 / 1001"});
-            this.comboBox1.Location = new System.Drawing.Point(447, 36);
+            this.comboBox1.Location = new System.Drawing.Point(447, 52);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 25);
             this.comboBox1.TabIndex = 11;
             this.comboBox1.TabStop = false;
-            this.comboBox1.Visible = false;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // cbRound
@@ -208,14 +193,13 @@
             this.cbRound.AutoSize = true;
             this.cbRound.ContextMenuStrip = this.contextMenuStrip1;
             this.cbRound.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbRound.Location = new System.Drawing.Point(318, 7);
+            this.cbRound.Location = new System.Drawing.Point(447, 25);
             this.cbRound.Name = "cbRound";
             this.cbRound.Size = new System.Drawing.Size(88, 21);
             this.cbRound.TabIndex = 12;
             this.cbRound.TabStop = false;
             this.cbRound.Text = "帧数取整    ";
             this.cbRound.UseVisualStyleBackColor = true;
-            this.cbRound.Visible = false;
             this.cbRound.CheckedChanged += new System.EventHandler(this.cbRound_CheckedChanged);
             // 
             // contextMenuStrip1
@@ -289,22 +273,6 @@
             this.TSD_6unit.Name = "TSD_6unit";
             this.TSD_6unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_6unit.Text = "0.30";
-            // 
-            // btnAUTO
-            // 
-            this.btnAUTO.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.btnAUTO.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
-            this.btnAUTO.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
-            this.btnAUTO.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAUTO.Location = new System.Drawing.Point(318, 36);
-            this.btnAUTO.Name = "btnAUTO";
-            this.btnAUTO.Size = new System.Drawing.Size(80, 40);
-            this.btnAUTO.TabIndex = 2;
-            this.btnAUTO.TabStop = false;
-            this.btnAUTO.Text = "AUTO";
-            this.btnAUTO.UseVisualStyleBackColor = true;
-            this.btnAUTO.Visible = false;
-            this.btnAUTO.Click += new System.EventHandler(this.btnAUTO_Click);
             // 
             // cbMore
             // 
@@ -424,7 +392,7 @@
             this.comboBox2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBox2.ForeColor = System.Drawing.SystemColors.WindowText;
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(141, 36);
+            this.comboBox2.Location = new System.Drawing.Point(184, 51);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 25);
             this.comboBox2.TabIndex = 23;
@@ -471,56 +439,55 @@
             this.btnLog.UseVisualStyleBackColor = true;
             this.btnLog.Click += new System.EventHandler(this.btnLog_Click);
             // 
-            // listView1
+            // dataGridView1
             // 
-            this.listView1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.order,
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.cOrder,
             this.cTimeCode,
-            this.cChapterName});
-            this.listView1.FullRowSelect = true;
-            this.listView1.LabelEdit = true;
-            this.listView1.Location = new System.Drawing.Point(15, 84);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(246, 354);
-            this.listView1.TabIndex = 25;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
-            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            this.cChapterName,
+            this.cFrams});
+            this.dataGridView1.Location = new System.Drawing.Point(12, 83);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowTemplate.Height = 23;
+            this.dataGridView1.Size = new System.Drawing.Size(556, 351);
+            this.dataGridView1.TabIndex = 25;
+            this.dataGridView1.TabStop = false;
+            this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
             // 
-            // order
+            // cOrder
             // 
-            this.order.Text = "#";
-            this.order.Width = 25;
+            this.cOrder.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.cOrder.Frozen = true;
+            this.cOrder.HeaderText = "#";
+            this.cOrder.Name = "cOrder";
+            this.cOrder.ReadOnly = true;
+            this.cOrder.Width = 41;
             // 
             // cTimeCode
             // 
-            this.cTimeCode.Text = "时间点";
-            this.cTimeCode.Width = 90;
+            this.cTimeCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.cTimeCode.HeaderText = "时间点";
+            this.cTimeCode.Name = "cTimeCode";
+            this.cTimeCode.Width = 69;
             // 
             // cChapterName
             // 
-            this.cChapterName.Text = "章节名";
-            this.cChapterName.Width = 150;
+            this.cChapterName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.cChapterName.HeaderText = "章节名";
+            this.cChapterName.Name = "cChapterName";
+            this.cChapterName.Width = 69;
             // 
-            // textBox2
+            // cFrams
             // 
-            this.textBox2.AcceptsReturn = true;
-            this.textBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.textBox2.Location = new System.Drawing.Point(318, 84);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 4, 3, 4);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.OthercTextBox = null;
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(250, 350);
-            this.textBox2.TabIndex = 6;
-            this.textBox2.TabStop = false;
-            this.textBox2.WordWrap = false;
-            this.textBox2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseClick);
+            this.cFrams.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.cFrams.HeaderText = "帧数";
+            this.cFrams.Name = "cFrams";
+            this.cFrams.ReadOnly = true;
+            this.cFrams.Width = 57;
             // 
             // Form1
             // 
@@ -529,7 +496,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(580, 551);
-            this.Controls.Add(this.listView1);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.btnLog);
             this.Controls.Add(this.maskedTextBox1);
@@ -539,16 +506,13 @@
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.cbMul1k1);
             this.Controls.Add(this.cbMore);
-            this.Controls.Add(this.btnAUTO);
             this.Controls.Add(this.cbRound);
             this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.cbFramCal);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.Tips);
-            this.Controls.Add(this.cbReserveName);
+            this.Controls.Add(this.cbAutoGenName);
             this.Controls.Add(this.btnTrans);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnLoad);
             this.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -567,6 +531,7 @@
             this.contextMenuStrip1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.contextMenuStrip2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -575,17 +540,14 @@
         #endregion
 
         private System.Windows.Forms.Button btnLoad;
-        private cTextBox textBox2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnTrans;
-        private System.Windows.Forms.CheckBox cbReserveName;
+        private System.Windows.Forms.CheckBox cbAutoGenName;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Label Tips;
         private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.CheckBox cbFramCal;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.CheckBox cbRound;
-        private System.Windows.Forms.Button btnAUTO;
         private System.Windows.Forms.CheckBox cbMore;
         private System.Windows.Forms.CheckBox cbMul1k1;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
@@ -610,10 +572,11 @@
         private System.Windows.Forms.Button btnLog;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem combineToolStripMenuItem;
-        private System.Windows.Forms.ListView listView1;
-        private System.Windows.Forms.ColumnHeader cTimeCode;
-        private System.Windows.Forms.ColumnHeader cChapterName;
-        private System.Windows.Forms.ColumnHeader order;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cOrder;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cTimeCode;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cChapterName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cFrams;
     }
 }
 
