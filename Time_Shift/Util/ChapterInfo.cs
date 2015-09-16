@@ -8,7 +8,10 @@ namespace ChapterTool.Util
 {
     public class Chapter
     {
-        public Chapter() { }
+        public Chapter()
+        {
+            FramsInfo = string.Empty;
+        }
 
         /// <summary>Chapter Number</summary>
         public int Number { get; set; }
@@ -16,6 +19,7 @@ namespace ChapterTool.Util
         public TimeSpan Time { get; set; }
         /// <summary>Chapter Name</summary>
         public string Name { get; set; }
+        public string FramsInfo { get; set; }
         public override string ToString()
         {
             return string.Format("{0} - {1}", Name, convertMethod.time2string(Time));
@@ -78,12 +82,7 @@ namespace ChapterTool.Util
             foreach (Chapter c in Chapters)
             {
                 i++;
-                if (c.Time.ToString().Length == 8)
-                    lines.Add("CHAPTER" + i.ToString("00") + "=" + c.Time.ToString() + ".000"); // better formating
-                else if (c.Time.ToString().Length > 12)
-                    lines.Add("CHAPTER" + i.ToString("00") + "=" + c.Time.ToString().Substring(0, 12)); // remove some duration length too long
-                else
-                    lines.Add("CHAPTER" + i.ToString("00") + "=" + c.Time.ToString());
+                lines.Add("CHAPTER" + i.ToString("00") + "=" + convertMethod.time2string(c.Time));
                 lines.Add("CHAPTER" + i.ToString("00") + "NAME=" + c.Name);
             }
             File.WriteAllLines(filename, lines.ToArray());
@@ -139,7 +138,7 @@ namespace ChapterTool.Util
                 xmlchap.WriteStartElement("ChapterAtom");
                 xmlchap.WriteStartElement("ChapterDisplay");
                 xmlchap.WriteElementString("ChapterString", c.Name);
-                xmlchap.WriteElementString("ChapterLanguage", String.IsNullOrEmpty(LangCode) ? "und" : LangCode);
+                xmlchap.WriteElementString("ChapterLanguage", String.IsNullOrEmpty(LangCode) ? "eng" : LangCode);
                 xmlchap.WriteEndElement();
                 xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, Int32.MaxValue)));
                 if (c.Time.ToString().Length == 8)

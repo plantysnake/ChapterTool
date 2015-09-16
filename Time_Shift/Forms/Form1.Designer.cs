@@ -68,6 +68,8 @@
             this.cTimeCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cChapterName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cFrams = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.savingType = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
@@ -96,7 +98,7 @@
             this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Location = new System.Drawing.Point(98, 36);
+            this.btnSave.Location = new System.Drawing.Point(109, 36);
             this.btnSave.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(80, 40);
@@ -124,21 +126,21 @@
             this.btnTrans.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnTrans.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
             this.btnTrans.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnTrans.Location = new System.Drawing.Point(374, 36);
+            this.btnTrans.Location = new System.Drawing.Point(538, 9);
             this.btnTrans.Margin = new System.Windows.Forms.Padding(4);
             this.btnTrans.Name = "btnTrans";
-            this.btnTrans.Size = new System.Drawing.Size(40, 40);
+            this.btnTrans.Size = new System.Drawing.Size(30, 30);
             this.btnTrans.TabIndex = 2;
             this.btnTrans.TabStop = false;
-            this.btnTrans.Text = ">>";
+            this.btnTrans.Text = "↻";
             this.btnTrans.UseVisualStyleBackColor = true;
-            this.btnTrans.Click += new System.EventHandler(this.btnTrans_Click);
+            this.btnTrans.Click += new System.EventHandler(this.refresh_Click);
             this.btnTrans.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Color_MouseDown);
             // 
             // cbAutoGenName
             // 
             this.cbAutoGenName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbAutoGenName.Location = new System.Drawing.Point(447, 7);
+            this.cbAutoGenName.Location = new System.Drawing.Point(192, 490);
             this.cbAutoGenName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cbAutoGenName.Name = "cbAutoGenName";
             this.cbAutoGenName.Size = new System.Drawing.Size(97, 21);
@@ -146,7 +148,7 @@
             this.cbAutoGenName.TabStop = false;
             this.cbAutoGenName.Text = "不使用章节名";
             this.cbAutoGenName.UseVisualStyleBackColor = true;
-            this.cbAutoGenName.CheckedChanged += new System.EventHandler(this.cbReserveName_CheckedChanged);
+            this.cbAutoGenName.CheckedChanged += new System.EventHandler(this.refresh_Click);
             // 
             // Tips
             // 
@@ -193,14 +195,14 @@
             this.cbRound.AutoSize = true;
             this.cbRound.ContextMenuStrip = this.contextMenuStrip1;
             this.cbRound.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbRound.Location = new System.Drawing.Point(447, 25);
+            this.cbRound.Location = new System.Drawing.Point(447, 18);
             this.cbRound.Name = "cbRound";
-            this.cbRound.Size = new System.Drawing.Size(88, 21);
+            this.cbRound.Size = new System.Drawing.Size(76, 21);
             this.cbRound.TabIndex = 12;
             this.cbRound.TabStop = false;
-            this.cbRound.Text = "帧数取整    ";
+            this.cbRound.Text = "帧数取整 ";
             this.cbRound.UseVisualStyleBackColor = true;
-            this.cbRound.CheckedChanged += new System.EventHandler(this.cbRound_CheckedChanged);
+            this.cbRound.CheckedChanged += new System.EventHandler(this.refresh_Click);
             // 
             // contextMenuStrip1
             // 
@@ -300,7 +302,7 @@
             // 
             this.cbMul1k1.AutoSize = true;
             this.cbMul1k1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbMul1k1.Location = new System.Drawing.Point(12, 490);
+            this.cbMul1k1.Location = new System.Drawing.Point(12, 519);
             this.cbMul1k1.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbMul1k1.Name = "cbMul1k1";
             this.cbMul1k1.Size = new System.Drawing.Size(177, 21);
@@ -356,7 +358,7 @@
             // 
             this.cbChapterName.AutoSize = true;
             this.cbChapterName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbChapterName.Location = new System.Drawing.Point(12, 519);
+            this.cbChapterName.Location = new System.Drawing.Point(192, 519);
             this.cbChapterName.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbChapterName.Name = "cbChapterName";
             this.cbChapterName.Size = new System.Drawing.Size(120, 21);
@@ -392,7 +394,7 @@
             this.comboBox2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBox2.ForeColor = System.Drawing.SystemColors.WindowText;
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(184, 51);
+            this.comboBox2.Location = new System.Drawing.Point(318, 51);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 25);
             this.comboBox2.TabIndex = 23;
@@ -457,6 +459,7 @@
             this.dataGridView1.TabIndex = 25;
             this.dataGridView1.TabStop = false;
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
+            this.dataGridView1.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataGridView1_UserDeletingRow);
             // 
             // cOrder
             // 
@@ -465,21 +468,24 @@
             this.cOrder.HeaderText = "#";
             this.cOrder.Name = "cOrder";
             this.cOrder.ReadOnly = true;
-            this.cOrder.Width = 41;
+            this.cOrder.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cOrder.Width = 22;
             // 
             // cTimeCode
             // 
             this.cTimeCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.cTimeCode.HeaderText = "时间点";
             this.cTimeCode.Name = "cTimeCode";
-            this.cTimeCode.Width = 69;
+            this.cTimeCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cTimeCode.Width = 50;
             // 
             // cChapterName
             // 
             this.cChapterName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.cChapterName.HeaderText = "章节名";
             this.cChapterName.Name = "cChapterName";
-            this.cChapterName.Width = 69;
+            this.cChapterName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cChapterName.Width = 50;
             // 
             // cFrams
             // 
@@ -487,7 +493,33 @@
             this.cFrams.HeaderText = "帧数";
             this.cFrams.Name = "cFrams";
             this.cFrams.ReadOnly = true;
-            this.cFrams.Width = 57;
+            this.cFrams.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cFrams.Width = 38;
+            // 
+            // savingType
+            // 
+            this.savingType.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            this.savingType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.savingType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.savingType.FormattingEnabled = true;
+            this.savingType.Items.AddRange(new object[] {
+            "OGM",
+            "XML",
+            "QPF"});
+            this.savingType.Location = new System.Drawing.Point(74, 489);
+            this.savingType.Name = "savingType";
+            this.savingType.Size = new System.Drawing.Size(108, 25);
+            this.savingType.TabIndex = 26;
+            this.savingType.TabStop = false;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 494);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(56, 17);
+            this.label2.TabIndex = 27;
+            this.label2.Text = "保存格式";
             // 
             // Form1
             // 
@@ -496,6 +528,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(580, 551);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.savingType);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.btnLog);
@@ -577,6 +611,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn cTimeCode;
         private System.Windows.Forms.DataGridViewTextBoxColumn cChapterName;
         private System.Windows.Forms.DataGridViewTextBoxColumn cFrams;
+        private System.Windows.Forms.ComboBox savingType;
+        private System.Windows.Forms.Label label2;
     }
 }
 
