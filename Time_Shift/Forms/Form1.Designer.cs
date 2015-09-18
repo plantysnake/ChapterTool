@@ -70,6 +70,7 @@
             this.cFrams = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.savingType = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.btnPreview = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
@@ -193,9 +194,11 @@
             // cbRound
             // 
             this.cbRound.AutoSize = true;
+            this.cbRound.Checked = true;
+            this.cbRound.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbRound.ContextMenuStrip = this.contextMenuStrip1;
             this.cbRound.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbRound.Location = new System.Drawing.Point(447, 18);
+            this.cbRound.Location = new System.Drawing.Point(417, 14);
             this.cbRound.Name = "cbRound";
             this.cbRound.Size = new System.Drawing.Size(76, 21);
             this.cbRound.TabIndex = 12;
@@ -459,6 +462,7 @@
             this.dataGridView1.TabIndex = 25;
             this.dataGridView1.TabStop = false;
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
+            this.dataGridView1.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridView1_DataBindingComplete);
             this.dataGridView1.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataGridView1_UserDeletingRow);
             // 
             // cOrder
@@ -521,6 +525,22 @@
             this.label2.TabIndex = 27;
             this.label2.Text = "保存格式";
             // 
+            // btnPreview
+            // 
+            this.btnPreview.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnPreview.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
+            this.btnPreview.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
+            this.btnPreview.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPreview.Location = new System.Drawing.Point(500, 9);
+            this.btnPreview.Margin = new System.Windows.Forms.Padding(4);
+            this.btnPreview.Name = "btnPreview";
+            this.btnPreview.Size = new System.Drawing.Size(30, 30);
+            this.btnPreview.TabIndex = 28;
+            this.btnPreview.TabStop = false;
+            this.btnPreview.Text = "P";
+            this.btnPreview.UseVisualStyleBackColor = true;
+            this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -528,6 +548,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(580, 551);
+            this.Controls.Add(this.btnPreview);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.savingType);
             this.Controls.Add(this.dataGridView1);
@@ -613,6 +634,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn cFrams;
         private System.Windows.Forms.ComboBox savingType;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btnPreview;
     }
 }
 

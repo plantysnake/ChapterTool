@@ -30,6 +30,7 @@ using System.IO;
 using System.Xml;
 using System.Text;
 using System.Linq;
+using ChapterTool.Forms;
 using System.Drawing;
 using ChapterTool.Util;
 using System.Windows.Forms;
@@ -129,7 +130,7 @@ namespace ChapterTool
 
             progressBar1.Visible = true;
             cbMore.Enabled = true;
-            mplsValid = true;
+            //mplsValid = true;
             cbMul1k1.Checked = false;
             cbMul1k1.Enabled = true;
 
@@ -150,7 +151,7 @@ namespace ChapterTool
                 CTLogger.Log("+从窗口拖拽中载入文件:" + paths[0]);
                 comboBox2.Items.Clear();
                 Loadfile();
-                updataGridView();//未勾选帧数计算时自动转换
+                updataGridView();
 
             }
         }
@@ -211,7 +212,7 @@ namespace ChapterTool
                 return true;
             }
         }
-        bool mplsValid = true;
+        //bool mplsValid = true;
         bool mkvEX = true;
 
         
@@ -229,11 +230,8 @@ namespace ChapterTool
                 if ((paths[0].ToLowerInvariant().EndsWith(".mkv" ) || 
                      paths[0].ToLowerInvariant().EndsWith(".mka" )) && mkvEX) { loadMatroska(); }
                 if ( paths[0].ToLowerInvariant().EndsWith(".txt" )) { loadOGM(); }
-                if (paths[0].ToLowerInvariant().EndsWith(".ifo")) { LoadIFO(); }
-                if (!string.IsNullOrEmpty(chapterNameTemplate)) 
-                {
-                    updataInfo(chapterNameTemplate);
-                }
+                if ( paths[0].ToLowerInvariant().EndsWith(".ifo")) { LoadIFO(); }
+                if (!string.IsNullOrEmpty(chapterNameTemplate))   { updataInfo(chapterNameTemplate); }
             }
             catch (Exception ex)
             {
@@ -275,7 +273,8 @@ namespace ChapterTool
                 CTLogger.Log("+从载入键中载入文件:" + paths[0]);
                 comboBox2.Items.Clear();
                 Loadfile();
-                if (mplsValid) { updataGridView(); }
+                getFramInfo(0);
+                //updataGridView();
             }
         }
 
@@ -345,7 +344,6 @@ namespace ChapterTool
             MessageBox.Show(savePath);
         }
         void refresh_Click(object sender, EventArgs e) { updataGridView(); }
-
 
 
         string GetFirstLine_new(string[] OGMdata, out int i)//i 为章节实际开始的行号
@@ -480,6 +478,7 @@ namespace ChapterTool
 
         void updataInfo(TimeSpan shift)
         {
+            if (!isPathValid) { return; }
             foreach (var item in info.Chapters)
             {
                 item.Time -= shift;
@@ -487,6 +486,7 @@ namespace ChapterTool
         }
         void updataInfo(int shift)
         {
+            if (!isPathValid) { return; }
             int i = 1;
             foreach (var item in info.Chapters)
             {
@@ -495,6 +495,7 @@ namespace ChapterTool
         }
         void updataInfo(string chapterName)
         {
+            if (!isPathValid) { return; }
             string[] cn = chapterName.Split('\n');
             int i = 0;
             foreach (var item in info.Chapters)
@@ -505,6 +506,7 @@ namespace ChapterTool
         }
         void updataInfo(decimal coefficient)
         {
+            if (!isPathValid) { return; }
             foreach (var item in info.Chapters)
             {
                 item.Time = convertMethod.pts2Time((int)((decimal)item.Time.TotalSeconds * coefficient * 45000M));
@@ -513,6 +515,7 @@ namespace ChapterTool
 
         void updataGridView(int fpsIndex = 0)
         {
+            if (!isPathValid) { return; }
             dataGridView1.Rows.Clear();
             getFramInfo(fpsIndex);
             info.FramesPerSecond = (double)FrameRate[comboBox1.SelectedIndex];
@@ -552,7 +555,7 @@ namespace ChapterTool
         int getAUTOFPS()
         {
             decimal FPStemp = FrameRate[1];
-            cbRound.CheckState = CheckState.Checked;
+            //cbRound.CheckState = CheckState.Checked;
             int currentMaxOne = 0; int AUTOFPS_code = 1;
             CTLogger.Log("|+自动帧率识别开始" + "，允许误差为：" + costumeAccuracy.ToString());
             for (int j = 1; j < 7; ++j)
@@ -590,7 +593,7 @@ namespace ChapterTool
         {
             updataGridView(comboBox1.SelectedIndex + 1);
         }
-        void cbRound_CheckedChanged(object sender, EventArgs e) { updataGridView(); }
+
         /// FPS Cal Part /////////////////////
 
 
@@ -658,7 +661,8 @@ namespace ChapterTool
 
         void cbShift_CheckedChanged(object sender, EventArgs e)
         {
-            if(cbShift.Checked)
+            if (!isPathValid) { return; }
+            if (cbShift.Checked)
             {
                 info.offset = getOffsetFromMaskedTextBox();
             }
@@ -1086,6 +1090,33 @@ namespace ChapterTool
                 CTLogger.Log("移动窗体到" + Location.ToString());
             #endif
         }
+
+        private void dataGridView1_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.Gainsboro; ;
+                }
+                else
+                {
+                    dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.PowderBlue;
+                }
+            }
+        }
+
+        private void btnPreview_Click(object sender, EventArgs e)
+        {
+            if (!isPathValid)   
+            {
+                return;
+            }
+            FormPreview fp = new FormPreview(info.getText());
+            fp.Show();
+        }
+
+        Color cellColorTemp = Color.FromArgb(0,230,230,230);
 
     }
 }
