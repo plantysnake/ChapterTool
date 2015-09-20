@@ -131,7 +131,7 @@ namespace ChapterTool
             progressBar1.Visible = true;
             cbMore.Enabled = true;
             //mplsValid = true;
-            cbMul1k1.Checked = false;
+            //cbMul1k1.Checked = false;
             cbMul1k1.Enabled = true;
 
             folderBrowserDialog1.SelectedPath = registryStorage.Load();
@@ -151,6 +151,7 @@ namespace ChapterTool
                 CTLogger.Log("+从窗口拖拽中载入文件:" + paths[0]);
                 comboBox2.Items.Clear();
                 Loadfile();
+                
                 updataGridView();
 
             }
@@ -273,8 +274,16 @@ namespace ChapterTool
                 CTLogger.Log("+从载入键中载入文件:" + paths[0]);
                 comboBox2.Items.Clear();
                 Loadfile();
-                getFramInfo(0);
-                //updataGridView();
+                if (info != null)
+                {
+                    getFramInfo(0);
+                    updataGridView();
+                }
+                else
+                {
+                    Tips.Text = "载入的文件为空";
+                }
+
             }
         }
 
@@ -515,8 +524,12 @@ namespace ChapterTool
 
         void updataGridView(int fpsIndex = 0)
         {
-            if (!isPathValid) { return; }
+            if (!isPathValid || info == null) { return; }
             dataGridView1.Rows.Clear();
+            if (info.SourceType == "DVD")
+            {
+                cbMul1k1.Checked = true;
+            }
             getFramInfo(fpsIndex);
             info.FramesPerSecond = (double)FrameRate[comboBox1.SelectedIndex];
             foreach (var item in info.Chapters)
@@ -530,7 +543,7 @@ namespace ChapterTool
                 else
                     dataGridView1.Rows[index].Cells[2].Value = item.Name;
                 dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
-                dataGridView1.Rows[index].Cells[0].Style.BackColor = Color.FromArgb(0xff, 0xe6, 0xe6, 0xe6);
+                //dataGridView1.Rows[index].Cells[0].Style.BackColor = Color.FromArgb(0xff, 0xe6, 0xe6, 0xe6);
             }
         }
 
@@ -589,10 +602,13 @@ namespace ChapterTool
                  { ++AccuratePiont;   }
             else { ++InAccuratePiont; }
         }
-        void comboBox1_SelectedIndexChanged(object sender, EventArgs e) //设置fps
+
+
+        private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
         {
             updataGridView(comboBox1.SelectedIndex + 1);
         }
+
 
         /// FPS Cal Part /////////////////////
 
@@ -695,12 +711,15 @@ namespace ChapterTool
         {
             set
             {
-                cbMul1k1.Visible = value;
+                label2.Visible = value;
+                savingType.Visible = value;
+                cbAutoGenName.Visible = value;
                 label3.Visible = value;
                 numericUpDown1.Visible = value;
 
-                cbShift.Visible = value;
+                cbMul1k1.Visible = value;
                 cbChapterName.Visible = value;
+                cbShift.Visible = value;
                 maskedTextBox1.Visible = value;
                 btnLog.Visible = value;
             }
@@ -1086,9 +1105,10 @@ namespace ChapterTool
         }
         private void Form1_Move(object sender, EventArgs e)
         {
-            #if false
-                CTLogger.Log("移动窗体到" + Location.ToString());
-            #endif
+            if (_PreviewForm != null)   
+            {
+                _PreviewForm.Location = new Point(Location.X - 230, Location.Y);
+            }
         }
 
         private void dataGridView1_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
@@ -1105,16 +1125,21 @@ namespace ChapterTool
                 }
             }
         }
-
+        FormPreview _PreviewForm;
         private void btnPreview_Click(object sender, EventArgs e)
         {
-            if (!isPathValid)   
+            if (!isPathValid) { return; }
+            if (_PreviewForm == null)
             {
-                return;
+                _PreviewForm = new FormPreview(info.getText(), Location);
             }
-            FormPreview fp = new FormPreview(info.getText());
-            fp.Show();
+            _PreviewForm.UpdateText(info.getText());
+            _PreviewForm.Show();
+            _PreviewForm.Focus();
+            _PreviewForm.Select();
         }
+
+
 
         Color cellColorTemp = Color.FromArgb(0,230,230,230);
 

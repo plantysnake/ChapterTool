@@ -33,21 +33,31 @@
             // 
             // cTextBox1
             // 
-            this.cTextBox1.Location = new System.Drawing.Point(12, 12);
+            this.cTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.cTextBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.cTextBox1.Location = new System.Drawing.Point(0, 0);
+            this.cTextBox1.Margin = new System.Windows.Forms.Padding(0);
             this.cTextBox1.Multiline = true;
             this.cTextBox1.Name = "cTextBox1";
             this.cTextBox1.OthercTextBox = null;
-            this.cTextBox1.Size = new System.Drawing.Size(260, 237);
+            this.cTextBox1.ReadOnly = true;
+            this.cTextBox1.Size = new System.Drawing.Size(230, 300);
             this.cTextBox1.TabIndex = 0;
+            this.cTextBox1.TabStop = false;
+            this.cTextBox1.WordWrap = false;
+            this.cTextBox1.DoubleClick += new System.EventHandler(this.cTextBox1_DoubleClick);
             // 
             // FormPreview
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(230, 300);
             this.Controls.Add(this.cTextBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FormPreview";
             this.Text = "FormPreview";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormPreview_FormClosing);
+            this.Load += new System.EventHandler(this.FormPreview_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
