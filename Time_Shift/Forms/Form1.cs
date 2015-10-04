@@ -544,6 +544,7 @@ namespace ChapterTool
                     dataGridView1.Rows[index].Cells[2].Value = item.Name;
                 dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
                 //dataGridView1.Rows[index].Cells[0].Style.BackColor = Color.FromArgb(0xff, 0xe6, 0xe6, 0xe6);
+                //MessageBox.Show(item.Number.ToString()+"   "+index.ToString() + "    " + dataGridView1.Rows.Count.ToString());
             }
         }
 
@@ -662,16 +663,7 @@ namespace ChapterTool
 
         private void Accuracy_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            switch (e.ClickedItem.ToString())
-            {
-                case "0.01": TSD = 0; break;
-                case "0.05": TSD = 1; break;
-                case "0.10": TSD = 2; break;
-                case "0.15": TSD = 3; break;
-                case "0.20": TSD = 4; break;
-                case "0.25": TSD = 5; break;
-                case "0.30": TSD = 6; break;
-            }
+            TSD = int.Parse(e.ClickedItem.Tag.ToString());
         }
 
 
