@@ -121,7 +121,7 @@ namespace ChapterTool
         void setDefault()
         {
             cbMore.CheckState = CheckState.Unchecked;
-            dataGridView1.Rows.Clear();
+            //dataGridView1.Rows.Clear();
             moreModeShow = false;
             comboBox2.Enabled = comboBox2.Visible = false;
 
@@ -430,7 +430,6 @@ namespace ChapterTool
         {
             Clip mplsClip = RawData.chapterClips[index];
             info = new ChapterInfo();
-            
             info.SourceHash = ifoData.ComputeMD5Sum(paths[0]);
             info.Duration = convertMethod.pts2Time(mplsClip.TimeOut - mplsClip.TimeIn);
             info.SourceType = "MPLS";
@@ -525,12 +524,29 @@ namespace ChapterTool
         void updataGridView(int fpsIndex = 0)
         {
             if (!isPathValid || info == null) { return; }
-            dataGridView1.Rows.Clear();
-            if (info.SourceType == "DVD")
+            if (dataGridView1.RowCount != 0)    
             {
-                cbMul1k1.Checked = true;
+                dataGridView1.Rows.Clear();
             }
-            getFramInfo(fpsIndex);
+
+            switch (info.SourceType)
+            {
+                case "DVD":
+                    cbMul1k1.Checked = true;
+                    //TODO: GET FPS FROM FILE
+                    break;
+                case "MPLS":
+                    int index = RawData.chapterClips[mplsFileSeletIndex].fps;
+                    getFramInfo(index);
+                    comboBox1.SelectedIndex = index;
+                    break;
+                default:
+                    getFramInfo(fpsIndex);
+                    break;
+            }
+
+
+            
             info.FramesPerSecond = (double)FrameRate[comboBox1.SelectedIndex];
             foreach (var item in info.Chapters)
             {
@@ -544,7 +560,6 @@ namespace ChapterTool
                     dataGridView1.Rows[index].Cells[2].Value = item.Name;
                 dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
                 //dataGridView1.Rows[index].Cells[0].Style.BackColor = Color.FromArgb(0xff, 0xe6, 0xe6, 0xe6);
-                //MessageBox.Show(item.Number.ToString()+"   "+index.ToString() + "    " + dataGridView1.Rows.Count.ToString());
             }
         }
 
@@ -592,7 +607,7 @@ namespace ChapterTool
             }
             
             comboBox1.SelectedIndex = AUTOFPS_code - 1;
-            CTLogger.Log(" |自动识别结果为" + FPStemp.ToString("00.0000") + " fps");
+            CTLogger.Log(" |自动识别结果为" + FrameRate[AUTOFPS_code].ToString("00.0000") + " fps");
             return AUTOFPS_code;
         }
         void getAccuracy(TimeSpan time, ref int AccuratePiont, ref int InAccuratePiont,int index)//framCal
@@ -1085,7 +1100,7 @@ namespace ChapterTool
             foreach (DataGridViewRow item in dataGridView1.SelectedRows)
             {
                 info.Chapters.Remove((Chapter)item.Tag);
-                dataGridView1.Rows.Remove(item);
+                //dataGridView1.Rows.Remove(item);
             }
             updataInfo((int)numericUpDown1.Value);
             if (info.Chapters.Count > 1)
@@ -1093,7 +1108,7 @@ namespace ChapterTool
                 TimeSpan ini = info.Chapters[0].Time;
                 updataInfo(ini);
             }
-            updataGridView();
+            //updataGridView();
         }
         private void Form1_Move(object sender, EventArgs e)
         {
@@ -1131,7 +1146,10 @@ namespace ChapterTool
             _PreviewForm.Select();
         }
 
-
+        private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            CTLogger.Log(e.RowCount.ToString() + "行被删除");
+        }
 
         Color cellColorTemp = Color.FromArgb(0,230,230,230);
 
