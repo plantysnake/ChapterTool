@@ -83,13 +83,6 @@ namespace ChapterTool
             //listView1.Columns.Add("时间点", 90, HorizontalAlignment.Left);
             //listView1.Columns.Add("章节名", 180, HorizontalAlignment.Left);
         }
-        public string NewLine
-        {
-            get
-            {
-                return Environment.NewLine;//     获取为此环境定义的换行字符串。
-            }
-        }
 
         ChapterInfo info;
 
@@ -220,8 +213,16 @@ namespace ChapterTool
         void Loadfile()
         {
             if (!isPathValid) { return; }
-            string shortedPath = paths[0].Substring(0, 20)  + "……" + paths[0].Substring(paths[0].Length - 12, 12);
-            label1.Text = shortedPath;
+            if (paths[0].Length > 55)   
+            {
+                string shortedPath = paths[0].Substring(0, 40) + "……" + paths[0].Substring(paths[0].Length - 15, 15);
+                label1.Text = shortedPath;
+            }
+            else
+            {
+                label1.Text = paths[0];
+            }
+            
             setDefault();
             Cursor = Cursors.AppStarting;
             try
@@ -250,16 +251,32 @@ namespace ChapterTool
             info = Rawifo[0];
         }
 
+        public string GetUTF8String(byte[] buffer)
+        {
+            if (buffer == null)
+                return null;
+
+            if (buffer.Length <= 3)
+            {
+                return Encoding.UTF8.GetString(buffer);
+            }
+
+            byte[] bomBuffer = new byte[] { 0xef, 0xbb, 0xbf };
+
+            if (buffer[0] == bomBuffer[0]
+                && buffer[1] == bomBuffer[1]
+                && buffer[2] == bomBuffer[2])
+            {
+                return new UTF8Encoding(false).GetString(buffer, 3, buffer.Length - 3);
+            }
+
+            return Encoding.UTF8.GetString(buffer);
+        }
+
         void loadOGM()
         {
-            using (StreamReader sr = new StreamReader(paths[0], Encoding.Default))
-            {
-                string temp = sr.ReadToEnd();
-                geneRateCI(temp);
-                
-                //textBox1.Text = temp;
-            }
-            
+            byte[] buffer = File.ReadAllBytes(paths[0]);
+            geneRateCI(GetUTF8String(buffer));
             progressBar1.Value = 33;
             Tips.Text = "载入完成 (≧▽≦)";
         }
@@ -336,7 +353,7 @@ namespace ChapterTool
                 case 0://TXT
                     while (File.Exists(savePath + ".txt")) { savePath += "_"; }
                     savePath += ".txt";
-                    info.SaveText(savePath);
+                    info.SaveText(savePath,cbAutoGenName.Checked);
                     break;
                 case 1://XML
                     while (File.Exists(savePath + ".xml")) { savePath += "_"; }
@@ -350,9 +367,9 @@ namespace ChapterTool
                     break;
             }
 
-            MessageBox.Show(savePath);
+            //MessageBox.Show(savePath);
         }
-        void refresh_Click(object sender, EventArgs e) { updataGridView(); }
+        void refresh_Click(object sender, EventArgs e) { updataGridView(0); }
 
 
         string GetFirstLine_new(string[] OGMdata, out int i)//i 为章节实际开始的行号
@@ -386,10 +403,10 @@ namespace ChapterTool
             Chapter temp = new Chapter();
             if (RLineTwo.IsMatch(line2))                     //章节标题行
             {
-                switch (cbAutoGenName.Checked)
+                switch (!cbAutoGenName.Checked)
                 {
                     case true:
-                        temp.Name = RLineTwo.Match(line).Groups["chapterName"].Value; break;
+                        temp.Name = RLineTwo.Match(line2).Groups["chapterName"].Value; break;
                     case false:
                         temp.Name = "Chapter " + order.ToString("00"); break;
                 }
@@ -521,6 +538,17 @@ namespace ChapterTool
             }
         }
 
+        int convertFR2Index(double frame)
+        {
+            int i = 0;
+            foreach (var item in FrameRate)
+            {
+                if (Math.Abs(frame-(double)item) < 1e-5) { return i; }
+                else { ++i; }
+            }
+            return 0;
+        }
+
         void updataGridView(int fpsIndex = 0)
         {
             if (!isPathValid || info == null) { return; }
@@ -533,8 +561,8 @@ namespace ChapterTool
             {
                 case "DVD":
                     cbMul1k1.Checked = true;
-                    //TODO: GET FPS FROM FILE
-                    getFramInfo(fpsIndex);
+                    getFramInfo(convertFR2Index(info.FramesPerSecond));
+                    MessageBox.Show(convertFR2Index(info.FramesPerSecond).ToString());
                     break;
                 case "MPLS":
                     int index = RawData.chapterClips[mplsFileSeletIndex].fps;
@@ -542,12 +570,11 @@ namespace ChapterTool
                     break;
                 default:
                     getFramInfo(fpsIndex);
+                    info.FramesPerSecond = (double)FrameRate[comboBox1.SelectedIndex];
                     break;
             }
 
-
             
-            info.FramesPerSecond = (double)FrameRate[comboBox1.SelectedIndex];
             foreach (var item in info.Chapters)
             {
                 int index = this.dataGridView1.Rows.Add();
@@ -738,10 +765,8 @@ namespace ChapterTool
             {
                 string ChapterPath = openFileDialog1.FileName;
                 CTLogger.Log("+载入自定义章节名模板："+ ChapterPath);
-                using (StreamReader sr = new StreamReader(ChapterPath, Encoding.Default))
-                {
-                    temp = sr.ReadToEnd();
-                }
+                byte[] buffer = File.ReadAllBytes(ChapterPath);
+                temp = GetUTF8String(buffer);
             }
             else
             {

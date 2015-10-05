@@ -116,7 +116,7 @@
             // 
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(249, 23);
+            this.label1.Size = new System.Drawing.Size(374, 23);
             this.label1.TabIndex = 5;
             this.label1.MouseEnter += new System.EventHandler(this.label1_MouseEnter);
             this.label1.MouseLeave += new System.EventHandler(this.toolTipRemoveAll);
@@ -233,26 +233,26 @@
             // TSD_0unit
             // 
             this.TSD_0unit.Name = "TSD_0unit";
-            this.TSD_0unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_0unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_0unit.Tag = "0";
             this.TSD_0unit.Text = "0.01";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(97, 6);
             // 
             // TSD_1unit
             // 
             this.TSD_1unit.Name = "TSD_1unit";
-            this.TSD_1unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_1unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_1unit.Tag = "1";
             this.TSD_1unit.Text = "0.05";
             // 
             // TSD_2unit
             // 
             this.TSD_2unit.Name = "TSD_2unit";
-            this.TSD_2unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_2unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_2unit.Tag = "2";
             this.TSD_2unit.Text = "0.10";
             // 
@@ -261,28 +261,28 @@
             this.TSD_3unit.Checked = true;
             this.TSD_3unit.CheckState = System.Windows.Forms.CheckState.Checked;
             this.TSD_3unit.Name = "TSD_3unit";
-            this.TSD_3unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_3unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_3unit.Tag = "3";
             this.TSD_3unit.Text = "0.15";
             // 
             // TSD_4unit
             // 
             this.TSD_4unit.Name = "TSD_4unit";
-            this.TSD_4unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_4unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_4unit.Tag = "4";
             this.TSD_4unit.Text = "0.20";
             // 
             // TSD_5unit
             // 
             this.TSD_5unit.Name = "TSD_5unit";
-            this.TSD_5unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_5unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_5unit.Tag = "5";
             this.TSD_5unit.Text = "0.25";
             // 
             // TSD_6unit
             // 
             this.TSD_6unit.Name = "TSD_6unit";
-            this.TSD_6unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_6unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_6unit.Tag = "6";
             this.TSD_6unit.Text = "0.30";
             // 

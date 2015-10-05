@@ -75,24 +75,31 @@ namespace ChapterTool.Util
             return string.Concat(lines);
         }
 
-        public void SaveText(string filename)
+        public void SaveText(string filename,bool DONOTUSEName)
         {
             List<string> lines = new List<string>();
             int i = 0;
-            foreach (Chapter c in Chapters)
+            foreach (Chapter c in Chapters) 
             {
                 i++;
                 lines.Add("CHAPTER" + i.ToString("00") + "=" + convertMethod.time2string(c.Time));
-                lines.Add("CHAPTER" + i.ToString("00") + "NAME=" + c.Name);
+                if (DONOTUSEName)
+                {
+                    lines.Add("Chapter " + (i + 1).ToString("00"));
+                }
+                else
+                {
+                    lines.Add("CHAPTER" + i.ToString("00") + "NAME=" + c.Name);
+                }
             }
-            File.WriteAllLines(filename, lines.ToArray());
+            File.WriteAllLines(filename, lines.ToArray(),Encoding.UTF8);
         }
 
         public void SaveQpfile(string filename)
         {
             List<string> lines = new List<string>();
             foreach (Chapter c in Chapters)
-                lines.Add(string.Format("{0} K", (long)Math.Round(c.Time.TotalSeconds * FramesPerSecond)));
+                lines.Add(c.FramsInfo.ToString());
             File.WriteAllLines(filename, lines.ToArray());
         }
 
@@ -132,19 +139,16 @@ namespace ChapterTool.Util
             xmlchap.WriteStartElement("EditionEntry");
             xmlchap.WriteElementString("EditionFlagHidden", "0");
             xmlchap.WriteElementString("EditionFlagDefault", "0");
-            xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, Int32.MaxValue)));
+            xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
             foreach (Chapter c in Chapters)
             {
                 xmlchap.WriteStartElement("ChapterAtom");
                 xmlchap.WriteStartElement("ChapterDisplay");
                 xmlchap.WriteElementString("ChapterString", c.Name);
-                xmlchap.WriteElementString("ChapterLanguage", String.IsNullOrEmpty(LangCode) ? "eng" : LangCode);
+                xmlchap.WriteElementString("ChapterLanguage", string.IsNullOrEmpty(LangCode) ? "eng" : LangCode);
                 xmlchap.WriteEndElement();
-                xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, Int32.MaxValue)));
-                if (c.Time.ToString().Length == 8)
-                    xmlchap.WriteElementString("ChapterTimeStart", c.Time.ToString() + ".0000000");
-                else
-                    xmlchap.WriteElementString("ChapterTimeStart", c.Time.ToString());
+                xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
+                xmlchap.WriteElementString("ChapterTimeStart", convertMethod.time2string(c.Time) + "0000");
                 xmlchap.WriteElementString("ChapterFlagHidden", "0");
                 xmlchap.WriteElementString("ChapterFlagEnabled", "1");
                 xmlchap.WriteEndElement();
