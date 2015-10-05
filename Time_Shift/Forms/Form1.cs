@@ -276,7 +276,7 @@ namespace ChapterTool
                 Loadfile();
                 if (info != null)
                 {
-                    getFramInfo(0);
+                    //getFramInfo(0);
                     updataGridView();
                 }
                 else
@@ -534,11 +534,11 @@ namespace ChapterTool
                 case "DVD":
                     cbMul1k1.Checked = true;
                     //TODO: GET FPS FROM FILE
+                    getFramInfo(fpsIndex);
                     break;
                 case "MPLS":
                     int index = RawData.chapterClips[mplsFileSeletIndex].fps;
                     getFramInfo(index);
-                    comboBox1.SelectedIndex = index;
                     break;
                 default:
                     getFramInfo(fpsIndex);
@@ -568,7 +568,15 @@ namespace ChapterTool
         decimal costumeAccuracy = 0.15M;
         void getFramInfo(int index = 0)
         {
-            index = (index == 0)? getAUTOFPS(): index;
+            if (index == 0)
+            {
+                index = getAUTOFPS();
+            }
+            else
+            {
+                comboBox1.SelectedIndex = index - 1;
+            }
+            //index = (index == 0)? getAUTOFPS(): index;
 
             foreach (var item in info.Chapters)
             {
@@ -593,7 +601,6 @@ namespace ChapterTool
                 int InAccuratePiont = 0;
                 FPStemp = FrameRate[j];
 
-                string buffer1 = string.Empty;
                 foreach (var item in info.Chapters)
                 {
                     getAccuracy(item.Time, ref AccuratePiont, ref InAccuratePiont, j);
@@ -628,57 +635,18 @@ namespace ChapterTool
 
         /// FPS Cal Part /////////////////////
 
-
-        int TSD
-        {
-            set
-            {
-                TSD_0unit.Checked = false;
-                TSD_1unit.Checked = false;
-                TSD_2unit.Checked = false;
-                TSD_3unit.Checked = false;
-                TSD_4unit.Checked = false;
-                TSD_5unit.Checked = false;
-                TSD_6unit.Checked = false;
-                switch (value)
-                {
-                    case 0:
-                        costumeAccuracy = 0.01M;
-                        TSD_0unit.Checked = true;
-                        break;
-                    case 1:
-                        costumeAccuracy = 0.05M;
-                        TSD_1unit.Checked = true;
-                        break;
-                    case 2:
-                        costumeAccuracy = 0.10M;
-                        TSD_2unit.Checked = true;
-                        break;
-                    case 3:
-                        costumeAccuracy = 0.15M;
-                        TSD_3unit.Checked = true;
-                        break;
-                    case 4:
-                        costumeAccuracy = 0.20M;
-                        TSD_4unit.Checked = true;
-                        break;
-                    case 5:
-                        costumeAccuracy = 0.25M;
-                        TSD_5unit.Checked = true;
-                        break;
-                    case 6:
-                        costumeAccuracy = 0.30M;
-                        TSD_6unit.Checked = true;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
+        decimal[] Accuracy = { 0.01M, 0.05M, 0.10M, 0.15M, 0.20M, 0.25M, 0.30M };
         private void Accuracy_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            TSD = int.Parse(e.ClickedItem.Tag.ToString());
+            foreach (var item in toolStripMenuItem1.DropDownItems)
+            {
+                if (!Equals(item,toolStripSeparator1))
+                {
+                    (item as ToolStripMenuItem).Checked = false;
+                }
+            }
+            (e.ClickedItem as ToolStripMenuItem).Checked = true;
+            costumeAccuracy = Accuracy[int.Parse(e.ClickedItem.Tag.ToString())];
         }
 
 
@@ -1148,10 +1116,9 @@ namespace ChapterTool
 
         private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
-            CTLogger.Log(e.RowCount.ToString() + "行被删除");
+            CTLogger.Log("+"+e.RowCount.ToString() + "行被删除");
         }
 
-        Color cellColorTemp = Color.FromArgb(0,230,230,230);
 
     }
 }
