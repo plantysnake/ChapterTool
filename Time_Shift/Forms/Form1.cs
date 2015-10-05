@@ -99,12 +99,12 @@ namespace ChapterTool
                 if (File.Exists("mkvextract.exe"))
                 {
                     mkvEX = true;
-                    return "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls*.ifo;|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
+                    return "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo;|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
                 }
                 else
                 {
                     mkvEX = false;
-                    return "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls*.ifo;";
+                    return "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo;";
                 }
             }
         }
