@@ -64,13 +64,23 @@ namespace ChapterTool.Util
             FramesPerSecond = fps;
         }
 
-        public string getText()
+        public string getText(bool DONOTUSEName)
         {
             string lines = string.Empty;
+            int i = 1;
             foreach (Chapter c in Chapters)
             {
                 lines += ("CHAPTER" + c.Number.ToString("00") + "=" + convertMethod.time2string(c.Time) + Environment.NewLine);
-                lines += ("CHAPTER" + c.Number.ToString("00") + "NAME=" + c.Name + Environment.NewLine);
+                lines += ("CHAPTER" + c.Number.ToString("00") + "NAME=");
+                if (DONOTUSEName)
+                {
+                    lines += "Chapter " + i.ToString("00") + Environment.NewLine;
+                }
+                else
+                {
+                    lines += c.Name + Environment.NewLine;
+                }
+                ++i;
             }
             return string.Concat(lines);
         }
@@ -78,19 +88,19 @@ namespace ChapterTool.Util
         public void SaveText(string filename,bool DONOTUSEName)
         {
             List<string> lines = new List<string>();
-            int i = 0;
+            int i = 1;
             foreach (Chapter c in Chapters) 
             {
-                i++;
                 lines.Add("CHAPTER" + i.ToString("00") + "=" + convertMethod.time2string(c.Time));
                 if (DONOTUSEName)
                 {
-                    lines.Add("Chapter " + (i + 1).ToString("00"));
+                    lines.Add("Chapter " + i.ToString("00"));
                 }
                 else
                 {
                     lines.Add("CHAPTER" + i.ToString("00") + "NAME=" + c.Name);
                 }
+                ++i;
             }
             File.WriteAllLines(filename, lines.ToArray(),Encoding.UTF8);
         }

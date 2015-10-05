@@ -249,6 +249,7 @@ namespace ChapterTool
         {
             List<ChapterInfo> Rawifo = new ifoData().GetStreams(paths[0]);
             info = Rawifo[0];
+            updataInfo(1.001M);
         }
 
         public string GetUTF8String(byte[] buffer)
@@ -469,12 +470,12 @@ namespace ChapterTool
             foreach (int item in current)
             {
                 Chapter temp = new Chapter();
-                var sDO = default_order.ToString("00");
                 temp.Time = convertMethod.pts2Time(item - offset);
-                temp.Name = "Chapter " + sDO;
+                temp.Name = "Chapter " + default_order.ToString("00");
                 temp.Number = default_order++;
                 info.Chapters.Add(temp);
             }
+            if (!string.IsNullOrEmpty(chapterNameTemplate)) { updataInfo(chapterNameTemplate); }
         }
         void geneRateCI(XmlDocument doc)
         {
@@ -484,10 +485,7 @@ namespace ChapterTool
             XmlElement root = doc.DocumentElement;
             XmlNodeList TimeNodes = root.SelectNodes("/Chapters/EditionEntry/ChapterAtom/ChapterTimeStart");
             XmlNodeList NameNodes = root.SelectNodes("/Chapters/EditionEntry/ChapterAtom/ChapterDisplay/ChapterString");
-            if (TimeNodes.Count * NameNodes.Count == 0)
-            {
-                return;
-            }
+            if (TimeNodes.Count * NameNodes.Count == 0) { return; }
             int j = 0;
             foreach (XmlNode timenode in TimeNodes)
             {
@@ -560,9 +558,8 @@ namespace ChapterTool
             switch (info.SourceType)
             {
                 case "DVD":
-                    cbMul1k1.Checked = true;
                     getFramInfo(convertFR2Index(info.FramesPerSecond));
-                    MessageBox.Show(convertFR2Index(info.FramesPerSecond).ToString());
+                    //MessageBox.Show(convertFR2Index(info.FramesPerSecond).ToString());
                     break;
                 case "MPLS":
                     int index = RawData.chapterClips[mplsFileSeletIndex].fps;
@@ -1074,15 +1071,18 @@ namespace ChapterTool
         }
         private void cbMul1k1_CheckedChanged(object sender, EventArgs e)
         {
-            if (cbMul1k1.Checked)   
+            if (info != null && info.SourceType != "DVD")
             {
-                updataInfo(1.001M);
+                if (cbMul1k1.Checked)
+                {
+                    updataInfo(1.001M);
+                }
+                else
+                {
+                    updataInfo(1 / 1.001M);
+                }
+                updataGridView();
             }
-            else
-            {
-                updataInfo(1/1.001M);
-            }
-            updataGridView();
         }
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
@@ -1131,12 +1131,28 @@ namespace ChapterTool
             if (!isPathValid) { return; }
             if (_PreviewForm == null)
             {
-                _PreviewForm = new FormPreview(info.getText(), Location);
+                _PreviewForm = new FormPreview(info.getText(cbAutoGenName.Checked), Location);
             }
-            _PreviewForm.UpdateText(info.getText());
+            _PreviewForm.UpdateText(info.getText(cbAutoGenName.Checked));
             _PreviewForm.Show();
             _PreviewForm.Focus();
             _PreviewForm.Select();
+        }
+
+        private void cbAutoGenName_CheckedChanged(object sender, EventArgs e)
+        {
+            int index = 1;
+            if (cbAutoGenName.Checked)
+            {
+                foreach (var item in dataGridView1.Rows)
+                {
+                    (item as DataGridViewRow).Cells[2].Value = "Chapter " + (index++).ToString("00");
+                }
+            }
+            else
+            {
+                updataGridView();
+            }
         }
 
         private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)

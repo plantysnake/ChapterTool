@@ -149,7 +149,7 @@
             this.cbAutoGenName.TabStop = false;
             this.cbAutoGenName.Text = "不使用章节名";
             this.cbAutoGenName.UseVisualStyleBackColor = true;
-            this.cbAutoGenName.CheckedChanged += new System.EventHandler(this.refresh_Click);
+            this.cbAutoGenName.CheckedChanged += new System.EventHandler(this.cbAutoGenName_CheckedChanged);
             // 
             // Tips
             // 
