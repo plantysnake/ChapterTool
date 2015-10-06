@@ -30,7 +30,7 @@ namespace ChapterTool
             temp.Milliseconds.ToString("000");
         }
 
-        static Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
+        public static Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
         public static TimeSpan string2Time(string input)
         {
             if (string.IsNullOrEmpty(input)) { return TimeSpan.Zero; }

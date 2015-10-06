@@ -67,7 +67,7 @@ namespace ChapterTool
 
         private void InitForm()
         {
-            base.Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
+            //base.Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
             this.Text = string.Format("ChapterTool v{0} -- Log", Assembly.GetExecutingAssembly().GetName().Version);
         }
 

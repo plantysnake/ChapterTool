@@ -56,11 +56,37 @@ namespace ChapterTool
         private void Form1_Load(object sender, EventArgs e)
         {
 
-            CTLogger.Log(Environment.UserName + "，你好呀");
-            CTLogger.Log(Environment.OSVersion.ToString());
-            foreach (var item in Screen.AllScreens)
+            if (Environment.UserName.ToLowerInvariant().IndexOf("yzy")>0)
             {
-                CTLogger.Log(item.DeviceName + " 分辨率：" + item.Bounds.Width + "*" + item.Bounds.Height);
+                CTLogger.Log("武总好~");
+            }
+            else
+            {
+                CTLogger.Log(Environment.UserName + "，你好呀");
+            }
+            CTLogger.Log(Environment.OSVersion.ToString());
+            if (Environment.GetLogicalDrives().Length > 10) 
+            {
+                CTLogger.Log("硬盘壕，给我块硬盘呗~");
+            }
+            using (Microsoft.Win32.RegistryKey registryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0"))
+            {
+                string processor = string.Empty;
+                //\HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0
+                if (registryKey != null)
+                {
+                    processor = (string)registryKey.GetValue("ProcessorNameString");
+                    registryKey.Close();
+                }
+                CTLogger.Log(processor);
+            }
+
+            if (Screen.AllScreens.Length>1)
+            {
+                foreach (var item in Screen.AllScreens)
+                {
+                    CTLogger.Log(item.DeviceName + " 分辨率：" + item.Bounds.Width + "*" + item.Bounds.Height);
+                }
             }
 
             Point saved = convertMethod.string2point(registryStorage.Load(@"Software\ChapterTool", "location"));
@@ -87,8 +113,7 @@ namespace ChapterTool
         ChapterInfo info;
 
         string SnotLoaded = "尚未载入文件";
-        //string SFPSShow3 = "就是 ";
-        //string SFPSShow4 = " fps 不对就是圆盘的锅 ";
+
         string SchapterFitter
         {
             get
@@ -114,7 +139,6 @@ namespace ChapterTool
         void setDefault()
         {
             cbMore.CheckState = CheckState.Unchecked;
-            //dataGridView1.Rows.Clear();
             moreModeShow = false;
             comboBox2.Enabled = comboBox2.Visible = false;
 
@@ -123,22 +147,18 @@ namespace ChapterTool
 
             progressBar1.Visible = true;
             cbMore.Enabled = true;
-            //mplsValid = true;
-            //cbMul1k1.Checked = false;
             cbMul1k1.Enabled = true;
 
             folderBrowserDialog1.SelectedPath = registryStorage.Load();
         }
         Regex RLineOne    = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
         Regex RLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
-        Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
 
         string[] paths = new string[20];
 
         void Form1_DragDrop(object sender,  DragEventArgs e)
         {
             paths = e.Data.GetData(DataFormats.FileDrop) as string[];
-            //IsTimeFomat = true;
             if (isPathValid)
             {
                 CTLogger.Log("+从窗口拖拽中载入文件:" + paths[0]);
@@ -178,6 +198,8 @@ namespace ChapterTool
             }
         }
 
+        Regex RFileType = new Regex(@".(txt|xml|mpls|ifo|mkv|mka)$");
+
         bool isPathValid
         {
             get
@@ -187,53 +209,40 @@ namespace ChapterTool
                     Tips.Text = "文件还没载入呢";
                     return false;
                 }
-                else
+                if (!RFileType.IsMatch(paths[0].ToLowerInvariant()))
                 {
-                    if (!(paths[0].ToLowerInvariant().EndsWith(".txt") ||
-                        paths[0].ToLowerInvariant().EndsWith(".xml") ||
-                        paths[0].ToLowerInvariant().EndsWith(".mpls") ||
-                        paths[0].ToLowerInvariant().EndsWith(".mkv") ||
-                        paths[0].ToLowerInvariant().EndsWith(".mka") ||
-                        paths[0].ToLowerInvariant().EndsWith(".ifo")) )
-                    {
-                        Tips.Text = "这个文件我不认识啊 _ (:3」∠)_";
-                        CTLogger.Log("文件格式非法");
-                        paths[0] = string.Empty;
-                        label1.Text = SnotLoaded;
-                        return false;
-                    }
+                    Tips.Text = "这个文件我不认识啊 _ (:3」∠)_";
+                    CTLogger.Log("文件格式非法");
+                    paths[0] = string.Empty;
+                    label1.Text = SnotLoaded;
+                    return false;
                 }
+
                 return true;
             }
         }
-        //bool mplsValid = true;
+
         bool mkvEX = true;
 
-        
         void Loadfile()
         {
             if (!isPathValid) { return; }
-            if (paths[0].Length > 55)   
-            {
-                string shortedPath = paths[0].Substring(0, 40) + "……" + paths[0].Substring(paths[0].Length - 15, 15);
-                label1.Text = shortedPath;
-            }
-            else
-            {
-                label1.Text = paths[0];
-            }
+            label1.Text = (paths[0].Length > 55) ? paths[0].Substring(0, 40) + "……" + paths[0].Substring(paths[0].Length - 15, 15) : paths[0];
             
             setDefault();
             Cursor = Cursors.AppStarting;
             try
             {
-                if  (paths[0].ToLowerInvariant().EndsWith(".mpls")) { loadMPLS(); }
-                if  (paths[0].ToLowerInvariant().EndsWith(".xml" )) { loadXML(); }
-                if ((paths[0].ToLowerInvariant().EndsWith(".mkv" ) || 
-                     paths[0].ToLowerInvariant().EndsWith(".mka" )) && mkvEX) { loadMatroska(); }
-                if ( paths[0].ToLowerInvariant().EndsWith(".txt" )) { loadOGM(); }
-                if ( paths[0].ToLowerInvariant().EndsWith(".ifo")) { LoadIFO(); }
-                if (!string.IsNullOrEmpty(chapterNameTemplate))   { updataInfo(chapterNameTemplate); }
+                switch (RFileType.Match(paths[0].ToLowerInvariant()).ToString()) 
+                {
+                    case ".mpls": loadMPLS(); break;
+                    case ".xml":   loadXML(); break;
+                    case ".txt":   loadOGM(); break;
+                    case ".ifo":   LoadIFO(); break;
+                    case ".mkv":
+                    case ".mka": if (mkvEX) { loadMatroska(); } break;
+                }
+                if (!string.IsNullOrEmpty(chapterNameTemplate)) { updataInfo(chapterNameTemplate); }
             }
             catch (Exception ex)
             {
@@ -254,23 +263,17 @@ namespace ChapterTool
 
         public string GetUTF8String(byte[] buffer)
         {
-            if (buffer == null)
-                return null;
-
-            if (buffer.Length <= 3)
-            {
-                return Encoding.UTF8.GetString(buffer);
-            }
-
+            if (buffer == null) return null;
+            if (buffer.Length <= 3)  return Encoding.UTF8.GetString(buffer); 
             byte[] bomBuffer = new byte[] { 0xef, 0xbb, 0xbf };
 
             if (buffer[0] == bomBuffer[0]
-                && buffer[1] == bomBuffer[1]
-                && buffer[2] == bomBuffer[2])
+             && buffer[1] == bomBuffer[1]
+             && buffer[2] == bomBuffer[2])
             {
                 return new UTF8Encoding(false).GetString(buffer, 3, buffer.Length - 3);
             }
-
+            
             return Encoding.UTF8.GetString(buffer);
         }
 
@@ -292,16 +295,7 @@ namespace ChapterTool
                 CTLogger.Log("+从载入键中载入文件:" + paths[0]);
                 comboBox2.Items.Clear();
                 Loadfile();
-                if (info != null)
-                {
-                    //getFramInfo(0);
-                    updataGridView();
-                }
-                else
-                {
-                    Tips.Text = "载入的文件为空";
-                }
-
+                updataGridView();
             }
         }
 
@@ -370,7 +364,7 @@ namespace ChapterTool
 
             //MessageBox.Show(savePath);
         }
-        void refresh_Click(object sender, EventArgs e) { updataGridView(0); }
+        void refresh_Click(object sender, EventArgs e) { updataGridView(); }
 
 
         string GetFirstLine_new(string[] OGMdata, out int i)//i 为章节实际开始的行号
@@ -391,7 +385,7 @@ namespace ChapterTool
         {
             if (RLineOne.IsMatch(line))
             {
-                return convertMethod.string2Time(RTimeFormat.Match(line).ToString());
+                return convertMethod.string2Time(convertMethod.RTimeFormat.Match(line).ToString());
             }
             else
             {
@@ -414,7 +408,7 @@ namespace ChapterTool
             }
             if (RLineOne.IsMatch(line))
             {
-                temp.Time = convertMethod.string2Time(RTimeFormat.Match(line).ToString()) - iniTime;
+                temp.Time = convertMethod.string2Time(convertMethod.RTimeFormat.Match(line).ToString()) - iniTime;
             }
             temp.Number = order;
             return temp;
@@ -490,7 +484,7 @@ namespace ChapterTool
             foreach (XmlNode timenode in TimeNodes)
             {
                 Chapter temp = new Chapter();
-                temp.Time = convertMethod.string2Time(RTimeFormat.Match(timenode.InnerText).ToString());
+                temp.Time = convertMethod.string2Time(convertMethod.RTimeFormat.Match(timenode.InnerText).ToString());
                 temp.Name = NameNodes[j++].InnerText.ToString();
                 temp.Number = j;
                 info.Chapters.Add(temp);
@@ -692,7 +686,7 @@ namespace ChapterTool
 
         TimeSpan getOffsetFromMaskedTextBox()
         {
-            if (RTimeFormat.IsMatch(maskedTextBox1.Text))
+            if (convertMethod.RTimeFormat.IsMatch(maskedTextBox1.Text))
             {
                 return convertMethod.string2Time(maskedTextBox1.Text);
             }
@@ -900,11 +894,11 @@ namespace ChapterTool
         {
             set
             {
-                dataGridView1.BackColor = value;
+                dataGridView1.BackgroundColor = value;
                 numericUpDown1.BackColor = maskedTextBox1.BackColor = value;
                 comboBox1.BackColor = comboBox2.BackColor = value;
+                savingType.BackColor = value;
             }
-            
         }
         public Color MouseOverColor
         {
@@ -914,6 +908,7 @@ namespace ChapterTool
                 btnSave.FlatAppearance.MouseOverBackColor = value;
                 btnTrans.FlatAppearance.MouseOverBackColor = value;
                 btnLog.FlatAppearance.MouseOverBackColor = value;
+                btnPreview.FlatAppearance.MouseOverBackColor = value;
                 cbMore.FlatAppearance.MouseOverBackColor = value;
             }
         }
@@ -925,6 +920,7 @@ namespace ChapterTool
                 btnSave.FlatAppearance.MouseDownBackColor = value;
                 btnTrans.FlatAppearance.MouseDownBackColor = value;
                 btnLog.FlatAppearance.MouseDownBackColor = value;
+                btnPreview.FlatAppearance.MouseDownBackColor = value;
                 cbMore.FlatAppearance.MouseDownBackColor = value;
             }
             
@@ -937,6 +933,7 @@ namespace ChapterTool
                 btnSave.FlatAppearance.BorderColor = value;
                 btnTrans.FlatAppearance.BorderColor = value;
                 btnLog.FlatAppearance.BorderColor = value;
+                btnPreview.FlatAppearance.BorderColor = value;
                 cbMore.FlatAppearance.BorderColor = value;
             }
         }
@@ -950,6 +947,8 @@ namespace ChapterTool
                 cbMore.ForeColor = value;
                 comboBox1.ForeColor = value;
                 comboBox2.ForeColor = value;
+                savingType.ForeColor = value;
+                dataGridView1.ForeColor = value;
             }
         }
 
