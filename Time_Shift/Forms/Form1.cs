@@ -106,8 +106,6 @@ namespace ChapterTool
             moreModeShow = false;
             Size = new Size(Size.Width, Size.Height - 80);
             savingType.SelectedIndex = 0;
-            //listView1.Columns.Add("时间点", 90, HorizontalAlignment.Left);
-            //listView1.Columns.Add("章节名", 180, HorizontalAlignment.Left);
         }
 
         ChapterInfo info;
@@ -121,12 +119,12 @@ namespace ChapterTool
                 if (File.Exists("mkvextract.exe"))
                 {
                     mkvEX = true;
-                    return "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo;|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
+                    return "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
                 }
                 else
                 {
                     mkvEX = false;
-                    return "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo;";
+                    return "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo";
                 }
             }
         }
@@ -1042,9 +1040,9 @@ namespace ChapterTool
                 }
                 else
                 {
-                    while (this.Opacity > 0)
+                    while (Opacity > 0)
                     {
-                        this.Opacity -= 0.02;
+                        Opacity -= 0.02;
                         FormMove(forward2, ref origin);
                         System.Threading.Thread.Sleep(4);
                         Location = origin;
