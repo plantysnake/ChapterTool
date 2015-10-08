@@ -252,10 +252,33 @@ namespace ChapterTool
             
         }
 
+        List<ChapterInfo> Rawifo;
+
         void LoadIFO()
         {
-            List<ChapterInfo> Rawifo = new ifoData().GetStreams(paths[0]);
-            info = Rawifo[0];
+            Rawifo = new ifoData().GetStreams(paths[0]);
+            comboBox2.Items.Clear();
+            comboBox2.Enabled = comboBox2.Visible = (Rawifo.Count >= 1);
+            foreach (var item in Rawifo)
+            {
+
+                if (comboBox2.Enabled)
+                {
+                    comboBox2.Items.Add(item.SourceName + "__" + item.Chapters.Count.ToString());
+                    CTLogger.Log(" |+" + item.SourceName);
+                    CTLogger.Log("  |+包含 " + item.Chapters.Count.ToString() + " 个时间戳");
+                }
+            }
+            comboBox2.SelectedIndex = mplsFileSeletIndex;
+            foreach (var item in Rawifo)
+            {
+                if (item != null)
+                {
+                    info = item;
+                    break;
+                }
+            }
+            
             updataInfo(1.001M);
         }
 
@@ -340,6 +363,8 @@ namespace ChapterTool
 
             if (paths[0].ToLowerInvariant().EndsWith(".mpls") && !combineToolStripMenuItem.Checked)
                 savePath += "__" + RawData.chapterClips[mplsFileSeletIndex].Name;
+            if (paths[0].ToLowerInvariant().EndsWith(".ifo"))   
+                savePath += "__" + Rawifo[mplsFileSeletIndex].SourceName;
 
             switch (savingType.SelectedIndex)
             {
@@ -490,6 +515,15 @@ namespace ChapterTool
             info.Duration = info.Chapters[info.Chapters.Count - 1].Time;
         }
 
+        void geneRateCI(int index,bool DVD)
+        {
+            if (Rawifo[index] != null)
+            {
+                info = Rawifo[index];
+                updataInfo(1.001M);
+                updataGridView();
+            }
+        }
 
         void updataInfo(TimeSpan shift)
         {
@@ -829,7 +863,15 @@ namespace ChapterTool
 
         void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            geneRateCI(comboBox2.SelectedIndex);
+            if (RawData != null)
+            {
+                geneRateCI(comboBox2.SelectedIndex);
+            }
+            else
+            {
+                geneRateCI(comboBox2.SelectedIndex,true);
+            }
+            
             updataGridView();
         }
 
