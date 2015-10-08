@@ -261,25 +261,23 @@ namespace ChapterTool
             comboBox2.Enabled = comboBox2.Visible = (Rawifo.Count >= 1);
             foreach (var item in Rawifo)
             {
-
-                if (comboBox2.Enabled)
+                if (comboBox2.Enabled && item != null)
                 {
                     comboBox2.Items.Add(item.SourceName + "__" + item.Chapters.Count.ToString());
                     CTLogger.Log(" |+" + item.SourceName);
                     CTLogger.Log("  |+包含 " + item.Chapters.Count.ToString() + " 个时间戳");
                 }
             }
-            comboBox2.SelectedIndex = mplsFileSeletIndex;
             foreach (var item in Rawifo)
             {
                 if (item != null)
                 {
                     info = item;
+                    comboBox2.SelectedIndex = mplsFileSeletIndex;
+                    updataInfo(1.001M);
                     break;
                 }
             }
-            
-            updataInfo(1.001M);
         }
 
         public string GetUTF8String(byte[] buffer)
