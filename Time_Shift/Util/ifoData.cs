@@ -80,7 +80,7 @@ namespace ChapterTool.Util
             pgc.Duration = duration;
             pgc.FramesPerSecond = fps;
             
-            if (pgc.Duration.TotalSeconds > 900)
+            if (pgc.Duration.TotalSeconds > 10)
                 OnStreamDetected(pgc);
             else
                 pgc = null;

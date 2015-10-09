@@ -29,11 +29,14 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Linq;
+using ChapterTool.Forms;
 using System.Drawing;
+using ChapterTool.Util;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using ChapterTool.Util;
+
 
 namespace ChapterTool
 {
@@ -41,6 +44,7 @@ namespace ChapterTool
     {
         public Form1()
         {
+
             InitializeComponent();
         }
         public Form1(string args)
@@ -49,15 +53,40 @@ namespace ChapterTool
             paths[0] = args;
             CTLogger.Log("+从运行参数中载入文件:" + paths[0]);
         }
-
         private void Form1_Load(object sender, EventArgs e)
         {
-            textBox1.OthercTextBox = textBox2;
-            CTLogger.Log(Environment.UserName + "，你好呀");
-            CTLogger.Log(Environment.OSVersion.ToString());
-            foreach (var item in Screen.AllScreens)
+
+            if (Environment.UserName.ToLowerInvariant().IndexOf("yzy")>0)
             {
-                CTLogger.Log(item.DeviceName + " 分辨率：" + item.Bounds.Width + "*" + item.Bounds.Height);
+                CTLogger.Log("武总好~");
+            }
+            else
+            {
+                CTLogger.Log(Environment.UserName + "，你好呀");
+            }
+            CTLogger.Log(Environment.OSVersion.ToString());
+            if (Environment.GetLogicalDrives().Length > 10) 
+            {
+                CTLogger.Log("硬盘壕，给我块硬盘呗~");
+            }
+            using (Microsoft.Win32.RegistryKey registryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0"))
+            {
+                string processor = string.Empty;
+                //\HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0
+                if (registryKey != null)
+                {
+                    processor = (string)registryKey.GetValue("ProcessorNameString");
+                    registryKey.Close();
+                }
+                CTLogger.Log(processor);
+            }
+
+            if (Screen.AllScreens.Length>1)
+            {
+                foreach (var item in Screen.AllScreens)
+                {
+                    CTLogger.Log(item.DeviceName + " 分辨率：" + item.Bounds.Width + "*" + item.Bounds.Height);
+                }
             }
 
             Point saved = convertMethod.string2point(registryStorage.Load(@"Software\ChapterTool", "location"));
@@ -71,27 +100,19 @@ namespace ChapterTool
             if (!string.IsNullOrEmpty(paths[0]))
             {
                 Loadfile();
-                Transfer();
+                updataGridView();
                 registryStorage.Save("你好呀，找到这里来干嘛呀", @"Software\ChapterTool", string.Empty);
             }
             moreModeShow = false;
             Size = new Size(Size.Width, Size.Height - 80);
+            savingType.SelectedIndex = 0;
+            btnTrans.Text = ((Environment.TickCount%2==0) ? "↺" : "↻");
         }
 
-        public string NewLine
-        {
-            get
-            {
-                return Environment.NewLine;//     获取为此环境定义的换行字符串。
-            }
-        }
-
-
-
+        ChapterInfo info;
 
         string SnotLoaded = "尚未载入文件";
-        string SFPSShow3 = "就是 ";
-        string SFPSShow4 = " fps 不对就是圆盘的锅 ";
+
         string SchapterFitter
         {
             get
@@ -99,17 +120,18 @@ namespace ChapterTool
                 if (File.Exists("mkvextract.exe"))
                 {
                     mkvEX = true;
-                    return "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo;|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
+                    return "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
                 }
                 else
                 {
                     mkvEX = false;
-                    return "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo;";
+                    return "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo";
                 }
             }
         }
         string SnameFitter = "文本文件(*.txt)|*.txt|所有文件(*.*)|*.*";
-        string SwhatsThis1 = "请别喂一些奇怪的东西 ( つ⁰﹏⁰)つ";
+        string Ssuccess = "载入完成 (≧▽≦)";
+        //string SwhatsThis1 = "请别喂一些奇怪的东西 ( つ⁰﹏⁰)つ";
         string Swhatsthis2 = "当前片段并没有章节 (¬_¬)";
         string SinvalidTime = "位移时间不科学的样子";
 
@@ -117,62 +139,34 @@ namespace ChapterTool
         void setDefault()
         {
             cbMore.CheckState = CheckState.Unchecked;
-
             moreModeShow = false;
             comboBox2.Enabled = comboBox2.Visible = false;
-            textBox1.ScrollBars = ScrollBars.None;
-            textBox2.ScrollBars = ScrollBars.None;
 
-            cbFramCal.CheckState = CheckState.Unchecked;
             comboBox1.SelectedIndex = -1;
             btnSave.Enabled = btnSave.Visible = true;
-            btnAUTO.Visible = btnAUTO.Enabled = false;
-            comboBox1.Visible = false;
 
             progressBar1.Visible = true;
-            cbFramCal.Enabled = true;
             cbMore.Enabled = true;
-            mplsValid = true;
-            xmlValid = true;
-
-            fps = 0;
+            cbMul1k1.Enabled = true;
 
             folderBrowserDialog1.SelectedPath = registryStorage.Load();
         }
         Regex RLineOne    = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
         Regex RLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
-        Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
 
         string[] paths = new string[20];
-        void SetScroll()
-        {
-            if (textBox1.GetLineFromCharIndex(textBox1.Text.Length) + 1 < 20)
-            {
-                textBox1.ScrollBars = ScrollBars.Horizontal;
-                textBox2.ScrollBars = ScrollBars.Horizontal;
-            }
-            else
-            {
-                textBox1.ScrollBars = ScrollBars.Both;
-                textBox2.ScrollBars = ScrollBars.Both;
-            }
-        }
+
         void Form1_DragDrop(object sender,  DragEventArgs e)
         {
             paths = e.Data.GetData(DataFormats.FileDrop) as string[];
-            //IsTimeFomat = true;
             if (isPathValid)
             {
                 CTLogger.Log("+从窗口拖拽中载入文件:" + paths[0]);
-                textBox1.Clear();
                 comboBox2.Items.Clear();
                 Loadfile();
-                SetScroll();
-                if (!cbFramCal.Checked && mplsValid) { Transfer(); }//未勾选帧数计算时自动转换
-                else
-                {
-                    if (cbFramCal.Checked) { FPS_Transfer(); }
-                }
+                
+                updataGridView();
+
             }
         }
         void Form1_DragEnter(object sender, DragEventArgs e)
@@ -204,6 +198,8 @@ namespace ChapterTool
             }
         }
 
+        Regex RFileType = new Regex(@".(txt|xml|mpls|ifo|mkv|mka)$");
+
         bool isPathValid
         {
             get
@@ -213,47 +209,40 @@ namespace ChapterTool
                     Tips.Text = "文件还没载入呢";
                     return false;
                 }
-                else
+                if (!RFileType.IsMatch(paths[0].ToLowerInvariant()))
                 {
-                    if (!(paths[0].ToLowerInvariant().EndsWith(".txt") ||
-                        paths[0].ToLowerInvariant().EndsWith(".xml") ||
-                        paths[0].ToLowerInvariant().EndsWith(".mpls") ||
-                        paths[0].ToLowerInvariant().EndsWith(".mkv") ||
-                        paths[0].ToLowerInvariant().EndsWith(".mka") ||
-                        paths[0].ToLowerInvariant().EndsWith(".ifo")) )
-                    {
-                        Tips.Text = "这个文件我不认识啊 _ (:3」∠)_";
-                        CTLogger.Log("文件格式非法");
-                        paths[0] = string.Empty;
-                        label1.Text = SnotLoaded;
-                        return false;
-                    }
+                    Tips.Text = "这个文件我不认识啊 _ (:3」∠)_";
+                    CTLogger.Log("文件格式非法");
+                    paths[0] = string.Empty;
+                    label1.Text = SnotLoaded;
+                    return false;
                 }
+
                 return true;
             }
         }
 
-        bool mplsValid = true;
-
         bool mkvEX = true;
 
-        
         void Loadfile()
         {
             if (!isPathValid) { return; }
-            string shortedPath = paths[0].Substring(0, 20)  + "……" + paths[0].Substring(paths[0].Length - 12, 12);
-            label1.Text = shortedPath;
+            label1.Text = (paths[0].Length > 55) ? paths[0].Substring(0, 40) + "……" + paths[0].Substring(paths[0].Length - 15, 15) : paths[0];
+            
             setDefault();
             Cursor = Cursors.AppStarting;
             try
             {
-                if  (paths[0].ToLowerInvariant().EndsWith(".mpls")) { mplsValid = loadMPLS(); }
-                if  (paths[0].ToLowerInvariant().EndsWith(".xml" )) { loadXML(); }
-                if ((paths[0].ToLowerInvariant().EndsWith(".mkv" ) || 
-                     paths[0].ToLowerInvariant().EndsWith(".mka" )) && mkvEX) { xmlValid = loadMatroska(); }
-                if ( paths[0].ToLowerInvariant().EndsWith(".txt" )) { loadOGM(); }
-                if (paths[0].ToLowerInvariant().EndsWith(".ifo")) { LoadIFO(); }
-                if (cbFramCal.Checked) { cbFramCal.CheckState = CheckState.Unchecked; }
+                switch (RFileType.Match(paths[0].ToLowerInvariant()).ToString()) 
+                {
+                    case ".mpls": loadMPLS(); break;
+                    case ".xml":   loadXML(); break;
+                    case ".txt":   loadOGM(); break;
+                    case ".ifo":   LoadIFO(); break;
+                    case ".mkv":
+                    case ".mka": if (mkvEX) { loadMatroska(); } break;
+                }
+                if (!string.IsNullOrEmpty(chapterNameTemplate)) { updataInfo(chapterNameTemplate); }
             }
             catch (Exception ex)
             {
@@ -265,30 +254,82 @@ namespace ChapterTool
             
         }
 
+        List<ChapterInfo> Rawifo;
+
         void LoadIFO()
         {
-            textBox2.Clear();
-            List<ChapterInfo> Rawifo = new ifoData().GetStreams(paths[0]);
-            string text = string.Empty;
-            int i = 1;
-            if (Rawifo[0] == null) { return; }
-            foreach (var item in Rawifo[0].Chapters)    
+            Rawifo = new ifoData().GetStreams(paths[0]);
+            IFOmul1k1();
+            comboBox2.Items.Clear();
+            comboBox2.Enabled = comboBox2.Visible = (Rawifo.Count >= 1);
+            foreach (var item in Rawifo)
             {
-                text += "CHAPTER" + i.ToString("00") + "=" + convertMethod.time2string((decimal)item.Time.TotalSeconds * 1.001M) + NewLine;
-                text += "CHAPTER" + i++.ToString("00") + "NAME=" + item.Name + NewLine;
+                if (comboBox2.Enabled && item != null)
+                {
+                    comboBox2.Items.Add(item.SourceName + "__" + item.Chapters.Count.ToString());
+                    CTLogger.Log(" |+" + item.SourceName);
+                    CTLogger.Log("  |+包含 " + item.Chapters.Count.ToString() + " 个时间戳");
+                }
             }
-            textBox1.Text = text;
+            int i = 0;
+            foreach (var item in Rawifo)
+            {
+                if (item != null)
+                {
+                    info = item;
+                    geneRateCI(i, true);
+                    comboBox2.SelectedIndex = i;
+                    //updataInfo(1.001M);
+                    break;
+                }
+                ++i;
+            }
+            if (comboBox2.SelectedIndex == -1)
+            {
+                Tips.Text = Swhatsthis2;
+            }
+            else
+            {
+                Tips.Text = Ssuccess;
+            }
+        }
+
+        void IFOmul1k1()
+        {
+            foreach (var item in Rawifo)
+            {
+                if (item!= null)
+                {
+                    foreach (var item2 in item.Chapters)
+                    {
+                        item2.Time = convertMethod.pts2Time((int)((decimal)item2.Time.TotalSeconds * 1.001M * 45000M));
+                    }
+                }
+            }
+        }
+
+        public string GetUTF8String(byte[] buffer)
+        {
+            if (buffer == null) return null;
+            if (buffer.Length <= 3)  return Encoding.UTF8.GetString(buffer); 
+            byte[] bomBuffer = new byte[] { 0xef, 0xbb, 0xbf };
+
+            if (buffer[0] == bomBuffer[0]
+             && buffer[1] == bomBuffer[1]
+             && buffer[2] == bomBuffer[2])
+            {
+                return new UTF8Encoding(false).GetString(buffer, 3, buffer.Length - 3);
+            }
+            
+            return Encoding.UTF8.GetString(buffer);
         }
 
         void loadOGM()
         {
-            using (StreamReader sr = new StreamReader(paths[0], Encoding.Default))
-            {
-                textBox1.Text = sr.ReadToEnd();
-            }
+            byte[] buffer = File.ReadAllBytes(paths[0]);
+            geneRateCI(GetUTF8String(buffer));
             progressBar1.Value = 33;
-            Tips.Text = "载入完成 (≧▽≦)";
-            CTLogger.Log("|成功载入OGM格式章节文件，共" + totalLine.ToString() + "行");
+            Tips.Text = Ssuccess;
         }
 
         void btnLoad_Click(object sender, EventArgs e)                  //载入键
@@ -297,13 +338,11 @@ namespace ChapterTool
 
             if(openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                textBox1.Clear();
                 paths[0] = openFileDialog1.FileName;
                 CTLogger.Log("+从载入键中载入文件:" + paths[0]);
                 comboBox2.Items.Clear();
                 Loadfile();
-                SetScroll();
-                if (mplsValid) { Transfer(); }
+                updataGridView();
             }
         }
 
@@ -336,8 +375,6 @@ namespace ChapterTool
                     MessageBox.Show(string.Format("Error opening path {0}: {1}{2}", CUSTsavingPath, exception.Message, Environment.NewLine), "ChapterTool Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
                     CTLogger.Log(string.Format("Error opening file {0}: {1}", CUSTsavingPath, exception.Message));
                 }
-
-
             }
         }
 
@@ -348,81 +385,42 @@ namespace ChapterTool
             //modify for custom saving path
             int slashPosition = paths[0].LastIndexOf(@"\");
             if (!string.IsNullOrEmpty(CUSTsavingPath))
-            {
                 savePath = CUSTsavingPath + paths[0].Substring(slashPosition, paths[0].LastIndexOf(".") - slashPosition);
-            }
 
             if (paths[0].ToLowerInvariant().EndsWith(".mpls") && !combineToolStripMenuItem.Checked)
-            {
                 savePath += "__" + RawData.chapterClips[mplsFileSeletIndex].Name;
-            }
-            
-            if (paths[0].ToLowerInvariant().EndsWith(".mpls") && cbFramCal.Checked)
-            {
-                while (File.Exists(savePath + ".qpf")) { savePath += "_"; }
-                savePath += ".qpf";
-            }
-            else
-            {
-                while (File.Exists(savePath + ".txt")) { savePath += "_"; }
-                savePath += ".txt";
-            }
-            try
-            {
-                using (FileStream fs = new FileStream(savePath, FileMode.Create))
-                {
-                    StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
-                    sw.Write(textBox2.Text);
-                    sw.Flush();
-                    sw.Close();
-                }
+            if (paths[0].ToLowerInvariant().EndsWith(".ifo"))   
+                savePath += "__" + Rawifo[mplsFileSeletIndex].SourceName;
 
-                Tips.Text = "保存完成 (≧▽≦)";
-                CTLogger.Log(savePath+"保存成功");
-                progressBar1.Value = 100;
-            }
-            catch (Exception ex)
+            switch (savingType.SelectedIndex)
             {
-                MessageBox.Show(string.Format("Error saving file {0}: {1}{2}", savePath, ex.Message, Environment.NewLine), "ChapterTool Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                CTLogger.Log(string.Format("Error saving file {0}: {1}", savePath, ex.Message));
+                case 0://TXT
+                    while (File.Exists(savePath + ".txt")) { savePath += "_"; }
+                    savePath += ".txt";
+                    info.SaveText(savePath,cbAutoGenName.Checked);
+                    break;
+                case 1://XML
+                    while (File.Exists(savePath + ".xml")) { savePath += "_"; }
+                    savePath += ".xml";
+                    info.SaveXml(savePath);
+                    break;
+                case 2://QPF
+                    while (File.Exists(savePath + ".qpf")) { savePath += "_"; }
+                    savePath += ".qpf";
+                    info.SaveQpfile(savePath);
+                    break;
             }
+            progressBar1.Value = 100;
+            Tips.Text = "保存成功";
+            //MessageBox.Show(savePath);
         }
-        void btnTrans_Click(object sender, EventArgs e)                  //转换键
-        {
-            if (!isPathValid || !mplsValid) { return; }
-            if (cbShift.Checked)//更新位移时间
-            {
-                _ShiftTime = SpecialCalForTimeShift();
-            }
-            if (cbFramCal.Checked)
-            {
-                FPS_Transfer();
-            }
-            else
-            {
-                if(cbChapterName.Checked)
-                {
-                    UseChapter = true;
-                    getChapterNameStream();
-                }
-                Transfer();
-            }
-        }
+        void refresh_Click(object sender, EventArgs e) { updataGridView(); }
 
-        //DateTime InitialTime;
-        TimeSpan _InitialTime;
-        void cbReserveName_CheckedChanged(object sender, EventArgs e)       //保留原章节名
-        {
-            if (!cbFramCal.Checked)
-            {
-                Transfer();
-            }
-        }       
 
-        string GetFirstLine(int totalLine,out int i)//i 为章节实际开始的行号
+        string GetFirstLine_new(string[] OGMdata, out int i)//i 为章节实际开始的行号
         {
             i = 0;
-            foreach (var item in textBox1.Lines)
+            foreach (var item in OGMdata)
             {
                 if (!string.IsNullOrEmpty(item))
                 {
@@ -433,363 +431,346 @@ namespace ChapterTool
             return string.Empty;
         }
 
-        void OffsetCal(string line)//获取第一行的时间
+        TimeSpan OffsetCal_new(string line)//获取第一行的时间
         {
             if (RLineOne.IsMatch(line))
             {
-                _InitialTime = convertMethod.string2Time(RTimeFormat.Match(line).ToString());
+                return convertMethod.string2Time(convertMethod.RTimeFormat.Match(line).ToString());
             }
             else
             {
                 CTLogger.Log("ERROR: " + line + " <-该行与时间行格式不匹配");
-                Tips.Text = SwhatsThis1;
+                return TimeSpan.Zero;
             }
         }
-
-        int totalLine
+        Chapter WriteToChapterInfo(string line, string line2, int order,TimeSpan iniTime)
         {
-            get
+            Chapter temp = new Chapter();
+            if (RLineTwo.IsMatch(line2))                     //章节标题行
             {
-                return textBox1.GetLineFromCharIndex(textBox1.Text.Length) + 1;
-            }
-        }
-
-        void Transfer()
-        {
-            if (isPathValid&&mplsValid&&xmlValid)
-            {
-                int i;
-                textBox2.Clear();
-                OffsetCal(GetFirstLine(totalLine,out i));
-                int order = 1 + (int)numericUpDown1.Value;
-                TransferCore(order,i);
-            }
-        }
-
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="order">起始的章节编号</param>
-        /// <param name="i">实际的起始行号</param>
-        void TransferCore(int order,int i)
-        {
-            if (totalLine == 1) { return; }
-            string buffer1, buffer2;
-            if (RLineOne.IsMatch(textBox1.Lines[i]))
-            {
-                for (; i + 1 < totalLine; i += 2, ++order)
-                {
-                    buffer1 = textBox1.Lines[i];
-                    buffer2 = textBox1.Lines[i + 1];
-                    if (string.IsNullOrEmpty(buffer1) || string.IsNullOrEmpty(buffer2)) { break; }
-                    WriteToTextBox(buffer1, order);
-                    WriteToTextBox(buffer2, order);
-                }
-
-                Tips.Text = "转换完成 (≧▽≦)";
-                if(UseChapter)
-                {
-                    ChapterStreamReader.Close();
-                    UseChapter = false;
-                }
-                progressBar1.Value = 66;
-            }
-        }
-
-
-        TimeSpan TimeTransfer(string line)
-        {
-            TimeSpan _current = convertMethod.string2Time(RTimeFormat.Match(line).ToString()) - _InitialTime;
-            if(cbShift.Checked)
-            {
-                _current +=_ShiftTime;
-            }
-            return _current;
-        }
-
-        
-        void WriteToTextBox(string line, int order)
-        {
-            if (string.IsNullOrEmpty(line)) { return; }
-            string buffer = string.Empty;
-            if (RLineTwo.IsMatch(line))                     //章节标题行
-            {
-                buffer += "CHAPTER" + order.ToString("00") + "NAME=";
-                string ChapterName = string.Empty;
-                switch (UseChapter)
+                switch (!cbAutoGenName.Checked)
                 {
                     case true:
-                        ChapterName = ChapterStreamReader.ReadLine(); break;
+                        temp.Name = RLineTwo.Match(line2).Groups["chapterName"].Value; break;
                     case false:
-                        switch (cbReserveName.Checked)
-                        {
-                            case true:
-                                ChapterName = RLineTwo.Match(line).Groups["chapterName"].Value; break;
-                            case false:
-                                ChapterName = "Chapter " + order.ToString("00"); break;
-                        } break;
+                        temp.Name = "Chapter " + order.ToString("00"); break;
                 }
-                buffer += ChapterName;
             }
-            if (RLineOne.IsMatch(line)) 
+            if (RLineOne.IsMatch(line))
             {
-                TimeSpan temp = TimeTransfer(line);
-                buffer += "CHAPTER" + order.ToString("00") + "=";
-                buffer += (cbMul1k1.Checked ? convertMethod.time2string((decimal)temp.TotalSeconds * 1.001M) : convertMethod.time2string(temp));
+                temp.Time = convertMethod.string2Time(convertMethod.RTimeFormat.Match(line).ToString()) - iniTime;
             }
-            textBox2.Text += buffer + NewLine;
+            temp.Number = order;
+            return temp;
+        }
+
+        void geneRateCI(string text)
+        {
+            string[] OGMdata = text.Split('\n');
+            info = new ChapterInfo();
+            info.SourceHash = ifoData.ComputeMD5Sum(paths[0]);
+            
+            info.SourceType = "OGM";
+            int i;
+            TimeSpan iniTime =  OffsetCal_new(GetFirstLine_new(OGMdata, out i));
+            int order = 1 + (int)numericUpDown1.Value;
+            if (OGMdata.Length == 1) { return; }
+            string buffer1, buffer2;
+            if (RLineOne.IsMatch(OGMdata[i]))
+            {
+                for (; i + 1 < OGMdata.Length; i += 2, ++order)
+                {
+                    buffer1 = OGMdata[i];
+                    buffer2 = OGMdata[i + 1];
+                    if (string.IsNullOrEmpty(buffer1) || string.IsNullOrEmpty(buffer2)) { break; }
+                    info.Chapters.Add(WriteToChapterInfo(buffer1, buffer2, order, iniTime));
+                }
+            }
+            if (info.Chapters.Count>1)
+            {
+                info.Duration = info.Chapters[info.Chapters.Count - 1].Time;
+            }
+        }
+        void geneRateCI(int index)
+        {
+            Clip mplsClip = RawData.chapterClips[index];
+            info = new ChapterInfo();
+            info.SourceHash = ifoData.ComputeMD5Sum(paths[0]);
+            info.Duration = convertMethod.pts2Time(mplsClip.TimeOut - mplsClip.TimeIn);
+            info.SourceType = "MPLS";
+            info.FramesPerSecond = (double)FrameRate[RawData.chapterClips[index].fps];
+            List<int> current;
+            if (combineToolStripMenuItem.Checked)
+            {
+                current = RawData.entireTimeStamp;
+                info.Title = "FULL Chapter";
+            }
+            else
+            {
+                current = mplsClip.timeStamp;
+                info.Title = RawData.chapterClips[index].Name;
+            }
+            if (current.Count < 2)
+            {
+                Tips.Text = Swhatsthis2;
+                return;
+            }
+            else
+            {
+                Tips.Text = Ssuccess;
+            }
+            int offset = current[0];
+
+            int default_order = 1;
+            foreach (int item in current)
+            {
+                Chapter temp = new Chapter();
+                temp.Time = convertMethod.pts2Time(item - offset);
+                temp.Name = "Chapter " + default_order.ToString("00");
+                temp.Number = default_order++;
+                info.Chapters.Add(temp);
+            }
+            if (!string.IsNullOrEmpty(chapterNameTemplate)) { updataInfo(chapterNameTemplate); }
+        }
+        void geneRateCI(XmlDocument doc)
+        {
+            info = new ChapterInfo();
+            info.SourceType = "XML";
+            info.SourceHash = ifoData.ComputeMD5Sum(paths[0]);
+            XmlElement root = doc.DocumentElement;
+            XmlNodeList TimeNodes = root.SelectNodes("/Chapters/EditionEntry/ChapterAtom/ChapterTimeStart");
+            XmlNodeList NameNodes = root.SelectNodes("/Chapters/EditionEntry/ChapterAtom/ChapterDisplay/ChapterString");
+            if (TimeNodes.Count * NameNodes.Count == 0) { return; }
+            int j = 0;
+            foreach (XmlNode timenode in TimeNodes)
+            {
+                Chapter temp = new Chapter();
+                temp.Time = convertMethod.string2Time(convertMethod.RTimeFormat.Match(timenode.InnerText).ToString());
+                temp.Name = NameNodes[j++].InnerText.ToString();
+                temp.Number = j;
+                info.Chapters.Add(temp);
+            }
+            info.Duration = info.Chapters[info.Chapters.Count - 1].Time;
+        }
+
+        void geneRateCI(int index,bool DVD)
+        {
+            if (Rawifo[index] != null)
+            {
+                info = Rawifo[index];
+                //updataInfo(1.001M);
+                updataGridView();
+                //Tips.Text = "载入完成 (≧▽≦)";
+            }
+            else
+            {
+                Tips.Text = Swhatsthis2;
+            }
+        }
+
+        void updataInfo(TimeSpan shift)
+        {
+            if (!isPathValid) { return; }
+            foreach (var item in info.Chapters)
+            {
+                item.Time -= shift;
+            }
+        }
+        void updataInfo(int shift)
+        {
+            if (!isPathValid) { return; }
+            int i = 1;
+            foreach (var item in info.Chapters)
+            {
+                item.Number = i++ + shift;
+            }
+        }
+        void updataInfo(string chapterName)
+        {
+            if (!isPathValid) { return; }
+            string[] cn = chapterName.Split('\n');
+            int i = 0;
+            foreach (var item in info.Chapters)
+            {
+                item.Name = cn[i++];
+                if (i == cn.Length) { break; }
+            }
+        }
+        void updataInfo(decimal coefficient)
+        {
+            if (!isPathValid) { return; }
+            foreach (var item in info.Chapters)
+            {
+                item.Time = convertMethod.pts2Time((int)((decimal)item.Time.TotalSeconds * coefficient * 45000M));
+            }
+        }
+
+        int convertFR2Index(double frame)
+        {
+            int i = 0;
+            foreach (var item in FrameRate)
+            {
+                if (Math.Abs(frame-(double)item) < 1e-5) { return i; }
+                else { ++i; }
+            }
+            return 0;
+        }
+
+        void updataGridView(int fpsIndex = 0)
+        {
+            if (!isPathValid || info == null) { return; }
+
+            switch (info.SourceType)
+            {
+                case "DVD":
+                    getFramInfo(convertFR2Index(info.FramesPerSecond));
+                    comboBox1.Enabled = false;
+                    break;
+                case "MPLS":
+                    int _index = RawData.chapterClips[mplsFileSeletIndex].fps;
+                    getFramInfo(_index);
+                    comboBox1.Enabled = false;
+                    break;
+                default:
+                    getFramInfo(fpsIndex);
+                    info.FramesPerSecond = (double)FrameRate[comboBox1.SelectedIndex];
+                    comboBox1.Enabled = true;
+                    break;
+            }
+
+            bool ClearOrNot = info.Chapters.Count != dataGridView1.Rows.Count;
+            if (ClearOrNot)
+            {
+                dataGridView1.Rows.Clear();
+            }
+
+            for (int i = 0; i < info.Chapters.Count; i++)
+            {   
+                if (ClearOrNot) { dataGridView1.Rows.Add(); }
+                dataGridView1.Rows[i].DefaultCellStyle.BackColor = ((i % 2 == 0) ? Color.FromArgb(0x92,0xaa,0xf3) : Color.FromArgb(0xf3, 0xf7, 0xf7));
+                addRow(info.Chapters[i], i);
+            }
+            progressBar1.Value = 66;
+        }
+
+
+        void addRow(Chapter item,int index)
+        {
+            dataGridView1.Rows[index].Tag = item;
+            dataGridView1.Rows[index].Cells[0].Value = item.Number.ToString("00");
+            dataGridView1.Rows[index].Cells[1].Value = convertMethod.time2string(item.Time + info.offset);
+            if (cbAutoGenName.Checked)
+                dataGridView1.Rows[index].Cells[2].Value = "Chapter " + (index + 1).ToString("00");
+            else
+                dataGridView1.Rows[index].Cells[2].Value = item.Name;
+            dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
         }
 
         /// FPS Cal Part /////////////////////
-
-        void FPS_Transfer()
-        {
-            if (!isPathValid || !mplsValid) { return; }
-            if(fps == 0) { MessageBox.Show("请选择帧率！"); return; }
-            
-            //int totalLine = textBox1.GetLineFromCharIndex(textBox1.Text.Length);
-            textBox2.Clear();
-            string buffer1 = string.Empty;
-            int i;
-            buffer1 = GetFirstLine(totalLine, out i);
-            for (; i < totalLine && buffer1 != string.Empty; i += 2)
-            {
-                buffer1 = textBox1.Lines[i];
-                WriteToTextBox(buffer1);
-            }
-        }
-
         decimal costumeAccuracy = 0.15M;
-
-        void getFramAndPrintFram(TimeSpan input,out decimal Frams,out decimal answer)
+        void getFramInfo(int index = 0)
         {
-            Frams = ((decimal)input.TotalMilliseconds * fps / 1000M);
-            answer = cbRound.Checked ? Math.Round(Frams, MidpointRounding.AwayFromZero) : Frams;
-        }
-
-        void WriteToTextBox(string line)                     //framCal output
-        {
-            if (string.IsNullOrEmpty(line)) { return; }
-            if (!RLineOne.IsMatch(line))
+            if (index == 0)
             {
-                Tips.Text = SwhatsThis1;
-                CTLogger.Log("ERROR: " + line + " <-该行与时间行格式不匹配");
-                return;
+                index = getAUTOFPS();
             }
-            TimeSpan _current = convertMethod.string2Time(RTimeFormat.Match(line).ToString());
-            decimal Frams, answer;
-            getFramAndPrintFram(_current, out Frams, out answer);
-            string  buffer = answer.ToString();
-            bool      accu = (Math.Abs(Frams - answer) < costumeAccuracy);
-            buffer        += (accu ? " K" : " *");
-            textBox2.Text += buffer + NewLine;
-        }
+            else
+            {
+                comboBox1.SelectedIndex = index - 1;
+            }
+            //index = (index == 0)? getAUTOFPS(): index;
 
-        void getAccuracy(string line, ref int AccuratePiont, ref int InAccuratePiont)//framCal
+            foreach (var item in info.Chapters)
+            {
+                TimeSpan _current = item.Time;
+                decimal Frams = ((decimal)_current.TotalMilliseconds * FrameRate[index] / 1000M);
+                decimal answer = cbRound.Checked ? Math.Round(Frams, MidpointRounding.AwayFromZero) : Frams;
+                string buffer = cbRound.Checked? answer.ToString():Frams.ToString();
+                bool accu = (Math.Abs(Frams - answer) < costumeAccuracy);
+                buffer += (accu ? " K" : " *");
+                item.FramsInfo = buffer;
+            }
+        }
+        int getAUTOFPS()
         {
-            if (string.IsNullOrEmpty(line) || !RLineOne.IsMatch(line)) { return; }
-            TimeSpan _current = convertMethod.string2Time(RTimeFormat.Match(line).ToString());
-            decimal Frams, answer;
-            getFramAndPrintFram(_current, out Frams, out answer);
+            decimal FPStemp = FrameRate[1];
+            //cbRound.CheckState = CheckState.Checked;
+            int currentMaxOne = 0; int AUTOFPS_code = 1;
+            CTLogger.Log("|+自动帧率识别开始" + "，允许误差为：" + costumeAccuracy.ToString());
+            for (int j = 1; j < 7; ++j)
+            {
+                int AccuratePiont = 0;
+                int InAccuratePiont = 0;
+                FPStemp = FrameRate[j];
+
+                foreach (var item in info.Chapters)
+                {
+                    getAccuracy(item.Time, ref AccuratePiont, ref InAccuratePiont, j);
+                }
+                if (currentMaxOne < AccuratePiont)
+                {
+                    AUTOFPS_code = j;
+                    currentMaxOne = AccuratePiont;
+                }
+                CTLogger.Log(" |fps=" + FrameRate[j].ToString("00.000") + "时，精确点：" + AccuratePiont.ToString("00") + "个，非精确点：" + InAccuratePiont.ToString("00") + "个");
+            }
+            
+            comboBox1.SelectedIndex = AUTOFPS_code - 1;
+            CTLogger.Log(" |自动识别结果为" + FrameRate[AUTOFPS_code].ToString("00.0000") + " fps");
+            return AUTOFPS_code;
+        }
+        void getAccuracy(TimeSpan time, ref int AccuratePiont, ref int InAccuratePiont,int index)//framCal
+        {
+            decimal Frams = ((decimal)time.TotalMilliseconds * FrameRate[index] / 1000M);
+            decimal answer = cbRound.Checked ? Math.Round(Frams, MidpointRounding.AwayFromZero) : Frams;
             if (Math.Abs(Frams - answer) < costumeAccuracy)
                  { ++AccuratePiont;   }
             else { ++InAccuratePiont; }
         }
 
-        decimal fps = 0M;
-        
-        void comboBox1_SelectedIndexChanged(object sender, EventArgs e) //设置fps
+
+        private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            if (!cbFramCal.Checked) { return; }
-            fps = FrameRate[comboBox1.SelectedIndex + 1];//the first number in framerate is 0
-            Tips.Text = fps.ToString("00.0000") + " fps";
-            FPS_Transfer(); 
-        }
-
-        void cbRound_CheckedChanged(object sender, EventArgs e)       //四舍五入
-        {
-            if (isPathValid)// && !AUTOMODE)
-            {
-                FPS_Transfer();
-            }
-        }
-
-        //private bool AUTOMODE = false;
-        void btnAUTO_Click(object sender, EventArgs e)                  //AUTO
-        {
-            if (!isPathValid) { return; }
-
-            
-            fps = FrameRate[1];
-            cbRound.CheckState = CheckState.Checked;
-            int currentMaxOne = 0; int AUTOFPS_code = 1;
-            CTLogger.Log("|+自动帧率识别开始"+"，允许误差为："+ costumeAccuracy.ToString());
-            for (int j = 1; j < 7; ++j)
-            {
-                int AccuratePiont   = 0;
-                int InAccuratePiont = 0;
-                fps = FrameRate[j];
-
-                //int totalLine = textBox1.GetLineFromCharIndex(textBox1.Text.Length);
-                //textBox2.Clear();
-                string buffer1 = string.Empty;//, buffer2;
-                for (int i = 0; i < totalLine ; i += 2)
-                {
-                    getAccuracy(textBox1.Lines[i], ref AccuratePiont, ref InAccuratePiont);
-                }
-                if(currentMaxOne < AccuratePiont)
-                {
-                    AUTOFPS_code = j;
-                    currentMaxOne = AccuratePiont;
-                }
-                CTLogger.Log(" |fps=" + FrameRate[j].ToString("00.000") + "时，精确点："+AccuratePiont.ToString("00")+"个，非精确点："+InAccuratePiont.ToString("00")+"个");
-            }
-            
-            fps = FrameRate[AUTOFPS_code];
-            FPS_Transfer();
-            comboBox1.SelectedIndex = AUTOFPS_code - 1;
-            Tips.Text = "大概是 " + fps.ToString("00.0000") + " fps 吧";
-            CTLogger.Log(" |自动识别结果为" + fps.ToString("00.0000") + " fps");
-            //AUTOMODE = false;
-        }
-
-        void qpfAbout() //对mpls中fps读取
-        {
-            if (isPathValid && paths[0].ToLowerInvariant().EndsWith(".mpls") && mplsValid)
-            {
-                fps = FrameRate[RawData.chapterClips[comboBox2.SelectedIndex].fps];
-                
-                btnSave.Enabled = btnSave.Visible = true;
-                btnAUTO.Visible = btnAUTO.Enabled = false;
-                comboBox1.Visible = false;
-                cbRound.CheckState = CheckState.Checked;
-                Tips.Text = SFPSShow3 + fps.ToString("00.0000") + SFPSShow4;
-                CTLogger.Log("|成功读"+RawData.chapterClips[comboBox2.SelectedIndex].Name +"的帧率：" + fps.ToString("00.0000") + " fps");
-                //FPS_Transfer();
-            }
-            else
-            {
-                //checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
-                btnSave.Enabled = btnSave.Visible = false;
-                btnAUTO.Visible = btnAUTO.Enabled = true;
-                comboBox1.Visible = true;
-            }
-            //FPS_Transfer();
+            updataGridView(comboBox1.SelectedIndex + 1);
         }
 
 
-        int TSD
-        {
-            set
-            {
-                TSD_0unit.Checked = false;
-                TSD_1unit.Checked = false;
-                TSD_2unit.Checked = false;
-                TSD_3unit.Checked = false;
-                TSD_4unit.Checked = false;
-                TSD_5unit.Checked = false;
-                TSD_6unit.Checked = false;
-                switch (value)
-                {
-                    case 0:
-                        costumeAccuracy = 0.01M;
-                        TSD_0unit.Checked = true;
-                        break;
-                    case 1:
-                        costumeAccuracy = 0.05M;
-                        TSD_1unit.Checked = true;
-                        break;
-                    case 2:
-                        costumeAccuracy = 0.10M;
-                        TSD_2unit.Checked = true;
-                        break;
-                    case 3:
-                        costumeAccuracy = 0.15M;
-                        TSD_3unit.Checked = true;
-                        break;
-                    case 4:
-                        costumeAccuracy = 0.20M;
-                        TSD_4unit.Checked = true;
-                        break;
-                    case 5:
-                        costumeAccuracy = 0.25M;
-                        TSD_5unit.Checked = true;
-                        break;
-                    case 6:
-                        costumeAccuracy = 0.30M;
-                        TSD_6unit.Checked = true;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
+        /// FPS Cal Part /////////////////////
 
+        decimal[] Accuracy = { 0.01M, 0.05M, 0.10M, 0.15M, 0.20M, 0.25M, 0.30M };
         private void Accuracy_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            switch (e.ClickedItem.ToString())
+            foreach (var item in toolStripMenuItem1.DropDownItems)
             {
-                case "0.01": TSD = 0; break;
-                case "0.05": TSD = 1; break;
-                case "0.10": TSD = 2; break;
-                case "0.15": TSD = 3; break;
-                case "0.20": TSD = 4; break;
-                case "0.25": TSD = 5; break;
-                case "0.30": TSD = 6; break;
+                if (!Equals(item,toolStripSeparator1))
+                {
+                    (item as ToolStripMenuItem).Checked = false;
+                }
             }
+            (e.ClickedItem as ToolStripMenuItem).Checked = true;
+            costumeAccuracy = Accuracy[int.Parse(e.ClickedItem.Tag.ToString())];
         }
 
 
-        bool fpsMode
+        void cbShift_CheckedChanged(object sender, EventArgs e)
         {
-            set
+            if (!isPathValid) { return; }
+            if (cbShift.Checked)
             {
-                btnSave.Visible = btnSave.Enabled = !value;
-                cbMore.Visible = !value;
-
-                cbReserveName.Visible = !value;
-                progressBar1.Visible = !value;
-
-                comboBox1.Visible = value;
-                cbRound.Visible = value;
-                btnAUTO.Visible = btnAUTO.Enabled = value;
-            }
-        }
-
-
-        void cbFramCal_CheckedChanged(object sender, EventArgs e)       //MODE CHANGE
-        {
-            cbMore.CheckState = CheckState.Unchecked;//收起more
-            Tips.Text = string.Empty;
-            textBox2.Clear();
-            fpsMode = cbFramCal.Checked;
-            if (cbFramCal.Checked)
-            {
-                qpfAbout();
+                info.offset = getOffsetFromMaskedTextBox();
             }
             else
             {
-                cbRound.CheckState = CheckState.Unchecked;//帧数取整
-                if (mplsValid) { Transfer(); }//恢复章节模式
+                info.offset = TimeSpan.Zero;
             }
-            
-        }
-        
-        void cbShift_CheckedChanged(object sender, EventArgs e)
-        {
-            if(cbShift.Checked)
-            {
-                _ShiftTime = SpecialCalForTimeShift();
-            }
-            Transfer();
+            updataGridView();
         }
 
         void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e) { Tips.Text = SinvalidTime; }
 
-        TimeSpan SpecialCalForTimeShift()
+        TimeSpan getOffsetFromMaskedTextBox()
         {
-            if (RTimeFormat.IsMatch(maskedTextBox1.Text))
+            if (convertMethod.RTimeFormat.IsMatch(maskedTextBox1.Text))
             {
                 return convertMethod.string2Time(maskedTextBox1.Text);
             }
@@ -800,19 +781,22 @@ namespace ChapterTool
             }
         }
 
-        TimeSpan _ShiftTime;
+        //TimeSpan _ShiftTime;
 
 
         bool moreModeShow
         {
             set
             {
-                cbMul1k1.Visible = value;
+                label2.Visible = value;
+                savingType.Visible = value;
+                cbAutoGenName.Visible = value;
                 label3.Visible = value;
                 numericUpDown1.Visible = value;
 
-                cbShift.Visible = value;
+                cbMul1k1.Visible = value;
                 cbChapterName.Visible = value;
+                cbShift.Visible = value;
                 maskedTextBox1.Visible = value;
                 btnLog.Visible = value;
             }
@@ -848,89 +832,46 @@ namespace ChapterTool
             cbMore.Text = cbMore.Checked ? "∧" : "∨";
         }
 
-        void contentUpdate(object sender, EventArgs e) { Transfer(); }
-
-
-        string ChapterPath;
-        bool UseChapter = false;
-
-        StreamReader ChapterStreamReader;
-
-       void loadChapterName()
+       string loadChapterName()
         {
             openFileDialog1.Filter = SnameFitter;
-
+            string temp = string.Empty;
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                ChapterPath = openFileDialog1.FileName;
+                string ChapterPath = openFileDialog1.FileName;
                 CTLogger.Log("+载入自定义章节名模板："+ ChapterPath);
-                UseChapter  = true;
-                getChapterNameStream();
+                byte[] buffer = File.ReadAllBytes(ChapterPath);
+                temp = GetUTF8String(buffer);
             }
             else
             {
                 cbChapterName.CheckState = CheckState.Unchecked;
             }
+            return temp;
         }
 
-       void getChapterNameStream()                                     //载入章节名文件
-        {
-            try
-            {
-                //ChapterFileStream = new FileStream(ChapterPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                ChapterStreamReader = new StreamReader(ChapterPath ,Encoding.Default);
-            }
-            catch(Exception ex)
-            {
-                Tips.Text = "文件被占用";
-                CTLogger.Log("|载入自定义章节名模板失败：" + ex.Message);
-            }
-        }
+        string chapterNameTemplate;
 
-       void cbChapterName_CheckedChanged(object sender, EventArgs e)       //使用客制化章节名
+       void cbChapterName_CheckedChanged(object sender, EventArgs e)       //载入客章节模板或清除
         {
             if(cbChapterName.Checked)
             {
-                loadChapterName();
+                chapterNameTemplate = loadChapterName();
+                updataInfo(chapterNameTemplate);
             }
             else
             {
-                UseChapter = false;
+                chapterNameTemplate = string.Empty;
             }
-            Transfer();
+            updataGridView();
         }         
 
         /////////////////XML support
-        bool xmlValid = true;
         void loadXML()
         {
-            textBox2.Clear();
-            XmlDocument doc       = new XmlDocument();
+            XmlDocument doc = new XmlDocument();
             doc.Load(paths[0]);
-            XmlElement  root      = doc.DocumentElement;
-            XmlNodeList TimeNodes = root.SelectNodes("/Chapters/EditionEntry/ChapterAtom/ChapterTimeStart");
-            XmlNodeList NameNodes = root.SelectNodes("/Chapters/EditionEntry/ChapterAtom/ChapterDisplay/ChapterString");
-            if (TimeNodes.Count * NameNodes.Count == 0)
-            {
-                xmlValid = false;
-                Tips.Text = SwhatsThis1;
-                CTLogger.Log("|无效的XML章节文件");
-                return;
-            }
-            else { xmlValid = true; }
-            int i = 1, j = 0;
-            string text = string.Empty;
-            foreach (XmlNode timenode in TimeNodes)
-            {
-                text += "CHAPTER" + i.ToString("00") + "=" + RTimeFormat.Match(timenode.InnerText) + NewLine;
-                text += "CHAPTER" + i++.ToString("00") + "NAME=" + NameNodes[j++].InnerText + NewLine;
-            }
-            CTLogger.Log("tb1在loadXML处更新");
-            textBox1.Text = text;
-            if (xmlValid)
-            {
-                CTLogger.Log("|成功载入XML格式章节文件，共" + totalLine.ToString() + "行");
-            }
+            geneRateCI(doc);
         }
 
         /////////////////mpls support
@@ -949,7 +890,7 @@ namespace ChapterTool
             }
         }
 
-        bool loadMPLS()
+        void loadMPLS()
         {
             RawData = new mplsData(paths[0]);
             CTLogger.Log("+成功载入MPLS格式章节文件");
@@ -966,120 +907,39 @@ namespace ChapterTool
                     CTLogger.Log("  |+包含 " + item.timeStamp.Count.ToString() + " 个时间戳");
                 }
             }
-            bool isValide = mpls2box();
+            //bool isValide = mpls2box();
             comboBox2.SelectedIndex = mplsFileSeletIndex;
-            return isValide;
+            geneRateCI(mplsFileSeletIndex);
         }
 
-        private bool mplsEnable
-        {
-            set
-            {
-                mplsValid = value;
-                btnSave.Enabled = value;
-                cbReserveName.Enabled = value;
-                cbFramCal.Enabled = value;
-                cbMore.Enabled = value;
-            }
-        }
-
-        bool mpls2box()
-        {
-            textBox1.Clear();
-            textBox2.Clear();
-
-            List<int> current;
-            if (combineToolStripMenuItem.Checked)
-            {
-                current = RawData.entireTimeStamp;
-            }
-            else
-            {
-                current = RawData.chapterClips[mplsFileSeletIndex].timeStamp;
-            }
-            
-
-            if (current.Count < 2)
-            {
-                mplsEnable = false;
-                Tips.Text = Swhatsthis2;
-                progressBar1.Value = 33;
-                cbMore.CheckState = CheckState.Unchecked;
-                return false;
-            }
-            mplsEnable = true;
-            
-
-            int offset = current[0];
-            
-            int default_order = 1;
-            string text = string.Empty;
-            foreach (int item in current)
-            {
-                var sDO = default_order.ToString("00");
-                text += "CHAPTER" + sDO + "=" + convertMethod.time2string(item - offset) + NewLine;
-                text += "CHAPTER" + sDO + "NAME=Chapter " + sDO + NewLine;
-                ++default_order;
-            }
-            textBox1.Text = text;
-            return true;
-        }
 
         void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            mpls2box();
-            switch (cbFramCal.Checked)
+            if (RawData != null)
             {
-                case true:
-                    switch (mplsValid)
-                    {
-                        case true:
-                            fps = FrameRate[RawData.chapterClips[comboBox2.SelectedIndex].fps];
-                            FPS_Transfer();
-                            Tips.Text = SFPSShow3 + fps.ToString("00.0000") + SFPSShow4;
-                            break;
-                        case false:
-                            cbFramCal.CheckState = CheckState.Unchecked; break;
-                    } break;
-                case false:
-                    Transfer(); break;
+                geneRateCI(comboBox2.SelectedIndex);
             }
+            else
+            {
+                geneRateCI(comboBox2.SelectedIndex,true);
+            }
+            
+            updataGridView();
         }
 
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
             combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
-            mpls2box();
-            switch (cbFramCal.Checked)
-            {
-                case true:  FPS_Transfer(); break;
-                case false: Transfer();     break;
-            }
-            SetScroll();
+            geneRateCI(comboBox2.SelectedIndex);
+            updataGridView();
         }
 
         //////////matroska support
-        bool loadMatroska()
+        void loadMatroska()
         {
-            //if (!File.Exists(@"C:\Program Files\MKVToolNix\mkvextract.exe"))
-            //{
-            //    Tips.Text = "请正确设置MKVToolNix路径";
-            //    return false;
-            //}
             matroskaInfo matroska = new matroskaInfo(paths[0]);
-
-            textBox2.Clear();
-            if (string.IsNullOrEmpty(matroska.result))
-            {
-                CTLogger.Log("|MKV中无章节文件");
-                Tips.Text = Swhatsthis2;
-                return false;
-            }
-            CTLogger.Log("|成功载入MKV中的章节文件");
-            textBox1.Text = matroska.result;
-
-            return true;
+            info = matroska.result;
         }
 
         //color support
@@ -1104,11 +964,11 @@ namespace ChapterTool
             {
                 List<Color> temp = new List<Color>();
                 temp.Add(BackColor);
-                temp.Add(textBox1.BackColor);
+                temp.Add(dataGridView1.BackColor);
                 temp.Add(btnLoad.FlatAppearance.MouseOverBackColor);
                 temp.Add(btnLoad.FlatAppearance.MouseDownBackColor);
                 temp.Add(btnLoad.FlatAppearance.BorderColor);
-                temp.Add(textBox1.ForeColor);
+                temp.Add(this.ForeColor);
                 //registryStorage.Save(temp);
 
                 return temp;
@@ -1126,11 +986,11 @@ namespace ChapterTool
         {
             set
             {
-                textBox1.BackColor = textBox2.BackColor = value;
+                dataGridView1.BackgroundColor = value;
                 numericUpDown1.BackColor = maskedTextBox1.BackColor = value;
                 comboBox1.BackColor = comboBox2.BackColor = value;
+                savingType.BackColor = value;
             }
-            
         }
         public Color MouseOverColor
         {
@@ -1140,7 +1000,7 @@ namespace ChapterTool
                 btnSave.FlatAppearance.MouseOverBackColor = value;
                 btnTrans.FlatAppearance.MouseOverBackColor = value;
                 btnLog.FlatAppearance.MouseOverBackColor = value;
-                btnAUTO.FlatAppearance.MouseOverBackColor = value;
+                btnPreview.FlatAppearance.MouseOverBackColor = value;
                 cbMore.FlatAppearance.MouseOverBackColor = value;
             }
         }
@@ -1152,7 +1012,7 @@ namespace ChapterTool
                 btnSave.FlatAppearance.MouseDownBackColor = value;
                 btnTrans.FlatAppearance.MouseDownBackColor = value;
                 btnLog.FlatAppearance.MouseDownBackColor = value;
-                btnAUTO.FlatAppearance.MouseDownBackColor = value;
+                btnPreview.FlatAppearance.MouseDownBackColor = value;
                 cbMore.FlatAppearance.MouseDownBackColor = value;
             }
             
@@ -1165,7 +1025,7 @@ namespace ChapterTool
                 btnSave.FlatAppearance.BorderColor = value;
                 btnTrans.FlatAppearance.BorderColor = value;
                 btnLog.FlatAppearance.BorderColor = value;
-                btnAUTO.FlatAppearance.BorderColor = value;
+                btnPreview.FlatAppearance.BorderColor = value;
                 cbMore.FlatAppearance.BorderColor = value;
             }
         }
@@ -1174,13 +1034,13 @@ namespace ChapterTool
             set
             {
                 ForeColor = value;
-                textBox1.ForeColor = value;
-                textBox2.ForeColor = value;
                 numericUpDown1.ForeColor = value;
                 maskedTextBox1.ForeColor = value;
                 cbMore.ForeColor = value;
                 comboBox1.ForeColor = value;
                 comboBox2.ForeColor = value;
+                savingType.ForeColor = value;
+                dataGridView1.ForeColor = value;
             }
         }
 
@@ -1215,14 +1075,7 @@ namespace ChapterTool
                 }
             }
         }
-        private void textBox2_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (cbFramCal.Checked)
-            {
-                string lineNumber = "呐，知道吗？这是第" + (textBox2.GetLineFromCharIndex(textBox2.GetCharIndexFromPosition(e.Location)) + 1).ToString() + "个章节点哦";
-                toolTip1.Show(lineNumber, textBox2,2000);
-            }
-        }
+
         private void comboBox2_MouseEnter(object sender, EventArgs e)
         {
             if (comboBox2.Items.Count > 20)
@@ -1251,8 +1104,6 @@ namespace ChapterTool
                 return Environment.OSVersion.Version.Major;
             }
         }
-
-
         void FormMove(int forward,ref Point p)
         {
             switch (forward)
@@ -1264,7 +1115,6 @@ namespace ChapterTool
                 default:       break;
             }
         }
-
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             registryStorage.Save(Location.ToString(), @"Software\ChapterTool", "Location");
@@ -1284,9 +1134,9 @@ namespace ChapterTool
                 }
                 else
                 {
-                    while (this.Opacity > 0)
+                    while (Opacity > 0)
                     {
-                        this.Opacity -= 0.02;
+                        Opacity -= 0.02;
                         FormMove(forward2, ref origin);
                         System.Threading.Thread.Sleep(4);
                         Location = origin;
@@ -1305,13 +1155,89 @@ namespace ChapterTool
             _LogForm.Focus();
             _LogForm.Select();
         }
-
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            updataInfo((int)numericUpDown1.Value);
+            updataGridView();
+        }
+        private void cbMul1k1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (info != null && info.SourceType != "DVD")
+            {
+                if (cbMul1k1.Checked)
+                {
+                    updataInfo(1.001M);
+                }
+                else
+                {
+                    updataInfo(1 / 1.001M);
+                }
+                updataGridView();
+            }
+        }
+        private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            CTLogger.Log("+更名: " + info.Chapters[e.RowIndex].Name + " -> "+ dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString());
+            info.Chapters[e.RowIndex].Name = dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
+        }
+        private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            foreach (DataGridViewRow item in dataGridView1.SelectedRows)
+            {
+                info.Chapters.Remove((Chapter)item.Tag);
+                //dataGridView1.Rows.Remove(item);
+            }
+            updataInfo((int)numericUpDown1.Value);
+            if (info.Chapters.Count > 1)
+            {
+                TimeSpan ini = info.Chapters[0].Time;
+                updataInfo(ini);
+            }
+            //updataGridView();
+        }
         private void Form1_Move(object sender, EventArgs e)
         {
-            #if false
-                CTLogger.Log("移动窗体到" + Location.ToString());
-            #endif
+            if (_PreviewForm != null)   
+            {
+                _PreviewForm.Location = new Point(Location.X - 230, Location.Y);
+            }
         }
+
+        FormPreview _PreviewForm;
+        private void btnPreview_Click(object sender, EventArgs e)
+        {
+            if (!isPathValid) { return; }
+            if (_PreviewForm == null)
+            {
+                _PreviewForm = new FormPreview(info.getText(cbAutoGenName.Checked), Location);
+            }
+            _PreviewForm.UpdateText(info.getText(cbAutoGenName.Checked));
+            _PreviewForm.Show();
+            _PreviewForm.Focus();
+            _PreviewForm.Select();
+        }
+
+        private void cbAutoGenName_CheckedChanged(object sender, EventArgs e)
+        {
+            int index = 1;
+            if (cbAutoGenName.Checked)
+            {
+                foreach (var item in dataGridView1.Rows)
+                {
+                    (item as DataGridViewRow).Cells[2].Value = "Chapter " + (index++).ToString("00");
+                }
+            }
+            else
+            {
+                updataGridView();
+            }
+        }
+
+        private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            CTLogger.Log("+"+e.RowCount.ToString() + "行被删除");
+        }
+
 
     }
 }

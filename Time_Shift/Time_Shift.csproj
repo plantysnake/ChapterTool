@@ -73,6 +73,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\FormPreview.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormPreview.Designer.cs">
+      <DependentUpon>FormPreview.cs</DependentUpon>
+    </Compile>
     <Compile Include="Util\ChapterInfo.cs" />
     <Compile Include="Util\convertMethod.cs" />
     <Compile Include="Controls\cTextBox.cs">
@@ -134,6 +140,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Form3.resx">
       <DependentUpon>Form3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormLog.resx">
+      <DependentUpon>FormLog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPreview.resx">
+      <DependentUpon>FormPreview.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>

@@ -8,7 +8,10 @@ namespace ChapterTool.Util
 {
     public class Chapter
     {
-        public Chapter() { }
+        public Chapter()
+        {
+            FramsInfo = string.Empty;
+        }
 
         /// <summary>Chapter Number</summary>
         public int Number { get; set; }
@@ -16,9 +19,19 @@ namespace ChapterTool.Util
         public TimeSpan Time { get; set; }
         /// <summary>Chapter Name</summary>
         public string Name { get; set; }
+        public string FramsInfo { get; set; }
+        public override string ToString()
+        {
+            return string.Format("{0} - {1}", Name, convertMethod.time2string(Time));
+        }
     }
     public class ChapterInfo
     {
+        public ChapterInfo()
+        {
+            Chapters = new List<Chapter>();
+            offset = TimeSpan.Zero;
+        }
         public string Title { get; set; }
         public string LangCode { get; set; }
         public string SourceName { get; set; }
@@ -28,7 +41,7 @@ namespace ChapterTool.Util
         public double FramesPerSecond { get; set; }
         public TimeSpan Duration { get; set; }
         public List<Chapter> Chapters { get; set; }
-
+        public TimeSpan offset { get; set; }
         public override string ToString()
         {
             if (Chapters.Count != 1)
@@ -51,29 +64,52 @@ namespace ChapterTool.Util
             FramesPerSecond = fps;
         }
 
-        public void SaveText(string filename)
+        public string getText(bool DONOTUSEName)
         {
-            List<string> lines = new List<string>();
-            int i = 0;
+            string lines = string.Empty;
+            int i = 1;
             foreach (Chapter c in Chapters)
             {
-                i++;
-                if (c.Time.ToString().Length == 8)
-                    lines.Add("CHAPTER" + i.ToString("00") + "=" + c.Time.ToString() + ".000"); // better formating
-                else if (c.Time.ToString().Length > 12)
-                    lines.Add("CHAPTER" + i.ToString("00") + "=" + c.Time.ToString().Substring(0, 12)); // remove some duration length too long
+                lines += ("CHAPTER" + c.Number.ToString("00") + "=" + convertMethod.time2string(c.Time) + Environment.NewLine);
+                lines += ("CHAPTER" + c.Number.ToString("00") + "NAME=");
+                if (DONOTUSEName)
+                {
+                    lines += "Chapter " + i.ToString("00") + Environment.NewLine;
+                }
                 else
-                    lines.Add("CHAPTER" + i.ToString("00") + "=" + c.Time.ToString());
-                lines.Add("CHAPTER" + i.ToString("00") + "NAME=" + c.Name);
+                {
+                    lines += c.Name + Environment.NewLine;
+                }
+                ++i;
             }
-            File.WriteAllLines(filename, lines.ToArray());
+            return string.Concat(lines);
+        }
+
+        public void SaveText(string filename,bool DONOTUSEName)
+        {
+            List<string> lines = new List<string>();
+            int i = 1;
+            foreach (Chapter c in Chapters) 
+            {
+                lines.Add("CHAPTER" + i.ToString("00") + "=" + convertMethod.time2string(c.Time));
+                if (DONOTUSEName)
+                {
+                    lines.Add("Chapter " + i.ToString("00"));
+                }
+                else
+                {
+                    lines.Add("CHAPTER" + i.ToString("00") + "NAME=" + c.Name);
+                }
+                ++i;
+            }
+            File.WriteAllLines(filename, lines.ToArray(),Encoding.UTF8);
         }
 
         public void SaveQpfile(string filename)
         {
             List<string> lines = new List<string>();
             foreach (Chapter c in Chapters)
-                lines.Add(string.Format("{0} K", (long)Math.Round(c.Time.TotalSeconds * FramesPerSecond)));
+                lines.Add(c.FramsInfo.ToString());
             File.WriteAllLines(filename, lines.ToArray());
         }
 
@@ -113,19 +149,16 @@ namespace ChapterTool.Util
             xmlchap.WriteStartElement("EditionEntry");
             xmlchap.WriteElementString("EditionFlagHidden", "0");
             xmlchap.WriteElementString("EditionFlagDefault", "0");
-            xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, Int32.MaxValue)));
+            xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
             foreach (Chapter c in Chapters)
             {
                 xmlchap.WriteStartElement("ChapterAtom");
                 xmlchap.WriteStartElement("ChapterDisplay");
                 xmlchap.WriteElementString("ChapterString", c.Name);
-                xmlchap.WriteElementString("ChapterLanguage", String.IsNullOrEmpty(LangCode) ? "und" : LangCode);
+                xmlchap.WriteElementString("ChapterLanguage", string.IsNullOrEmpty(LangCode) ? "eng" : LangCode);
                 xmlchap.WriteEndElement();
-                xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, Int32.MaxValue)));
-                if (c.Time.ToString().Length == 8)
-                    xmlchap.WriteElementString("ChapterTimeStart", c.Time.ToString() + ".0000000");
-                else
-                    xmlchap.WriteElementString("ChapterTimeStart", c.Time.ToString());
+                xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
+                xmlchap.WriteElementString("ChapterTimeStart", convertMethod.time2string(c.Time) + "0000");
                 xmlchap.WriteElementString("ChapterFlagHidden", "0");
                 xmlchap.WriteElementString("ChapterFlagEnabled", "1");
                 xmlchap.WriteEndElement();
