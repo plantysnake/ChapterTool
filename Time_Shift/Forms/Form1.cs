@@ -106,6 +106,7 @@ namespace ChapterTool
             moreModeShow = false;
             Size = new Size(Size.Width, Size.Height - 80);
             savingType.SelectedIndex = 0;
+            btnTrans.Text = ((Environment.TickCount%2==0) ? "↺" : "↻");
         }
 
         ChapterInfo info;
@@ -129,8 +130,9 @@ namespace ChapterTool
             }
         }
         string SnameFitter = "文本文件(*.txt)|*.txt|所有文件(*.*)|*.*";
+        string Ssuccess = "载入完成 (≧▽≦)";
         //string SwhatsThis1 = "请别喂一些奇怪的东西 ( つ⁰﹏⁰)つ";
-        //string Swhatsthis2 = "当前片段并没有章节 (¬_¬)";
+        string Swhatsthis2 = "当前片段并没有章节 (¬_¬)";
         string SinvalidTime = "位移时间不科学的样子";
 
 
@@ -282,15 +284,26 @@ namespace ChapterTool
                 }
                 ++i;
             }
+            if (comboBox2.SelectedIndex == -1)
+            {
+                Tips.Text = Swhatsthis2;
+            }
+            else
+            {
+                Tips.Text = Ssuccess;
+            }
         }
 
         void IFOmul1k1()
         {
             foreach (var item in Rawifo)
             {
-                foreach (var item2 in item.Chapters)
+                if (item!= null)
                 {
-                    item2.Time = convertMethod.pts2Time((int)((decimal)item2.Time.TotalSeconds * 1.001M * 45000M));
+                    foreach (var item2 in item.Chapters)
+                    {
+                        item2.Time = convertMethod.pts2Time((int)((decimal)item2.Time.TotalSeconds * 1.001M * 45000M));
+                    }
                 }
             }
         }
@@ -316,7 +329,7 @@ namespace ChapterTool
             byte[] buffer = File.ReadAllBytes(paths[0]);
             geneRateCI(GetUTF8String(buffer));
             progressBar1.Value = 33;
-            Tips.Text = "载入完成 (≧▽≦)";
+            Tips.Text = Ssuccess;
         }
 
         void btnLoad_Click(object sender, EventArgs e)                  //载入键
@@ -397,7 +410,8 @@ namespace ChapterTool
                     info.SaveQpfile(savePath);
                     break;
             }
-
+            progressBar1.Value = 100;
+            Tips.Text = "保存成功";
             //MessageBox.Show(savePath);
         }
         void refresh_Click(object sender, EventArgs e) { updataGridView(); }
@@ -472,7 +486,10 @@ namespace ChapterTool
                     info.Chapters.Add(WriteToChapterInfo(buffer1, buffer2, order, iniTime));
                 }
             }
-            info.Duration = info.Chapters[info.Chapters.Count - 1].Time;
+            if (info.Chapters.Count>1)
+            {
+                info.Duration = info.Chapters[info.Chapters.Count - 1].Time;
+            }
         }
         void geneRateCI(int index)
         {
@@ -493,7 +510,15 @@ namespace ChapterTool
                 current = mplsClip.timeStamp;
                 info.Title = RawData.chapterClips[index].Name;
             }
-            if (current.Count < 2) { return; }
+            if (current.Count < 2)
+            {
+                Tips.Text = Swhatsthis2;
+                return;
+            }
+            else
+            {
+                Tips.Text = Ssuccess;
+            }
             int offset = current[0];
 
             int default_order = 1;
@@ -535,6 +560,11 @@ namespace ChapterTool
                 info = Rawifo[index];
                 //updataInfo(1.001M);
                 updataGridView();
+                //Tips.Text = "载入完成 (≧▽≦)";
+            }
+            else
+            {
+                Tips.Text = Swhatsthis2;
             }
         }
 
@@ -594,54 +624,47 @@ namespace ChapterTool
             {
                 case "DVD":
                     getFramInfo(convertFR2Index(info.FramesPerSecond));
-                    //MessageBox.Show(convertFR2Index(info.FramesPerSecond).ToString());
+                    comboBox1.Enabled = false;
                     break;
                 case "MPLS":
-                    int index = RawData.chapterClips[mplsFileSeletIndex].fps;
-                    getFramInfo(index);
+                    int _index = RawData.chapterClips[mplsFileSeletIndex].fps;
+                    getFramInfo(_index);
+                    comboBox1.Enabled = false;
                     break;
                 default:
                     getFramInfo(fpsIndex);
                     info.FramesPerSecond = (double)FrameRate[comboBox1.SelectedIndex];
+                    comboBox1.Enabled = true;
                     break;
             }
 
-            if (info.Chapters.Count == dataGridView1.Rows.Count)    
-            {
-                int index = 0;
-                foreach (var item in info.Chapters)
-                {
-                    dataGridView1.Rows[index].Tag = item;
-                    dataGridView1.Rows[index].Cells[0].Value = item.Number.ToString("00");
-                    dataGridView1.Rows[index].Cells[1].Value = convertMethod.time2string(item.Time + info.offset);
-                    if (cbAutoGenName.Checked)
-                        dataGridView1.Rows[index].Cells[2].Value = "Chapter " + (index + 1).ToString("00");
-                    else
-                        dataGridView1.Rows[index].Cells[2].Value = item.Name;
-                    dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
-                    //dataGridView1.Rows[index].Cells[0].Style.BackColor = Color.FromArgb(0xff, 0xe6, 0xe6, 0xe6);
-                    ++index;
-                }
-            }
-            else
+            bool ClearOrNot = info.Chapters.Count != dataGridView1.Rows.Count;
+            if (ClearOrNot)
             {
                 dataGridView1.Rows.Clear();
-                foreach (var item in info.Chapters)
-                {
-                    int index = this.dataGridView1.Rows.Add();
-                    dataGridView1.Rows[index].Tag = item;
-                    dataGridView1.Rows[index].Cells[0].Value = item.Number.ToString("00");
-                    dataGridView1.Rows[index].Cells[1].Value = convertMethod.time2string(item.Time + info.offset);
-                    if (cbAutoGenName.Checked)
-                        dataGridView1.Rows[index].Cells[2].Value = "Chapter " + (index + 1).ToString("00");
-                    else
-                        dataGridView1.Rows[index].Cells[2].Value = item.Name;
-                    dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
-                    //dataGridView1.Rows[index].Cells[0].Style.BackColor = Color.FromArgb(0xff, 0xe6, 0xe6, 0xe6);
-                }
             }
+
+            for (int i = 0; i < info.Chapters.Count; i++)
+            {   
+                if (ClearOrNot) { dataGridView1.Rows.Add(); }
+                dataGridView1.Rows[i].DefaultCellStyle.BackColor = ((i % 2 == 0) ? Color.FromArgb(0x92,0xaa,0xf3) : Color.FromArgb(0xf3, 0xf7, 0xf7));
+                addRow(info.Chapters[i], i);
+            }
+            progressBar1.Value = 66;
         }
 
+
+        void addRow(Chapter item,int index)
+        {
+            dataGridView1.Rows[index].Tag = item;
+            dataGridView1.Rows[index].Cells[0].Value = item.Number.ToString("00");
+            dataGridView1.Rows[index].Cells[1].Value = convertMethod.time2string(item.Time + info.offset);
+            if (cbAutoGenName.Checked)
+                dataGridView1.Rows[index].Cells[2].Value = "Chapter " + (index + 1).ToString("00");
+            else
+                dataGridView1.Rows[index].Cells[2].Value = item.Name;
+            dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
+        }
 
         /// FPS Cal Part /////////////////////
         decimal costumeAccuracy = 0.15M;
@@ -1180,20 +1203,6 @@ namespace ChapterTool
             }
         }
 
-        private void dataGridView1_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
-        {
-            for (int i = 0; i < dataGridView1.Rows.Count; i++)
-            {
-                if (i % 2 == 0)
-                {
-                    dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.Gainsboro; ;
-                }
-                else
-                {
-                    dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.PowderBlue;
-                }
-            }
-        }
         FormPreview _PreviewForm;
         private void btnPreview_Click(object sender, EventArgs e)
         {

@@ -64,13 +64,13 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.btnLog = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.savingType = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.btnPreview = new System.Windows.Forms.Button();
             this.cOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cTimeCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cChapterName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cFrams = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.savingType = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.btnPreview = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
@@ -469,44 +469,8 @@
             this.dataGridView1.TabIndex = 25;
             this.dataGridView1.TabStop = false;
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
-            this.dataGridView1.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridView1_DataBindingComplete);
             this.dataGridView1.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView1_RowsRemoved);
             this.dataGridView1.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataGridView1_UserDeletingRow);
-            // 
-            // cOrder
-            // 
-            this.cOrder.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.cOrder.Frozen = true;
-            this.cOrder.HeaderText = "#";
-            this.cOrder.Name = "cOrder";
-            this.cOrder.ReadOnly = true;
-            this.cOrder.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cOrder.Width = 22;
-            // 
-            // cTimeCode
-            // 
-            this.cTimeCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.cTimeCode.HeaderText = "时间点";
-            this.cTimeCode.Name = "cTimeCode";
-            this.cTimeCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cTimeCode.Width = 50;
-            // 
-            // cChapterName
-            // 
-            this.cChapterName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.cChapterName.HeaderText = "章节名";
-            this.cChapterName.Name = "cChapterName";
-            this.cChapterName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cChapterName.Width = 50;
-            // 
-            // cFrams
-            // 
-            this.cFrams.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.cFrams.HeaderText = "帧数";
-            this.cFrams.Name = "cFrams";
-            this.cFrams.ReadOnly = true;
-            this.cFrams.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cFrams.Width = 38;
             // 
             // savingType
             // 
@@ -548,6 +512,41 @@
             this.btnPreview.Text = "P";
             this.btnPreview.UseVisualStyleBackColor = true;
             this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
+            // 
+            // cOrder
+            // 
+            this.cOrder.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.cOrder.Frozen = true;
+            this.cOrder.HeaderText = "#";
+            this.cOrder.Name = "cOrder";
+            this.cOrder.ReadOnly = true;
+            this.cOrder.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cOrder.Width = 22;
+            // 
+            // cTimeCode
+            // 
+            this.cTimeCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.cTimeCode.HeaderText = " 时间点 ";
+            this.cTimeCode.Name = "cTimeCode";
+            this.cTimeCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cTimeCode.Width = 58;
+            // 
+            // cChapterName
+            // 
+            this.cChapterName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.cChapterName.HeaderText = " 章节名 ";
+            this.cChapterName.Name = "cChapterName";
+            this.cChapterName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cChapterName.Width = 58;
+            // 
+            // cFrams
+            // 
+            this.cFrams.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.cFrams.HeaderText = " 帧数 ";
+            this.cFrams.Name = "cFrams";
+            this.cFrams.ReadOnly = true;
+            this.cFrams.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cFrams.Width = 46;
             // 
             // Form1
             // 
@@ -636,13 +635,13 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem combineToolStripMenuItem;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.ComboBox savingType;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btnPreview;
         private System.Windows.Forms.DataGridViewTextBoxColumn cOrder;
         private System.Windows.Forms.DataGridViewTextBoxColumn cTimeCode;
         private System.Windows.Forms.DataGridViewTextBoxColumn cChapterName;
         private System.Windows.Forms.DataGridViewTextBoxColumn cFrams;
-        private System.Windows.Forms.ComboBox savingType;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button btnPreview;
     }
 }
 
