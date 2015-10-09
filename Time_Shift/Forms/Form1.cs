@@ -257,6 +257,7 @@ namespace ChapterTool
         void LoadIFO()
         {
             Rawifo = new ifoData().GetStreams(paths[0]);
+            IFOmul1k1();
             comboBox2.Items.Clear();
             comboBox2.Enabled = comboBox2.Visible = (Rawifo.Count >= 1);
             foreach (var item in Rawifo)
@@ -268,14 +269,28 @@ namespace ChapterTool
                     CTLogger.Log("  |+包含 " + item.Chapters.Count.ToString() + " 个时间戳");
                 }
             }
+            int i = 0;
             foreach (var item in Rawifo)
             {
                 if (item != null)
                 {
                     info = item;
-                    comboBox2.SelectedIndex = mplsFileSeletIndex;
-                    updataInfo(1.001M);
+                    geneRateCI(i, true);
+                    comboBox2.SelectedIndex = i;
+                    //updataInfo(1.001M);
                     break;
+                }
+                ++i;
+            }
+        }
+
+        void IFOmul1k1()
+        {
+            foreach (var item in Rawifo)
+            {
+                foreach (var item2 in item.Chapters)
+                {
+                    item2.Time = convertMethod.pts2Time((int)((decimal)item2.Time.TotalSeconds * 1.001M * 45000M));
                 }
             }
         }
@@ -518,7 +533,7 @@ namespace ChapterTool
             if (Rawifo[index] != null)
             {
                 info = Rawifo[index];
-                updataInfo(1.001M);
+                //updataInfo(1.001M);
                 updataGridView();
             }
         }
@@ -574,10 +589,6 @@ namespace ChapterTool
         void updataGridView(int fpsIndex = 0)
         {
             if (!isPathValid || info == null) { return; }
-            if (dataGridView1.RowCount != 0)    
-            {
-                dataGridView1.Rows.Clear();
-            }
 
             switch (info.SourceType)
             {
@@ -595,19 +606,39 @@ namespace ChapterTool
                     break;
             }
 
-            
-            foreach (var item in info.Chapters)
+            if (info.Chapters.Count == dataGridView1.Rows.Count)    
             {
-                int index = this.dataGridView1.Rows.Add();
-                dataGridView1.Rows[index].Tag = item;
-                dataGridView1.Rows[index].Cells[0].Value = item.Number.ToString("00");
-                dataGridView1.Rows[index].Cells[1].Value = convertMethod.time2string(item.Time + info.offset);
-                if (cbAutoGenName.Checked)
-                    dataGridView1.Rows[index].Cells[2].Value = "Chapter " + (index+1).ToString("00");
-                else
-                    dataGridView1.Rows[index].Cells[2].Value = item.Name;
-                dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
-                //dataGridView1.Rows[index].Cells[0].Style.BackColor = Color.FromArgb(0xff, 0xe6, 0xe6, 0xe6);
+                int index = 0;
+                foreach (var item in info.Chapters)
+                {
+                    dataGridView1.Rows[index].Tag = item;
+                    dataGridView1.Rows[index].Cells[0].Value = item.Number.ToString("00");
+                    dataGridView1.Rows[index].Cells[1].Value = convertMethod.time2string(item.Time + info.offset);
+                    if (cbAutoGenName.Checked)
+                        dataGridView1.Rows[index].Cells[2].Value = "Chapter " + (index + 1).ToString("00");
+                    else
+                        dataGridView1.Rows[index].Cells[2].Value = item.Name;
+                    dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
+                    //dataGridView1.Rows[index].Cells[0].Style.BackColor = Color.FromArgb(0xff, 0xe6, 0xe6, 0xe6);
+                    ++index;
+                }
+            }
+            else
+            {
+                dataGridView1.Rows.Clear();
+                foreach (var item in info.Chapters)
+                {
+                    int index = this.dataGridView1.Rows.Add();
+                    dataGridView1.Rows[index].Tag = item;
+                    dataGridView1.Rows[index].Cells[0].Value = item.Number.ToString("00");
+                    dataGridView1.Rows[index].Cells[1].Value = convertMethod.time2string(item.Time + info.offset);
+                    if (cbAutoGenName.Checked)
+                        dataGridView1.Rows[index].Cells[2].Value = "Chapter " + (index + 1).ToString("00");
+                    else
+                        dataGridView1.Rows[index].Cells[2].Value = item.Name;
+                    dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
+                    //dataGridView1.Rows[index].Cells[0].Style.BackColor = Color.FromArgb(0xff, 0xe6, 0xe6, 0xe6);
+                }
             }
         }
 
@@ -1123,6 +1154,7 @@ namespace ChapterTool
         }
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
+            CTLogger.Log("+更名: " + info.Chapters[e.RowIndex].Name + " -> "+ dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString());
             info.Chapters[e.RowIndex].Name = dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
         }
         private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
