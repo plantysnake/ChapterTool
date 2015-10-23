@@ -11,7 +11,7 @@
 -      Move all chapter number backward
 -      Load chapter name from other file
 -      Calculate frames by chapter file
--      Latest Version : 2.3.333.2
+-      Multi-outputType supporte
 
 	Install
 --------------------
