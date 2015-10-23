@@ -102,7 +102,11 @@ namespace ChapterTool
             for (int mark = 0; mark < PlaylistMarkNumber; ++mark)
             {
                 Array.Copy(data, PlaylistMarkEntries, bytelist, 0, 14);
-                if (1 != bytelist[1]) { continue; }
+                if (1 != bytelist[1])
+                {
+                    PlaylistMarkEntries += 14;
+                    continue;
+                }
                 int streamFileIndex = byte2int(bytelist, 2, 4);
                 Clip streamClip = chapterClips[streamFileIndex];
                 int TimeStamp = byte2int(bytelist, 4, 8);
