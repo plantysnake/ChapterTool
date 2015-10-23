@@ -532,25 +532,35 @@ namespace ChapterTool
             }
             if (!string.IsNullOrEmpty(chapterNameTemplate)) { updataInfo(chapterNameTemplate); }
         }
+
+
+        List<ChapterInfo> XMLGroup;
+
+
+        void geneRateCI(int index, bool DVD, bool XML)
+        {
+            info = XMLGroup[index];
+        }
+
         void geneRateCI(XmlDocument doc)
         {
-            info = new ChapterInfo();
-            info.SourceType = "XML";
-            info.SourceHash = ifoData.ComputeMD5Sum(paths[0]);
-            XmlElement root = doc.DocumentElement;
-            XmlNodeList TimeNodes = root.SelectNodes("/Chapters/EditionEntry/ChapterAtom/ChapterTimeStart");
-            XmlNodeList NameNodes = root.SelectNodes("/Chapters/EditionEntry/ChapterAtom/ChapterDisplay/ChapterString");
-            if (TimeNodes.Count * NameNodes.Count == 0) { return; }
-            int j = 0;
-            foreach (XmlNode timenode in TimeNodes)
+            XMLGroup = convertMethod.PraseXML(doc);
+            comboBox2.Enabled = comboBox2.Visible = (XMLGroup.Count >= 1);
+            if (comboBox2.Enabled)
             {
-                Chapter temp = new Chapter();
-                temp.Time = convertMethod.string2Time(convertMethod.RTimeFormat.Match(timenode.InnerText).ToString());
-                temp.Name = NameNodes[j++].InnerText.ToString();
-                temp.Number = j;
-                info.Chapters.Add(temp);
+                comboBox2.Items.Clear();
+                int i = 1;
+                foreach (var item in XMLGroup)
+                {
+                    string name = "Edition " + i++.ToString();
+                    comboBox2.Items.Add(name);
+                    CTLogger.Log(" |+" + name);
+                    CTLogger.Log("  |+包含 " + item.Chapters.Count.ToString() + " 个时间戳");
+                }
             }
-            info.Duration = info.Chapters[info.Chapters.Count - 1].Time;
+            info = XMLGroup[0];
+            comboBox2.SelectedIndex = mplsFileSeletIndex;
+            return;
         }
 
         void geneRateCI(int index,bool DVD)
@@ -921,7 +931,14 @@ namespace ChapterTool
             }
             else
             {
-                geneRateCI(comboBox2.SelectedIndex,true);
+                if (XMLGroup != null)
+                {
+                    geneRateCI(comboBox2.SelectedIndex, false, true);
+                }
+                else
+                {
+                    geneRateCI(comboBox2.SelectedIndex, true);
+                }
             }
             
             updataGridView();
@@ -939,7 +956,7 @@ namespace ChapterTool
         void loadMatroska()
         {
             matroskaInfo matroska = new matroskaInfo(paths[0]);
-            info = matroska.result;
+            geneRateCI(matroska.result);
         }
 
         //color support

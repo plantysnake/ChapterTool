@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Drawing;
+using ChapterTool.Util;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.Xml;
 
 namespace ChapterTool
 {
@@ -58,6 +61,50 @@ namespace ChapterTool
             int y = int.Parse(temp.Groups["y"].Value);
             return new Point(x, y);
         }
+
+        public static List<ChapterInfo>  PraseXML(XmlDocument doc)
+        {
+            List<ChapterInfo> BUFFER = new List<ChapterInfo>();
+            XmlElement root = doc.DocumentElement;
+            XmlNodeList EditionEntrys = root.ChildNodes;//获取各个章节的入口
+            foreach (XmlNode EditionEntry in EditionEntrys)
+            {
+                XmlNodeList EditionEntryChildNodes = (EditionEntry as XmlElement).ChildNodes;//获取当前章节中的所有子节点
+
+                ChapterInfo buff = new ChapterInfo();
+                buff.SourceType = "XML";
+                int j = 0;
+                foreach (XmlNode EditionEntryChildNode in EditionEntryChildNodes)
+                {
+                    if (EditionEntryChildNode.Name == "ChapterAtom")
+                    {
+                        XmlNodeList ChapterAtomChildNodes = (EditionEntryChildNode as XmlElement).ChildNodes;//获取Atom中的所有子节点
+                        Chapter temp = new Chapter();
+                        foreach (XmlNode ChapterAtomChildNode in ChapterAtomChildNodes)
+                        {
+                            switch (ChapterAtomChildNode.Name)
+                            {
+                                case "ChapterTimeStart":
+                                    temp.Time = convertMethod.string2Time(convertMethod.RTimeFormat.Match(ChapterAtomChildNode.InnerText).ToString());
+                                    break;
+                                case "ChapterTimeEnd":
+                                    buff.Duration = convertMethod.string2Time(convertMethod.RTimeFormat.Match(ChapterAtomChildNode.InnerText).ToString());
+                                    break;
+                                case "ChapterDisplay":
+                                    temp.Name = (ChapterAtomChildNode as XmlElement).ChildNodes.Item(0).InnerText.ToString();
+                                    break;
+                            }
+                        }
+                        temp.Number = ++j;
+                        buff.Chapters.Add(temp);
+                    }
+                }
+                BUFFER.Add(buff);
+            }
+            return BUFFER;
+        }
+
+
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
         static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr w, IntPtr l);
