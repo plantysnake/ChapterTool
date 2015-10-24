@@ -107,6 +107,7 @@ namespace ChapterTool
             Size = new Size(Size.Width, Size.Height - 80);
             savingType.SelectedIndex = 0;
             btnTrans.Text = ((Environment.TickCount%2==0) ? "↺" : "↻");
+            folderBrowserDialog1.SelectedPath = registryStorage.Load();
         }
 
         ChapterInfo info;
@@ -148,8 +149,10 @@ namespace ChapterTool
             progressBar1.Visible = true;
             cbMore.Enabled = true;
             cbMul1k1.Enabled = true;
-
-            folderBrowserDialog1.SelectedPath = registryStorage.Load();
+            
+            
+            RawData  = null;
+            XMLGroup = null;
         }
         Regex RLineOne    = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
         Regex RLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
@@ -233,7 +236,7 @@ namespace ChapterTool
             Cursor = Cursors.AppStarting;
             try
             {
-                switch (RFileType.Match(paths[0].ToLowerInvariant()).ToString()) 
+                switch (RFileType.Match(paths[0].ToLowerInvariant()).Value) 
                 {
                     case ".mpls": loadMPLS(); break;
                     case ".xml":   loadXML(); break;
@@ -435,7 +438,7 @@ namespace ChapterTool
         {
             if (RLineOne.IsMatch(line))
             {
-                return convertMethod.string2Time(convertMethod.RTimeFormat.Match(line).ToString());
+                return convertMethod.string2Time(convertMethod.RTimeFormat.Match(line).Value);
             }
             else
             {
@@ -458,7 +461,7 @@ namespace ChapterTool
             }
             if (RLineOne.IsMatch(line))
             {
-                temp.Time = convertMethod.string2Time(convertMethod.RTimeFormat.Match(line).ToString()) - iniTime;
+                temp.Time = convertMethod.string2Time(convertMethod.RTimeFormat.Match(line).Value) - iniTime;
             }
             temp.Number = order;
             return temp;
@@ -560,7 +563,6 @@ namespace ChapterTool
             }
             info = XMLGroup[0];
             comboBox2.SelectedIndex = mplsFileSeletIndex;
-            return;
         }
 
         void geneRateCI(int index,bool DVD)
@@ -947,9 +949,12 @@ namespace ChapterTool
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
-            geneRateCI(comboBox2.SelectedIndex);
-            updataGridView();
+            if (RawData != null)
+            {
+                combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
+                geneRateCI(comboBox2.SelectedIndex);
+                updataGridView();
+            }
         }
 
         //////////matroska support
@@ -1044,6 +1049,7 @@ namespace ChapterTool
                 btnLog.FlatAppearance.BorderColor = value;
                 btnPreview.FlatAppearance.BorderColor = value;
                 cbMore.FlatAppearance.BorderColor = value;
+                dataGridView1.GridColor = value;
             }
         }
         public Color TextFrontColor

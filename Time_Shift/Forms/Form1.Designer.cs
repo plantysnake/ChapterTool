@@ -64,13 +64,13 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.btnLog = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.savingType = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.btnPreview = new System.Windows.Forms.Button();
             this.cOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cTimeCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cChapterName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cFrams = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.savingType = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.btnPreview = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
@@ -456,14 +456,18 @@
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dataGridView1.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.cOrder,
             this.cTimeCode,
             this.cChapterName,
             this.cFrams});
+            this.dataGridView1.EnableHeadersVisualStyles = false;
+            this.dataGridView1.GridColor = System.Drawing.SystemColors.Highlight;
             this.dataGridView1.Location = new System.Drawing.Point(12, 83);
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.Size = new System.Drawing.Size(556, 351);
             this.dataGridView1.TabIndex = 25;
@@ -471,6 +475,41 @@
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
             this.dataGridView1.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView1_RowsRemoved);
             this.dataGridView1.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataGridView1_UserDeletingRow);
+            // 
+            // cOrder
+            // 
+            this.cOrder.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.cOrder.Frozen = true;
+            this.cOrder.HeaderText = "#";
+            this.cOrder.Name = "cOrder";
+            this.cOrder.ReadOnly = true;
+            this.cOrder.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cOrder.Width = 20;
+            // 
+            // cTimeCode
+            // 
+            this.cTimeCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.cTimeCode.HeaderText = " 时间点 ";
+            this.cTimeCode.Name = "cTimeCode";
+            this.cTimeCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cTimeCode.Width = 56;
+            // 
+            // cChapterName
+            // 
+            this.cChapterName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.cChapterName.HeaderText = " 章节名 ";
+            this.cChapterName.Name = "cChapterName";
+            this.cChapterName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cChapterName.Width = 56;
+            // 
+            // cFrams
+            // 
+            this.cFrams.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.cFrams.HeaderText = " 帧数 ";
+            this.cFrams.Name = "cFrams";
+            this.cFrams.ReadOnly = true;
+            this.cFrams.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cFrams.Width = 44;
             // 
             // savingType
             // 
@@ -512,41 +551,6 @@
             this.btnPreview.Text = "P";
             this.btnPreview.UseVisualStyleBackColor = true;
             this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
-            // 
-            // cOrder
-            // 
-            this.cOrder.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.cOrder.Frozen = true;
-            this.cOrder.HeaderText = "#";
-            this.cOrder.Name = "cOrder";
-            this.cOrder.ReadOnly = true;
-            this.cOrder.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cOrder.Width = 22;
-            // 
-            // cTimeCode
-            // 
-            this.cTimeCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.cTimeCode.HeaderText = " 时间点 ";
-            this.cTimeCode.Name = "cTimeCode";
-            this.cTimeCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cTimeCode.Width = 58;
-            // 
-            // cChapterName
-            // 
-            this.cChapterName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.cChapterName.HeaderText = " 章节名 ";
-            this.cChapterName.Name = "cChapterName";
-            this.cChapterName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cChapterName.Width = 58;
-            // 
-            // cFrams
-            // 
-            this.cFrams.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.cFrams.HeaderText = " 帧数 ";
-            this.cFrams.Name = "cFrams";
-            this.cFrams.ReadOnly = true;
-            this.cFrams.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cFrams.Width = 46;
             // 
             // Form1
             // 

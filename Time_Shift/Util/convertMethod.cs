@@ -85,13 +85,13 @@ namespace ChapterTool
                             switch (ChapterAtomChildNode.Name)
                             {
                                 case "ChapterTimeStart":
-                                    temp.Time = convertMethod.string2Time(convertMethod.RTimeFormat.Match(ChapterAtomChildNode.InnerText).ToString());
+                                    temp.Time = string2Time(RTimeFormat.Match(ChapterAtomChildNode.InnerText).Value);
                                     break;
                                 case "ChapterTimeEnd":
-                                    buff.Duration = convertMethod.string2Time(convertMethod.RTimeFormat.Match(ChapterAtomChildNode.InnerText).ToString());
+                                    buff.Duration = string2Time(RTimeFormat.Match(ChapterAtomChildNode.InnerText).Value);
                                     break;
                                 case "ChapterDisplay":
-                                    temp.Name = (ChapterAtomChildNode as XmlElement).ChildNodes.Item(0).InnerText.ToString();
+                                    temp.Name = (ChapterAtomChildNode as XmlElement).ChildNodes.Item(0).InnerText;
                                     break;
                             }
                         }
