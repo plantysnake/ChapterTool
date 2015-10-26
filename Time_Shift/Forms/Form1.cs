@@ -701,18 +701,15 @@ namespace ChapterTool
             foreach (var item in info.Chapters)
             {
                 TimeSpan _current = item.Time;
-                decimal Frams = ((decimal)_current.TotalMilliseconds * FrameRate[index] / 1000M);
-                decimal answer = cbRound.Checked ? Math.Round(Frams, MidpointRounding.AwayFromZero) : Frams;
-                string buffer = cbRound.Checked? answer.ToString():Frams.ToString();
-                bool accu = (Math.Abs(Frams - answer) < costumeAccuracy);
-                buffer += (accu ? " K" : " *");
-                item.FramsInfo = buffer;
+                decimal Frams     = ((decimal)_current.TotalMilliseconds * FrameRate[index] / 1000M);
+                decimal answer    = cbRound.Checked ? Math.Round(Frams, MidpointRounding.AwayFromZero) : Frams;
+                bool accuracy     = (Math.Abs(Frams - answer) < costumeAccuracy);
+                item.FramsInfo = string.Format("{0}{1}", answer, (accuracy ? " K" : " *"));
             }
         }
         int getAUTOFPS()
         {
             decimal FPStemp = FrameRate[1];
-            //cbRound.CheckState = CheckState.Checked;
             int currentMaxOne = 0; int AUTOFPS_code = 1;
             CTLogger.Log("|+自动帧率识别开始，允许误差为：" + costumeAccuracy.ToString());
             for (int j = 1; j < 7; ++j)
@@ -1094,11 +1091,11 @@ namespace ChapterTool
                     string lastTime = convertMethod.time2string(streamClip.TimeOut - streamClip.TimeIn);
                     if (((streamClip.TimeOut - streamClip.TimeIn) - (streamClip.timeStamp[1] - streamClip.timeStamp[0])) <= 5 * 45000)
                     {
-                        toolTip1.Show(SFakeChapter1 + lastTime + SFakeChapter2, btnSave);
+                        toolTip1.Show(string.Format("{0}{1}{2}",SFakeChapter1, lastTime, SFakeChapter2), btnSave);
                     }
                     else
                     {
-                        toolTip1.Show(SFakeChapter1 + lastTime + SFakeChapter3, btnSave);
+                        toolTip1.Show(string.Format("{0}{1}{2}",SFakeChapter1, lastTime, SFakeChapter3), btnSave);
                     }
                 }
             }
