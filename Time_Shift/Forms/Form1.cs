@@ -689,7 +689,7 @@ namespace ChapterTool
                 dataGridView1.Rows[i].DefaultCellStyle.BackColor = ((i % 2 == 0) ? Color.FromArgb(0x92,0xaa,0xf3) : Color.FromArgb(0xf3, 0xf7, 0xf7));
                 addRow(info.Chapters[i], i);
             }
-            progressBar1.Value = 66;
+            progressBar1.Value = (dataGridView1.RowCount > 1) ? 66 : 33;
         }
 
 
