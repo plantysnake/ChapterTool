@@ -27,10 +27,9 @@ namespace ChapterTool
         
         public static string time2string(TimeSpan temp)
         {
-            return temp.Hours.ToString("00") + ":" +
-                 temp.Minutes.ToString("00") + ":" +
-                 temp.Seconds.ToString("00") + "." +
-            temp.Milliseconds.ToString("000");
+            return string.Format("{0:D2}:{1:D2}:{2:D2}.{3:D3}", 
+                                  temp.Hours  , temp.Minutes,
+                                  temp.Seconds, temp.Milliseconds);
         }
 
         public static Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
