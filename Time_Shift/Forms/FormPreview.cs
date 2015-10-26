@@ -19,6 +19,10 @@ namespace ChapterTool.Forms
             InitializeComponent();
             cTextBox1.Text = text;
             MainPos = pos;
+            if (cTextBox1.Lines.Count()>20) 
+            {
+                cTextBox1.ScrollBars = ScrollBars.Vertical;
+            }
             base.Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
         }
 

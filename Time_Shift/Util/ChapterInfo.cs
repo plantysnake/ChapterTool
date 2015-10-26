@@ -138,8 +138,9 @@ namespace ChapterTool.Util
             File.WriteAllLines(filename, lines.ToArray());
         }
 
-        public void SaveXml(string filename)
+        public void SaveXml(string filename,string lang)
         {
+            if (string.IsNullOrEmpty(lang)) { lang = "und"; }
             Random rndb = new Random();
             XmlTextWriter xmlchap = new XmlTextWriter(filename, Encoding.UTF8);
             xmlchap.Formatting = Formatting.Indented;
@@ -155,7 +156,7 @@ namespace ChapterTool.Util
                 xmlchap.WriteStartElement("ChapterAtom");
                 xmlchap.WriteStartElement("ChapterDisplay");
                 xmlchap.WriteElementString("ChapterString", c.Name);
-                xmlchap.WriteElementString("ChapterLanguage", string.IsNullOrEmpty(LangCode) ? "eng" : LangCode);
+                xmlchap.WriteElementString("ChapterLanguage", lang);
                 xmlchap.WriteEndElement();
                 xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
                 xmlchap.WriteElementString("ChapterTimeStart", convertMethod.time2string(c.Time) + "0000");

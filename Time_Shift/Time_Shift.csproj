@@ -128,7 +128,6 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="Util\registryStorage.cs" />
-    <Compile Include="Util\TSStreamBuffer.cs" />
     <EmbeddedResource Include="Controls\cTextBox.resx">
       <DependentUpon>cTextBox.cs</DependentUpon>
     </EmbeddedResource>

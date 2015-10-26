@@ -39,7 +39,6 @@
             this.cTextBox1.Margin = new System.Windows.Forms.Padding(0);
             this.cTextBox1.Multiline = true;
             this.cTextBox1.Name = "cTextBox1";
-            this.cTextBox1.OthercTextBox = null;
             this.cTextBox1.ReadOnly = true;
             this.cTextBox1.Size = new System.Drawing.Size(230, 300);
             this.cTextBox1.TabIndex = 0;

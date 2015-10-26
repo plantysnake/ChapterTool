@@ -1,30 +1,22 @@
-﻿//
-//                       _oo0oo_
-//                      o8888888o
-//                      88" . "88
-//                      (| -_- |)
-//                      0\  =  /0
-//                    ___/`---'\___
-//                  .' \\|     |// '.
-//                 / \\|||  :  |||// \
-//                / _||||| -:- |||||- \
-//               |   | \\\  -  /// |   |
-//               | \_|  ''\---/''  |_/ |
-//               \  .-\__  '-'  ___/-. /
-//             ___'. .'  /--.--\  `. .'___
-//          ."" '<  `.___\_<|>_/___.' >' "".
-//         | | :  `- \`.;`\ _ /`;.`/ - ` : | |
-//         \  \ `_.   \_ __\ /__ _/   .-` /  /
-//     =====`-.____`.___ \_____/___.-`___.-'=====
-//                       `=---='
-//
-//
-//     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//
-//               佛祖保佑         永无BUG
-//
-//
-//
+﻿// ****************************************************************************
+// 
+// Copyright (C) 2014-2015 TautCony (TautCony@vcb-s.com)
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// 
+// ****************************************************************************
 using System;
 using System.IO;
 using System.Xml;
@@ -95,7 +87,7 @@ namespace ChapterTool
                 Location = saved;
                 CTLogger.Log("成功载入保存的窗体位置"+saved.ToString());
             }
-
+            loadLang();
             setDefault();
             if (!string.IsNullOrEmpty(paths[0]))
             {
@@ -107,7 +99,27 @@ namespace ChapterTool
             Size = new Size(Size.Width, Size.Height - 80);
             savingType.SelectedIndex = 0;
             btnTrans.Text = ((Environment.TickCount%2==0) ? "↺" : "↻");
+            folderBrowserDialog1.SelectedPath = registryStorage.Load();
         }
+
+
+        
+
+        void loadLang()
+        {
+            xmlLang.Items.Add("---常用---");
+            xmlLang.Items.Add("und (Undetermined)");
+            xmlLang.Items.Add("eng (English)");
+            xmlLang.Items.Add("jpn (Japanese)");
+            xmlLang.Items.Add("chi (Chinese)");
+            xmlLang.Items.Add("---全部---");
+
+            foreach (var item in LanguageSelectionContainer.Languages)
+            {
+                xmlLang.Items.Add(string.Format("{0} ({1})", item.Value, item.Key));
+            }
+        }
+
 
         ChapterInfo info;
 
@@ -148,8 +160,11 @@ namespace ChapterTool
             progressBar1.Visible = true;
             cbMore.Enabled = true;
             cbMul1k1.Enabled = true;
-
-            folderBrowserDialog1.SelectedPath = registryStorage.Load();
+            
+            
+            RawData  = null;
+            XMLGroup = null;
+            xmlLang.SelectedIndex = 2;
         }
         Regex RLineOne    = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
         Regex RLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
@@ -182,7 +197,7 @@ namespace ChapterTool
         {
 
             ++poi;
-            CTLogger.Log("点击了" + poi.ToString() + "次进度条");
+            CTLogger.Log(string.Format("点击了 {0} 次进度条", poi));
             if (poi >= nico)
             {
                 Form2 version = new Form2();
@@ -233,7 +248,7 @@ namespace ChapterTool
             Cursor = Cursors.AppStarting;
             try
             {
-                switch (RFileType.Match(paths[0].ToLowerInvariant()).ToString()) 
+                switch (RFileType.Match(paths[0].ToLowerInvariant()).Value) 
                 {
                     case ".mpls": loadMPLS(); break;
                     case ".xml":   loadXML(); break;
@@ -259,7 +274,10 @@ namespace ChapterTool
         void LoadIFO()
         {
             Rawifo = new ifoData().GetStreams(paths[0]);
-            IFOmul1k1();
+            if (Rawifo[0].FramesPerSecond != 25)
+            {
+                IFOmul1k1();
+            }
             comboBox2.Items.Clear();
             comboBox2.Enabled = comboBox2.Visible = (Rawifo.Count >= 1);
             foreach (var item in Rawifo)
@@ -378,42 +396,54 @@ namespace ChapterTool
             }
         }
 
+        Regex RLang = new Regex(@"\((?<lang>.+)\)");
+
         void saveFile()
         {
             if (!isPathValid) { return; }
-            string savePath = paths[0].Substring(0, paths[0].LastIndexOf("."));
+            
+            
+            string PN = paths[0].Substring(0, paths[0].LastIndexOf("."));
             //modify for custom saving path
             int slashPosition = paths[0].LastIndexOf(@"\");
             if (!string.IsNullOrEmpty(CUSTsavingPath))
-                savePath = CUSTsavingPath + paths[0].Substring(slashPosition, paths[0].LastIndexOf(".") - slashPosition);
+                PN = CUSTsavingPath + paths[0].Substring(slashPosition, paths[0].LastIndexOf(".") - slashPosition);
+            StringBuilder SavePath = new StringBuilder(PN);
 
             if (paths[0].ToLowerInvariant().EndsWith(".mpls") && !combineToolStripMenuItem.Checked)
-                savePath += "__" + RawData.chapterClips[mplsFileSeletIndex].Name;
-            if (paths[0].ToLowerInvariant().EndsWith(".ifo"))   
-                savePath += "__" + Rawifo[mplsFileSeletIndex].SourceName;
+                SavePath.Append("__" + RawData.chapterClips[mplsFileSeletIndex].Name);
+            if (paths[0].ToLowerInvariant().EndsWith(".ifo"))
+                SavePath.Append("__" + Rawifo[mplsFileSeletIndex].SourceName);
 
             switch (savingType.SelectedIndex)
             {
                 case 0://TXT
-                    while (File.Exists(savePath + ".txt")) { savePath += "_"; }
-                    savePath += ".txt";
-                    info.SaveText(savePath,cbAutoGenName.Checked);
+                    while (File.Exists(SavePath + ".txt")) { SavePath.Append("_"); }
+                    SavePath.Append(".txt");
+                    info.SaveText(SavePath.ToString(), cbAutoGenName.Checked);
                     break;
                 case 1://XML
-                    while (File.Exists(savePath + ".xml")) { savePath += "_"; }
-                    savePath += ".xml";
-                    info.SaveXml(savePath);
+                    while (File.Exists(SavePath + ".xml")) { SavePath.Append("_"); }
+                    SavePath.Append(".xml");
+                    string key = RLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
+                    info.SaveXml(SavePath.ToString(),string.IsNullOrEmpty(key)? "": LanguageSelectionContainer.Languages[key]);
                     break;
                 case 2://QPF
-                    while (File.Exists(savePath + ".qpf")) { savePath += "_"; }
-                    savePath += ".qpf";
-                    info.SaveQpfile(savePath);
+                    while (File.Exists(SavePath + ".qpf")) { SavePath.Append("_"); }
+                    SavePath.Append(".qpf");
+                    info.SaveQpfile(SavePath.ToString());
                     break;
             }
             progressBar1.Value = 100;
             Tips.Text = "保存成功";
             //MessageBox.Show(savePath);
         }
+
+        private void savingType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            xmlLang.Enabled = (savingType.SelectedIndex == 1);
+        }
+
         void refresh_Click(object sender, EventArgs e) { updataGridView(); }
 
 
@@ -435,7 +465,7 @@ namespace ChapterTool
         {
             if (RLineOne.IsMatch(line))
             {
-                return convertMethod.string2Time(convertMethod.RTimeFormat.Match(line).ToString());
+                return convertMethod.string2Time(convertMethod.RTimeFormat.Match(line).Value);
             }
             else
             {
@@ -453,12 +483,12 @@ namespace ChapterTool
                     case true:
                         temp.Name = RLineTwo.Match(line2).Groups["chapterName"].Value; break;
                     case false:
-                        temp.Name = "Chapter " + order.ToString("00"); break;
+                        temp.Name = string.Format("Chapter {0:D2}", order); break;
                 }
             }
             if (RLineOne.IsMatch(line))
             {
-                temp.Time = convertMethod.string2Time(convertMethod.RTimeFormat.Match(line).ToString()) - iniTime;
+                temp.Time = convertMethod.string2Time(convertMethod.RTimeFormat.Match(line).Value) - iniTime;
             }
             temp.Number = order;
             return temp;
@@ -532,25 +562,34 @@ namespace ChapterTool
             }
             if (!string.IsNullOrEmpty(chapterNameTemplate)) { updataInfo(chapterNameTemplate); }
         }
+
+
+        List<ChapterInfo> XMLGroup;
+
+
+        void geneRateCI(int index, bool DVD, bool XML)
+        {
+            info = XMLGroup[index];
+        }
+
         void geneRateCI(XmlDocument doc)
         {
-            info = new ChapterInfo();
-            info.SourceType = "XML";
-            info.SourceHash = ifoData.ComputeMD5Sum(paths[0]);
-            XmlElement root = doc.DocumentElement;
-            XmlNodeList TimeNodes = root.SelectNodes("/Chapters/EditionEntry/ChapterAtom/ChapterTimeStart");
-            XmlNodeList NameNodes = root.SelectNodes("/Chapters/EditionEntry/ChapterAtom/ChapterDisplay/ChapterString");
-            if (TimeNodes.Count * NameNodes.Count == 0) { return; }
-            int j = 0;
-            foreach (XmlNode timenode in TimeNodes)
+            XMLGroup = convertMethod.PraseXML(doc);
+            comboBox2.Enabled = comboBox2.Visible = (XMLGroup.Count >= 1);
+            if (comboBox2.Enabled)
             {
-                Chapter temp = new Chapter();
-                temp.Time = convertMethod.string2Time(convertMethod.RTimeFormat.Match(timenode.InnerText).ToString());
-                temp.Name = NameNodes[j++].InnerText.ToString();
-                temp.Number = j;
-                info.Chapters.Add(temp);
+                comboBox2.Items.Clear();
+                int i = 1;
+                foreach (var item in XMLGroup)
+                {
+                    string name = string.Format("Edition {0:D2}", i++);
+                    comboBox2.Items.Add(name);
+                    CTLogger.Log(" |+" + name);
+                    CTLogger.Log(string.Format("  |+包含 {0} 个时间戳", item.Chapters.Count));
+                }
             }
-            info.Duration = info.Chapters[info.Chapters.Count - 1].Time;
+            info = XMLGroup[0];
+            comboBox2.SelectedIndex = mplsFileSeletIndex;
         }
 
         void geneRateCI(int index,bool DVD)
@@ -650,7 +689,7 @@ namespace ChapterTool
                 dataGridView1.Rows[i].DefaultCellStyle.BackColor = ((i % 2 == 0) ? Color.FromArgb(0x92,0xaa,0xf3) : Color.FromArgb(0xf3, 0xf7, 0xf7));
                 addRow(info.Chapters[i], i);
             }
-            progressBar1.Value = 66;
+            progressBar1.Value = (dataGridView1.RowCount > 1) ? 66 : 33;
         }
 
 
@@ -660,7 +699,7 @@ namespace ChapterTool
             dataGridView1.Rows[index].Cells[0].Value = item.Number.ToString("00");
             dataGridView1.Rows[index].Cells[1].Value = convertMethod.time2string(item.Time + info.offset);
             if (cbAutoGenName.Checked)
-                dataGridView1.Rows[index].Cells[2].Value = "Chapter " + (index + 1).ToString("00");
+                dataGridView1.Rows[index].Cells[2].Value = string.Format("Chapter {0:D2}", (index + 1));
             else
                 dataGridView1.Rows[index].Cells[2].Value = item.Name;
             dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
@@ -683,20 +722,17 @@ namespace ChapterTool
             foreach (var item in info.Chapters)
             {
                 TimeSpan _current = item.Time;
-                decimal Frams = ((decimal)_current.TotalMilliseconds * FrameRate[index] / 1000M);
-                decimal answer = cbRound.Checked ? Math.Round(Frams, MidpointRounding.AwayFromZero) : Frams;
-                string buffer = cbRound.Checked? answer.ToString():Frams.ToString();
-                bool accu = (Math.Abs(Frams - answer) < costumeAccuracy);
-                buffer += (accu ? " K" : " *");
-                item.FramsInfo = buffer;
+                decimal Frams     = ((decimal)_current.TotalMilliseconds * FrameRate[index] / 1000M);
+                decimal answer    = cbRound.Checked ? Math.Round(Frams, MidpointRounding.AwayFromZero) : Frams;
+                bool accuracy     = (Math.Abs(Frams - answer) < costumeAccuracy);
+                item.FramsInfo = string.Format("{0}{1}", answer, (accuracy ? " K" : " *"));
             }
         }
         int getAUTOFPS()
         {
             decimal FPStemp = FrameRate[1];
-            //cbRound.CheckState = CheckState.Checked;
             int currentMaxOne = 0; int AUTOFPS_code = 1;
-            CTLogger.Log("|+自动帧率识别开始" + "，允许误差为：" + costumeAccuracy.ToString());
+            CTLogger.Log("|+自动帧率识别开始，允许误差为：" + costumeAccuracy.ToString());
             for (int j = 1; j < 7; ++j)
             {
                 int AccuratePiont = 0;
@@ -712,11 +748,11 @@ namespace ChapterTool
                     AUTOFPS_code = j;
                     currentMaxOne = AccuratePiont;
                 }
-                CTLogger.Log(" |fps=" + FrameRate[j].ToString("00.000") + "时，精确点：" + AccuratePiont.ToString("00") + "个，非精确点：" + InAccuratePiont.ToString("00") + "个");
+                CTLogger.Log(string.Format(" |fps= {0:F4} 时，精确点：{1:D2} 个，非精确点：{2:D2} 个", FrameRate[j], AccuratePiont, InAccuratePiont));
             }
             
             comboBox1.SelectedIndex = AUTOFPS_code - 1;
-            CTLogger.Log(" |自动识别结果为" + FrameRate[AUTOFPS_code].ToString("00.0000") + " fps");
+            CTLogger.Log(string.Format(" |自动识别结果为 {0:F4} fps", FrameRate[AUTOFPS_code]));
             return AUTOFPS_code;
         }
         void getAccuracy(TimeSpan time, ref int AccuratePiont, ref int InAccuratePiont,int index)//framCal
@@ -799,6 +835,8 @@ namespace ChapterTool
                 cbShift.Visible = value;
                 maskedTextBox1.Visible = value;
                 btnLog.Visible = value;
+                label4.Visible = value;
+                xmlLang.Visible = value;
             }
 
         }
@@ -894,7 +932,7 @@ namespace ChapterTool
         {
             RawData = new mplsData(paths[0]);
             CTLogger.Log("+成功载入MPLS格式章节文件");
-            CTLogger.Log("|+MPLS中共有" + RawData.chapterClips.Count.ToString() + "个m2ts片段");
+            CTLogger.Log(string.Format("|+MPLS中共有{0:D}个m2ts片段", RawData.chapterClips.Count));
 
             comboBox2.Enabled = comboBox2.Visible = (RawData.chapterClips.Count >= 1);
             if (comboBox2.Enabled)
@@ -902,12 +940,11 @@ namespace ChapterTool
                 comboBox2.Items.Clear();
                 foreach (var item in RawData.chapterClips)
                 {
-                    comboBox2.Items.Add(item.Name.Replace("M2TS",".m2ts") + "__" + item.timeStamp.Count.ToString());
+                    comboBox2.Items.Add(string.Format("{0}__{1}", item.Name.Replace("M2TS", ".m2ts"), item.timeStamp.Count));
                     CTLogger.Log(" |+" + item.Name);
-                    CTLogger.Log("  |+包含 " + item.timeStamp.Count.ToString() + " 个时间戳");
+                    CTLogger.Log(string.Format("  |+包含 {0} 个时间戳", item.timeStamp.Count));
                 }
             }
-            //bool isValide = mpls2box();
             comboBox2.SelectedIndex = mplsFileSeletIndex;
             geneRateCI(mplsFileSeletIndex);
         }
@@ -921,7 +958,14 @@ namespace ChapterTool
             }
             else
             {
-                geneRateCI(comboBox2.SelectedIndex,true);
+                if (XMLGroup != null)
+                {
+                    geneRateCI(comboBox2.SelectedIndex, false, true);
+                }
+                else
+                {
+                    geneRateCI(comboBox2.SelectedIndex, true);
+                }
             }
             
             updataGridView();
@@ -930,16 +974,19 @@ namespace ChapterTool
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
-            geneRateCI(comboBox2.SelectedIndex);
-            updataGridView();
+            if (RawData != null)
+            {
+                combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
+                geneRateCI(comboBox2.SelectedIndex);
+                updataGridView();
+            }
         }
 
         //////////matroska support
         void loadMatroska()
         {
             matroskaInfo matroska = new matroskaInfo(paths[0]);
-            info = matroska.result;
+            geneRateCI(matroska.result);
         }
 
         //color support
@@ -989,6 +1036,7 @@ namespace ChapterTool
                 dataGridView1.BackgroundColor = value;
                 numericUpDown1.BackColor = maskedTextBox1.BackColor = value;
                 comboBox1.BackColor = comboBox2.BackColor = value;
+                xmlLang.BackColor = value;
                 savingType.BackColor = value;
             }
         }
@@ -1027,6 +1075,7 @@ namespace ChapterTool
                 btnLog.FlatAppearance.BorderColor = value;
                 btnPreview.FlatAppearance.BorderColor = value;
                 cbMore.FlatAppearance.BorderColor = value;
+                dataGridView1.GridColor = value;
             }
         }
         public Color TextFrontColor
@@ -1039,6 +1088,7 @@ namespace ChapterTool
                 cbMore.ForeColor = value;
                 comboBox1.ForeColor = value;
                 comboBox2.ForeColor = value;
+                xmlLang.ForeColor = value;
                 savingType.ForeColor = value;
                 dataGridView1.ForeColor = value;
             }
@@ -1066,11 +1116,11 @@ namespace ChapterTool
                     string lastTime = convertMethod.time2string(streamClip.TimeOut - streamClip.TimeIn);
                     if (((streamClip.TimeOut - streamClip.TimeIn) - (streamClip.timeStamp[1] - streamClip.timeStamp[0])) <= 5 * 45000)
                     {
-                        toolTip1.Show(SFakeChapter1 + lastTime + SFakeChapter2, btnSave);
+                        toolTip1.Show(string.Format("{0}{1}{2}",SFakeChapter1, lastTime, SFakeChapter2), btnSave);
                     }
                     else
                     {
-                        toolTip1.Show(SFakeChapter1 + lastTime + SFakeChapter3, btnSave);
+                        toolTip1.Show(string.Format("{0}{1}{2}",SFakeChapter1, lastTime, SFakeChapter3), btnSave);
                     }
                 }
             }
@@ -1177,7 +1227,7 @@ namespace ChapterTool
         }
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            CTLogger.Log("+更名: " + info.Chapters[e.RowIndex].Name + " -> "+ dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString());
+            CTLogger.Log(string.Format("+更名: {0} -> {1}", info.Chapters[e.RowIndex].Name, dataGridView1.Rows[e.RowIndex].Cells[2].Value));
             info.Chapters[e.RowIndex].Name = dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
         }
         private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
@@ -1185,7 +1235,6 @@ namespace ChapterTool
             foreach (DataGridViewRow item in dataGridView1.SelectedRows)
             {
                 info.Chapters.Remove((Chapter)item.Tag);
-                //dataGridView1.Rows.Remove(item);
             }
             updataInfo((int)numericUpDown1.Value);
             if (info.Chapters.Count > 1)
@@ -1193,7 +1242,7 @@ namespace ChapterTool
                 TimeSpan ini = info.Chapters[0].Time;
                 updataInfo(ini);
             }
-            //updataGridView();
+
         }
         private void Form1_Move(object sender, EventArgs e)
         {
@@ -1224,7 +1273,7 @@ namespace ChapterTool
             {
                 foreach (var item in dataGridView1.Rows)
                 {
-                    (item as DataGridViewRow).Cells[2].Value = "Chapter " + (index++).ToString("00");
+                    (item as DataGridViewRow).Cells[2].Value = string.Format("Chapter {0:D2}", index++);
                 }
             }
             else
@@ -1233,9 +1282,11 @@ namespace ChapterTool
             }
         }
 
+
+
         private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
-            CTLogger.Log("+"+e.RowCount.ToString() + "行被删除");
+            CTLogger.Log(string.Format("+ {0} 行被删除", e.RowCount));
         }
 
 

@@ -1,20 +1,36 @@
-﻿using System;
-using System.Drawing;
+﻿// ****************************************************************************
+//Public Domain
+// code from http://sourceforge.net/projects/gmkvextractgui/
+// ****************************************************************************
+using System;
 using System.Reflection;
-using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace ChapterTool
 {
     public partial class FormLog : Form
     {
-
-
-        // Methods
         public FormLog()
         {
-            this.InitializeComponent();
-            this.InitForm();
+            InitializeComponent();
+            InitForm();
+        }
+
+        private void InitForm()
+        {
+            Text = string.Format("ChapterTool v{0} -- Log", Assembly.GetExecutingAssembly().GetName().Version);
+        }
+
+        private void frmLog_Activated(object sender, EventArgs e)
+        {
+            this.txtLog.Text = CTLogger.LogText;
+        }
+
+        private void txtLog_TextChanged(object sender, EventArgs e)
+        {
+            this.txtLog.Select(this.txtLog.TextLength + 1, 0);
+            this.txtLog.ScrollToCaret();
+            this.grpLog.Text = string.Format("Log ({0})", this.txtLog.Lines.LongLength);
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -45,7 +61,7 @@ namespace ChapterTool
         {
             try
             {
-                this.txtLog.Text = CTLogger.LogText;
+                txtLog.Text = CTLogger.LogText;
             }
             catch (Exception exception)
             {
@@ -53,32 +69,11 @@ namespace ChapterTool
             }
         }
 
-
-        private void frmLog_Activated(object sender, EventArgs e)
-        {
-            this.txtLog.Text = CTLogger.LogText;
-        }
-
         private void frmLog_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // To avoid getting disposed
             e.Cancel = true;
             base.Hide();
         }
-
-        private void InitForm()
-        {
-            //base.Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-            this.Text = string.Format("ChapterTool v{0} -- Log", Assembly.GetExecutingAssembly().GetName().Version);
-        }
-
-
-        private void txtLog_TextChanged(object sender, EventArgs e)
-        {
-            this.txtLog.Select(this.txtLog.TextLength + 1, 0);
-            this.txtLog.ScrollToCaret();
-            this.grpLog.Text = string.Format("Log ({0})", this.txtLog.Lines.LongLength);
-        }
     }
-
-
 }

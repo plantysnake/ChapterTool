@@ -76,7 +76,6 @@ namespace ChapterTool
             this.txtLog.Location = new System.Drawing.Point(3, 19);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
-            this.txtLog.OthercTextBox = null;
             this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtLog.Size = new System.Drawing.Size(592, 404);

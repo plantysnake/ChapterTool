@@ -1,8 +1,30 @@
-﻿using System;
+﻿// ****************************************************************************
+// 
+// Copyright (C) 2014-2015 TautCony (TautCony@vcb-s.com)
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// 
+// ****************************************************************************
+using System;
 using System.Drawing;
+using ChapterTool.Util;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.Xml;
 
 namespace ChapterTool
 {
@@ -24,10 +46,9 @@ namespace ChapterTool
         
         public static string time2string(TimeSpan temp)
         {
-            return temp.Hours.ToString("00") + ":" +
-                 temp.Minutes.ToString("00") + ":" +
-                 temp.Seconds.ToString("00") + "." +
-            temp.Milliseconds.ToString("000");
+            return string.Format("{0:D2}:{1:D2}:{2:D2}.{3:D3}", 
+                                  temp.Hours  , temp.Minutes,
+                                  temp.Seconds, temp.Milliseconds);
         }
 
         public static Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
@@ -58,6 +79,50 @@ namespace ChapterTool
             int y = int.Parse(temp.Groups["y"].Value);
             return new Point(x, y);
         }
+
+        public static List<ChapterInfo>  PraseXML(XmlDocument doc)
+        {
+            List<ChapterInfo> BUFFER = new List<ChapterInfo>();
+            XmlElement root = doc.DocumentElement;
+            XmlNodeList EditionEntrys = root.ChildNodes;//获取各个章节的入口
+            foreach (XmlNode EditionEntry in EditionEntrys)
+            {
+                XmlNodeList EditionEntryChildNodes = (EditionEntry as XmlElement).ChildNodes;//获取当前章节中的所有子节点
+
+                ChapterInfo buff = new ChapterInfo();
+                buff.SourceType = "XML";
+                int j = 0;
+                foreach (XmlNode EditionEntryChildNode in EditionEntryChildNodes)
+                {
+                    if (EditionEntryChildNode.Name == "ChapterAtom")
+                    {
+                        XmlNodeList ChapterAtomChildNodes = (EditionEntryChildNode as XmlElement).ChildNodes;//获取Atom中的所有子节点
+                        Chapter temp = new Chapter();
+                        foreach (XmlNode ChapterAtomChildNode in ChapterAtomChildNodes)
+                        {
+                            switch (ChapterAtomChildNode.Name)
+                            {
+                                case "ChapterTimeStart":
+                                    temp.Time = string2Time(RTimeFormat.Match(ChapterAtomChildNode.InnerText).Value);
+                                    break;
+                                case "ChapterTimeEnd":
+                                    buff.Duration = string2Time(RTimeFormat.Match(ChapterAtomChildNode.InnerText).Value);
+                                    break;
+                                case "ChapterDisplay":
+                                    temp.Name = (ChapterAtomChildNode as XmlElement).ChildNodes.Item(0).InnerText;
+                                    break;
+                            }
+                        }
+                        temp.Number = ++j;
+                        buff.Chapters.Add(temp);
+                    }
+                }
+                BUFFER.Add(buff);
+            }
+            return BUFFER;
+        }
+
+
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
         static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr w, IntPtr l);
