@@ -1,5 +1,7 @@
-﻿//Public Domain
-//from http://sourceforge.net/projects/gmkvextractgui/
+﻿// ****************************************************************************
+//Public Domain
+// code from http://sourceforge.net/projects/gmkvextractgui/
+// ****************************************************************************
 using System;
 using System.Reflection;
 using System.Windows.Forms;
