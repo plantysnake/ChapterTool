@@ -262,7 +262,10 @@ namespace ChapterTool
         void LoadIFO()
         {
             Rawifo = new ifoData().GetStreams(paths[0]);
-            IFOmul1k1();
+            if (Rawifo[0].FramesPerSecond != 25)
+            {
+                IFOmul1k1();
+            }
             comboBox2.Items.Clear();
             comboBox2.Enabled = comboBox2.Visible = (Rawifo.Count >= 1);
             foreach (var item in Rawifo)
