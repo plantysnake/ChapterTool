@@ -95,7 +95,7 @@ namespace ChapterTool
                 Location = saved;
                 CTLogger.Log("成功载入保存的窗体位置"+saved.ToString());
             }
-
+            loadLang();
             setDefault();
             if (!string.IsNullOrEmpty(paths[0]))
             {
@@ -109,6 +109,25 @@ namespace ChapterTool
             btnTrans.Text = ((Environment.TickCount%2==0) ? "↺" : "↻");
             folderBrowserDialog1.SelectedPath = registryStorage.Load();
         }
+
+
+        
+
+        void loadLang()
+        {
+            xmlLang.Items.Add("und [未定]");
+            xmlLang.Items.Add("---常用---");
+            xmlLang.Items.Add("eng (English)");
+            xmlLang.Items.Add("jpn (Japanese)");
+            xmlLang.Items.Add("chi (Chinese)");
+            xmlLang.Items.Add("---全部---");
+
+            foreach (var item in LanguageSelectionContainer.Languages)
+            {
+                xmlLang.Items.Add(string.Format("{0} ({1})", item.Value, item.Key));
+            }
+        }
+
 
         ChapterInfo info;
 
@@ -153,6 +172,7 @@ namespace ChapterTool
             
             RawData  = null;
             XMLGroup = null;
+            xmlLang.SelectedIndex = 2;
         }
         Regex RLineOne    = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
         Regex RLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
@@ -384,6 +404,8 @@ namespace ChapterTool
             }
         }
 
+        Regex RLang = new Regex(@"\((?<lang>.+)\)");
+
         void saveFile()
         {
             if (!isPathValid) { return; }
@@ -411,7 +433,8 @@ namespace ChapterTool
                 case 1://XML
                     while (File.Exists(SavePath + ".xml")) { SavePath.Append("_"); }
                     SavePath.Append(".xml");
-                    info.SaveXml(SavePath.ToString());
+                    string key = RLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
+                    info.SaveXml(SavePath.ToString(),string.IsNullOrEmpty(key)? "": LanguageSelectionContainer.Languages[key]);
                     break;
                 case 2://QPF
                     while (File.Exists(SavePath + ".qpf")) { SavePath.Append("_"); }
@@ -423,6 +446,12 @@ namespace ChapterTool
             Tips.Text = "保存成功";
             //MessageBox.Show(savePath);
         }
+
+        private void savingType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            xmlLang.Enabled = (savingType.SelectedIndex == 1);
+        }
+
         void refresh_Click(object sender, EventArgs e) { updataGridView(); }
 
 
@@ -814,6 +843,8 @@ namespace ChapterTool
                 cbShift.Visible = value;
                 maskedTextBox1.Visible = value;
                 btnLog.Visible = value;
+                label4.Visible = value;
+                xmlLang.Visible = value;
             }
 
         }
@@ -1013,6 +1044,7 @@ namespace ChapterTool
                 dataGridView1.BackgroundColor = value;
                 numericUpDown1.BackColor = maskedTextBox1.BackColor = value;
                 comboBox1.BackColor = comboBox2.BackColor = value;
+                xmlLang.BackColor = value;
                 savingType.BackColor = value;
             }
         }
@@ -1064,6 +1096,7 @@ namespace ChapterTool
                 cbMore.ForeColor = value;
                 comboBox1.ForeColor = value;
                 comboBox2.ForeColor = value;
+                xmlLang.ForeColor = value;
                 savingType.ForeColor = value;
                 dataGridView1.ForeColor = value;
             }
@@ -1256,6 +1289,8 @@ namespace ChapterTool
                 updataGridView();
             }
         }
+
+
 
         private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {

@@ -334,7 +334,7 @@ namespace ChapterTool.Util
             addLanguage("Northern Frisian", "frr", "", "");
             addLanguage("Northern Sami", "sme", "", "se");
             addLanguage("Norwegian", "nor", "", "no");
-            addLanguage("Norwegian Bokm錶", "nob", "", "nb");
+            addLanguage("norwegian bokmål", "nob", "", "nb");
             addLanguage("Norwegian Nynorsk", "nno", "", "nn");
             addLanguage("Nyamwezi", "nym", "", "");
             addLanguage("Nyankole", "nyn", "", "");

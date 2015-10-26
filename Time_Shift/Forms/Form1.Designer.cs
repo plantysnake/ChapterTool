@@ -71,6 +71,8 @@
             this.savingType = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.btnPreview = new System.Windows.Forms.Button();
+            this.xmlLang = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
@@ -141,7 +143,7 @@
             // cbAutoGenName
             // 
             this.cbAutoGenName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbAutoGenName.Location = new System.Drawing.Point(192, 491);
+            this.cbAutoGenName.Location = new System.Drawing.Point(318, 493);
             this.cbAutoGenName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cbAutoGenName.Name = "cbAutoGenName";
             this.cbAutoGenName.Size = new System.Drawing.Size(97, 21);
@@ -312,13 +314,13 @@
             // 
             this.cbMul1k1.AutoSize = true;
             this.cbMul1k1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbMul1k1.Location = new System.Drawing.Point(12, 519);
+            this.cbMul1k1.Location = new System.Drawing.Point(192, 519);
             this.cbMul1k1.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbMul1k1.Name = "cbMul1k1";
-            this.cbMul1k1.Size = new System.Drawing.Size(177, 21);
+            this.cbMul1k1.Size = new System.Drawing.Size(117, 21);
             this.cbMul1k1.TabIndex = 15;
             this.cbMul1k1.TabStop = false;
-            this.cbMul1k1.Text = "所有章节的开始时间 x 1.001";
+            this.cbMul1k1.Text = "章节时间 x 1.001";
             this.toolTip1.SetToolTip(this.cbMul1k1, "用于DVD Decrypter提取的Chapter");
             this.cbMul1k1.UseVisualStyleBackColor = true;
             this.cbMul1k1.CheckedChanged += new System.EventHandler(this.cbMul1k1_CheckedChanged);
@@ -330,14 +332,14 @@
             this.numericUpDown1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.numericUpDown1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.numericUpDown1.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.numericUpDown1.Location = new System.Drawing.Point(419, 491);
+            this.numericUpDown1.Location = new System.Drawing.Point(516, 491);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             50,
             0,
             0,
             0});
             this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(82, 23);
+            this.numericUpDown1.Size = new System.Drawing.Size(52, 23);
             this.numericUpDown1.TabIndex = 16;
             this.numericUpDown1.TabStop = false;
             this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
@@ -345,7 +347,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(318, 494);
+            this.label3.Location = new System.Drawing.Point(435, 494);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(68, 17);
             this.label3.TabIndex = 17;
@@ -368,7 +370,7 @@
             // 
             this.cbChapterName.AutoSize = true;
             this.cbChapterName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbChapterName.Location = new System.Drawing.Point(192, 519);
+            this.cbChapterName.Location = new System.Drawing.Point(192, 493);
             this.cbChapterName.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbChapterName.Name = "cbChapterName";
             this.cbChapterName.Size = new System.Drawing.Size(120, 21);
@@ -387,7 +389,7 @@
             this.maskedTextBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.maskedTextBox1.ForeColor = System.Drawing.SystemColors.WindowText;
             this.maskedTextBox1.InsertKeyMode = System.Windows.Forms.InsertKeyMode.Overwrite;
-            this.maskedTextBox1.Location = new System.Drawing.Point(419, 519);
+            this.maskedTextBox1.Location = new System.Drawing.Point(423, 519);
             this.maskedTextBox1.Mask = "00:00:00.000";
             this.maskedTextBox1.Name = "maskedTextBox1";
             this.maskedTextBox1.PromptChar = 'T';
@@ -442,9 +444,9 @@
             this.btnLog.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnLog.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
             this.btnLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnLog.Location = new System.Drawing.Point(516, 490);
+            this.btnLog.Location = new System.Drawing.Point(514, 519);
             this.btnLog.Name = "btnLog";
-            this.btnLog.Size = new System.Drawing.Size(52, 52);
+            this.btnLog.Size = new System.Drawing.Size(52, 23);
             this.btnLog.TabIndex = 24;
             this.btnLog.TabStop = false;
             this.btnLog.Text = "LOG";
@@ -484,7 +486,7 @@
             this.cOrder.Name = "cOrder";
             this.cOrder.ReadOnly = true;
             this.cOrder.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cOrder.Width = 20;
+            this.cOrder.Width = 21;
             // 
             // cTimeCode
             // 
@@ -492,7 +494,7 @@
             this.cTimeCode.HeaderText = " 时间点 ";
             this.cTimeCode.Name = "cTimeCode";
             this.cTimeCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cTimeCode.Width = 56;
+            this.cTimeCode.Width = 57;
             // 
             // cChapterName
             // 
@@ -500,7 +502,7 @@
             this.cChapterName.HeaderText = " 章节名 ";
             this.cChapterName.Name = "cChapterName";
             this.cChapterName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cChapterName.Width = 56;
+            this.cChapterName.Width = 57;
             // 
             // cFrams
             // 
@@ -509,7 +511,7 @@
             this.cFrams.Name = "cFrams";
             this.cFrams.ReadOnly = true;
             this.cFrams.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cFrams.Width = 44;
+            this.cFrams.Width = 45;
             // 
             // savingType
             // 
@@ -526,6 +528,7 @@
             this.savingType.Size = new System.Drawing.Size(108, 25);
             this.savingType.TabIndex = 26;
             this.savingType.TabStop = false;
+            this.savingType.SelectedIndexChanged += new System.EventHandler(this.savingType_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -552,6 +555,27 @@
             this.btnPreview.UseVisualStyleBackColor = true;
             this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
             // 
+            // xmlLang
+            // 
+            this.xmlLang.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            this.xmlLang.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.xmlLang.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.xmlLang.FormattingEnabled = true;
+            this.xmlLang.Location = new System.Drawing.Point(74, 519);
+            this.xmlLang.Name = "xmlLang";
+            this.xmlLang.Size = new System.Drawing.Size(108, 25);
+            this.xmlLang.TabIndex = 29;
+            this.xmlLang.TabStop = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 523);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(58, 17);
+            this.label4.TabIndex = 30;
+            this.label4.Text = "XML语言";
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -559,6 +583,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(580, 551);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.xmlLang);
             this.Controls.Add(this.btnPreview);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.savingType);
@@ -647,6 +673,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn cTimeCode;
         private System.Windows.Forms.DataGridViewTextBoxColumn cChapterName;
         private System.Windows.Forms.DataGridViewTextBoxColumn cFrams;
+        private System.Windows.Forms.ComboBox xmlLang;
+        private System.Windows.Forms.Label label4;
     }
 }
 
