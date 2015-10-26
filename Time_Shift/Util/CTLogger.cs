@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿//Public Domain
+//from http://sourceforge.net/projects/gmkvextractgui/
+using System;
 using System.Text;
 
 namespace ChapterTool
 {
+    public delegate void LogLineAddedEventHandler(string lineAdded, DateTime actionDate);
     public class CTLogger
     {
-        // Fields
         private static StringBuilder _Log = new StringBuilder();
 
-        public delegate void LogLineAddedEventHandler(string lineAdded, DateTime actionDate);
+        public static string LogText { get { return _Log.ToString(); } }
 
-
-        // Events
         public static event LogLineAddedEventHandler LogLineAdded;
 
-        // Methods
         public static void Log(string message)
         {
-            DateTime now = DateTime.Now;
-            string str = string.Format("{0} {1}", now.ToString("[yyyy-MM-dd][HH:mm:ss]"), message);
-            _Log.AppendLine(str);
-            OnLogLineAdded(str, now);
+            DateTime actionDate = DateTime.Now;
+            string logMessage = string.Format("{0} {1}", actionDate.ToString("[yyyy-MM-dd][HH:mm:ss]"), message);
+            _Log.AppendLine(logMessage);
+            OnLogLineAdded(logMessage, actionDate);
         }
 
         protected static void OnLogLineAdded(string lineAdded, DateTime actionDate)
@@ -30,15 +27,6 @@ namespace ChapterTool
             if (LogLineAdded != null)
             {
                 LogLineAdded(lineAdded, actionDate);
-            }
-        }
-
-        // Properties
-        public static string LogText
-        {
-            get
-            {
-                return _Log.ToString();
             }
         }
     }
