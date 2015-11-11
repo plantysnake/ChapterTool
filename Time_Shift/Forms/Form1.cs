@@ -55,6 +55,7 @@ namespace ChapterTool
             initialLog();
             loadLang();
             setDefault();
+            convertMethod.loadColor(this);
             moreModeShow = false;
             Size = new Size(Size.Width, Size.Height - 80);
             savingType.SelectedIndex = 0;
@@ -310,25 +311,12 @@ namespace ChapterTool
             }
         }
 
-        public string GetUTF8String(byte[] buffer)
-        {
-            if (buffer == null) return null;
-            if (buffer.Length <= 3)  return Encoding.UTF8.GetString(buffer); 
-            byte[] bomBuffer = new byte[] { 0xef, 0xbb, 0xbf };
 
-            if (buffer[0] == bomBuffer[0]
-             && buffer[1] == bomBuffer[1]
-             && buffer[2] == bomBuffer[2])
-            {
-                return new UTF8Encoding(false).GetString(buffer, 3, buffer.Length - 3);
-            }
-            return Encoding.UTF8.GetString(buffer);
-        }
 
         void loadOGM()
         {
             byte[] buffer = File.ReadAllBytes(paths[0]);
-            geneRateCI(GetUTF8String(buffer));
+            geneRateCI(convertMethod.GetUTF8String(buffer));
             progressBar1.Value = 33;
             Tips.Text = Ssuccess;
         }
@@ -853,7 +841,7 @@ namespace ChapterTool
                 string ChapterPath = openFileDialog1.FileName;
                 CTLogger.Log("+载入自定义章节名模板："+ ChapterPath);
                 byte[] buffer = File.ReadAllBytes(ChapterPath);
-                temp = GetUTF8String(buffer);
+                temp = convertMethod.GetUTF8String(buffer);
             }
             else
             {

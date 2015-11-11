@@ -87,6 +87,7 @@ namespace ChapterTool
 
         private void Form3_FormClosing(object sender, FormClosingEventArgs e)
         {
+            convertMethod.saveColor(magic.currentColor);
             e.Cancel = true;
             base.Hide();
         }

@@ -18,7 +18,9 @@
 // 
 // ****************************************************************************
 using System;
+using System.IO;
 using System.Xml;
+using System.Text;
 using System.Drawing;
 using ChapterTool.Util;
 using System.Collections.Generic;
@@ -81,6 +83,21 @@ namespace ChapterTool
             return new Point(x, y);
         }
 
+        public static string GetUTF8String(byte[] buffer)
+        {
+            if (buffer == null) return null;
+            if (buffer.Length <= 3) return Encoding.UTF8.GetString(buffer);
+            byte[] bomBuffer = new byte[] { 0xef, 0xbb, 0xbf };
+
+            if (buffer[0] == bomBuffer[0]
+             && buffer[1] == bomBuffer[1]
+             && buffer[2] == bomBuffer[2])
+            {
+                return new UTF8Encoding(false).GetString(buffer, 3, buffer.Length - 3);
+            }
+            return Encoding.UTF8.GetString(buffer);
+        }
+
         public static List<ChapterInfo>  PraseXML(XmlDocument doc)
         {
             List<ChapterInfo> BUFFER = new List<ChapterInfo>();
@@ -135,7 +152,34 @@ namespace ChapterTool
             return BUFFER;
         }
 
+        private static string colorProfile = "color-config.json";
+        private static Regex Rcolor = new Regex("\"(?<argb>.+?)\"");
+        public static void saveColor(List<Color> ColorList)
+        {
+            StringBuilder json = new StringBuilder("[");
+            foreach (var item in ColorList)
+            {
+                json.AppendFormat("\"{0}\",", item.ToArgb());
+            }
+            json[json.Length - 1] = ']';
+            File.WriteAllText(colorProfile, json.ToString());
+        }
 
+        public static void loadColor(Form1 window)
+        {
+            if (File.Exists(colorProfile))
+            {
+                string json = File.ReadAllText(colorProfile);
+                var matchesOfJson = Rcolor.Matches(json);
+                if (matchesOfJson.Count < 6) { return; }
+                window.BackChange     = Color.FromArgb(int.Parse(matchesOfJson[0].Groups["argb"].Value));
+                window.TextBack       = Color.FromArgb(int.Parse(matchesOfJson[1].Groups["argb"].Value));
+                window.MouseOverColor = Color.FromArgb(int.Parse(matchesOfJson[2].Groups["argb"].Value));
+                window.MouseDownColor = Color.FromArgb(int.Parse(matchesOfJson[3].Groups["argb"].Value));
+                window.BordBackColor  = Color.FromArgb(int.Parse(matchesOfJson[4].Groups["argb"].Value));
+                window.TextFrontColor = Color.FromArgb(int.Parse(matchesOfJson[5].Groups["argb"].Value));
+            }
+        }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
         static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr w, IntPtr l);
@@ -147,5 +191,15 @@ namespace ChapterTool
         {
             SendMessage(pBar.Handle, 1040, (IntPtr)state, IntPtr.Zero);
         }
+
+        //from http://www.sukitech.com/?p=1080
+        //尋找視窗
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        //將視窗移動到最上層
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+
     }
 }

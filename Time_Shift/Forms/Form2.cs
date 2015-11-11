@@ -43,18 +43,19 @@ namespace ChapterTool
         }
         private void Form2_SizeChanged(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Minimized)
+            if (WindowState == FormWindowState.Minimized)
             {
-                this.Hide();
-                this.notifyIcon1.Visible = true;
+                Hide();
+                notifyIcon1.Visible = true;
+                notifyIcon1.ShowBalloonTip(1000, "具体作用开发中~", "现在完全没用啦", ToolTipIcon.Info);
             }
         }
 
         private void notifyIcon1_Click(object sender, EventArgs e)
         {
-            this.Visible = true;
-            this.WindowState = FormWindowState.Normal;
-            this.notifyIcon1.Visible = false;
+            Visible = true;
+            WindowState = FormWindowState.Normal;
+            notifyIcon1.Visible = false;
         }
 
         private void close()
@@ -73,41 +74,36 @@ namespace ChapterTool
         private void button3_Click(object sender, EventArgs e) { if(poi == 3) { close(); } }
         private void button4_Click(object sender, EventArgs e) { if(poi == 4) { close(); } }
 
-        Point mouseOff;
-        bool leftFlag;
 
+        //from http://www.sukitech.com/?p=948
+        private Point startPoint;
         private void Form2_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                mouseOff = new Point(-e.X, -e.Y);
-                leftFlag = true;
-            }
+            startPoint = new Point(-e.X , -e.Y);
+            //startPoint = new Point(-e.X + SystemInformation.FrameBorderSize.Width, -e.Y - SystemInformation.FrameBorderSize.Height);
         }
-
-        private void Form2_MouseUp(object sender, MouseEventArgs e) { leftFlag = false; }
 
         private void Form2_MouseMove(object sender, MouseEventArgs e)
         {
-            if (leftFlag)
+            if (e.Button == MouseButtons.Left)
             {
-                Point mouseSet = Control.MousePosition;
-                mouseSet.Offset(mouseOff.X, mouseOff.Y);
-                Location = mouseSet;
+                Point mousePos = MousePosition;
+                mousePos.Offset(startPoint.X, startPoint.Y);
+                Location = mousePos;
             }
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
             //Thread.Sleep(20000);
-            this.WindowState = FormWindowState.Minimized;
+            WindowState = FormWindowState.Minimized;
             CTLogger.Log("关于窗口被最小化");
         }
 
         private void Form2_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
-            base.Hide();
+            Hide();
         }
     }
 }

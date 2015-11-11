@@ -159,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\about.ico" />
+    <Content Include="Images\Ct.ico" />
     <Content Include="Images\icon.ico" />
   </ItemGroup>
   <ItemGroup>
