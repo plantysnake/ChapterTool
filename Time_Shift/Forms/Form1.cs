@@ -870,7 +870,7 @@ namespace ChapterTool
             cbMore.Text = cbMore.Checked ? "∧" : "∨";
         }
 
-       string loadChapterName()
+        string loadChapterName()
         {
             openFileDialog1.Filter = SnameFitter;
             string temp = string.Empty;

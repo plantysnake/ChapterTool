@@ -94,27 +94,39 @@ namespace ChapterTool
                 int j = 0;
                 foreach (XmlNode EditionEntryChildNode in EditionEntryChildNodes)
                 {
-                    if (EditionEntryChildNode.Name == "ChapterAtom")
+                    if (EditionEntryChildNode.Name != "ChapterAtom") { continue; }
+                    XmlNodeList ChapterAtomChildNodes = (EditionEntryChildNode as XmlElement).ChildNodes;//获取Atom中的所有子节点
+                    Chapter temp  = new Chapter();
+                    Chapter temp2 = new Chapter();
+                    foreach (XmlNode ChapterAtomChildNode in ChapterAtomChildNodes)
                     {
-                        XmlNodeList ChapterAtomChildNodes = (EditionEntryChildNode as XmlElement).ChildNodes;//获取Atom中的所有子节点
-                        Chapter temp = new Chapter();
-                        foreach (XmlNode ChapterAtomChildNode in ChapterAtomChildNodes)
+                        switch (ChapterAtomChildNode.Name)
                         {
-                            switch (ChapterAtomChildNode.Name)
-                            {
-                                case "ChapterTimeStart":
-                                    temp.Time = string2Time(RTimeFormat.Match(ChapterAtomChildNode.InnerText).Value);
-                                    break;
-                                case "ChapterTimeEnd":
-                                    buff.Duration = string2Time(RTimeFormat.Match(ChapterAtomChildNode.InnerText).Value);
-                                    break;
-                                case "ChapterDisplay":
-                                    temp.Name = (ChapterAtomChildNode as XmlElement).ChildNodes.Item(0).InnerText;
-                                    break;
-                            }
+                            case "ChapterTimeStart":
+                                temp.Time = string2Time(RTimeFormat.Match(ChapterAtomChildNode.InnerText).Value);
+                                break;
+                            case "ChapterTimeEnd":
+                                temp2.Time = string2Time(RTimeFormat.Match(ChapterAtomChildNode.InnerText).Value);
+                                break;
+                            case "ChapterDisplay":
+                                temp.Name  = (ChapterAtomChildNode as XmlElement).ChildNodes.Item(0).InnerText;
+                                temp2.Name = temp.Name;
+                                break;
                         }
-                        temp.Number = ++j;
-                        buff.Chapters.Add(temp);
+                    }
+                    temp.Number = ++j;
+                    buff.Chapters.Add(temp);
+                    if (temp2.Time.TotalSeconds > 1e-5)
+                    {
+                        temp2.Number = j;
+                        buff.Chapters.Add(temp2);
+                    }
+                }
+                for (int i = 0; i < buff.Chapters.Count - 1; i++)
+                {
+                    if (buff.Chapters[i].Time == buff.Chapters[i+1].Time)
+                    {
+                        buff.Chapters.Remove(buff.Chapters[i--]);
                     }
                 }
                 BUFFER.Add(buff);
