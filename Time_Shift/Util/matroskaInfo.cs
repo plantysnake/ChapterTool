@@ -17,28 +17,26 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 // ****************************************************************************
-using System.Xml;
 
 namespace ChapterTool
 {
     class matroskaInfo
     {
-        public XmlDocument result;
+        public System.Xml.XmlDocument result = new System.Xml.XmlDocument();
         public matroskaInfo(string path, string program = "mkvextract.exe")
         {
-            result = new XmlDocument();
             string arg = "chapters \"" + path + "\"";
             string xmlresult = runMkvextract(arg, program);
             result.LoadXml(xmlresult);
         }
-        static string runMkvextract(string arguments,string program)
+        static string runMkvextract(string arguments, string program)
         {
             System.Diagnostics.Process process = new System.Diagnostics.Process();
-            process.StartInfo.FileName = program;
-            process.StartInfo.Arguments = arguments;
+            process.StartInfo.FileName               = program;
+            process.StartInfo.Arguments              = arguments;
             // 禁用操作系统外壳程序
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.UseShellExecute        = false;
+            process.StartInfo.CreateNoWindow         = true;
             process.StartInfo.RedirectStandardOutput = true;
             process.Start();
 
@@ -48,6 +46,5 @@ namespace ChapterTool
             process.Close();
             return output;
         }
-
     }
 }

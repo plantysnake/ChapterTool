@@ -19,6 +19,7 @@ namespace ChapterTool.Util
         public TimeSpan Time { get; set; }
         /// <summary>Chapter Name</summary>
         public string Name { get; set; }
+        /// <summary>Fram Count</summary>
         public string FramsInfo { get; set; }
         public override string ToString()
         {
@@ -30,7 +31,7 @@ namespace ChapterTool.Util
         public ChapterInfo()
         {
             Chapters = new List<Chapter>();
-            offset = TimeSpan.Zero;
+            offset   = TimeSpan.Zero;
         }
         public string Title { get; set; }
         public string LangCode { get; set; }
@@ -66,43 +67,30 @@ namespace ChapterTool.Util
 
         public string getText(bool DONOTUSEName)
         {
-            string lines = string.Empty;
+            StringBuilder lines = new StringBuilder();
             int i = 1;
             foreach (Chapter c in Chapters)
             {
-                lines += ("CHAPTER" + c.Number.ToString("00") + "=" + convertMethod.time2string(c.Time) + Environment.NewLine);
-                lines += ("CHAPTER" + c.Number.ToString("00") + "NAME=");
-                if (DONOTUSEName)
-                {
-                    lines += "Chapter " + i.ToString("00") + Environment.NewLine;
-                }
-                else
-                {
-                    lines += c.Name + Environment.NewLine;
-                }
-                ++i;
+                lines.Append(string.Format("CHAPTER{0:D2}={1}{2}", c.Number, convertMethod.time2string(c.Time), Environment.NewLine));
+                lines.Append(string.Format("CHAPTER{0:D2}NAME=", c.Number));
+                lines.Append(DONOTUSEName ? string.Format("Chapter {0:D2}", i++) : c.Name);
+                lines.Append(Environment.NewLine);
             }
-            return string.Concat(lines);
+            return lines.ToString();
         }
 
         public void SaveText(string filename,bool DONOTUSEName)
         {
-            List<string> lines = new List<string>();
+            StringBuilder lines = new StringBuilder();
             int i = 1;
-            foreach (Chapter c in Chapters) 
+            foreach (Chapter c in Chapters)
             {
-                lines.Add("CHAPTER" + i.ToString("00") + "=" + convertMethod.time2string(c.Time));
-                if (DONOTUSEName)
-                {
-                    lines.Add("Chapter " + i.ToString("00"));
-                }
-                else
-                {
-                    lines.Add("CHAPTER" + i.ToString("00") + "NAME=" + c.Name);
-                }
-                ++i;
+                lines.Append(string.Format("CHAPTER{0:D2}={1}{2}", c.Number, convertMethod.time2string(c.Time), Environment.NewLine));
+                lines.Append(string.Format("CHAPTER{0:D2}NAME=", c.Number));
+                lines.Append(DONOTUSEName ? ("Chapter " + i++.ToString("00")) : c.Name);
+                lines.Append(Environment.NewLine);
             }
-            File.WriteAllLines(filename, lines.ToArray(),Encoding.UTF8);
+            File.WriteAllText(filename, lines.ToString(), Encoding.UTF8);
         }
 
         public void SaveQpfile(string filename)
@@ -141,11 +129,11 @@ namespace ChapterTool.Util
         public void SaveXml(string filename,string lang)
         {
             if (string.IsNullOrEmpty(lang)) { lang = "und"; }
-            Random rndb = new Random();
+            Random rndb           = new Random();
             XmlTextWriter xmlchap = new XmlTextWriter(filename, Encoding.UTF8);
-            xmlchap.Formatting = Formatting.Indented;
+            xmlchap.Formatting    = Formatting.Indented;
             xmlchap.WriteStartDocument();
-            xmlchap.WriteComment("<!DOCTYPE Tags SYSTEM " + "\"" + "matroskatags.dtd" + "\"" + ">");
+            xmlchap.WriteComment("<!DOCTYPE Tags SYSTEM \"matroskatags.dtd\">");
             xmlchap.WriteStartElement("Chapters");
             xmlchap.WriteStartElement("EditionEntry");
             xmlchap.WriteElementString("EditionFlagHidden", "0");

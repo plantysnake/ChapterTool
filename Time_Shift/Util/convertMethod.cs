@@ -18,13 +18,14 @@
 // 
 // ****************************************************************************
 using System;
+using System.Xml;
 using System.Drawing;
 using ChapterTool.Util;
-using System.Windows.Forms;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Xml;
+
+
 
 namespace ChapterTool
 {
@@ -142,7 +143,7 @@ namespace ChapterTool
         //2 = error (red); 
         //3 = warning (yellow).
         //
-        public static void SetState(this ProgressBar pBar, int state)
+        public static void SetState(this System.Windows.Forms.ProgressBar pBar, int state)
         {
             SendMessage(pBar.Handle, 1040, (IntPtr)state, IntPtr.Zero);
         }

@@ -110,9 +110,9 @@
             this.btnSave.Text = "保存";
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            this.btnSave.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnSave_MouseDown);
             this.btnSave.MouseEnter += new System.EventHandler(this.btnSave_MouseEnter);
             this.btnSave.MouseLeave += new System.EventHandler(this.toolTipRemoveAll);
+            this.btnSave.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnSave_MouseUp);
             // 
             // label1
             // 
@@ -138,12 +138,12 @@
             this.btnTrans.Text = "↻";
             this.btnTrans.UseVisualStyleBackColor = true;
             this.btnTrans.Click += new System.EventHandler(this.refresh_Click);
-            this.btnTrans.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Color_MouseDown);
+            this.btnTrans.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Color_MouseUp);
             // 
             // cbAutoGenName
             // 
             this.cbAutoGenName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbAutoGenName.Location = new System.Drawing.Point(318, 493);
+            this.cbAutoGenName.Location = new System.Drawing.Point(318, 491);
             this.cbAutoGenName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cbAutoGenName.Name = "cbAutoGenName";
             this.cbAutoGenName.Size = new System.Drawing.Size(97, 21);
@@ -314,7 +314,7 @@
             // 
             this.cbMul1k1.AutoSize = true;
             this.cbMul1k1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbMul1k1.Location = new System.Drawing.Point(192, 519);
+            this.cbMul1k1.Location = new System.Drawing.Point(192, 521);
             this.cbMul1k1.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbMul1k1.Name = "cbMul1k1";
             this.cbMul1k1.Size = new System.Drawing.Size(117, 21);
@@ -357,7 +357,7 @@
             // 
             this.cbShift.AutoSize = true;
             this.cbShift.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbShift.Location = new System.Drawing.Point(318, 519);
+            this.cbShift.Location = new System.Drawing.Point(318, 521);
             this.cbShift.Name = "cbShift";
             this.cbShift.Size = new System.Drawing.Size(96, 21);
             this.cbShift.TabIndex = 18;
@@ -370,7 +370,7 @@
             // 
             this.cbChapterName.AutoSize = true;
             this.cbChapterName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbChapterName.Location = new System.Drawing.Point(192, 493);
+            this.cbChapterName.Location = new System.Drawing.Point(192, 491);
             this.cbChapterName.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbChapterName.Name = "cbChapterName";
             this.cbChapterName.Size = new System.Drawing.Size(120, 21);
