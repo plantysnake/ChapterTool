@@ -153,13 +153,13 @@ namespace ChapterTool
         }
 
         private static string colorProfile = "color-config.json";
-        private static Regex Rcolor = new Regex("\"(?<argb>.+?)\"");
+        private static Regex Rcolor = new Regex("\"(?<hex>.+?)\"");
         public static void saveColor(List<Color> ColorList)
         {
             StringBuilder json = new StringBuilder("[");
             foreach (var item in ColorList)
             {
-                json.AppendFormat("\"{0}\",", item.ToArgb());
+                json.AppendFormat("\"#{0:X2}{1:X2}{2:X2}\",", item.R, item.G, item.B);
             }
             json[json.Length - 1] = ']';
             File.WriteAllText(colorProfile, json.ToString());
@@ -172,12 +172,12 @@ namespace ChapterTool
                 string json = File.ReadAllText(colorProfile);
                 var matchesOfJson = Rcolor.Matches(json);
                 if (matchesOfJson.Count < 6) { return; }
-                window.BackChange     = Color.FromArgb(int.Parse(matchesOfJson[0].Groups["argb"].Value));
-                window.TextBack       = Color.FromArgb(int.Parse(matchesOfJson[1].Groups["argb"].Value));
-                window.MouseOverColor = Color.FromArgb(int.Parse(matchesOfJson[2].Groups["argb"].Value));
-                window.MouseDownColor = Color.FromArgb(int.Parse(matchesOfJson[3].Groups["argb"].Value));
-                window.BordBackColor  = Color.FromArgb(int.Parse(matchesOfJson[4].Groups["argb"].Value));
-                window.TextFrontColor = Color.FromArgb(int.Parse(matchesOfJson[5].Groups["argb"].Value));
+                window.BackChange     = ColorTranslator.FromHtml(matchesOfJson[0].Groups["hex"].Value);
+                window.TextBack       = ColorTranslator.FromHtml(matchesOfJson[1].Groups["hex"].Value);
+                window.MouseOverColor = ColorTranslator.FromHtml(matchesOfJson[2].Groups["hex"].Value);
+                window.MouseDownColor = ColorTranslator.FromHtml(matchesOfJson[3].Groups["hex"].Value);
+                window.BordBackColor  = ColorTranslator.FromHtml(matchesOfJson[4].Groups["hex"].Value);
+                window.TextFrontColor = ColorTranslator.FromHtml(matchesOfJson[5].Groups["hex"].Value);
             }
         }
 

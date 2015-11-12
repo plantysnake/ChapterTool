@@ -465,7 +465,7 @@ namespace ChapterTool
             temp.Number = order;
             return temp;
         }
-
+        #region geneRateCI
         void geneRateCI(string text)
         {
             string[] OGMdata = text.Split('\n');
@@ -576,7 +576,9 @@ namespace ChapterTool
                 Tips.Text = Swhatsthis2;
             }
         }
+        #endregion
 
+        #region updataInfo
         void updataInfo(TimeSpan shift)
         {
             if (!isPathValid) { return; }
@@ -613,6 +615,7 @@ namespace ChapterTool
                 item.Time = convertMethod.pts2Time((int)((decimal)item.Time.TotalSeconds * coefficient * 45000M));
             }
         }
+        #endregion
 
         int convertFR2Index(double frame)
         {
@@ -687,7 +690,6 @@ namespace ChapterTool
             {
                 comboBox1.SelectedIndex = index - 1;
             }
-            //index = (index == 0)? getAUTOFPS(): index;
 
             foreach (var item in info.Chapters)
             {
@@ -780,9 +782,8 @@ namespace ChapterTool
             }
         }
 
-        //TimeSpan _ShiftTime;
 
-
+        #region form resize support
         bool moreModeShow
         {
             set
@@ -826,11 +827,12 @@ namespace ChapterTool
             }
             moreModeShow = cbMore.Checked;
         }
-        void cbMore_CheckedChanged(object sender, EventArgs e) //MORE
+        void cbMore_CheckedChanged(object sender, EventArgs e)
         {
             Form1_Resize();
             cbMore.Text = cbMore.Checked ? "∧" : "∨";
         }
+        #endregion
 
         string loadChapterName()
         {
@@ -943,14 +945,16 @@ namespace ChapterTool
             }
         }
 
-        //////////matroska support
+        /// <summary>
+        /// generate the chapter info from a matroska file
+        /// </summary>
         void loadMatroska()
         {
             matroskaInfo matroska = new matroskaInfo(paths[0]);
             geneRateCI(matroska.result);
         }
 
-        //color support
+        #region color support
         Form3 Fcolor;
 
         private void Color_MouseUp(object sender, MouseEventArgs e)
@@ -1079,8 +1083,9 @@ namespace ChapterTool
                 return ForeColor;
             }
         }
+        #endregion
 
-        //tips part
+        #region tips support
         private void label1_MouseEnter(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(paths[0]))
@@ -1121,7 +1126,9 @@ namespace ChapterTool
             toolTip1.Show("用于DVD Decrypter提取的Chapter", cbMul1k1);
         }
         private void toolTipRemoveAll(object sender, EventArgs e) { toolTip1.RemoveAll(); }
+        #endregion
 
+        #region closing animation support
         public int SystemVersion
         {
             //Windows95/98/Me	     	 4	 
@@ -1172,6 +1179,8 @@ namespace ChapterTool
                 }
             }
         }
+        #endregion
+
         FormLog _LogForm;
         private void btnLog_Click(object sender, EventArgs e)
         {
