@@ -21,15 +21,15 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Linq;
 using System.Drawing;
 using ChapterTool.Util;
-using ChapterTool.Forms;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 
-namespace ChapterTool
+namespace ChapterTool.Forms
 {
     public partial class Form1 : Form
     {
@@ -87,14 +87,7 @@ namespace ChapterTool
                 }
                 CTLogger.Log(processor);
             }
-
-            if (Screen.AllScreens.Length > 1)
-            {
-                foreach (var item in Screen.AllScreens)
-                {
-                    CTLogger.Log(item.DeviceName + " 分辨率：" + item.Bounds.Width + "*" + item.Bounds.Height);
-                }
-            }
+            Screen.AllScreens.ToList().ForEach(item => CTLogger.Log(string.Format("{0} 分辨率：{1}*{2}", item.DeviceName, item.Bounds.Width, item.Bounds.Height)));
         }
 
 
@@ -116,8 +109,6 @@ namespace ChapterTool
 
         ChapterInfo info;
 
-        string SnotLoaded = "尚未载入文件";
-
         string SchapterFitter
         {
             get
@@ -134,6 +125,7 @@ namespace ChapterTool
                 }
             }
         }
+        string SnotLoaded = "尚未载入文件";
         string SnameFitter = "文本文件(*.txt)|*.txt|所有文件(*.*)|*.*";
         string Ssuccess = "载入完成 (≧▽≦)";
         string Swhatsthis2 = "当前片段并没有章节 (¬_¬)";
@@ -166,15 +158,11 @@ namespace ChapterTool
         void Form1_DragDrop(object sender,  DragEventArgs e)
         {
             paths = e.Data.GetData(DataFormats.FileDrop) as string[];
-            if (isPathValid)
-            {
-                CTLogger.Log("+从窗口拖拽中载入文件:" + paths[0]);
-                comboBox2.Items.Clear();
-                Loadfile();
-
-                updataGridView();
-
-            }
+            if (!isPathValid) { return; }
+            CTLogger.Log("+从窗口拖拽中载入文件:" + paths[0]);
+            comboBox2.Items.Clear();
+            Loadfile();
+            updataGridView();
         }
         void Form1_DragEnter(object sender, DragEventArgs e)
         {
@@ -224,7 +212,6 @@ namespace ChapterTool
                     label1.Text = SnotLoaded;
                     return false;
                 }
-
                 return true;
             }
         }
@@ -299,15 +286,9 @@ namespace ChapterTool
 
         void IFOmul1k1()
         {
-            foreach (var item in Rawifo)
+            foreach (var item in Rawifo.Where(item => item != null))
             {
-                if (item!= null)
-                {
-                    foreach (var item2 in item.Chapters)
-                    {
-                        item2.Time = convertMethod.pts2Time((int)((decimal)item2.Time.TotalSeconds * 1.001M * 45000M));
-                    }
-                }
+                item.Chapters.ForEach((item2) => item2.Time = convertMethod.pts2Time((int)((decimal)item2.Time.TotalSeconds * 1.001M * 45000M)));
             }
         }
 
@@ -341,30 +322,22 @@ namespace ChapterTool
 
         private void btnSave_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            try
             {
-                try
+                if (e.Button == MouseButtons.Right)
                 {
                     if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
                     {
                         CUSTsavingPath = folderBrowserDialog1.SelectedPath;
-                        try
-                        {
-                            registryStorage.Save(CUSTsavingPath);
-                            CTLogger.Log("设置保存路径为:" + CUSTsavingPath);
-                        }
-                        catch (Exception ex)
-                        {
-                            Tips.Text = "由于某种原因，它炸了";
-                            CTLogger.Log("设置保存路过程中出现错误：" + ex.Message);
-                        }
+                        registryStorage.Save(CUSTsavingPath);
+                        CTLogger.Log("设置保存路径为:" + CUSTsavingPath);
                     }
                 }
-                catch (Exception exception)
-                {
-                    MessageBox.Show(string.Format("Error opening path {0}: {1}{2}", CUSTsavingPath, exception.Message, Environment.NewLine), "ChapterTool Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                    CTLogger.Log(string.Format("Error opening file {0}: {1}", CUSTsavingPath, exception.Message));
-                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(string.Format("Error opening path {0}: {1}{2}", CUSTsavingPath, exception.Message, Environment.NewLine), "ChapterTool Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                CTLogger.Log(string.Format("Error opening path {0}: {1}", CUSTsavingPath, exception.Message));
             }
         }
 
@@ -424,10 +397,7 @@ namespace ChapterTool
             i = 0;
             foreach (var item in OGMdata)
             {
-                if (!string.IsNullOrEmpty(item))
-                {
-                    return item;
-                }
+                if (!string.IsNullOrEmpty(item)) { return item; }
                 ++i;
             }
             return string.Empty;
@@ -582,56 +552,42 @@ namespace ChapterTool
         void updataInfo(TimeSpan shift)
         {
             if (!isPathValid) { return; }
-            foreach (var item in info.Chapters)
-            {
-                item.Time -= shift;
-            }
+            info.Chapters.ForEach(item => item.Time -= shift);
         }
         void updataInfo(int shift)
         {
             if (!isPathValid) { return; }
             int i = 1;
-            foreach (var item in info.Chapters)
-            {
-                item.Number = i++ + shift;
-            }
+            info.Chapters.ForEach(item => item.Number = i++ + shift);
         }
         void updataInfo(string chapterName)
         {
             if (!isPathValid) { return; }
-            string[] cn = chapterName.Split('\n');
-            int i = 0;
+            List<string>.Enumerator cn = chapterName.Split('\n').ToList().GetEnumerator();
             foreach (var item in info.Chapters)
             {
-                item.Name = cn[i++];
-                if (i == cn.Length) { break; }
+                if(cn.MoveNext())
+                {
+                    item.Name = cn.Current;
+                }
             }
         }
         void updataInfo(decimal coefficient)
         {
             if (!isPathValid) { return; }
-            foreach (var item in info.Chapters)
-            {
-                item.Time = convertMethod.pts2Time((int)((decimal)item.Time.TotalSeconds * coefficient * 45000M));
-            }
+            info.Chapters.ForEach(item => item.Time = convertMethod.pts2Time((int)((decimal)item.Time.TotalSeconds * coefficient * 45000M)));
         }
         #endregion
 
         int convertFR2Index(double frame)
         {
-            int i = 0;
-            foreach (var item in FrameRate)
-            {
-                if (Math.Abs(frame-(double)item) < 1e-5) { return i; }
-                else { ++i; }
-            }
-            return 0;
+            var result = Enumerable.Range(0, 7).Where(index => (Math.Abs(frame - (double)FrameRate[index]))< 1e-5);
+            return result.First();
         }
 
         void updataGridView(int fpsIndex = 0)
         {
             if (!isPathValid || info == null) { return; }
-
             switch (info.SourceType)
             {
                 case "DVD":
@@ -711,10 +667,8 @@ namespace ChapterTool
                 int InAccuratePiont = 0;
                 FPStemp = FrameRate[j];
 
-                foreach (var item in info.Chapters)
-                {
-                    getAccuracy(item.Time, ref AccuratePiont, ref InAccuratePiont, j);
-                }
+                info.Chapters.ForEach((item) => getAccuracy(item.Time, ref AccuratePiont, ref InAccuratePiont, j));
+
                 if (currentMaxOne < AccuratePiont)
                 {
                     AUTOFPS_code = j;
@@ -750,7 +704,7 @@ namespace ChapterTool
         {
             foreach (var item in toolStripMenuItem1.DropDownItems)
             {
-                if (!Equals(item,toolStripSeparator1))
+                if (!Equals(item, toolStripSeparator1))
                 {
                     (item as ToolStripMenuItem).Checked = false;
                 }
@@ -805,25 +759,13 @@ namespace ChapterTool
         }
         void Form1_Resize()
         {
-            Size change = new Size(Size.Width,0);
-            switch (cbMore.Checked)
+            if (cbMore.Checked)
             {
-                case true:
-                    int range = Size.Height + 80;
-                    for (int i = Size.Height; i <= range; ++i)
-                    {
-                        change.Height = i;
-                        Size = change;
-                    }
-                    break;
-                case false:
-                    int range2 = Size.Height - 80;
-                    for (int i = Size.Height; i >= range2; --i)
-                    {
-                        change.Height = i;
-                        Size = change;
-                    }
-                    break;
+                Enumerable.Range(Size.Height, 80).ToList().ForEach((x) => Size = new Size(Size.Width, x));
+            }
+            else
+            {
+                Enumerable.Range(Size.Height - 80, 80).Reverse().ToList().ForEach((x) => Size = new Size(Size.Width, x));
             }
             moreModeShow = cbMore.Checked;
         }
@@ -854,8 +796,8 @@ namespace ChapterTool
 
         string chapterNameTemplate;
 
-       void cbChapterName_CheckedChanged(object sender, EventArgs e)       //载入客章节模板或清除
-        {
+       private void cbChapterName_CheckedChanged(object sender, EventArgs e)       //载入客章节模板或清除
+       {
             if(cbChapterName.Checked)
             {
                 chapterNameTemplate = loadChapterName();
@@ -1160,22 +1102,20 @@ namespace ChapterTool
                 int forward2   = forward.Next(1, 5);
                 if (forward2 % 2 == 0 || SystemVersion == 5)
                 {
-                    for (int i = 0; i < 50; i++)
+                    foreach (var i in Enumerable.Range(0,50))
                     {
                         FormMove(forward.Next(1, 5), ref origin);
                         System.Threading.Thread.Sleep(4);
                         Location = origin;
                     }
+                    return;
                 }
-                else
+                while (Opacity > 0)
                 {
-                    while (Opacity > 0)
-                    {
-                        Opacity -= 0.02;
-                        FormMove(forward2, ref origin);
-                        System.Threading.Thread.Sleep(4);
-                        Location = origin;
-                    }
+                    Opacity -= 0.02;
+                    FormMove(forward2, ref origin);
+                    System.Threading.Thread.Sleep(4);
+                    Location = origin;
                 }
             }
         }
@@ -1229,7 +1169,6 @@ namespace ChapterTool
                 TimeSpan ini = info.Chapters[0].Time;
                 updataInfo(ini);
             }
-
         }
         private void Form1_Move(object sender, EventArgs e)
         {
@@ -1262,11 +1201,9 @@ namespace ChapterTool
                 {
                     (item as DataGridViewRow).Cells[2].Value = string.Format("Chapter {0:D2}", index++);
                 }
+                return;
             }
-            else
-            {
-                updataGridView();
-            }
+            updataGridView();
         }
 
         private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
