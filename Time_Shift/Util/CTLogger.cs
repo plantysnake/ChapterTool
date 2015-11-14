@@ -5,7 +5,7 @@
 using System;
 using System.Text;
 
-namespace ChapterTool
+namespace ChapterTool.Util
 {
     public delegate void LogLineAddedEventHandler(string lineAdded, DateTime actionDate);
     public class CTLogger

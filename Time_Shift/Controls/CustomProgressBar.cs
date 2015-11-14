@@ -3,13 +3,13 @@ using System.Drawing;
 using System.Windows.Forms;
 using System;
 
-namespace ChapterTool
+namespace ChapterTool.Controls
 {
     class CustomProgressBar : ProgressBar
     {
         Color BarColor = Color.Blue;        // Color of progress meter
 
-        
+
 
         public CustomProgressBar()
         {

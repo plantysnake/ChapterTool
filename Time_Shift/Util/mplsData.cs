@@ -23,7 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 
-namespace ChapterTool
+namespace ChapterTool.Util
 {
     public class mplsData
     {

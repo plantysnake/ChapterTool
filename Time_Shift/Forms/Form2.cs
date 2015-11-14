@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Drawing;
 using System.Threading;
+using ChapterTool.Util;
 using System.Windows.Forms;
 using System.Reflection;
 
-namespace ChapterTool
+namespace ChapterTool.Forms
 {
     public partial class Form2 : Form
     {

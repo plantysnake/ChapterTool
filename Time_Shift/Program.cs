@@ -10,17 +10,17 @@ namespace ChapterTool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            
-            
+
+
             if (args.Length == 0)
             {
-                Application.Run(new Form1());
+                Application.Run(new Forms.Form1());
             }
             else
             {
                 string argsFull = string.Join(" ", args);
                 //argsFull = "\"" + argsFull + "\"";
-                Application.Run(new Form1(argsFull));
+                Application.Run(new Forms.Form1(argsFull));
             }
         }
     }

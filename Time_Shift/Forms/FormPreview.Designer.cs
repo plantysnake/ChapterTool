@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.cTextBox1 = new ChapterTool.cTextBox();
+            this.cTextBox1 = new ChapterTool.Controls.cTextBox();
             this.SuspendLayout();
-            // 
+            //
             // cTextBox1
-            // 
+            //
             this.cTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.cTextBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.cTextBox1.Location = new System.Drawing.Point(0, 0);
@@ -45,9 +45,9 @@
             this.cTextBox1.TabStop = false;
             this.cTextBox1.WordWrap = false;
             this.cTextBox1.DoubleClick += new System.EventHandler(this.cTextBox1_DoubleClick);
-            // 
+            //
             // FormPreview
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(230, 300);
@@ -64,6 +64,6 @@
 
         #endregion
 
-        private cTextBox cTextBox1;
+        private ChapterTool.Controls.cTextBox cTextBox1;
     }
 }

@@ -4,9 +4,10 @@
 // ****************************************************************************
 using System;
 using System.Reflection;
+using ChapterTool.Util;
 using System.Windows.Forms;
 
-namespace ChapterTool
+namespace ChapterTool.Forms
 {
     public partial class FormLog : Form
     {

@@ -18,7 +18,7 @@
 //
 // ****************************************************************************
 
-namespace ChapterTool
+namespace ChapterTool.Util
 {
     class matroskaInfo
     {
@@ -31,17 +31,12 @@ namespace ChapterTool
         }
         static string runMkvextract(string arguments, string program)
         {
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            process.StartInfo.FileName               = program;
-            process.StartInfo.Arguments              = arguments;
-            // 禁用操作系统外壳程序
-            process.StartInfo.UseShellExecute        = false;
-            process.StartInfo.CreateNoWindow         = true;
-            process.StartInfo.RedirectStandardOutput = true;
+            System.Diagnostics.Process process = new System.Diagnostics.Process
+            {
+                StartInfo = { FileName = program, Arguments = arguments, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true }
+            };
             process.Start();
-
             string output = process.StandardOutput.ReadToEnd();
-
             process.WaitForExit();
             process.Close();
             return output;

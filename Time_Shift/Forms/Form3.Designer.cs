@@ -1,4 +1,4 @@
-﻿namespace ChapterTool
+﻿namespace ChapterTool.Forms
 {
     partial class Form3
     {
@@ -36,9 +36,9 @@
             this.bordBack = new System.Windows.Forms.Button();
             this.textFront = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            // 
+            //
             // back
-            // 
+            //
             this.back.BackColor = System.Drawing.Color.WhiteSmoke;
             this.back.FlatAppearance.BorderSize = 0;
             this.back.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -49,9 +49,9 @@
             this.back.Text = " ";
             this.back.UseVisualStyleBackColor = false;
             this.back.Click += new System.EventHandler(this.back_Click);
-            // 
+            //
             // textBack
-            // 
+            //
             this.textBack.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.textBack.FlatAppearance.BorderSize = 0;
             this.textBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -62,9 +62,9 @@
             this.textBack.Text = " ";
             this.textBack.UseVisualStyleBackColor = false;
             this.textBack.Click += new System.EventHandler(this.textBack_Click);
-            // 
+            //
             // overBack
-            // 
+            //
             this.overBack.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
             this.overBack.FlatAppearance.BorderSize = 0;
             this.overBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -75,9 +75,9 @@
             this.overBack.Text = " ";
             this.overBack.UseVisualStyleBackColor = false;
             this.overBack.Click += new System.EventHandler(this.overBack_Click);
-            // 
+            //
             // downBack
-            // 
+            //
             this.downBack.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.downBack.FlatAppearance.BorderSize = 0;
             this.downBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -88,9 +88,9 @@
             this.downBack.Text = " ";
             this.downBack.UseVisualStyleBackColor = false;
             this.downBack.Click += new System.EventHandler(this.downBack_Click);
-            // 
+            //
             // bordBack
-            // 
+            //
             this.bordBack.BackColor = System.Drawing.SystemColors.Highlight;
             this.bordBack.FlatAppearance.BorderSize = 0;
             this.bordBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -101,9 +101,9 @@
             this.bordBack.Text = " ";
             this.bordBack.UseVisualStyleBackColor = false;
             this.bordBack.Click += new System.EventHandler(this.bordBack_Click);
-            // 
+            //
             // textFront
-            // 
+            //
             this.textFront.BackColor = System.Drawing.SystemColors.WindowText;
             this.textFront.FlatAppearance.BorderSize = 0;
             this.textFront.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -114,9 +114,9 @@
             this.textFront.Text = " ";
             this.textFront.UseVisualStyleBackColor = false;
             this.textFront.Click += new System.EventHandler(this.textFront_Click);
-            // 
+            //
             // Form3
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;

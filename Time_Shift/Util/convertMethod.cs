@@ -22,14 +22,14 @@ using System.IO;
 using System.Xml;
 using System.Text;
 using System.Drawing;
-using ChapterTool.Util;
+using ChapterTool.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 
 
 
-namespace ChapterTool
+namespace ChapterTool.Util
 {
     static class convertMethod
     {
@@ -106,7 +106,6 @@ namespace ChapterTool
             foreach (XmlNode EditionEntry in EditionEntrys)
             {
                 XmlNodeList EditionEntryChildNodes = (EditionEntry as XmlElement).ChildNodes;//获取当前章节中的所有子节点
-
                 ChapterInfo buff = new ChapterInfo();
                 buff.SourceType = "XML";
                 int j = 0;

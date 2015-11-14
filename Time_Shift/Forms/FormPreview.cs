@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
+using System.Drawing;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 
 namespace ChapterTool.Forms
@@ -19,7 +15,7 @@ namespace ChapterTool.Forms
             InitializeComponent();
             cTextBox1.Text = text;
             MainPos = pos;
-            if (cTextBox1.Lines.Count()>20) 
+            if (cTextBox1.Lines.Count()>20)
             {
                 cTextBox1.ScrollBars = ScrollBars.Vertical;
             }

@@ -17,17 +17,16 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
-namespace ChapterTool
+namespace ChapterTool.Util
 {
     class registryStorage
     {
         public static string Load(string subKey = @"Software\ChapterTool", string name = "SavingPath")
         {
-            Microsoft.Win32.RegistryKey registryKey;
             string path = string.Empty;
 
             // HKCU_CURRENT_USER\Software\
-            registryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(subKey);
+            Microsoft.Win32.RegistryKey registryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(subKey);
             if (registryKey != null)
             {
                 path = (string)registryKey.GetValue(name);
@@ -39,19 +38,15 @@ namespace ChapterTool
 
         public static void Save(string value, string subKey = @"Software\ChapterTool", string name = "SavingPath")
         {
-            Microsoft.Win32.RegistryKey registryKey;
-
             // HKCU_CURRENT_USER\Software\
-            registryKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(subKey);
+            Microsoft.Win32.RegistryKey registryKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(subKey);
             registryKey.SetValue(name, value);
             registryKey.Close();
         }
         public static void Save(System.Collections.Generic.List<System.Drawing.Color> value, string subKey = @"Software\ChapterTool", string name = "Color")
         {
-            Microsoft.Win32.RegistryKey registryKey;
-
             // HKCU_CURRENT_USER\Software\
-            registryKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(subKey);
+            Microsoft.Win32.RegistryKey registryKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(subKey);
             registryKey.SetValue(name, value);
             registryKey.Close();
         }

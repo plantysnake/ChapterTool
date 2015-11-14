@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Drawing;
+using ChapterTool.Util;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
-namespace ChapterTool
+namespace ChapterTool.Forms
 {
 
     public partial class Form3 : Form

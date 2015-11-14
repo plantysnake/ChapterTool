@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace ChapterTool
+namespace ChapterTool.Controls
 {
     public class InputBox : Form
     {
