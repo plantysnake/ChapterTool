@@ -115,21 +115,17 @@ namespace ChapterTool.Forms
             {
                 if (File.Exists("mkvextract.exe"))
                 {
-                    mkvEX = true;
                     return "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
                 }
                 else
                 {
-                    mkvEX = false;
                     return "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo";
                 }
             }
         }
         string SnotLoaded = "尚未载入文件";
-        string SnameFitter = "文本文件(*.txt)|*.txt|所有文件(*.*)|*.*";
         string Ssuccess = "载入完成 (≧▽≦)";
         string Swhatsthis2 = "当前片段并没有章节 (¬_¬)";
-        string SinvalidTime = "位移时间不科学的样子";
 
 
         void setDefault()
@@ -175,7 +171,6 @@ namespace ChapterTool.Forms
 
         void progressBar1_Click(object sender, EventArgs e)
         {
-
             ++poi;
             CTLogger.Log(string.Format("点击了 {0} 次进度条", poi));
             if (poi >= nico)
@@ -216,7 +211,6 @@ namespace ChapterTool.Forms
             }
         }
 
-        bool mkvEX = true;
 
         void Loadfile()
         {
@@ -234,7 +228,7 @@ namespace ChapterTool.Forms
                     case ".txt":   loadOGM(); break;
                     case ".ifo":   LoadIFO(); break;
                     case ".mkv":
-                    case ".mka": if (mkvEX) { loadMatroska(); } break;
+                    case ".mka": if (File.Exists("mkvextract.exe")) { loadMatroska(); } break;
                 }
                 if (!string.IsNullOrEmpty(chapterNameTemplate)) { updataInfo(chapterNameTemplate); }
             }
@@ -579,11 +573,7 @@ namespace ChapterTool.Forms
         }
         #endregion
 
-        int convertFR2Index(double frame)
-        {
-            var result = Enumerable.Range(0, 7).Where(index => (Math.Abs(frame - (double)FrameRate[index]))< 1e-5);
-            return result.First();
-        }
+
 
         void updataGridView(int fpsIndex = 0)
         {
@@ -591,7 +581,7 @@ namespace ChapterTool.Forms
             switch (info.SourceType)
             {
                 case "DVD":
-                    getFramInfo(convertFR2Index(info.FramesPerSecond));
+                    getFramInfo(convertMethod.convertFR2Index(info.FramesPerSecond));
                     comboBox1.Enabled = false;
                     break;
                 case "MPLS":
@@ -641,6 +631,7 @@ namespace ChapterTool.Forms
             if (index == 0)
             {
                 index = getAUTOFPS();
+                comboBox1.SelectedIndex = index - 1;
             }
             else
             {
@@ -658,14 +649,12 @@ namespace ChapterTool.Forms
         }
         int getAUTOFPS()
         {
-            decimal FPStemp = FrameRate[1];
             int currentMaxOne = 0; int AUTOFPS_code = 1;
             CTLogger.Log(string.Format("|+自动帧率识别开始，允许误差为：{0}", costumeAccuracy));
             for (int j = 1; j < 7; ++j)
             {
                 int AccuratePiont = 0;
                 int InAccuratePiont = 0;
-                FPStemp = FrameRate[j];
 
                 info.Chapters.ForEach((item) => getAccuracy(item.Time, ref AccuratePiont, ref InAccuratePiont, j));
 
@@ -676,11 +665,11 @@ namespace ChapterTool.Forms
                 }
                 CTLogger.Log(string.Format(" |fps= {0:F4} 时，精确点：{1:D2} 个，非精确点：{2:D2} 个", FrameRate[j], AccuratePiont, InAccuratePiont));
             }
-
-            comboBox1.SelectedIndex = AUTOFPS_code - 1;
             CTLogger.Log(string.Format(" |自动识别结果为 {0:F4} fps", FrameRate[AUTOFPS_code]));
             return AUTOFPS_code;
         }
+
+
         void getAccuracy(TimeSpan time, ref int AccuratePiont, ref int InAccuratePiont,int index)//framCal
         {
             decimal Frams = ((decimal)time.TotalMilliseconds * FrameRate[index] / 1000M);
@@ -721,7 +710,7 @@ namespace ChapterTool.Forms
             updataGridView();
         }
 
-        void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e) { Tips.Text = SinvalidTime; }
+        void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e) { Tips.Text = "位移时间不科学的样子"; }
 
         TimeSpan getOffsetFromMaskedTextBox()
         {
@@ -731,7 +720,7 @@ namespace ChapterTool.Forms
             }
             else
             {
-                Tips.Text = SinvalidTime;
+                Tips.Text = "位移时间不科学的样子";
                 return TimeSpan.Zero;
             }
         }
@@ -778,7 +767,7 @@ namespace ChapterTool.Forms
 
         string loadChapterName()
         {
-            openFileDialog1.Filter = SnameFitter;
+            openFileDialog1.Filter = "文本文件(*.txt)|*.txt|所有文件(*.*)|*.*";
             string temp = string.Empty;
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {

@@ -21,13 +21,12 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Linq;
 using System.Drawing;
 using ChapterTool.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
-
-
 
 namespace ChapterTool.Util
 {
@@ -55,6 +54,7 @@ namespace ChapterTool.Util
         }
 
         public static Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
+
         public static TimeSpan string2Time(string input)
         {
             if (string.IsNullOrEmpty(input)) { return TimeSpan.Zero; }
@@ -73,14 +73,23 @@ namespace ChapterTool.Util
             decimal millisecondPart = Math.Round((total - secondPart) * 1000M);
             return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
         }
-        static Regex Rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");
         public static Point string2point(string input)
         {
+            Regex Rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");
             if (string.IsNullOrEmpty(input)) { return new Point(-32000, -32000); }
             var temp = Rpos.Match(input);
             int x = int.Parse(temp.Groups["x"].Value);
             int y = int.Parse(temp.Groups["y"].Value);
             return new Point(x, y);
+        }
+
+        public static int convertFR2Index(double frame)
+        {
+            decimal[] FrameRate = { 0M, 24000M / 1001, 24000M / 1000,
+                                        25000M / 1000, 30000M / 1001,
+                                        50000M / 1000, 60000M / 1001 };
+            var result = Enumerable.Range(0, 7).Where(index => (Math.Abs(frame - (double)FrameRate[index])) < 1e-5);
+            return result.First();
         }
 
         public static string GetUTF8String(byte[] buffer)
@@ -152,7 +161,6 @@ namespace ChapterTool.Util
         }
 
         private static string colorProfile = "color-config.json";
-        private static Regex Rcolor = new Regex("\"(?<hex>.+?)\"");
         public static void saveColor(List<Color> ColorList)
         {
             StringBuilder json = new StringBuilder("[");
@@ -169,6 +177,7 @@ namespace ChapterTool.Util
             if (File.Exists(colorProfile))
             {
                 string json = File.ReadAllText(colorProfile);
+                Regex Rcolor = new Regex("\"(?<hex>.+?)\"");
                 var matchesOfJson = Rcolor.Matches(json);
                 if (matchesOfJson.Count < 6) { return; }
                 window.BackChange     = ColorTranslator.FromHtml(matchesOfJson[0].Groups["hex"].Value);
