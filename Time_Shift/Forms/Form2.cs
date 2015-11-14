@@ -19,7 +19,7 @@ namespace ChapterTool
             label1.Text          = AssemblyProduct;
             label2.Text          = "Version "+ AssemblyVersion;
             label3.Text          = System.IO.File.GetLastWriteTime(GetType().Assembly.Location).ToString();
-            notifyIcon1.Visible  = false; 
+            notifyIcon1.Visible  = false;
         }
 
         public string AssemblyVersion

@@ -1,21 +1,21 @@
 ﻿// ****************************************************************************
-// 
+//
 // Copyright (C) 2014-2015 TautCony (TautCony@vcb-s.com)
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // ****************************************************************************
 using System;
 using System.IO;
@@ -45,11 +45,11 @@ namespace ChapterTool
             decimal millisecondPart = Math.Round((second - secondPart) * 1000M);
             return time2string(new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart));
         }
-        
-        
+
+
         public static string time2string(TimeSpan temp)
         {
-            return string.Format("{0:D2}:{1:D2}:{2:D2}.{3:D3}", 
+            return string.Format("{0:D2}:{1:D2}:{2:D2}.{3:D3}",
                                   temp.Hours  , temp.Minutes,
                                   temp.Seconds, temp.Milliseconds);
         }
@@ -183,8 +183,8 @@ namespace ChapterTool
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
         static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr w, IntPtr l);
-        //1 = normal (green); 
-        //2 = error (red); 
+        //1 = normal (green);
+        //2 = error (red);
         //3 = warning (yellow).
         //
         public static void SetState(this System.Windows.Forms.ProgressBar pBar, int state)

@@ -1,21 +1,21 @@
 ﻿// ****************************************************************************
-// 
+//
 // Copyright (C) 2014-2015 TautCony (TautCony@vcb-s.com)
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // ****************************************************************************
 using System;
 using System.IO;
@@ -96,7 +96,7 @@ namespace ChapterTool
                 }
             }
         }
-        
+
 
         void loadLang()
         {
@@ -152,8 +152,8 @@ namespace ChapterTool
             progressBar1.Visible = true;
             cbMore.Enabled = true;
             cbMul1k1.Enabled = true;
-            
-            
+
+
             RawData  = null;
             XMLGroup = null;
             xmlLang.SelectedIndex = 2;
@@ -171,7 +171,7 @@ namespace ChapterTool
                 CTLogger.Log("+从窗口拖拽中载入文件:" + paths[0]);
                 comboBox2.Items.Clear();
                 Loadfile();
-                
+
                 updataGridView();
 
             }
@@ -184,8 +184,8 @@ namespace ChapterTool
 
 
         int  poi = 0, nico = 10;
-        
-        void progressBar1_Click(object sender, EventArgs e) 
+
+        void progressBar1_Click(object sender, EventArgs e)
         {
 
             ++poi;
@@ -235,12 +235,12 @@ namespace ChapterTool
         {
             if (!isPathValid) { return; }
             label1.Text = (paths[0].Length > 55) ? paths[0].Substring(0, 40) + "……" + paths[0].Substring(paths[0].Length - 15, 15) : paths[0];
-            
+
             setDefault();
             Cursor = Cursors.AppStarting;
             try
             {
-                switch (RFileType.Match(paths[0].ToLowerInvariant()).Value) 
+                switch (RFileType.Match(paths[0].ToLowerInvariant()).Value)
                 {
                     case ".mpls": loadMPLS(); break;
                     case ".xml":   loadXML(); break;
@@ -258,7 +258,7 @@ namespace ChapterTool
                 label1.Text = SnotLoaded;
             }
             Cursor = Cursors.Default;
-            
+
         }
 
         List<ChapterInfo> Rawifo;
@@ -373,8 +373,8 @@ namespace ChapterTool
         void saveFile()
         {
             if (!isPathValid) { return; }
-            
-            
+
+
             string PN = paths[0].Substring(0, paths[0].LastIndexOf("."));
             //modify for custom saving path
             int slashPosition = paths[0].LastIndexOf(@"\");
@@ -471,7 +471,7 @@ namespace ChapterTool
             string[] OGMdata = text.Split('\n');
             info = new ChapterInfo();
             info.SourceHash = ifoData.ComputeMD5Sum(paths[0]);
-            
+
             info.SourceType = "OGM";
             int i;
             TimeSpan iniTime =  OffsetCal_new(GetFirstLine_new(OGMdata, out i));
@@ -657,7 +657,7 @@ namespace ChapterTool
             }
 
             for (int i = 0; i < info.Chapters.Count; i++)
-            {   
+            {
                 if (ClearOrNot) { dataGridView1.Rows.Add(); }
                 dataGridView1.Rows[i].DefaultCellStyle.BackColor = ((i % 2 == 0) ? Color.FromArgb(0x92,0xaa,0xf3) : Color.FromArgb(0xf3, 0xf7, 0xf7));
                 addRow(info.Chapters[i], i);
@@ -722,7 +722,7 @@ namespace ChapterTool
                 }
                 CTLogger.Log(string.Format(" |fps= {0:F4} 时，精确点：{1:D2} 个，非精确点：{2:D2} 个", FrameRate[j], AccuratePiont, InAccuratePiont));
             }
-            
+
             comboBox1.SelectedIndex = AUTOFPS_code - 1;
             CTLogger.Log(string.Format(" |自动识别结果为 {0:F4} fps", FrameRate[AUTOFPS_code]));
             return AUTOFPS_code;
@@ -806,7 +806,7 @@ namespace ChapterTool
         void Form1_Resize()
         {
             Size change = new Size(Size.Width,0);
-            switch (cbMore.Checked)  
+            switch (cbMore.Checked)
             {
                 case true:
                     int range = Size.Height + 80;
@@ -866,7 +866,7 @@ namespace ChapterTool
                 chapterNameTemplate = string.Empty;
             }
             updataGridView();
-        }         
+        }
 
         /////////////////XML support
         void loadXML()
@@ -877,11 +877,11 @@ namespace ChapterTool
         }
 
         /////////////////mpls support
-        
+
         decimal[] FrameRate = { 0M, 24000M / 1001, 24000M / 1000,
                                     25000M / 1000, 30000M / 1001,
                                     50000M / 1000, 60000M / 1001 };
-        
+
         mplsData RawData;
 
         int mplsFileSeletIndex
@@ -1045,7 +1045,7 @@ namespace ChapterTool
             {
                 return btnLoad.FlatAppearance.MouseDownBackColor;
             }
-            
+
         }
         public Color BordBackColor
         {
@@ -1131,8 +1131,8 @@ namespace ChapterTool
         #region closing animation support
         public int SystemVersion
         {
-            //Windows95/98/Me	     	 4	 
-            //Windows2000/XP/2003        5	 
+            //Windows95/98/Me	     	 4
+            //Windows2000/XP/2003        5
             //WindowsVista/7/8/8.1/10 	 6
             get
             {
@@ -1233,7 +1233,7 @@ namespace ChapterTool
         }
         private void Form1_Move(object sender, EventArgs e)
         {
-            if (_PreviewForm != null)   
+            if (_PreviewForm != null)
             {
                 _PreviewForm.Location = new Point(Location.X - 230, Location.Y);
             }
@@ -1268,7 +1268,7 @@ namespace ChapterTool
                 updataGridView();
             }
         }
- 
+
         private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
             CTLogger.Log(string.Format("+ {0} 行被删除", e.RowCount));

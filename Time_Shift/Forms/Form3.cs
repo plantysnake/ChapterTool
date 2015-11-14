@@ -37,7 +37,6 @@ namespace ChapterTool
                 back.BackColor = colorDialog1.Color;
             }
             magic.BackChange = back.BackColor;
-            
         }
         private void textBack_Click(object sender, EventArgs e)
         {
@@ -45,7 +44,6 @@ namespace ChapterTool
             {
                 textBack.BackColor = colorDialog1.Color;
             }
-            
             magic.TextBack = textBack.BackColor;
         }
         private void overBack_Click(object sender, EventArgs e)
@@ -54,7 +52,6 @@ namespace ChapterTool
             {
                 overBack.BackColor = colorDialog1.Color;
             }
-            
             magic.MouseOverColor = overBack.BackColor;
         }
         private void downBack_Click(object sender, EventArgs e)

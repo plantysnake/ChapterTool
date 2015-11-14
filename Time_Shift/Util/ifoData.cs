@@ -79,13 +79,13 @@ namespace ChapterTool.Util
             pgc.Chapters = GetChapters(location, titleSetNum, out duration, out fps);
             pgc.Duration = duration;
             pgc.FramesPerSecond = fps;
-            
+
             if (pgc.Duration.TotalSeconds > 10)
                 OnStreamDetected(pgc);
             else
                 pgc = null;
             OnExtractionComplete();
-            
+
             return pgc;
         }
 
