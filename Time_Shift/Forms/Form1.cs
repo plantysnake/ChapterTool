@@ -316,14 +316,11 @@ namespace ChapterTool.Forms
         {
             try
             {
-                if (e.Button == MouseButtons.Right)
+                if (e.Button == MouseButtons.Right && folderBrowserDialog1.ShowDialog() == DialogResult.OK)
                 {
-                    if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
-                    {
-                        CUSTsavingPath = folderBrowserDialog1.SelectedPath;
-                        registryStorage.Save(CUSTsavingPath);
-                        CTLogger.Log("设置保存路径为:" + CUSTsavingPath);
-                    }
+                    CUSTsavingPath = folderBrowserDialog1.SelectedPath;
+                    registryStorage.Save(CUSTsavingPath);
+                    CTLogger.Log("设置保存路径为:" + CUSTsavingPath);
                 }
             }
             catch (Exception exception)
@@ -373,7 +370,6 @@ namespace ChapterTool.Forms
             }
             progressBar1.Value = 100;
             Tips.Text = "保存成功";
-            //MessageBox.Show(savePath);
         }
 
         private void savingType_SelectedIndexChanged(object sender, EventArgs e)
@@ -383,17 +379,6 @@ namespace ChapterTool.Forms
 
         void refresh_Click(object sender, EventArgs e) { updataGridView(); }
 
-
-        string GetFirstLine_new(string[] OGMdata, out int i)//i 为章节实际开始的行号
-        {
-            i = 0;
-            foreach (var item in OGMdata)
-            {
-                if (!string.IsNullOrEmpty(item)) { return item; }
-                ++i;
-            }
-            return string.Empty;
-        }
 
         TimeSpan OffsetCal_new(string line)//获取第一行的时间
         {
@@ -430,26 +415,29 @@ namespace ChapterTool.Forms
         #region geneRateCI
         void geneRateCI(string text)
         {
-            string[] OGMdata = text.Split('\n');
             info = new ChapterInfo();
             info.SourceHash = ifoData.ComputeMD5Sum(paths[0]);
-
             info.SourceType = "OGM";
-            int i;
-            TimeSpan iniTime =  OffsetCal_new(GetFirstLine_new(OGMdata, out i));
-            int order = 1 + (int)numericUpDown1.Value;
-            if (OGMdata.Length == 1) { return; }
-            string buffer1, buffer2;
-            if (RLineOne.IsMatch(OGMdata[i]))
+            List<string>.Enumerator OGMdata = text.Split('\n').ToList().GetEnumerator();
+            do
             {
-                for (; i + 1 < OGMdata.Length; i += 2, ++order)
+                if (!OGMdata.MoveNext()) { return; }
+            } while ((string.IsNullOrEmpty(OGMdata.Current) || OGMdata.Current == "\r"));
+            TimeSpan iniTime =  OffsetCal_new(OGMdata.Current);
+            int order = 1 + (int)numericUpDown1.Value;
+            do
+            {
+                string buffer1 = OGMdata.Current;
+                OGMdata.MoveNext();
+                string buffer2 = OGMdata.Current;
+                if (string.IsNullOrEmpty(buffer1) ||
+                    string.IsNullOrEmpty(buffer2) ||
+                    buffer1 == "\r" || buffer2 == "\r" ) { break; }
+                if (RLineOne.IsMatch(buffer1) && RLineTwo.IsMatch(buffer2))
                 {
-                    buffer1 = OGMdata[i];
-                    buffer2 = OGMdata[i + 1];
-                    if (string.IsNullOrEmpty(buffer1) || string.IsNullOrEmpty(buffer2)) { break; }
-                    info.Chapters.Add(WriteToChapterInfo(buffer1, buffer2, order, iniTime));
+                    info.Chapters.Add(WriteToChapterInfo(buffer1, buffer2, order++, iniTime));
                 }
-            }
+            } while (OGMdata.MoveNext());
             if (info.Chapters.Count>1)
             {
                 info.Duration = info.Chapters[info.Chapters.Count - 1].Time;
@@ -650,7 +638,7 @@ namespace ChapterTool.Forms
             result[0] = 0;
             int AUTOFPS_code = result.IndexOf(result.Max());
             CTLogger.Log(string.Format(" |自动识别结果为 {0:F4} fps", FrameRate[AUTOFPS_code]));
-            return AUTOFPS_code;
+            return AUTOFPS_code == 0 ? 1 : AUTOFPS_code;
         }
 
 
@@ -1052,7 +1040,7 @@ namespace ChapterTool.Forms
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             registryStorage.Save(Location.ToString(), @"Software\ChapterTool", "Location");
-            if (POI[0] < 3 && POI[1] == 10)
+            if (POI[0]> 0 && POI[0] < 3 && POI[1] == 10)
             {
                 Point origin   = Location;
                 Random forward = new Random();
