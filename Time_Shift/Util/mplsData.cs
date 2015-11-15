@@ -47,12 +47,9 @@ namespace ChapterTool.Util
             int shift = 0;
             for (int playItemOrder = 0; playItemOrder < PlayItemNumber; playItemOrder++)
             {
-                int lengthOfPlayItem, itemStartAdress, streamCount;
-                parsePlayItem(PlayItemEntries + shift, out lengthOfPlayItem, out itemStartAdress, out streamCount);
-                for (int streamOrder = 0; streamOrder < streamCount; ++streamOrder)
-                {
-                    parseStream(itemStartAdress, streamOrder, playItemOrder);
-                }
+                int itemStartAdress, streamCount;
+                int lengthOfPlayItem = parsePlayItem(PlayItemEntries + shift, out itemStartAdress, out streamCount);
+                Enumerable.Range(0, streamCount).ToList().ForEach(streamOrder => parseStream(itemStartAdress, streamOrder, playItemOrder));
                 shift += (lengthOfPlayItem + 2);//for that not counting the two length bytes themselves.
             }
             parsePlaylistMark();
@@ -66,10 +63,10 @@ namespace ChapterTool.Util
             PlayItemEntries = PlaylistSectionStartAddress + 0x0a;
         }
 
-        private void parsePlayItem(int PlayItemEntries, out int lengthOfPlayItem, out int itemStartAdress, out int streamCount)
+        private int parsePlayItem(int PlayItemEntries, out int itemStartAdress, out int streamCount)
         {
+            int lengthOfPlayItem       = byte2int(data, PlayItemEntries + 0x00, 0x02);
             Clip streamClip            = new Clip();
-            lengthOfPlayItem           = byte2int(data, PlayItemEntries + 0x00, 0x02);
             streamClip.Name            = Encoding.ASCII.GetString(data, PlayItemEntries + 0x02, 0x09);
             streamClip.TimeIn          = byte2int(data, PlayItemEntries + 0x0e, 0x04);
             streamClip.TimeOut         = byte2int(data, PlayItemEntries + 0x12, 0x04);
@@ -78,14 +75,15 @@ namespace ChapterTool.Util
             streamClip.RelativeTimeOut = streamClip.RelativeTimeIn + streamClip.Length;
             chapterClips.Add(streamClip);
 
-            itemStartAdress = PlayItemEntries + 0x32;
-            int UO2     = byte2int(data, PlayItemEntries + 0x22, 0x01);
-            streamCount = byte2int(data, PlayItemEntries + 0x23, 0x01) >> 4;
+            itemStartAdress            = PlayItemEntries + 0x32;
+            int UO2                    = byte2int(data, PlayItemEntries + 0x22, 0x01);
+            streamCount                = byte2int(data, PlayItemEntries + 0x23, 0x01) >> 4;
             if (0x02 == UO2)//ignore angles, can only operate angles == 1 or 2
             {
                 streamCount     = byte2int(data, PlayItemEntries + 0x2f, 0x01) >> 4;
                 itemStartAdress = PlayItemEntries + 0x3e;
             }
+            return lengthOfPlayItem;
         }
         private void parseStream(int itemStartAdress,int streamOrder,int playItemOrder)
         {

@@ -268,7 +268,6 @@ namespace ChapterTool.Forms
                     info = item;
                     geneRateCI(i, true);
                     comboBox2.SelectedIndex = i;
-                    //updataInfo(1.001M);
                     break;
                 }
                 ++i;
@@ -442,7 +441,9 @@ namespace ChapterTool.Forms
             {
                 info.Duration = info.Chapters[info.Chapters.Count - 1].Time;
             }
+            OGMdata.Dispose();
         }
+
         void geneRateCI(int index)
         {
             Clip mplsClip = RawData.chapterClips[index];
@@ -629,15 +630,11 @@ namespace ChapterTool.Forms
         int getAUTOFPS()
         {
             CTLogger.Log(string.Format("|+自动帧率识别开始，允许误差为：{0}", costumeAccuracy));
-            List<int> result = new List<int>();
-            FrameRate.ToList().ForEach(FPS =>
-            {
-                result.Add(Enumerable.Sum(info.Chapters, item => getAccuracy(item.Time, FPS)));
-                CTLogger.Log(string.Format(" |fps= {0:F4} 时，精确点：{1:D2} 个", FPS, result.Last()));
-            });
+            List<int> result = FrameRate.ToList().Select(FPS => Enumerable.Sum(info.Chapters, item => getAccuracy(item.Time, FPS))).ToList();
+            result.ToList().ForEach(count => CTLogger.Log(string.Format(" | {0:D2} 个精确点", count)));
             result[0] = 0;
             int AUTOFPS_code = result.IndexOf(result.Max());
-            CTLogger.Log(string.Format(" |自动识别结果为 {0:F4} fps", FrameRate[AUTOFPS_code]));
+            CTLogger.Log(string.Format(" |自动帧率识别结果为 {0:F4} fps", FrameRate[AUTOFPS_code]));
             return AUTOFPS_code == 0 ? 1 : AUTOFPS_code;
         }
 
@@ -705,7 +702,6 @@ namespace ChapterTool.Forms
                 label4.Visible         = value;
                 xmlLang.Visible        = value;
             }
-
         }
         void Form1_Resize()
         {
