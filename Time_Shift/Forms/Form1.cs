@@ -45,14 +45,13 @@ namespace ChapterTool.Forms
         }
         private void Form1_Load(object sender, EventArgs e)
         {
+            initialLog();
             Point saved = convertMethod.string2point(registryStorage.Load(@"Software\ChapterTool", "location"));
             if (saved != new Point(-32000, -32000))
             {
                 Location = saved;
                 CTLogger.Log(string.Format("成功载入保存的窗体位置{0}", saved));
             }
-
-            initialLog();
             loadLang();
             setDefault();
             convertMethod.loadColor(this);
@@ -68,6 +67,9 @@ namespace ChapterTool.Forms
                 updataGridView();
                 registryStorage.Save("你好呀，找到这里来干嘛呀", @"Software\ChapterTool", string.Empty);
             }
+            string CountS = registryStorage.Load(@"Software\ChapterTool\Statistics", @"Count");
+            int count = string.IsNullOrEmpty(CountS) ? 0: int.Parse(CountS);
+            registryStorage.Save((++count).ToString(), @"Software\ChapterTool\Statistics", @"Count");
         }
 
         void initialLog()
@@ -83,8 +85,8 @@ namespace ChapterTool.Forms
                 if (registryKey != null)
                 {
                     processor = (string)registryKey.GetValue("ProcessorNameString");
-                    registryKey.Close();
                 }
+                registryKey.Close();
                 CTLogger.Log(processor);
             }
             Screen.AllScreens.ToList().ForEach(item => CTLogger.Log(string.Format("{0} 分辨率：{1}*{2}", item.DeviceName, item.Bounds.Width, item.Bounds.Height)));
@@ -93,17 +95,13 @@ namespace ChapterTool.Forms
 
         void loadLang()
         {
-            xmlLang.Items.Add("---常用---");
+            xmlLang.Items.Add("----常用----");
             xmlLang.Items.Add("und (Undetermined)");
             xmlLang.Items.Add("eng (English)");
             xmlLang.Items.Add("jpn (Japanese)");
             xmlLang.Items.Add("chi (Chinese)");
-            xmlLang.Items.Add("---全部---");
-
-            foreach (var item in LanguageSelectionContainer.Languages)
-            {
-                xmlLang.Items.Add(string.Format("{0} ({1})", item.Value, item.Key));
-            }
+            xmlLang.Items.Add("----全部----");
+            LanguageSelectionContainer.Languages.ToList().ForEach(item => xmlLang.Items.Add(string.Format("{0} ({1})", item.Value, item.Key)));
         }
 
 
@@ -167,22 +165,22 @@ namespace ChapterTool.Forms
         }
 
 
-        int  poi = 0, nico = 10;
+        int[] POI = { 0, 10 };
 
         void progressBar1_Click(object sender, EventArgs e)
         {
-            ++poi;
-            CTLogger.Log(string.Format("点击了 {0} 次进度条", poi));
-            if (poi >= nico)
+            ++POI[0];
+            CTLogger.Log(string.Format("点击了 {0} 次进度条", POI[0]));
+            if (POI[0] >= POI[1])
             {
                 Form2 version = new Form2();
                 CTLogger.Log("打开了关于界面");
                 version.Show();
-                poi   = 0;
-                nico += 10;
+                POI[0] = 0;
+                POI[1] += 10;
                 CTLogger.Log("进度条点击计数清零");
             }
-            if (poi < 3 && nico == 10)
+            if (POI[0] < 3 && POI[1] == 10)
             {
                 MessageBox.Show("Something happened", "Something happened");
             }
@@ -558,13 +556,14 @@ namespace ChapterTool.Forms
         {
             if (!isPathValid) { return; }
             List<string>.Enumerator cn = chapterName.Split('\n').ToList().GetEnumerator();
-            foreach (var item in info.Chapters)
+            info.Chapters.ForEach(item =>
             {
-                if(cn.MoveNext())
+                if (cn.MoveNext())
                 {
                     item.Name = cn.Current;
                 }
-            }
+            });
+            cn.Dispose();
         }
         void updataInfo(decimal coefficient)
         {
@@ -628,55 +627,38 @@ namespace ChapterTool.Forms
         decimal costumeAccuracy = 0.15M;
         void getFramInfo(int index = 0)
         {
-            if (index == 0)
-            {
-                index = getAUTOFPS();
-                comboBox1.SelectedIndex = index - 1;
-            }
-            else
-            {
-                comboBox1.SelectedIndex = index - 1;
-            }
+            index = index == 0 ? getAUTOFPS() : index;
+            comboBox1.SelectedIndex = index - 1;
 
             foreach (var item in info.Chapters)
             {
-                TimeSpan _current = item.Time;
-                decimal Frams     = ((decimal)_current.TotalMilliseconds * FrameRate[index] / 1000M);
+                decimal Frams     = ((decimal)item.Time.TotalMilliseconds * FrameRate[index] / 1000M);
                 decimal answer    = cbRound.Checked ? Math.Round(Frams, MidpointRounding.AwayFromZero) : Frams;
                 bool accuracy     = (Math.Abs(Frams - answer) < costumeAccuracy);
-                item.FramsInfo = string.Format("{0}{1}", answer, (accuracy ? " K" : " *"));
+                item.FramsInfo    = string.Format("{0}{1}", answer, (accuracy ? " K" : " *"));
             }
         }
         int getAUTOFPS()
         {
-            int currentMaxOne = 0; int AUTOFPS_code = 1;
             CTLogger.Log(string.Format("|+自动帧率识别开始，允许误差为：{0}", costumeAccuracy));
-            for (int j = 1; j < 7; ++j)
+            List<int> result = new List<int>();
+            FrameRate.ToList().ForEach(FPS =>
             {
-                int AccuratePiont = 0;
-                int InAccuratePiont = 0;
-
-                info.Chapters.ForEach((item) => getAccuracy(item.Time, ref AccuratePiont, ref InAccuratePiont, j));
-
-                if (currentMaxOne < AccuratePiont)
-                {
-                    AUTOFPS_code = j;
-                    currentMaxOne = AccuratePiont;
-                }
-                CTLogger.Log(string.Format(" |fps= {0:F4} 时，精确点：{1:D2} 个，非精确点：{2:D2} 个", FrameRate[j], AccuratePiont, InAccuratePiont));
-            }
+                result.Add(Enumerable.Sum(info.Chapters, item => getAccuracy(item.Time, FPS)));
+                CTLogger.Log(string.Format(" |fps= {0:F4} 时，精确点：{1:D2} 个", FPS, result.Last()));
+            });
+            result[0] = 0;
+            int AUTOFPS_code = result.IndexOf(result.Max());
             CTLogger.Log(string.Format(" |自动识别结果为 {0:F4} fps", FrameRate[AUTOFPS_code]));
             return AUTOFPS_code;
         }
 
 
-        void getAccuracy(TimeSpan time, ref int AccuratePiont, ref int InAccuratePiont,int index)//framCal
+        int getAccuracy(TimeSpan time, decimal fps)//framCal
         {
-            decimal Frams = ((decimal)time.TotalMilliseconds * FrameRate[index] / 1000M);
+            decimal Frams  = ((decimal)time.TotalMilliseconds * fps / 1000M);
             decimal answer = cbRound.Checked ? Math.Round(Frams, MidpointRounding.AwayFromZero) : Frams;
-            if (Math.Abs(Frams - answer) < costumeAccuracy)
-                 { ++AccuratePiont;   }
-            else { ++InAccuratePiont; }
+            return (Math.Abs(Frams - answer) < costumeAccuracy) ? 1 : 0;
         }
 
 
@@ -691,13 +673,7 @@ namespace ChapterTool.Forms
         decimal[] Accuracy = { 0.01M, 0.05M, 0.10M, 0.15M, 0.20M, 0.25M, 0.30M };
         private void Accuracy_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            foreach (var item in toolStripMenuItem1.DropDownItems)
-            {
-                if (!Equals(item, toolStripSeparator1))
-                {
-                    (item as ToolStripMenuItem).Checked = false;
-                }
-            }
+            toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>().ToList().ForEach(item => item.Checked = false);
             (e.ClickedItem as ToolStripMenuItem).Checked = true;
             costumeAccuracy = Accuracy[int.Parse(e.ClickedItem.Tag.ToString())];
         }
@@ -718,11 +694,8 @@ namespace ChapterTool.Forms
             {
                 return convertMethod.string2Time(maskedTextBox1.Text);
             }
-            else
-            {
-                Tips.Text = "位移时间不科学的样子";
-                return TimeSpan.Zero;
-            }
+            Tips.Text = "位移时间不科学的样子";
+            return TimeSpan.Zero;
         }
 
 
@@ -833,12 +806,12 @@ namespace ChapterTool.Forms
             if (comboBox2.Enabled)
             {
                 comboBox2.Items.Clear();
-                foreach (var item in RawData.chapterClips)
+                RawData.chapterClips.ForEach(item =>
                 {
                     comboBox2.Items.Add(string.Format("{0}__{1}", item.Name.Replace("M2TS", ".m2ts"), item.timeStamp.Count));
                     CTLogger.Log(string.Format(" |+{0}", item.Name));
                     CTLogger.Log(string.Format("  |+包含 {0} 个时间戳", item.timeStamp.Count));
-                }
+                });
             }
             comboBox2.SelectedIndex = mplsFileSeletIndex;
             geneRateCI(mplsFileSeletIndex);
@@ -850,30 +823,25 @@ namespace ChapterTool.Forms
             if (RawData != null)
             {
                 geneRateCI(comboBox2.SelectedIndex);
+                goto updata;
             }
-            else
+            if (XMLGroup != null)
             {
-                if (XMLGroup != null)
-                {
-                    geneRateCI(comboBox2.SelectedIndex, false, true);
-                }
-                else
-                {
-                    geneRateCI(comboBox2.SelectedIndex, true);
-                }
+                geneRateCI(comboBox2.SelectedIndex, false, true);
+                goto updata;
             }
+            geneRateCI(comboBox2.SelectedIndex, true);
+            updata:
             updataGridView();
         }
 
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (RawData != null)
-            {
-                combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
-                geneRateCI(comboBox2.SelectedIndex);
-                updataGridView();
-            }
+            if (RawData == null) { return; }
+            combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
+            geneRateCI(comboBox2.SelectedIndex);
+            updataGridView();
         }
 
         /// <summary>
@@ -1029,7 +997,7 @@ namespace ChapterTool.Forms
             string SFakeChapter1 = "本片段时长为";
             string SFakeChapter2 = string.Format("但是第二个章节点{0}离视频结尾太近了呢，应该没有用处吧 (-｡-;)"   , Environment.NewLine);
             string SFakeChapter3 = string.Format("虽然只有两个章节点{0}应该还是能安心的呢 (～￣▽￣)→))*￣▽￣*)o", Environment.NewLine);
-            if (!string.IsNullOrEmpty(paths[0]) && paths[0].ToLowerInvariant().EndsWith(".mpls"))
+            if (isPathValid && paths[0].ToLowerInvariant().EndsWith(".mpls"))
             {
                 int index = mplsFileSeletIndex;
                 if (RawData.chapterClips[index].timeStamp.Count == 2)
@@ -1084,7 +1052,7 @@ namespace ChapterTool.Forms
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             registryStorage.Save(Location.ToString(), @"Software\ChapterTool", "Location");
-            if (poi > 0 && poi < 3 && nico == 10)
+            if (POI[0] < 3 && POI[1] == 10)
             {
                 Point origin   = Location;
                 Random forward = new Random();
