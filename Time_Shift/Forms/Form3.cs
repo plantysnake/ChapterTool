@@ -9,8 +9,8 @@ namespace ChapterTool.Forms
 
     public partial class Form3 : Form
     {
-        Form1 _mainWindow;
-        List<Color> _currentSetting;
+        readonly Form1 _mainWindow;
+        readonly List<Color> _currentSetting;
         public Form3(Form1 mainWindow)
         {
             MaximizeBox = false;

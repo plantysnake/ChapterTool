@@ -163,7 +163,7 @@ namespace ChapterTool.Util
             StringBuilder json = new StringBuilder("[");
             foreach (var item in colorList)
             {
-                json.AppendFormat("\"#{0:X2}{1:X2}{2:X2}\",", item.R, item.G, item.B);
+                json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\",");
             }
             json[json.Length - 1] = ']';
             File.WriteAllText(ColorProfile, json.ToString());
@@ -185,7 +185,7 @@ namespace ChapterTool.Util
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
-        static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr w, IntPtr l);
+        static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
         //1 = normal (green);
         //2 = error (red);
         //3 = warning (yellow).

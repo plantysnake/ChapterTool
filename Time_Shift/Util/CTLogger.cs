@@ -1,5 +1,5 @@
 ﻿// ****************************************************************************
-//Public Domain
+// Public Domain
 // code from http://sourceforge.net/projects/gmkvextractgui/
 // ****************************************************************************
 using System;
@@ -11,9 +11,9 @@ namespace ChapterTool.Util
     // ReSharper disable once InconsistentNaming
     public class CTLogger
     {
-        private static StringBuilder _log = new StringBuilder();
+        private static readonly StringBuilder LogContext = new StringBuilder();
 
-        public static string LogText => _log.ToString();
+        public static string LogText => LogContext.ToString();
 
         public static event LogLineAddedEventHandler LogLineAdded;
 
@@ -21,7 +21,7 @@ namespace ChapterTool.Util
         {
             DateTime actionDate = DateTime.Now;
             string logMessage = $"{actionDate.ToString("[yyyy-MM-dd][HH:mm:ss]")} {message}";
-            _log.AppendLine(logMessage);
+            LogContext.AppendLine(logMessage);
             OnLogLineAdded(logMessage, actionDate);
         }
 

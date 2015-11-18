@@ -1,7 +1,5 @@
-﻿using System.Runtime.InteropServices;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
-using System;
 
 namespace ChapterTool.Controls
 {
@@ -13,7 +11,7 @@ namespace ChapterTool.Controls
 
         public CustomProgressBar()
         {
-            this.SetStyle(ControlStyles.UserPaint, true);
+            SetStyle(ControlStyles.UserPaint, true);
         }
 
 

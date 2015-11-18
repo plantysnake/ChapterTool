@@ -105,10 +105,10 @@ namespace ChapterTool.Forms
 
         ChapterInfo _info;
 
-        string SchapterFitter => !File.Exists("mkvextract.exe") ? "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo" : "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
-        readonly string _snotLoaded = "尚未载入文件";
-        readonly string _ssuccess = "载入完成 (≧▽≦)";
-        readonly string _swhatsthis2 = "当前片段并没有章节 (¬_¬)";
+        static string SchapterFitter => !File.Exists("mkvextract.exe") ? "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo" : "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
+        private const string SnotLoaded = "尚未载入文件";
+        private const string Ssuccess = "载入完成 (≧▽≦)";
+        private const string Swhatsthis2 = "当前片段并没有章节 (¬_¬)";
 
 
         void SetDefault()
@@ -186,7 +186,7 @@ namespace ChapterTool.Forms
                 Tips.Text = @"这个文件我不认识啊 _ (:3」∠)_";
                 CTLogger.Log("文件格式非法");
                 _paths[0] = string.Empty;
-                label1.Text = _snotLoaded;
+                label1.Text = SnotLoaded;
                 return false;
             }
         }
@@ -216,7 +216,7 @@ namespace ChapterTool.Forms
             {
                 MessageBox.Show(ex.Message);
                 CTLogger.Log("ERROR: " + ex.Message);
-                label1.Text = _snotLoaded;
+                label1.Text = SnotLoaded;
             }
             Cursor = Cursors.Default;
 
@@ -243,7 +243,7 @@ namespace ChapterTool.Forms
 
             _info = _rawIfo.First(item => item != null);
             comboBox2.SelectedIndex = _rawIfo.IndexOf(_info);
-            Tips.Text = (comboBox2.SelectedIndex == -1) ? _swhatsthis2 : _ssuccess;
+            Tips.Text = (comboBox2.SelectedIndex == -1) ? Swhatsthis2 : Ssuccess;
         }
 
         void IfoMul1K1()
@@ -265,7 +265,7 @@ namespace ChapterTool.Forms
             byte[] buffer = File.ReadAllBytes(_paths[0]);
             GenerateChapterInfo(ConvertMethod.GetUTF8String(buffer));
             progressBar1.Value = 33;
-            Tips.Text = _ssuccess;
+            Tips.Text = Ssuccess;
         }
 
         void btnLoad_Click(object sender, EventArgs e)                  //载入键
@@ -394,9 +394,8 @@ namespace ChapterTool.Forms
                 SourceHash = IfoData.ComputeMd5Sum(_paths[0]),
                 SourceType = "OGM"
             };
-            var ogmData = text.Split('\n').ToList().GetEnumerator();
-            do { if (!ogmData.MoveNext()) { return; }
-            } while ((string.IsNullOrEmpty(ogmData.Current) || ogmData.Current == "\r"));
+            var ogmData = text.Trim(' ', '\r', '\n').Split('\n').SkipWhile(item=> (string.IsNullOrEmpty(item))).ToList().GetEnumerator();
+            if (!ogmData.MoveNext()) return;
             TimeSpan iniTime =  OffsetCal_new(ogmData.Current);
             int order = 1 + (int)numericUpDown1.Value;
             do
@@ -405,8 +404,7 @@ namespace ChapterTool.Forms
                 ogmData.MoveNext();
                 string buffer2 = ogmData.Current;
                 if (string.IsNullOrEmpty(buffer1) ||
-                    string.IsNullOrEmpty(buffer2) ||
-                    buffer1 == "\r" || buffer2 == "\r" ) { break; }
+                    string.IsNullOrEmpty(buffer2)) { break; }
                 if (_rLineOne.IsMatch(buffer1) && _rLineTwo.IsMatch(buffer2))
                 {
                     _info.Chapters.Add(WriteToChapterInfo(buffer1, buffer2, order++, iniTime));
@@ -442,10 +440,10 @@ namespace ChapterTool.Forms
             }
             if (current.Count < 2)
             {
-                Tips.Text = _swhatsthis2;
+                Tips.Text = Swhatsthis2;
                 return;
             }
-            Tips.Text = _ssuccess;
+            Tips.Text = Ssuccess;
             int offset = current[0];
 
             int defaultOrder = 1;
@@ -495,7 +493,7 @@ namespace ChapterTool.Forms
             }
             else
             {
-                Tips.Text = _swhatsthis2;
+                Tips.Text = Swhatsthis2;
             }
         }
         #endregion
@@ -515,7 +513,7 @@ namespace ChapterTool.Forms
         void UpdataInfo(string chapterName)
         {
             if (!IsPathValid) { return; }
-            var cn = chapterName.Split('\n').ToList().GetEnumerator();
+            var cn = chapterName.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();
             _info.Chapters.ForEach(item =>
             {
                 if (cn.MoveNext())
@@ -943,7 +941,7 @@ namespace ChapterTool.Forms
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
             const string sFakeChapter1 = "本片段时长为";
-            string sFakeChapter2 = $"但是第二个章节点{Environment.NewLine}离视频结尾太近了呢，应该没有用处吧 (-｡-;)";
+            string sFakeChapter2 = $"但是这第二个章节点{Environment.NewLine}离视频结尾太近了呢，应该没有用处吧 (-｡-;)";
             string sFakeChapter3 = $"虽然只有两个章节点{Environment.NewLine}应该还是能安心的呢 (～￣▽￣)→))*￣▽￣*)o";
             if (!IsPathValid || !_paths[0].ToLowerInvariant().EndsWith(".mpls")) return;
             int index = MplsFileSeletIndex;
@@ -1080,16 +1078,16 @@ namespace ChapterTool.Forms
 
         private void cbAutoGenName_CheckedChanged(object sender, EventArgs e)
         {
-            int index = 1;
-            if (cbAutoGenName.Checked)
+            if (!cbAutoGenName.Checked)
             {
-                foreach (var item in dataGridView1.Rows)
-                {
-                    ((DataGridViewRow) item).Cells[2].Value = $"Chapter {index++:D2}";
-                }
+                UpdataGridView();
                 return;
             }
-            UpdataGridView();
+            int index = 1;
+            foreach (var item in dataGridView1.Rows)
+            {
+                ((DataGridViewRow) item).Cells[2].Value = $"Chapter {index++:D2}";
+            }
         }
 
         private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)

@@ -32,7 +32,7 @@ namespace ChapterTool.Util
         private static readonly Dictionary<string, string> languagesTerminology;
         private static readonly Dictionary<string, string> languagesReverseTerminology;
 
-        private static readonly Dictionary<string, string> languagesISO2;
+        //private static readonly Dictionary<string, string> languagesISO2;
         private static readonly Dictionary<string, string> languagesReverseISO2;
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace ChapterTool.Util
 
             if (!string.IsNullOrEmpty(iso2))
             {
-                languagesISO2.Add(name, iso2);
+                //languagesISO2.Add(name, iso2);
                 languagesReverseISO2.Add(iso2, name);
             }
         }
@@ -80,7 +80,7 @@ namespace ChapterTool.Util
             languagesTerminology = new Dictionary<string, string>();
             languagesReverseTerminology = new Dictionary<string, string>();
 
-            languagesISO2 = new Dictionary<string, string>();
+            //languagesISO2 = new Dictionary<string, string>();
             languagesReverseISO2 = new Dictionary<string, string>();
 
             addLanguage("Abkhazian", "abk", "", "ab");

@@ -42,14 +42,13 @@ namespace ChapterTool.Util
             if (vobFiles.Length == 0) return null;
 
             // Look for the largest VOB set
-            string vtsNameCurrent;
             string vtsNamePrevious = Path.GetFileName(vobFiles[0]).Substring(0, 7);
             long vtsSizeLargest = 0;
             long vtsSize = 0;
             string vtsNumber = "01";
             foreach (string file in vobFiles)
             {
-                vtsNameCurrent = Path.GetFileName(file).Substring(0, 7);
+                var vtsNameCurrent = Path.GetFileName(file).Substring(0, 7);
                 if (vtsNameCurrent.Equals(vtsNamePrevious))
                     vtsSize += new FileInfo(file).Length;
                 else

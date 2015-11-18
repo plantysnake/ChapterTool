@@ -10,7 +10,7 @@ namespace ChapterTool.Forms
 {
     public partial class Form2 : Form
     {
-        private int _poi;
+        private readonly int _poi;
         public Form2()
         {
             InitializeComponent();
