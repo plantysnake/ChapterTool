@@ -1,24 +1,24 @@
 ﻿// ****************************************************************************
-// 
+//
 // Copyright (C) 2005-2015 Doom9 & al
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // ****************************************************************************
-using System;
 using System.Collections.Generic;
+// ReSharper disable InconsistentNaming
 
 namespace ChapterTool.Util
 {
@@ -32,37 +32,25 @@ namespace ChapterTool.Util
         private static readonly Dictionary<string, string> languagesTerminology;
         private static readonly Dictionary<string, string> languagesReverseTerminology;
 
-        private static readonly Dictionary<string, string> languagesISO2;
+        //private static readonly Dictionary<string, string> languagesISO2;
         private static readonly Dictionary<string, string> languagesReverseISO2;
 
         /// <summary>
         /// uses the ISO 639-2/B language codes
         /// </summary>
-        public static Dictionary<string, string> Languages
-        {
-            get
-            {
-                return languagesBibliographic;
-            }
-        }
+        public static Dictionary<string, string> Languages => languagesBibliographic;
 
         /// <summary>
         /// uses the ISO 639-2/T language codes
         /// </summary>
-        public static Dictionary<string, string> LanguagesTerminology
-        {
-            get
-            {
-                return languagesTerminology;
-            }
-        }
+        public static Dictionary<string, string> LanguagesTerminology => languagesTerminology;
 
         private static void addLanguage(string name, string iso3B, string iso3T, string iso2)
         {
             languagesBibliographic.Add(name, iso3B);
             languagesReverseBibliographic.Add(iso3B, name);
 
-            if (String.IsNullOrEmpty(iso3T))
+            if (string.IsNullOrEmpty(iso3T))
             {
                 languagesTerminology.Add(name, iso3B);
                 languagesReverseTerminology.Add(iso3B, name);
@@ -73,9 +61,9 @@ namespace ChapterTool.Util
                 languagesReverseTerminology.Add(iso3T, name);
             }
 
-            if (!String.IsNullOrEmpty(iso2))
+            if (!string.IsNullOrEmpty(iso2))
             {
-                languagesISO2.Add(name, iso2);
+                //languagesISO2.Add(name, iso2);
                 languagesReverseISO2.Add(iso2, name);
             }
         }
@@ -92,7 +80,7 @@ namespace ChapterTool.Util
             languagesTerminology = new Dictionary<string, string>();
             languagesReverseTerminology = new Dictionary<string, string>();
 
-            languagesISO2 = new Dictionary<string, string>();
+            //languagesISO2 = new Dictionary<string, string>();
             languagesReverseISO2 = new Dictionary<string, string>();
 
             addLanguage("Abkhazian", "abk", "", "ab");

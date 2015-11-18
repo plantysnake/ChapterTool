@@ -4,9 +4,10 @@
 // ****************************************************************************
 using System;
 using System.Reflection;
+using ChapterTool.Util;
 using System.Windows.Forms;
 
-namespace ChapterTool
+namespace ChapterTool.Forms
 {
     public partial class FormLog : Form
     {
@@ -18,19 +19,19 @@ namespace ChapterTool
 
         private void InitForm()
         {
-            Text = string.Format("ChapterTool v{0} -- Log", Assembly.GetExecutingAssembly().GetName().Version);
+            Text = $"ChapterTool v{Assembly.GetExecutingAssembly().GetName().Version} -- Log";
         }
 
         private void frmLog_Activated(object sender, EventArgs e)
         {
-            this.txtLog.Text = CTLogger.LogText;
+            txtLog.Text = CTLogger.LogText;
         }
 
         private void txtLog_TextChanged(object sender, EventArgs e)
         {
-            this.txtLog.Select(this.txtLog.TextLength + 1, 0);
-            this.txtLog.ScrollToCaret();
-            this.grpLog.Text = string.Format("Log ({0})", this.txtLog.Lines.LongLength);
+            txtLog.Select(txtLog.TextLength + 1, 0);
+            txtLog.ScrollToCaret();
+            grpLog.Text = $"Log ({txtLog.Lines.LongLength})";
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -49,7 +50,7 @@ namespace ChapterTool
         {
             try
             {
-                Clipboard.SetData(DataFormats.UnicodeText, this.txtLog.SelectedText);
+                Clipboard.SetData(DataFormats.UnicodeText, txtLog.SelectedText);
             }
             catch (Exception exception)
             {
@@ -73,7 +74,7 @@ namespace ChapterTool
         {
             // To avoid getting disposed
             e.Cancel = true;
-            base.Hide();
+            Hide();
         }
     }
 }

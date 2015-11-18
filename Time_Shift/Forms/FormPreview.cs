@@ -1,29 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
+using System.Drawing;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 
 namespace ChapterTool.Forms
 {
     public partial class FormPreview : Form
     {
-        Point MainPos = Point.Empty;
+        Point _mainPos;
 
         public FormPreview(string text,Point pos)
         {
             InitializeComponent();
             cTextBox1.Text = text;
-            MainPos = pos;
-            if (cTextBox1.Lines.Count()>20) 
+            _mainPos = pos;
+            if (cTextBox1.Lines.Count()>20)
             {
                 cTextBox1.ScrollBars = ScrollBars.Vertical;
             }
-            base.Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
+            Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
         }
 
         public void UpdateText(string text)
@@ -33,15 +29,15 @@ namespace ChapterTool.Forms
 
         private void cTextBox1_DoubleClick(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
 
 
         private void FormPreview_Load(object sender, EventArgs e)
         {
-            MainPos.X = MainPos.X - 230;
-            Location = MainPos;
+            _mainPos.X = _mainPos.X - 230;
+            Location = _mainPos;
         }
 
         private void FormPreview_FormClosing(object sender, FormClosingEventArgs e)

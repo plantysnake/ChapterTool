@@ -1,4 +1,4 @@
-namespace ChapterTool
+namespace ChapterTool.Forms
 {
     partial class FormLog
     {
@@ -31,7 +31,7 @@ namespace ChapterTool
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLog));
             this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
             this.grpLog = new System.Windows.Forms.GroupBox();
-            this.txtLog = new ChapterTool.cTextBox();
+            this.txtLog = new Controls.cTextBox();
             this.grpActions = new System.Windows.Forms.GroupBox();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.btnCopy = new System.Windows.Forms.Button();
@@ -40,9 +40,9 @@ namespace ChapterTool
             this.grpLog.SuspendLayout();
             this.grpActions.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // tlpMain
-            // 
+            //
             this.tlpMain.ColumnCount = 1;
             this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 23F));
@@ -56,9 +56,9 @@ namespace ChapterTool
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 69F));
             this.tlpMain.Size = new System.Drawing.Size(604, 501);
             this.tlpMain.TabIndex = 0;
-            // 
+            //
             // grpLog
-            // 
+            //
             this.grpLog.Controls.Add(this.txtLog);
             this.grpLog.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grpLog.Location = new System.Drawing.Point(3, 3);
@@ -67,9 +67,9 @@ namespace ChapterTool
             this.grpLog.TabIndex = 0;
             this.grpLog.TabStop = false;
             this.grpLog.Text = "Log";
-            // 
+            //
             // txtLog
-            // 
+            //
             this.txtLog.BackColor = System.Drawing.SystemColors.Window;
             this.txtLog.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtLog.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
@@ -82,9 +82,9 @@ namespace ChapterTool
             this.txtLog.TabIndex = 0;
             this.txtLog.WordWrap = false;
             this.txtLog.TextChanged += new System.EventHandler(this.txtLog_TextChanged);
-            // 
+            //
             // grpActions
-            // 
+            //
             this.grpActions.Controls.Add(this.btnRefresh);
             this.grpActions.Controls.Add(this.btnCopy);
             this.grpActions.Controls.Add(this.btnClose);
@@ -95,9 +95,9 @@ namespace ChapterTool
             this.grpActions.TabIndex = 1;
             this.grpActions.TabStop = false;
             this.grpActions.Text = "Actions";
-            // 
+            //
             // btnRefresh
-            // 
+            //
             this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRefresh.Location = new System.Drawing.Point(297, 15);
             this.btnRefresh.Name = "btnRefresh";
@@ -106,9 +106,9 @@ namespace ChapterTool
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
-            // 
+            //
             // btnCopy
-            // 
+            //
             this.btnCopy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCopy.Location = new System.Drawing.Point(398, 15);
             this.btnCopy.Name = "btnCopy";
@@ -117,9 +117,9 @@ namespace ChapterTool
             this.btnCopy.Text = "Copy Selection";
             this.btnCopy.UseVisualStyleBackColor = true;
             this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
-            // 
+            //
             // btnClose
-            // 
+            //
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.Location = new System.Drawing.Point(498, 15);
             this.btnClose.Name = "btnClose";
@@ -128,9 +128,9 @@ namespace ChapterTool
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
+            //
             // FormLog
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(604, 501);
@@ -152,14 +152,14 @@ namespace ChapterTool
 
         #endregion
 
-		
+
 		private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnCopy;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.GroupBox grpActions;
         private System.Windows.Forms.GroupBox grpLog;
         private System.Windows.Forms.TableLayoutPanel tlpMain;
-        private cTextBox txtLog;
+        private Controls.cTextBox txtLog;
         //private object AnchorStyles;
 
         public object DockStyle { get; private set; }

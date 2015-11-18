@@ -1,30 +1,31 @@
 ﻿// ****************************************************************************
-// 
+//
 // Copyright (C) 2009-2015 Kurtnoise (kurtnoise@free.fr)
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // ****************************************************************************
 using System;
 using System.IO;
 using System.Collections;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
-    public sealed class ifoParser
+    public sealed class IfoParser
     {
         /// <summary>
         /// Determine the IFO file that contains the menu: although it often is the largest
@@ -41,14 +42,13 @@ namespace ChapterTool.Util
             if (vobFiles.Length == 0) return null;
 
             // Look for the largest VOB set
-            string vtsNameCurrent;
             string vtsNamePrevious = Path.GetFileName(vobFiles[0]).Substring(0, 7);
             long vtsSizeLargest = 0;
             long vtsSize = 0;
             string vtsNumber = "01";
             foreach (string file in vobFiles)
             {
-                vtsNameCurrent = Path.GetFileName(file).Substring(0, 7);
+                var vtsNameCurrent = Path.GetFileName(file).Substring(0, 7);
                 if (vtsNameCurrent.Equals(vtsNamePrevious))
                     vtsSize += new FileInfo(file).Length;
                 else
@@ -93,12 +93,12 @@ namespace ChapterTool.Util
             return (long)Math.Round(fps * time.TotalSeconds);
         }
 
-        private static string TwoLong(int val) { return string.Format("{0:D2}", val); }
+        private static string TwoLong(int val) { return $"{val:D2}"; }
 
         private static int AsHex(int val)
         {
             int ret;
-            int.TryParse(string.Format("{0:X2}", val), out ret);
+            int.TryParse($"{val:X2}", out ret);
             return ret;
         }
 
@@ -157,7 +157,7 @@ namespace ChapterTool.Util
                 int minutes = AsHex(playbackBytes[1]);
                 int seconds = AsHex(playbackBytes[2]);
                 TimeSpan ret = new TimeSpan(hours, minutes, seconds);
-                if (fps != 0)
+                if (Math.Abs(fps) > 1e-5)
                     ret = ret.Add(TimeSpan.FromSeconds((double)frames / fps));
                 return ret;
             }
@@ -170,9 +170,9 @@ namespace ChapterTool.Util
         /// <param name="fileName">name of the IFO file</param>
         /// <param name="count">the audio stream number</param>
         /// <returns>Language as String</returns>
-        public static string getAudioLanguage(string FileName, int count)
+        public static string getAudioLanguage(string fileName, int count)
         {
-            FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
+            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             BinaryReader br = new BinaryReader(fs);
             Stream sr = br.BaseStream;
 
@@ -183,7 +183,7 @@ namespace ChapterTool.Util
             if (count > 0) sr.Seek(8 * count, SeekOrigin.Current);
             byte[] buff = new byte[2];
             br.Read(buff, 0, 2);
-            string ShortLangCode = String.Format("{0}{1}", (char)buff[0], (char)buff[1]);
+            string ShortLangCode = $"{(char) buff[0]}{(char) buff[1]}";
             string audioLang = LanguageSelectionContainer.LookupISOCode(ShortLangCode);
             fs.Close();
             return audioLang;
@@ -193,8 +193,10 @@ namespace ChapterTool.Util
         /// get several Subtitles Informations from the IFO file
         /// </summary>
         /// <param name="fileName">name of the IFO file</param>
-        /// <returns>several infos as String</returns>       
-        public static string[] GetSubtitlesStreamsInfos(string FileName, int iPGC, bool bGetAllStreams)
+        /// <param name="iPGC"></param>
+        /// <param name="bGetAllStreams"></param>
+        /// <returns>several infos as String</returns>
+        public static string[] GetSubtitlesStreamsInfos(string fileName, int iPGC, bool bGetAllStreams)
         {
             byte[] buff = new byte[4];
             byte s = 0;
@@ -203,7 +205,7 @@ namespace ChapterTool.Util
 
             try
             {
-                FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
+                FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
                 BinaryReader br = new BinaryReader(fs);
                 Stream sr = br.BaseStream;
 
@@ -230,7 +232,7 @@ namespace ChapterTool.Util
                     }
                     else
                     {
-                        string ShortLangCode = String.Format("{0}{1}", (char)buff[0], (char)buff[1]);
+                        string ShortLangCode = $"{(char) buff[0]}{(char) buff[1]}";
                         subdesc[i] = LanguageSelectionContainer.LookupISOCode(ShortLangCode);
                     }
 
@@ -282,34 +284,33 @@ namespace ChapterTool.Util
                     buff[0] -= 128;
 
                     if (buff[0] > 0)
-                        if (String.IsNullOrEmpty(substreams[buff[0]]))
-                            substreams[buff[0]] = "[" + String.Format("{0:00}", buff[0]) + "] - " + subdesc[i];
+                        if (string.IsNullOrEmpty(substreams[buff[0]]))
+                            substreams[buff[0]] = $"[{buff[0]:00}] - {subdesc[i]}";
                     if (buff[1] > 0)
-                        if (String.IsNullOrEmpty(substreams[buff[1]]))
-                            substreams[buff[1]] = "[" + String.Format("{0:00}", buff[1]) + "] - " + subdesc[i];
+                        if (string.IsNullOrEmpty(substreams[buff[1]]))
+                            substreams[buff[1]] = $"[{buff[1]:00}] - {subdesc[i]}";
                     if (buff[2] > 0)
-                        if (String.IsNullOrEmpty(substreams[buff[2]]))
-                            substreams[buff[2]] = "[" + String.Format("{0:00}", buff[2]) + "] - " + subdesc[i];
+                        if (string.IsNullOrEmpty(substreams[buff[2]]))
+                            substreams[buff[2]] = $"[{buff[2]:00}] - {subdesc[i]}";
                     if (buff[3] > 0)
-                        if (String.IsNullOrEmpty(substreams[buff[3]]))
-                            substreams[buff[3]] = "[" + String.Format("{0:00}", buff[3]) + "] - " + subdesc[i];
+                        if (string.IsNullOrEmpty(substreams[buff[3]]))
+                            substreams[buff[3]] = $"[{buff[3]:00}] - {subdesc[i]}";
                     if (buff[0] == 0 && buff[1] == 0 && buff[2] == 0 && buff[3] == 0)
-                        if (String.IsNullOrEmpty(substreams[buff[0]]))
-                            substreams[buff[0]] = "[" + String.Format("{0:00}", buff[0]) + "] - " + subdesc[i];
+                        if (string.IsNullOrEmpty(substreams[buff[0]]))
+                            substreams[buff[0]] = $"[{buff[4]:00}] - {subdesc[i]}";
                 }
 
                 if (bGetAllStreams)
                 {
                     for (int i = 0; i < 32; i++)
-                        if (String.IsNullOrEmpty(substreams[i]))
-                            substreams[i] = "[" + String.Format("{0:00}", i) + "] - not detected";
+                        if (string.IsNullOrEmpty(substreams[i]))
+                            substreams[i] = $"[{i:00}] - not detected";
                 }
                 else
                 {
                     ArrayList arrList = new ArrayList();
-                    foreach (string strItem in substreams)
-                        if (!String.IsNullOrEmpty(strItem))
-                            arrList.Add(strItem);
+                    foreach (string strItem in substreams.Where(strItem => !string.IsNullOrEmpty(strItem)))
+                        arrList.Add(strItem);
                     substreams = new string[arrList.Count];
                     for (int i = 0; i < arrList.Count; i++)
                         substreams[i] = arrList[i].ToString();
@@ -329,9 +330,9 @@ namespace ChapterTool.Util
         /// </summary>
         /// <param name="fileName">name of the IFO file</param>
         /// <returns>number of PGS as unsigned integer</returns>
-        public static uint getPGCnb(string FileName)
+        public static uint getPGCnb(string fileName)
         {
-            FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
+            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             BinaryReader br = new BinaryReader(fs);
             Stream sr = br.BaseStream;
 
@@ -360,9 +361,9 @@ namespace ChapterTool.Util
         /// </summary>
         /// <param name="fileName">name of the IFO file</param>
         /// <returns>aspect ratio info as String</returns>
-        public static string GetVideoAR(string FileName)
+        public static string GetVideoAR(string fileName)
         {
-            FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
+            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             BinaryReader br = new BinaryReader(fs);
             Stream sr = br.BaseStream;
 
@@ -372,13 +373,13 @@ namespace ChapterTool.Util
             fs.Close();
 
             byte b = (byte)((0x0C & array[0]) >> 2);
-            string ar = String.Empty;
+            string ar = string.Empty;
 
             switch (b)
             {
                 case 0: ar = "4:3"; break;
                 case 1:
-                case 2: ar = String.Empty; break;
+                case 2: ar = string.Empty; break;
                 case 3: ar = "16:9"; break;
             }
             return ar;
