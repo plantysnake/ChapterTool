@@ -24,7 +24,6 @@ namespace ChapterTool.Util
         public static string Load(string subKey = @"Software\ChapterTool", string name = "SavingPath")
         {
             string path = string.Empty;
-
             // HKCU_CURRENT_USER\Software\
             var registryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(subKey);
             if (registryKey == null) return path;
@@ -32,7 +31,6 @@ namespace ChapterTool.Util
             registryKey.Close();
             return path;
         }
-
 
         public static void Save(string value, string subKey = @"Software\ChapterTool", string name = "SavingPath")
         {

@@ -24,7 +24,7 @@ namespace ChapterTool.Util
         public string FramsInfo { get; set; }
         public override string ToString()
         {
-            return $"{Name} - {ConvertMethod.time2string(Time)}";
+            return $"{Name} - {ConvertMethod.Time2String(Time)}";
         }
     }
     public class ChapterInfo
@@ -69,7 +69,7 @@ namespace ChapterTool.Util
             int i = 1;
             foreach (Chapter c in Chapters)
             {
-                lines.Append($"CHAPTER{c.Number:D2}={ConvertMethod.time2string(c.Time)}{Environment.NewLine}");
+                lines.Append($"CHAPTER{c.Number:D2}={ConvertMethod.Time2String(c.Time)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{c.Number:D2}NAME=");
                 lines.Append(donotuseName ? $"Chapter {i++:D2}" : c.Name);
                 lines.Append(Environment.NewLine);
@@ -83,7 +83,7 @@ namespace ChapterTool.Util
             int i = 1;
             foreach (Chapter c in Chapters)
             {
-                lines.Append($"CHAPTER{c.Number:D2}={ConvertMethod.time2string(c.Time)}{Environment.NewLine}");
+                lines.Append($"CHAPTER{c.Number:D2}={ConvertMethod.Time2String(c.Time)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{c.Number:D2}NAME=");
                 lines.Append(donotuseName ? ("Chapter " + i++.ToString("00")) : c.Name);
                 lines.Append(Environment.NewLine);
@@ -103,7 +103,7 @@ namespace ChapterTool.Util
 
         public void SaveTsmuxerMeta(string filename)
         {
-            string text = "--custom-" + Environment.NewLine + "chapters=";
+            string text = $"--custom-{Environment.NewLine}chapters=";
             text = Chapters.Aggregate(text, (current, c) => current + (c.Time.ToString() + ";"));
             text = text.Substring(0, text.Length - 1);
             File.WriteAllText(filename, text);
@@ -134,7 +134,7 @@ namespace ChapterTool.Util
                 xmlchap.WriteElementString("ChapterLanguage", lang);
                 xmlchap.WriteEndElement();
                 xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                xmlchap.WriteElementString("ChapterTimeStart", ConvertMethod.time2string(c.Time) + "0000");
+                xmlchap.WriteElementString("ChapterTimeStart", ConvertMethod.Time2String(c.Time) + "0000");
                 xmlchap.WriteElementString("ChapterFlagHidden", "0");
                 xmlchap.WriteElementString("ChapterFlagEnabled", "1");
                 xmlchap.WriteEndElement();

@@ -9,24 +9,24 @@ namespace ChapterTool.Forms
 
     public partial class Form3 : Form
     {
-        Form1 magic;
-        List<Color> currentSetting;
+        Form1 _mainWindow;
+        List<Color> _currentSetting;
         public Form3(Form1 mainWindow)
         {
             MaximizeBox = false;
             InitializeComponent();
-            magic = mainWindow;
-            currentSetting = mainWindow.CurrentColor;
-            setDefault();
+            _mainWindow = mainWindow;
+            _currentSetting = mainWindow.CurrentColor;
+            SetDefault();
         }
-        void setDefault()
+        void SetDefault()
         {
-            back.BackColor = currentSetting[0];
-            textBack.BackColor = currentSetting[1];
-            overBack.BackColor = currentSetting[2];
-            downBack.BackColor = currentSetting[3];
-            bordBack.BackColor = currentSetting[4];
-            textFront.BackColor = currentSetting[5];
+            back.BackColor      = _currentSetting[0];
+            textBack.BackColor  = _currentSetting[1];
+            overBack.BackColor  = _currentSetting[2];
+            downBack.BackColor  = _currentSetting[3];
+            bordBack.BackColor  = _currentSetting[4];
+            textFront.BackColor = _currentSetting[5];
         }
 
 
@@ -37,7 +37,7 @@ namespace ChapterTool.Forms
             {
                 back.BackColor = colorDialog1.Color;
             }
-            magic.BackChange = back.BackColor;
+            _mainWindow.BackChange = back.BackColor;
         }
         private void textBack_Click(object sender, EventArgs e)
         {
@@ -45,7 +45,7 @@ namespace ChapterTool.Forms
             {
                 textBack.BackColor = colorDialog1.Color;
             }
-            magic.TextBack = textBack.BackColor;
+            _mainWindow.TextBack = textBack.BackColor;
         }
         private void overBack_Click(object sender, EventArgs e)
         {
@@ -53,7 +53,7 @@ namespace ChapterTool.Forms
             {
                 overBack.BackColor = colorDialog1.Color;
             }
-            magic.MouseOverColor = overBack.BackColor;
+            _mainWindow.MouseOverColor = overBack.BackColor;
         }
         private void downBack_Click(object sender, EventArgs e)
         {
@@ -61,8 +61,7 @@ namespace ChapterTool.Forms
             {
                 downBack.BackColor = colorDialog1.Color;
             }
-
-            magic.MouseDownColor = downBack.BackColor;
+            _mainWindow.MouseDownColor = downBack.BackColor;
         }
         private void bordBack_Click(object sender, EventArgs e)
         {
@@ -70,8 +69,7 @@ namespace ChapterTool.Forms
             {
                 bordBack.BackColor = colorDialog1.Color;
             }
-
-            magic.BordBackColor = bordBack.BackColor;
+            _mainWindow.BordBackColor = bordBack.BackColor;
         }
         private void textFront_Click(object sender, EventArgs e)
         {
@@ -79,15 +77,14 @@ namespace ChapterTool.Forms
             {
                 textFront.BackColor = colorDialog1.Color;
             }
-
-            magic.TextFrontColor = textFront.BackColor;
+            _mainWindow.TextFrontColor = textFront.BackColor;
         }
 
         private void Form3_FormClosing(object sender, FormClosingEventArgs e)
         {
-            ConvertMethod.SaveColor(magic.CurrentColor);
+            ConvertMethod.SaveColor(_mainWindow.CurrentColor);
             e.Cancel = true;
-            base.Hide();
+            Hide();
         }
     }
 }

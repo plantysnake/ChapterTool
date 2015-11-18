@@ -7,7 +7,7 @@ namespace ChapterTool.Controls
 {
     class CustomProgressBar : ProgressBar
     {
-        Color BarColor = Color.Blue;        // Color of progress meter
+        Color _barColor = Color.Blue;        // Color of progress meter
 
 
 
@@ -20,7 +20,7 @@ namespace ChapterTool.Controls
         protected override void OnPaint(PaintEventArgs e)
         {
             Rectangle rec = e.ClipRectangle;
-            SolidBrush brush = new SolidBrush(BarColor);
+            SolidBrush brush = new SolidBrush(_barColor);
 
             rec.Width = (int)(rec.Width * ((double)Value / Maximum)) - 4;
             if (ProgressBarRenderer.IsSupported)
@@ -36,12 +36,12 @@ namespace ChapterTool.Controls
         {
             get
             {
-                return BarColor;
+                return _barColor;
             }
 
             set
             {
-                BarColor = value;
+                _barColor = value;
 
                 // Invalidate the control to get a repaint.
                 Invalidate();

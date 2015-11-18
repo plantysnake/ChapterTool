@@ -116,7 +116,7 @@
     <Compile Include="Util\IfoParser.cs" />
     <Compile Include="Util\LanguageSelectionContainer.cs" />
     <Compile Include="Util\MatroskaInfo.cs" />
-    <Compile Include="Util\mplsData.cs" />
+    <Compile Include="Util\MplsData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

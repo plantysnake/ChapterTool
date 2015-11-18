@@ -17,8 +17,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
-using System;
 using System.Collections.Generic;
+// ReSharper disable InconsistentNaming
 
 namespace ChapterTool.Util
 {
@@ -38,31 +38,19 @@ namespace ChapterTool.Util
         /// <summary>
         /// uses the ISO 639-2/B language codes
         /// </summary>
-        public static Dictionary<string, string> Languages
-        {
-            get
-            {
-                return languagesBibliographic;
-            }
-        }
+        public static Dictionary<string, string> Languages => languagesBibliographic;
 
         /// <summary>
         /// uses the ISO 639-2/T language codes
         /// </summary>
-        public static Dictionary<string, string> LanguagesTerminology
-        {
-            get
-            {
-                return languagesTerminology;
-            }
-        }
+        public static Dictionary<string, string> LanguagesTerminology => languagesTerminology;
 
         private static void addLanguage(string name, string iso3B, string iso3T, string iso2)
         {
             languagesBibliographic.Add(name, iso3B);
             languagesReverseBibliographic.Add(iso3B, name);
 
-            if (String.IsNullOrEmpty(iso3T))
+            if (string.IsNullOrEmpty(iso3T))
             {
                 languagesTerminology.Add(name, iso3B);
                 languagesReverseTerminology.Add(iso3B, name);
@@ -73,7 +61,7 @@ namespace ChapterTool.Util
                 languagesReverseTerminology.Add(iso3T, name);
             }
 
-            if (!String.IsNullOrEmpty(iso2))
+            if (!string.IsNullOrEmpty(iso2))
             {
                 languagesISO2.Add(name, iso2);
                 languagesReverseISO2.Add(iso2, name);

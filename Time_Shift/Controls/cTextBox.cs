@@ -22,6 +22,7 @@ using System.Windows.Forms;
 
 namespace ChapterTool.Controls
 {
+    // ReSharper disable once InconsistentNaming
     public class cTextBox : TextBox
     {
         // Methods
@@ -29,7 +30,6 @@ namespace ChapterTool.Controls
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-            DoubleBuffered = true;
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -42,12 +42,12 @@ namespace ChapterTool.Controls
                 }
                 else if (e.Control && (e.KeyCode == Keys.C))
                 {
-                    Clipboard.SetText(this.SelectedText, TextDataFormat.UnicodeText);
+                    Clipboard.SetText(SelectedText, TextDataFormat.UnicodeText);
                 }
                 else if (e.Alt && (e.KeyCode == Keys.A))
                 {
                     int totalLine = GetLineFromCharIndex(Text.Length);
-                    int charIndex = GetFirstCharIndexFromLine((int)(totalLine / 2));
+                    int charIndex = GetFirstCharIndexFromLine(totalLine / 2);
                     Select(charIndex, Text.Length);
                 }
                 e.Handled = true;

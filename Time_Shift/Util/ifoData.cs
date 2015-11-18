@@ -16,7 +16,7 @@ namespace ChapterTool.Util
         public event EventHandler<ProgramChainArg> StreamDetected;
         public event EventHandler ExtractionComplete;
 
-        public static string ComputeMD5Sum(string path)
+        public static string ComputeMd5Sum(string path)
         {
             return BitConverter.ToString(new MD5CryptoServiceProvider().ComputeHash(File.ReadAllBytes(path))).Replace("-", "").ToLowerInvariant();
         }
@@ -25,12 +25,11 @@ namespace ChapterTool.Util
         public List<ChapterInfo> GetStreams(string ifoFile)
         {
             List<ChapterInfo> oList = new List<ChapterInfo>();
-            ChapterInfo oChapterInfo;
 
             int pgcCount = (int)IfoParser.getPGCnb(ifoFile);
             for (int i = 1; i <= pgcCount; i++)
             {
-                oChapterInfo = GetChapterInfo(ifoFile, i);
+                var oChapterInfo = GetChapterInfo(ifoFile, i);
                 oList.Add(oChapterInfo);
             }
             return oList;
@@ -38,21 +37,16 @@ namespace ChapterTool.Util
 
         protected void OnStreamDetected(ChapterInfo pgc)
         {
-            if (StreamDetected != null)
+            if (StreamDetected == null) return;
+            ProgramChainArg e = new ProgramChainArg
             {
-                ProgramChainArg e = new ProgramChainArg
-                {
-                    ProgramChain = pgc
-                };
-                this.StreamDetected(this, e);
-            }
+                ProgramChain = pgc
+            };
+            StreamDetected(this, e);
         }
         protected void OnExtractionComplete()
         {
-            if (this.ExtractionComplete != null)
-            {
-                this.ExtractionComplete(this, EventArgs.Empty);
-            }
+            ExtractionComplete?.Invoke(this, EventArgs.Empty);
         }
 
         public ChapterInfo GetChapterInfo(string location, int titleSetNum)
@@ -70,7 +64,7 @@ namespace ChapterTool.Util
                 SourceType = "DVD",
                 SourceName = "PGC " + titleSetNum.ToString("D2"),
                 TitleNumber = titleSetNum,
-                SourceHash = ComputeMD5Sum(location),
+                SourceHash = ComputeMd5Sum(location),
                 Title = Path.GetFileNameWithoutExtension(location)
             };
             if (pgc.Title.Split('_').Length == 3)
@@ -91,36 +85,36 @@ namespace ChapterTool.Util
             return pgc;
         }
 
-        List<Chapter> GetChapters(string ifoFile, int programChain, out TimeSpan duration, out double fps)
+        static List<Chapter> GetChapters(string ifoFile, int programChain, out TimeSpan duration, out double fps)
         {
             List<Chapter> chapters = new List<Chapter>();
             duration = TimeSpan.Zero;
             fps = 0;
 
-            long pcgITPosition = IfoParser.GetPCGIP_Position(ifoFile);
+            long pcgItPosition = IfoParser.GetPCGIP_Position(ifoFile);
             int programChainPrograms = -1;
             TimeSpan programTime = TimeSpan.Zero;
             double FPS;
             if (programChain >= 0)
             {
-                uint chainOffset = IfoParser.GetChainOffset(ifoFile, pcgITPosition, programChain);
-                programTime = IfoParser.ReadTimeSpan(ifoFile, pcgITPosition, chainOffset, out FPS) ?? TimeSpan.Zero;
-                programChainPrograms = IfoParser.GetNumberOfPrograms(ifoFile, pcgITPosition, chainOffset);
+                uint chainOffset = IfoParser.GetChainOffset(ifoFile, pcgItPosition, programChain);
+                programTime = IfoParser.ReadTimeSpan(ifoFile, pcgItPosition, chainOffset, out FPS) ?? TimeSpan.Zero;
+                programChainPrograms = IfoParser.GetNumberOfPrograms(ifoFile, pcgItPosition, chainOffset);
             }
             else
             {
-                int programChains = IfoParser.GetProgramChains(ifoFile, pcgITPosition);
+                int programChains = IfoParser.GetProgramChains(ifoFile, pcgItPosition);
                 for (int curChain = 1; curChain <= programChains; curChain++)
                 {
-                    uint chainOffset = IfoParser.GetChainOffset(ifoFile, pcgITPosition, curChain);
-                    TimeSpan? time = IfoParser.ReadTimeSpan(ifoFile, pcgITPosition, chainOffset, out FPS);
+                    uint chainOffset = IfoParser.GetChainOffset(ifoFile, pcgItPosition, curChain);
+                    TimeSpan? time = IfoParser.ReadTimeSpan(ifoFile, pcgItPosition, chainOffset, out FPS);
                     if (time == null)
                         break;
 
                     if (time.Value > programTime)
                     {
                         programChain = curChain;
-                        programChainPrograms = IfoParser.GetNumberOfPrograms(ifoFile, pcgITPosition, chainOffset);
+                        programChainPrograms = IfoParser.GetNumberOfPrograms(ifoFile, pcgItPosition, chainOffset);
                         programTime = time.Value;
                     }
                 }
@@ -130,25 +124,25 @@ namespace ChapterTool.Util
 
             chapters.Add(new Chapter() { Name = "Chapter 01" });
 
-            uint longestChainOffset = IfoParser.GetChainOffset(ifoFile, pcgITPosition, programChain);
-            int programMapOffset = IfoParser.ToInt16(IfoParser.GetFileBlock(ifoFile, (pcgITPosition + longestChainOffset) + 230, 2));
-            int cellTableOffset = IfoParser.ToInt16(IfoParser.GetFileBlock(ifoFile, (pcgITPosition + longestChainOffset) + 0xE8, 2));
+            uint longestChainOffset = IfoParser.GetChainOffset(ifoFile, pcgItPosition, programChain);
+            int programMapOffset = IfoParser.ToInt16(IfoParser.GetFileBlock(ifoFile, (pcgItPosition + longestChainOffset) + 230, 2));
+            int cellTableOffset = IfoParser.ToInt16(IfoParser.GetFileBlock(ifoFile, (pcgItPosition + longestChainOffset) + 0xE8, 2));
             for (int currentProgram = 0; currentProgram < programChainPrograms; ++currentProgram)
             {
-                int entryCell = IfoParser.GetFileBlock(ifoFile, ((pcgITPosition + longestChainOffset) + programMapOffset) + currentProgram, 1)[0];
+                int entryCell = IfoParser.GetFileBlock(ifoFile, ((pcgItPosition + longestChainOffset) + programMapOffset) + currentProgram, 1)[0];
                 int exitCell = entryCell;
                 if (currentProgram < (programChainPrograms - 1))
-                    exitCell = IfoParser.GetFileBlock(ifoFile, ((pcgITPosition + longestChainOffset) + programMapOffset) + (currentProgram + 1), 1)[0] - 1;
+                    exitCell = IfoParser.GetFileBlock(ifoFile, ((pcgItPosition + longestChainOffset) + programMapOffset) + (currentProgram + 1), 1)[0] - 1;
 
                 TimeSpan totalTime = TimeSpan.Zero;
                 for (int currentCell = entryCell; currentCell <= exitCell; currentCell++)
                 {
                     int cellStart = cellTableOffset + ((currentCell - 1) * 0x18);
-                    byte[] bytes = IfoParser.GetFileBlock(ifoFile, (pcgITPosition + longestChainOffset) + cellStart, 4);
+                    byte[] bytes = IfoParser.GetFileBlock(ifoFile, (pcgItPosition + longestChainOffset) + cellStart, 4);
                     int cellType = bytes[0] >> 6;
                     if (cellType == 0x00 || cellType == 0x01)
                     {
-                        bytes = IfoParser.GetFileBlock(ifoFile, ((pcgITPosition + longestChainOffset) + cellStart) + 4, 4);
+                        bytes = IfoParser.GetFileBlock(ifoFile, ((pcgItPosition + longestChainOffset) + cellStart) + 4, 4);
                         TimeSpan time = IfoParser.ReadTimeSpan(bytes, out fps) ?? TimeSpan.Zero;
                         totalTime += time;
                     }

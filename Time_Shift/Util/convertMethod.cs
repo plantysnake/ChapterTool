@@ -33,20 +33,20 @@ namespace ChapterTool.Util
     static class ConvertMethod
     {
         //format a pts as hh:mm:ss.sss
-        public static string time2string(int pts)
+        public static string Time2String(int pts)
         {
             decimal total = pts / 45000M;
-            return time2string(total);
+            return Time2String(total);
         }
-        public static string time2string(decimal second)
+        public static string Time2String(decimal second)
         {
             decimal secondPart = Math.Floor(second);
             decimal millisecondPart = Math.Round((second - secondPart) * 1000M);
-            return time2string(new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart));
+            return Time2String(new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart));
         }
 
 
-        public static string time2string(TimeSpan temp)
+        public static string Time2String(TimeSpan temp)
         {
             return $"{temp.Hours:D2}:{temp.Minutes:D2}:{temp.Seconds:D2}.{temp.Milliseconds:D3}";
         }
@@ -105,16 +105,16 @@ namespace ChapterTool.Util
             return Encoding.UTF8.GetString(buffer);
         }
 
-        public static List<ChapterInfo>  PraseXML(XmlDocument doc)
+        public static List<ChapterInfo>  PraseXml(XmlDocument doc)
         {
-            List<ChapterInfo> BUFFER = new List<ChapterInfo>();
+            List<ChapterInfo> result = new List<ChapterInfo>();
             XmlElement root = doc.DocumentElement;
+            if (root == null) return result;
             XmlNodeList editionEntrys = root.ChildNodes;//获取各个章节的入口
             foreach (XmlNode editionEntry in editionEntrys)
             {
-                XmlNodeList editionEntryChildNodes = (editionEntry as XmlElement).ChildNodes;//获取当前章节中的所有子节点
-                ChapterInfo buff = new ChapterInfo();
-                buff.SourceType = "XML";
+                XmlNodeList editionEntryChildNodes = ((XmlElement) editionEntry).ChildNodes;//获取当前章节中的所有子节点
+                ChapterInfo buff = new ChapterInfo {SourceType = "XML"};
                 int j = 0;
                 foreach (XmlNode editionEntryChildNode in editionEntryChildNodes)
                 {
@@ -140,11 +140,9 @@ namespace ChapterTool.Util
                     }
                     temp.Number = ++j;
                     buff.Chapters.Add(temp);
-                    if (temp2.Time.TotalSeconds > 1e-5)
-                    {
-                        temp2.Number = j;
-                        buff.Chapters.Add(temp2);
-                    }
+                    if (!(temp2.Time.TotalSeconds > 1e-5)) continue;
+                    temp2.Number = j;
+                    buff.Chapters.Add(temp2);
                 }
                 for (int i = 0; i < buff.Chapters.Count - 1; i++)
                 {
@@ -153,12 +151,13 @@ namespace ChapterTool.Util
                         buff.Chapters.Remove(buff.Chapters[i--]);
                     }
                 }
-                BUFFER.Add(buff);
+                result.Add(buff);
             }
-            return BUFFER;
+            return result;
         }
 
-        private static string colorProfile = "color-config.json";
+        private const string ColorProfile = "color-config.json";
+
         public static void SaveColor(List<Color> colorList)
         {
             StringBuilder json = new StringBuilder("[");
@@ -167,24 +166,22 @@ namespace ChapterTool.Util
                 json.AppendFormat("\"#{0:X2}{1:X2}{2:X2}\",", item.R, item.G, item.B);
             }
             json[json.Length - 1] = ']';
-            File.WriteAllText(colorProfile, json.ToString());
+            File.WriteAllText(ColorProfile, json.ToString());
         }
 
         public static void LoadColor(Form1 window)
         {
-            if (File.Exists(colorProfile))
-            {
-                string json = File.ReadAllText(colorProfile);
-                Regex rcolor = new Regex("\"(?<hex>.+?)\"");
-                var matchesOfJson = rcolor.Matches(json);
-                if (matchesOfJson.Count < 6) { return; }
-                window.BackChange     = ColorTranslator.FromHtml(matchesOfJson[0].Groups["hex"].Value);
-                window.TextBack       = ColorTranslator.FromHtml(matchesOfJson[1].Groups["hex"].Value);
-                window.MouseOverColor = ColorTranslator.FromHtml(matchesOfJson[2].Groups["hex"].Value);
-                window.MouseDownColor = ColorTranslator.FromHtml(matchesOfJson[3].Groups["hex"].Value);
-                window.BordBackColor  = ColorTranslator.FromHtml(matchesOfJson[4].Groups["hex"].Value);
-                window.TextFrontColor = ColorTranslator.FromHtml(matchesOfJson[5].Groups["hex"].Value);
-            }
+            if (!File.Exists(ColorProfile)) return;
+            string json = File.ReadAllText(ColorProfile);
+            Regex rcolor = new Regex("\"(?<hex>.+?)\"");
+            var matchesOfJson = rcolor.Matches(json);
+            if (matchesOfJson.Count < 6) { return; }
+            window.BackChange     = ColorTranslator.FromHtml(matchesOfJson[0].Groups["hex"].Value);
+            window.TextBack       = ColorTranslator.FromHtml(matchesOfJson[1].Groups["hex"].Value);
+            window.MouseOverColor = ColorTranslator.FromHtml(matchesOfJson[2].Groups["hex"].Value);
+            window.MouseDownColor = ColorTranslator.FromHtml(matchesOfJson[3].Groups["hex"].Value);
+            window.BordBackColor  = ColorTranslator.FromHtml(matchesOfJson[4].Groups["hex"].Value);
+            window.TextFrontColor = ColorTranslator.FromHtml(matchesOfJson[5].Groups["hex"].Value);
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
