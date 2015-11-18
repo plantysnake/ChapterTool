@@ -19,19 +19,17 @@
 // ****************************************************************************
 namespace ChapterTool.Util
 {
-    class registryStorage
+    class RegistryStorage
     {
         public static string Load(string subKey = @"Software\ChapterTool", string name = "SavingPath")
         {
             string path = string.Empty;
 
             // HKCU_CURRENT_USER\Software\
-            Microsoft.Win32.RegistryKey registryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(subKey);
-            if (registryKey != null)
-            {
-                path = (string)registryKey.GetValue(name);
-                registryKey.Close();
-            }
+            var registryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(subKey);
+            if (registryKey == null) return path;
+            path = (string)registryKey.GetValue(name);
+            registryKey.Close();
             return path;
         }
 
@@ -39,16 +37,16 @@ namespace ChapterTool.Util
         public static void Save(string value, string subKey = @"Software\ChapterTool", string name = "SavingPath")
         {
             // HKCU_CURRENT_USER\Software\
-            Microsoft.Win32.RegistryKey registryKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(subKey);
-            registryKey.SetValue(name, value);
-            registryKey.Close();
+            var registryKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(subKey);
+            registryKey?.SetValue(name, value);
+            registryKey?.Close();
         }
         public static void Save(System.Collections.Generic.List<System.Drawing.Color> value, string subKey = @"Software\ChapterTool", string name = "Color")
         {
             // HKCU_CURRENT_USER\Software\
-            Microsoft.Win32.RegistryKey registryKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(subKey);
-            registryKey.SetValue(name, value);
-            registryKey.Close();
+            var registryKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(subKey);
+            registryKey?.SetValue(name, value);
+            registryKey?.Close();
         }
     }
 }

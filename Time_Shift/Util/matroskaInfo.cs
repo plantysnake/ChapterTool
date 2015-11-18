@@ -20,16 +20,16 @@
 
 namespace ChapterTool.Util
 {
-    class matroskaInfo
+    class MatroskaInfo
     {
-        public System.Xml.XmlDocument result = new System.Xml.XmlDocument();
-        public matroskaInfo(string path, string program = "mkvextract.exe")
+        public System.Xml.XmlDocument Result = new System.Xml.XmlDocument();
+        public MatroskaInfo(string path, string program = "mkvextract.exe")
         {
             string arg = "chapters \"" + path + "\"";
-            string xmlresult = runMkvextract(arg, program);
-            result.LoadXml(xmlresult);
+            string xmlresult = RunMkvextract(arg, program);
+            Result.LoadXml(xmlresult);
         }
-        static string runMkvextract(string arguments, string program)
+        static string RunMkvextract(string arguments, string program)
         {
             System.Diagnostics.Process process = new System.Diagnostics.Process
             {

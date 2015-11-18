@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 
 namespace ChapterTool.Util
 {
-    static class convertMethod
+    static class ConvertMethod
     {
         //format a pts as hh:mm:ss.sss
         public static string time2string(int pts)
@@ -48,47 +48,45 @@ namespace ChapterTool.Util
 
         public static string time2string(TimeSpan temp)
         {
-            return string.Format("{0:D2}:{1:D2}:{2:D2}.{3:D3}",
-                                  temp.Hours  , temp.Minutes,
-                                  temp.Seconds, temp.Milliseconds);
+            return $"{temp.Hours:D2}:{temp.Minutes:D2}:{temp.Seconds:D2}.{temp.Milliseconds:D3}";
         }
 
         public static Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
 
-        public static TimeSpan string2Time(string input)
+        public static TimeSpan String2Time(string input)
         {
             if (string.IsNullOrEmpty(input)) { return TimeSpan.Zero; }
             var        temp = RTimeFormat.Match(input);
-            int        Hour = int.Parse(temp.Groups["Hour"].Value);
-            int      Minute = int.Parse(temp.Groups["Minute"].Value);
-            int      Second = int.Parse(temp.Groups["Second"].Value);
-            int Millisecond = int.Parse(temp.Groups["Millisecond"].Value);
-            return new TimeSpan(0, Hour, Minute, Second, Millisecond);
+            int        hour = int.Parse(temp.Groups["Hour"].Value);
+            int      minute = int.Parse(temp.Groups["Minute"].Value);
+            int      second = int.Parse(temp.Groups["Second"].Value);
+            int millisecond = int.Parse(temp.Groups["Millisecond"].Value);
+            return new TimeSpan(0, hour, minute, second, millisecond);
         }
 
-        public static TimeSpan pts2Time(int pts)
+        public static TimeSpan Pts2Time(int pts)
         {
             decimal total = pts / 45000M;
             decimal secondPart = Math.Floor(total);
             decimal millisecondPart = Math.Round((total - secondPart) * 1000M);
             return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
         }
-        public static Point string2point(string input)
+        public static Point String2Point(string input)
         {
-            Regex Rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");
+            var rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");
             if (string.IsNullOrEmpty(input)) { return new Point(-32000, -32000); }
-            var temp = Rpos.Match(input);
+            var temp = rpos.Match(input);
             int x = int.Parse(temp.Groups["x"].Value);
             int y = int.Parse(temp.Groups["y"].Value);
             return new Point(x, y);
         }
 
-        public static int convertFR2Index(double frame)
+        public static int ConvertFr2Index(double frame)
         {
-            decimal[] FrameRate = { 0M, 24000M / 1001, 24000M / 1000,
+            decimal[] frameRate = { 0M, 24000M / 1001, 24000M / 1000,
                                         25000M / 1000, 30000M / 1001,
                                         50000M / 1000, 60000M / 1001 };
-            var result = Enumerable.Range(0, 7).Where(index => (Math.Abs(frame - (double)FrameRate[index])) < 1e-5);
+            var result = Enumerable.Range(0, 7).Where(index => (Math.Abs(frame - (double)frameRate[index])) < 1e-5);
             return result.First();
         }
 
@@ -111,31 +109,31 @@ namespace ChapterTool.Util
         {
             List<ChapterInfo> BUFFER = new List<ChapterInfo>();
             XmlElement root = doc.DocumentElement;
-            XmlNodeList EditionEntrys = root.ChildNodes;//获取各个章节的入口
-            foreach (XmlNode EditionEntry in EditionEntrys)
+            XmlNodeList editionEntrys = root.ChildNodes;//获取各个章节的入口
+            foreach (XmlNode editionEntry in editionEntrys)
             {
-                XmlNodeList EditionEntryChildNodes = (EditionEntry as XmlElement).ChildNodes;//获取当前章节中的所有子节点
+                XmlNodeList editionEntryChildNodes = (editionEntry as XmlElement).ChildNodes;//获取当前章节中的所有子节点
                 ChapterInfo buff = new ChapterInfo();
                 buff.SourceType = "XML";
                 int j = 0;
-                foreach (XmlNode EditionEntryChildNode in EditionEntryChildNodes)
+                foreach (XmlNode editionEntryChildNode in editionEntryChildNodes)
                 {
-                    if (EditionEntryChildNode.Name != "ChapterAtom") { continue; }
-                    XmlNodeList ChapterAtomChildNodes = (EditionEntryChildNode as XmlElement).ChildNodes;//获取Atom中的所有子节点
+                    if (editionEntryChildNode.Name != "ChapterAtom") { continue; }
+                    XmlNodeList chapterAtomChildNodes = ((XmlElement) editionEntryChildNode).ChildNodes;//获取Atom中的所有子节点
                     Chapter temp  = new Chapter();
                     Chapter temp2 = new Chapter();
-                    foreach (XmlNode ChapterAtomChildNode in ChapterAtomChildNodes)
+                    foreach (XmlNode chapterAtomChildNode in chapterAtomChildNodes)
                     {
-                        switch (ChapterAtomChildNode.Name)
+                        switch (chapterAtomChildNode.Name)
                         {
                             case "ChapterTimeStart":
-                                temp.Time = string2Time(RTimeFormat.Match(ChapterAtomChildNode.InnerText).Value);
+                                temp.Time = String2Time(RTimeFormat.Match(chapterAtomChildNode.InnerText).Value);
                                 break;
                             case "ChapterTimeEnd":
-                                temp2.Time = string2Time(RTimeFormat.Match(ChapterAtomChildNode.InnerText).Value);
+                                temp2.Time = String2Time(RTimeFormat.Match(chapterAtomChildNode.InnerText).Value);
                                 break;
                             case "ChapterDisplay":
-                                temp.Name  = (ChapterAtomChildNode as XmlElement).ChildNodes.Item(0).InnerText;
+                                temp.Name  = ((XmlElement) chapterAtomChildNode).ChildNodes.Item(0)?.InnerText;
                                 temp2.Name = temp.Name;
                                 break;
                         }
@@ -161,10 +159,10 @@ namespace ChapterTool.Util
         }
 
         private static string colorProfile = "color-config.json";
-        public static void saveColor(List<Color> ColorList)
+        public static void SaveColor(List<Color> colorList)
         {
             StringBuilder json = new StringBuilder("[");
-            foreach (var item in ColorList)
+            foreach (var item in colorList)
             {
                 json.AppendFormat("\"#{0:X2}{1:X2}{2:X2}\",", item.R, item.G, item.B);
             }
@@ -172,13 +170,13 @@ namespace ChapterTool.Util
             File.WriteAllText(colorProfile, json.ToString());
         }
 
-        public static void loadColor(Form1 window)
+        public static void LoadColor(Form1 window)
         {
             if (File.Exists(colorProfile))
             {
                 string json = File.ReadAllText(colorProfile);
-                Regex Rcolor = new Regex("\"(?<hex>.+?)\"");
-                var matchesOfJson = Rcolor.Matches(json);
+                Regex rcolor = new Regex("\"(?<hex>.+?)\"");
+                var matchesOfJson = rcolor.Matches(json);
                 if (matchesOfJson.Count < 6) { return; }
                 window.BackChange     = ColorTranslator.FromHtml(matchesOfJson[0].Groups["hex"].Value);
                 window.TextBack       = ColorTranslator.FromHtml(matchesOfJson[1].Groups["hex"].Value);

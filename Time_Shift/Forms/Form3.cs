@@ -16,7 +16,7 @@ namespace ChapterTool.Forms
             MaximizeBox = false;
             InitializeComponent();
             magic = mainWindow;
-            currentSetting = mainWindow.currentColor;
+            currentSetting = mainWindow.CurrentColor;
             setDefault();
         }
         void setDefault()
@@ -85,7 +85,7 @@ namespace ChapterTool.Forms
 
         private void Form3_FormClosing(object sender, FormClosingEventArgs e)
         {
-            convertMethod.saveColor(magic.currentColor);
+            ConvertMethod.SaveColor(magic.CurrentColor);
             e.Cancel = true;
             base.Hide();
         }

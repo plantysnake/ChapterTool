@@ -111,7 +111,7 @@
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             this.btnSave.MouseEnter += new System.EventHandler(this.btnSave_MouseEnter);
-            this.btnSave.MouseLeave += new System.EventHandler(this.toolTipRemoveAll);
+            this.btnSave.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             this.btnSave.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnSave_MouseUp);
             //
             // label1
@@ -121,7 +121,7 @@
             this.label1.Size = new System.Drawing.Size(374, 23);
             this.label1.TabIndex = 5;
             this.label1.MouseEnter += new System.EventHandler(this.label1_MouseEnter);
-            this.label1.MouseLeave += new System.EventHandler(this.toolTipRemoveAll);
+            this.label1.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             //
             // btnTrans
             //
@@ -325,7 +325,7 @@
             this.cbMul1k1.UseVisualStyleBackColor = true;
             this.cbMul1k1.CheckedChanged += new System.EventHandler(this.cbMul1k1_CheckedChanged);
             this.cbMul1k1.MouseEnter += new System.EventHandler(this.cbMul1k1_MouseEnter);
-            this.cbMul1k1.MouseLeave += new System.EventHandler(this.toolTipRemoveAll);
+            this.cbMul1k1.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             //
             // numericUpDown1
             //
@@ -413,7 +413,7 @@
             this.comboBox2.TabStop = false;
             this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             this.comboBox2.MouseEnter += new System.EventHandler(this.comboBox2_MouseEnter);
-            this.comboBox2.MouseLeave += new System.EventHandler(this.toolTipRemoveAll);
+            this.comboBox2.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             //
             // contextMenuStrip2
             //

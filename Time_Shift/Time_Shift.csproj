@@ -80,7 +80,7 @@
       <DependentUpon>FormPreview.cs</DependentUpon>
     </Compile>
     <Compile Include="Util\ChapterInfo.cs" />
-    <Compile Include="Util\convertMethod.cs" />
+    <Compile Include="Util\ConvertMethod.cs" />
     <Compile Include="Controls\cTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -112,13 +112,10 @@
     <Compile Include="Forms\FormLog.Designer.cs">
       <DependentUpon>FormLog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\InputBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Util\ifoData.cs" />
-    <Compile Include="Util\ifoParser.cs" />
+    <Compile Include="Util\IfoData.cs" />
+    <Compile Include="Util\IfoParser.cs" />
     <Compile Include="Util\LanguageSelectionContainer.cs" />
-    <Compile Include="Util\matroskaInfo.cs" />
+    <Compile Include="Util\MatroskaInfo.cs" />
     <Compile Include="Util\mplsData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -127,7 +124,7 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="Util\registryStorage.cs" />
+    <Compile Include="Util\RegistryStorage.cs" />
     <EmbeddedResource Include="Controls\cTextBox.resx">
       <DependentUpon>cTextBox.cs</DependentUpon>
     </EmbeddedResource>

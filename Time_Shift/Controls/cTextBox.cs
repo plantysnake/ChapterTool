@@ -52,7 +52,10 @@ namespace ChapterTool.Controls
                 }
                 e.Handled = true;
             }
-            catch (Exception)  { }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
     }
 
