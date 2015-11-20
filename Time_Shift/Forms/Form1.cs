@@ -44,6 +44,7 @@ namespace ChapterTool.Forms
         }
         private void Form1_Load(object sender, EventArgs e)
         {
+            Text = $"ChapterTool v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
             Point saved = ConvertMethod.String2Point(RegistryStorage.Load(@"Software\ChapterTool", "location"));
             if (saved != new Point(-32000, -32000))
