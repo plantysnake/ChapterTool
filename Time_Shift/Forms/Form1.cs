@@ -249,13 +249,9 @@ namespace ChapterTool.Forms
 
         void IfoMul1K1()
         {
-            _rawIfo.Where(item => item != null)
-                .ToList()
-                .ForEach(
-                    item =>
-                        item.Chapters.ForEach(
-                            item2 =>
-                                item2.Time =
+            (from item in _rawIfo where item != null select item.Chapters).ToList().ForEach(
+                    item => item.ForEach(
+                            item2 => item2.Time =
                                     ConvertMethod.Pts2Time((int) item2.Time.TotalSeconds*45045)));
         }
 
@@ -395,7 +391,7 @@ namespace ChapterTool.Forms
                 SourceHash = IfoData.ComputeMd5Sum(_paths[0]),
                 SourceType = "OGM"
             };
-            var ogmData = text.Trim(' ', '\r', '\n').Split('\n').SkipWhile(item=> (string.IsNullOrEmpty(item))).ToList().GetEnumerator();
+            var ogmData = text.Trim(' ', '\r', '\n').Split('\n').SkipWhile(item => (string.IsNullOrEmpty(item))).ToList().GetEnumerator();
             if (!ogmData.MoveNext()) return;
             TimeSpan iniTime =  OffsetCal_new(ogmData.Current);
             int order = 1 + (int)numericUpDown1.Value;
