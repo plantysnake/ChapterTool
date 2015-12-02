@@ -94,21 +94,23 @@ namespace ChapterTool.Util
             Array.Copy(_data, itemStartAdress + streamOrder * 16, stream, 0, 16);
             if (0x01 != stream[01]) return;
             int streamCodingType = stream[0x0b];
-            if (0x1b != streamCodingType) return;
-            int attr = stream[0x0c];
-            ChapterClips[playItemOrder].Fps = (attr & 0xf);//last 4 bits is the fps
+            if (0x1b != streamCodingType && // AVC
+                0x02 != streamCodingType && // MPEG-I/II
+                0xea != streamCodingType)   // VC-1
+                return;
+            ChapterClips[playItemOrder].Fps = (stream[0x0c] & 0xf);//last 4 bits is the fps
         }
         private void ParsePlaylistMark()
         {
             int playlistMarkNumber  = Byte2Int16(_data, _playlistMarkSectionStartAddress + 0x04);
             int playlistMarkEntries = _playlistMarkSectionStartAddress + 0x06;
-            byte[] bytelist = new byte[14];// eg. 0001 yyyy xxxxxxxx FFFF 000000
-                                           // 00       mark_id
-                                           // 01       mark_type
-                                           // 02 - 03  play_item_ref
-                                           // 04 - 07  time
-                                           // 08 - 09  entry_es_pid
-                                           // 10 - 13  duration
+            byte[] bytelist = new byte[14]; // eg. 0001 yyyy xxxxxxxx FFFF 000000
+                                            // 00       mark_id
+                                            // 01       mark_type
+                                            // 02 - 03  play_item_ref
+                                            // 04 - 07  time
+                                            // 08 - 09  entry_es_pid
+                                            // 10 - 13  duration
             for (var mark = 0; mark < playlistMarkNumber; ++mark)
             {
                 Array.Copy(_data, playlistMarkEntries, bytelist, 0, 14);
