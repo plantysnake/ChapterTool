@@ -284,7 +284,8 @@ namespace ChapterTool.Forms
             }
         }
 
-        void btnSave_Click(object sender, EventArgs e) { SaveFile(); }  //输出保存键
+        void btnSave_Click(object sender, EventArgs e) => SaveFile();   //输出保存键
+
 
         string _customSavingPath = string.Empty;
 
@@ -309,7 +310,6 @@ namespace ChapterTool.Forms
         void SaveFile()
         {
             if (!IsPathValid) { return; }
-
 
             string pn = _paths[0].Substring(0, _paths[0].LastIndexOf(".", StringComparison.Ordinal));
             //modify for custom saving path
@@ -346,12 +346,9 @@ namespace ChapterTool.Forms
             Tips.Text = @"保存成功";
         }
 
-        private void savingType_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            xmlLang.Enabled = (savingType.SelectedIndex == 1);
-        }
+        private void savingType_SelectedIndexChanged(object sender, EventArgs e) => xmlLang.Enabled = (savingType.SelectedIndex == 1);
 
-        void refresh_Click(object sender, EventArgs e) { UpdataGridView(); }
+        void refresh_Click(object sender, EventArgs e) => UpdataGridView();
 
 
         TimeSpan OffsetCal_new(string line)//获取第一行的时间
@@ -365,22 +362,12 @@ namespace ChapterTool.Forms
         }
         Chapter WriteToChapterInfo(string line, string line2, int order,TimeSpan iniTime)
         {
-            Chapter temp = new Chapter();
-            if (_rLineTwo.IsMatch(line2))                     //章节标题行
-            {
-                switch (!cbAutoGenName.Checked)
-                {
-                    case true:
-                        temp.Name = _rLineTwo.Match(line2).Groups["chapterName"].Value; break;
-                    case false:
-                        temp.Name = $"Chapter {order:D2}"; break;
-                }
-            }
-            if (_rLineOne.IsMatch(line))
-            {
-                temp.Time = ConvertMethod.String2Time(ConvertMethod.RTimeFormat.Match(line).Value) - iniTime;
-            }
-            temp.Number = order;
+            Chapter temp = new Chapter {Number = order, Time = TimeSpan.Zero};
+            if (!_rLineOne.IsMatch(line) || !_rLineTwo.IsMatch(line2)) return temp;
+            temp.Name = cbAutoGenName.Checked
+                ? $"Chapter {order:D2}"
+                : _rLineTwo.Match(line2).Groups["chapterName"].Value;
+            temp.Time = ConvertMethod.String2Time(ConvertMethod.RTimeFormat.Match(line).Value) - iniTime;
             return temp;
         }
         #region geneRateCI
@@ -511,13 +498,7 @@ namespace ChapterTool.Forms
         {
             if (!IsPathValid) { return; }
             var cn = chapterName.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();
-            _info.Chapters.ForEach(item =>
-            {
-                if (cn.MoveNext())
-                {
-                    item.Name = cn.Current;
-                }
-            });
+            _info.Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name);
             cn.Dispose();
         }
         void UpdataInfo(decimal coefficient)
