@@ -110,19 +110,16 @@ namespace ChapterTool.Util
             List<ChapterInfo> result = new List<ChapterInfo>();
             XmlElement root = doc.DocumentElement;
             if (root == null) return result;
-            XmlNodeList editionEntrys = root.ChildNodes;//获取各个章节的入口
-            foreach (XmlNode editionEntry in editionEntrys)
+            foreach (XmlNode editionEntry in root.ChildNodes)//Get Entrance for each chapter
             {
-                XmlNodeList editionEntryChildNodes = ((XmlElement) editionEntry).ChildNodes;//获取当前章节中的所有子节点
                 ChapterInfo buff = new ChapterInfo {SourceType = "XML"};
-                int j = 0;
-                foreach (XmlNode editionEntryChildNode in editionEntryChildNodes)
+                int index = 0;
+                foreach (XmlNode editionEntryChildNode in ((XmlElement)editionEntry).ChildNodes)//Get all the child nodes in current chapter
                 {
                     if (editionEntryChildNode.Name != "ChapterAtom") { continue; }
-                    XmlNodeList chapterAtomChildNodes = ((XmlElement) editionEntryChildNode).ChildNodes;//获取Atom中的所有子节点
                     Chapter temp  = new Chapter();
                     Chapter temp2 = new Chapter();
-                    foreach (XmlNode chapterAtomChildNode in chapterAtomChildNodes)
+                    foreach (XmlNode chapterAtomChildNode in ((XmlElement)editionEntryChildNode).ChildNodes)//Get detail info for current chapter node
                     {
                         switch (chapterAtomChildNode.Name)
                         {
@@ -138,12 +135,13 @@ namespace ChapterTool.Util
                                 break;
                         }
                     }
-                    temp.Number = ++j;
+                    temp.Number = ++index;          // Chapter node for ChapterTimeStart
                     buff.Chapters.Add(temp);
                     if (!(temp2.Time.TotalSeconds > 1e-5)) continue;
-                    temp2.Number = j;
+                    temp2.Number = index;           // Chapter node for ChapterTimeEnd
                     buff.Chapters.Add(temp2);
                 }
+
                 for (int i = 0; i < buff.Chapters.Count - 1; i++)
                 {
                     if (buff.Chapters[i].Time == buff.Chapters[i+1].Time)
@@ -151,6 +149,7 @@ namespace ChapterTool.Util
                         buff.Chapters.Remove(buff.Chapters[i--]);
                     }
                 }
+                //buff.Chapters = buff.Chapters.Distinct().ToList();
                 result.Add(buff);
             }
             return result;

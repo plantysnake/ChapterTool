@@ -26,7 +26,7 @@ namespace ChapterTool.Util
         {
             List<ChapterInfo> oList = new List<ChapterInfo>();
 
-            int pgcCount = (int)IfoParser.getPGCnb(ifoFile);
+            int pgcCount = (int)IfoParser.GetPGCnb(ifoFile);
             for (int i = 1; i <= pgcCount; i++)
             {
                 var oChapterInfo = GetChapterInfo(ifoFile, i);

@@ -85,7 +85,6 @@ namespace ChapterTool.Util
 
         internal static short ToInt16(byte[] bytes) { return (short)((bytes[0] << 8) + bytes[1]); }
         private static uint ToInt32(byte[] bytes) { return (uint)((bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3]); }
-        private static short ToShort(byte[] bytes) { return ToInt16(bytes); }
         internal static long ToFilePosition(byte[] bytes) { return ToInt32(bytes) * 0x800L; }
 
         private static long GetTotalFrames(TimeSpan time, int fps)
@@ -104,13 +103,13 @@ namespace ChapterTool.Util
 
         private static short? GetFrames(byte val)
         {
-            int byte0_high = val >> 4;
-            int byte0_low = val & 0x0F;
-            if (byte0_high > 11)
-                return (short)(((byte0_high - 12) * 10) + byte0_low);
-            if ((byte0_high <= 3) || (byte0_high >= 8))
+            int byte0High = val >> 4;
+            int byte0Low = val & 0x0F;
+            if (byte0High > 11)
+                return (short)(((byte0High - 12) * 10) + byte0Low);
+            if ((byte0High <= 3) || (byte0High >= 8))
                 return null;
-            return (short)(((byte0_high - 4) * 10) + byte0_low);
+            return (short)(((byte0High - 4) * 10) + byte0Low);
         }
 
         private static int GetFrames(TimeSpan time, int fps)
@@ -170,7 +169,7 @@ namespace ChapterTool.Util
         /// <param name="fileName">name of the IFO file</param>
         /// <param name="count">the audio stream number</param>
         /// <returns>Language as String</returns>
-        public static string getAudioLanguage(string fileName, int count)
+        public static string GetAudioLanguage(string fileName, int count)
         {
             FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             BinaryReader br = new BinaryReader(fs);
@@ -183,8 +182,8 @@ namespace ChapterTool.Util
             if (count > 0) sr.Seek(8 * count, SeekOrigin.Current);
             byte[] buff = new byte[2];
             br.Read(buff, 0, 2);
-            string ShortLangCode = $"{(char) buff[0]}{(char) buff[1]}";
-            string audioLang = LanguageSelectionContainer.LookupISOCode(ShortLangCode);
+            string shortLangCode = $"{(char) buff[0]}{(char) buff[1]}";
+            string audioLang = LanguageSelectionContainer.LookupISOCode(shortLangCode);
             fs.Close();
             return audioLang;
         }
@@ -232,8 +231,8 @@ namespace ChapterTool.Util
                     }
                     else
                     {
-                        string ShortLangCode = $"{(char) buff[0]}{(char) buff[1]}";
-                        subdesc[i] = LanguageSelectionContainer.LookupISOCode(ShortLangCode);
+                        string shortLangCode = $"{(char) buff[0]}{(char) buff[1]}";
+                        subdesc[i] = LanguageSelectionContainer.LookupISOCode(shortLangCode);
                     }
 
                     // Go to Code Extension
@@ -243,13 +242,13 @@ namespace ChapterTool.Util
                     switch (buff[0] & 0x0F)
                     {
                         // from http://dvd.sourceforge.net/dvdinfo/sprm.html
-                        case 1: subdesc[i] += " - (Caption/Normal Size Char)"; break;
-                        case 2: subdesc[i] += " - (Caption/Large Size Char)"; break;
-                        case 3: subdesc[i] += " - (Caption For Children)"; break;
-                        case 5: subdesc[i] += " - (Closed Caption/Normal Size Char)"; break;
-                        case 6: subdesc[i] += " - (Closed Caption/Large Size Char)"; break;
-                        case 7: subdesc[i] += " - (Closed Caption For Children)"; break;
-                        case 9: subdesc[i] += " - (Forced Caption)"; break;
+                        case 01: subdesc[i] += " - (Caption/Normal Size Char)"; break;
+                        case 02: subdesc[i] += " - (Caption/Large Size Char)"; break;
+                        case 03: subdesc[i] += " - (Caption For Children)"; break;
+                        case 05: subdesc[i] += " - (Closed Caption/Normal Size Char)"; break;
+                        case 06: subdesc[i] += " - (Closed Caption/Large Size Char)"; break;
+                        case 07: subdesc[i] += " - (Closed Caption For Children)"; break;
+                        case 09: subdesc[i] += " - (Forced Caption)"; break;
                         case 13: subdesc[i] += " - (Director Comments/Normal Size Char)"; break;
                         case 14: subdesc[i] += " - (Director Comments/Large Size Char)"; break;
                         case 15: subdesc[i] += " - (Director Comments for Children)"; break;
@@ -330,7 +329,7 @@ namespace ChapterTool.Util
         /// </summary>
         /// <param name="fileName">name of the IFO file</param>
         /// <returns>number of PGS as unsigned integer</returns>
-        public static uint getPGCnb(string fileName)
+        public static uint GetPGCnb(string fileName)
         {
             FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             BinaryReader br = new BinaryReader(fs);

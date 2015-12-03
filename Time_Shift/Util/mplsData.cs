@@ -27,7 +27,7 @@ namespace ChapterTool.Util
 {
     public class MplsData
     {
-        /// <summary>include all chapter in mpls divisionally</summary>
+        /// <summary>include all chapters in mpls divisionally</summary>
         public List<Clip> ChapterClips { get; set; }
         /// <summary>include all time code in mpls</summary>
         public List<int> EntireTimeStamp { get; set; }
@@ -59,7 +59,7 @@ namespace ChapterTool.Util
         {
             _playlistSectionStartAddress     = Byte2Int32(_data, 0x08);
             _playlistMarkSectionStartAddress = Byte2Int32(_data, 0x0c);
-            _playItemNumber = Byte2Int16(_data, _playlistSectionStartAddress + 0x06);
+            _playItemNumber  = Byte2Int16(_data, _playlistSectionStartAddress + 0x06);
             _playItemEntries = _playlistSectionStartAddress + 0x0a;
         }
 
@@ -68,8 +68,8 @@ namespace ChapterTool.Util
             int lengthOfPlayItem       = Byte2Int16(_data, playItemEntries + 0x00);
             Clip streamClip = new Clip
             {
-                Name = Encoding.ASCII.GetString(_data, playItemEntries + 0x02, 0x09),
-                TimeIn = Byte2Int32(_data, playItemEntries + 0x0e),
+                Name    = Encoding.ASCII.GetString(_data, playItemEntries + 0x02, 0x09),
+                TimeIn  = Byte2Int32(_data, playItemEntries + 0x0e),
                 TimeOut = Byte2Int32(_data, playItemEntries + 0x12)
             };
             streamClip.Length          = streamClip.TimeOut - streamClip.TimeIn;
@@ -114,13 +114,13 @@ namespace ChapterTool.Util
             for (var mark = 0; mark < playlistMarkNumber; ++mark)
             {
                 Array.Copy(_data, playlistMarkEntries, bytelist, 0, 14);
-                if (0x01 == bytelist[1])// the playlist mark type is an entry mark
+                if (0x01 == bytelist[1])//make sure the playlist mark type is an entry mark
                 {
                     int streamFileIndex = Byte2Int16(bytelist, 0x02);
                     Clip streamClip     = ChapterClips[streamFileIndex];
                     int timeStamp       = Byte2Int32(bytelist, 0x04);
                     int relativeSeconds = timeStamp - streamClip.TimeIn + streamClip.RelativeTimeIn;
-                    ChapterClips[streamFileIndex].TimeStamp.Add(timeStamp);
+                    streamClip.TimeStamp.Add(timeStamp);
                     EntireTimeStamp.Add(relativeSeconds);
                 }
                 playlistMarkEntries += 14;
@@ -138,17 +138,5 @@ namespace ChapterTool.Util
             return bigEndian ? ((bytes[index] << 24) + (bytes[index + 1] << 16) + (bytes[index + 2] << 8) + bytes[index + 3]) :
                                ((bytes[index + 3] << 24) + (bytes[index + 2] << 16) + (bytes[index + 1] << 8) + bytes[index]);
         }
-    }
-
-    public class Clip
-    {
-        public string Name;
-        public List<int> TimeStamp = new List<int>();
-        public int Fps;
-        public int Length;
-        public int RelativeTimeIn;
-        public int RelativeTimeOut;
-        public int TimeIn;
-        public int TimeOut;
     }
 }
