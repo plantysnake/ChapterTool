@@ -154,7 +154,7 @@ namespace ChapterTool.Util
             // let's check if it's valid
             if (!File.Exists(valuePath))
             {
-                throw new Exception("Found a registry value (" + valuePath + ") for MKVToolNix in your system but it is not valid!");
+                throw new Exception($"Found a registry value ({valuePath}) for MKVToolNix in your system but it is not valid!");
             }
 
             // Everything is A-OK! Return the valid Directory value! :)

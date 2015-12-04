@@ -58,13 +58,13 @@ namespace ChapterTool.Util
             ChapterInfo pgc = new ChapterInfo
             {
                 SourceType = "DVD",
-                SourceName = "PGC " + titleSetNum.ToString("D2"),
+                SourceName = $"PGC {titleSetNum:D2}",
                 TitleNumber = titleSetNum,
                 SourceHash = ComputeMd5Sum(location),
                 Title = Path.GetFileNameWithoutExtension(location)
             };
             if (pgc.Title.Split('_').Length == 3)
-                pgc.Title = pgc.Title.Split('_')[0] + "_" + pgc.Title.Split('_')[1];
+                pgc.Title = $"{pgc.Title.Split('_')[0]}_{pgc.Title.Split('_')[1]}";
 
             TimeSpan duration;
             double fps;

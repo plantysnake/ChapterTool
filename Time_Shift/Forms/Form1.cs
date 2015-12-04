@@ -264,7 +264,7 @@ namespace ChapterTool.Forms
             {
                 if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
                 _paths[0] = openFileDialog1.FileName;
-                CTLogger.Log("+从载入键中载入文件:" + _paths[0]);
+                CTLogger.Log($"+从载入键中载入文件: {_paths[0]}");
                 comboBox2.Items.Clear();
                 Loadfile();
                 UpdataGridView();
@@ -311,25 +311,25 @@ namespace ChapterTool.Forms
             StringBuilder savePath = new StringBuilder(pn);
 
             if (_paths[0].ToLowerInvariant().EndsWith(".mpls") && !combineToolStripMenuItem.Checked)
-                savePath.Append("__" + _rawMpls.ChapterClips[MplsFileSeletIndex].Name);
+                savePath.Append($"__{_rawMpls.ChapterClips[MplsFileSeletIndex].Name}");
             if (_paths[0].ToLowerInvariant().EndsWith(".ifo"))
-                savePath.Append("__" + _rawIfo[MplsFileSeletIndex].SourceName);
+                savePath.Append("__{_rawIfo[MplsFileSeletIndex].SourceName}");
 
             switch (savingType.SelectedIndex)
             {
                 case 0://TXT
-                    while (File.Exists(savePath + ".txt")) { savePath.Append("_"); }
+                    while (File.Exists($"{savePath}.txt")) { savePath.Append("_"); }
                     savePath.Append(".txt");
                     _info.SaveText(savePath.ToString(), cbAutoGenName.Checked);
                     break;
                 case 1://XML
-                    while (File.Exists(savePath + ".xml")) { savePath.Append("_"); }
+                    while (File.Exists($"{savePath}.xml")) { savePath.Append("_"); }
                     savePath.Append(".xml");
                     string key = _rLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
-                    _info.SaveXml(savePath.ToString(),string.IsNullOrEmpty(key)? "": LanguageSelectionContainer.Languages[key]);
+                    _info.SaveXml(savePath.ToString(),string.IsNullOrEmpty(key)? "": LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
                     break;
                 case 2://QPF
-                    while (File.Exists(savePath + ".qpf")) { savePath.Append("_"); }
+                    while (File.Exists($"{savePath}.qpf")) { savePath.Append("_"); }
                     savePath.Append(".qpf");
                     _info.SaveQpfile(savePath.ToString());
                     break;
@@ -520,7 +520,7 @@ namespace ChapterTool.Forms
         void AddRow(Chapter item,int index)
         {
             dataGridView1.Rows[index].Tag = item;
-            dataGridView1.Rows[index].Cells[0].Value = item.Number.ToString("00");
+            dataGridView1.Rows[index].Cells[0].Value = $"{item.Number:D2}";
             dataGridView1.Rows[index].Cells[1].Value = ConvertMethod.Time2String(item.Time + _info.Offset);
             dataGridView1.Rows[index].Cells[2].Value = cbAutoGenName.Checked ? $"Chapter {(index + 1):D2}" : item.Name;
             dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
@@ -753,7 +753,7 @@ namespace ChapterTool.Forms
                 }
                 else
                 {
-                    MessageBox.Show(@"无可用 MkvExtract, 安装个呗~");
+                    MessageBox.Show(@"无可用 MkvExtract, 安装个呗~", @"ChapterTool Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 }
             }
         }
