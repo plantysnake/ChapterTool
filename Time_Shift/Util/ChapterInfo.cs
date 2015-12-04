@@ -62,7 +62,7 @@ namespace ChapterTool.Util
             {
                 lines.Append($"CHAPTER{c.Number:D2}={ConvertMethod.Time2String(c.Time)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{c.Number:D2}NAME=");
-                lines.Append(donotuseName ? ("Chapter " + i++.ToString("00")) : c.Name);
+                lines.Append(donotuseName ? $"Chapter {i++:D2}" : c.Name);
                 lines.Append(Environment.NewLine);
             }
             File.WriteAllText(filename, lines.ToString(), Encoding.UTF8);
@@ -82,7 +82,7 @@ namespace ChapterTool.Util
 
         public void SaveTimecodes(string filename) => File.WriteAllLines(filename, Chapters.Select(c => c.Time.ToString()).ToArray());
 
-        public void SaveXml(string filename,string lang)
+        public void SaveXml(string filename,string lang, bool donotuseName)
         {
             if (string.IsNullOrEmpty(lang)) { lang = "und"; }
             Random rndb           = new Random();
@@ -94,11 +94,12 @@ namespace ChapterTool.Util
             xmlchap.WriteElementString("EditionFlagHidden", "0");
             xmlchap.WriteElementString("EditionFlagDefault", "0");
             xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
+            int i = 1;
             foreach (Chapter c in Chapters)
             {
                 xmlchap.WriteStartElement("ChapterAtom");
                 xmlchap.WriteStartElement("ChapterDisplay");
-                xmlchap.WriteElementString("ChapterString", c.Name);
+                xmlchap.WriteElementString("ChapterString", donotuseName ? $"Chapter {i++:D2}" : c.Name);
                 xmlchap.WriteElementString("ChapterLanguage", lang);
                 xmlchap.WriteEndElement();
                 xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
