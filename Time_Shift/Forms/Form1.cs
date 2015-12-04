@@ -319,22 +319,36 @@ namespace ChapterTool.Forms
             if (_paths[0].ToLowerInvariant().EndsWith(".ifo"))
                 savePath.Append("__{_rawIfo[MplsFileSeletIndex].SourceName}");
 
+            string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf"};
+            while (File.Exists($"{savePath}{saveingTypeSuffix[savingType.SelectedIndex]}")) { savePath.Append("_"); }
+            savePath.Append(saveingTypeSuffix[savingType.SelectedIndex]);
+
+            CTLogger.Log("+保存信息");
+            CTLogger.Log($"|+保存文件名: {savePath}");
+            CTLogger.Log($"|+保存格式: {saveingTypeSuffix[savingType.SelectedIndex]}");
+            if (savingType.SelectedIndex == 1)
+            {
+                CTLogger.Log($" |+语言选择: {xmlLang.Items[xmlLang.SelectedIndex]}");
+            }
+            CTLogger.Log($"|+使用自定义章节名: {cbChapterName.Checked}");
+            CTLogger.Log($"|+使用章节名: {!cbAutoGenName.Checked}");
+            CTLogger.Log($"|+章节号平移: {numericUpDown1.Value}");
+            CTLogger.Log($"|+章节开始时间 x 1.001: {cbMul1k1.Checked}");
+            if (cbShift.Checked)
+            {
+                CTLogger.Log($"|+时间平移: {ConvertMethod.Time2String(_info.Offset)}");
+            }
+
             switch (savingType.SelectedIndex)
             {
                 case 0://TXT
-                    while (File.Exists($"{savePath}.txt")) { savePath.Append("_"); }
-                    savePath.Append(".txt");
                     _info.SaveText(savePath.ToString(), cbAutoGenName.Checked);
                     break;
                 case 1://XML
-                    while (File.Exists($"{savePath}.xml")) { savePath.Append("_"); }
-                    savePath.Append(".xml");
                     string key = _rLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
                     _info.SaveXml(savePath.ToString(),string.IsNullOrEmpty(key)? "": LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
                     break;
                 case 2://QPF
-                    while (File.Exists($"{savePath}.qpf")) { savePath.Append("_"); }
-                    savePath.Append(".qpf");
                     _info.SaveQpfile(savePath.ToString());
                     break;
             }
