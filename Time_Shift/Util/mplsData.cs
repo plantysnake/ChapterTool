@@ -69,12 +69,14 @@ namespace ChapterTool.Util
 
         private int ParsePlayItem(int playItemEntries, out int itemStartAdress, out int streamCount)
         {
-            int lengthOfPlayItem       = Byte2Int16(_data, playItemEntries + 0x00);
+            int lengthOfPlayItem = Byte2Int16(_data, playItemEntries);
+            byte[] bytes = new byte[lengthOfPlayItem + 2];
+            Array.Copy(_data, playItemEntries, bytes, 0, lengthOfPlayItem);
             Clip streamClip = new Clip
             {
-                Name    = Encoding.ASCII.GetString(_data, playItemEntries + 0x02, 0x09),
-                TimeIn  = Byte2Int32(_data, playItemEntries + 0x0e),
-                TimeOut = Byte2Int32(_data, playItemEntries + 0x12)
+                Name    = Encoding.ASCII.GetString(bytes, 0x02, 0x09),
+                TimeIn  = Byte2Int32(bytes, 0x0e),
+                TimeOut = Byte2Int32(bytes, 0x12)
             };
             streamClip.Length          = streamClip.TimeOut - streamClip.TimeIn;
             streamClip.RelativeTimeIn  = ChapterClips.Sum(clip => clip.Length);
@@ -82,12 +84,13 @@ namespace ChapterTool.Util
             ChapterClips.Add(streamClip);
 
             itemStartAdress            = playItemEntries + 0x32;
-            streamCount                = _data[playItemEntries + 0x23] >> 4;
-            int uo2                    = _data[playItemEntries + 0x22];
+            streamCount                = bytes[0x23] >> 4;
+            int uo2                    = bytes[0x22];
             //System.Diagnostics.Trace.Assert(uo2 == 0 || uo2 == 1 || uo2 == 2);
-            if (0x02 == uo2)//ignore angles, can only operate angles == 1 or 2 //may be 0?
+            if (0x02 == uo2)//ignore angles, only operate case that angles == 2, it normally be 0
             {
-                streamCount     = _data[playItemEntries + 0x2f] >> 4;
+                CTLogger.Log($"Chapter with {uo2} Angle, file name: {streamClip.Name}");
+                streamCount     = bytes[0x2f] >> 4;
                 itemStartAdress = playItemEntries + 0x3e;
             }
             return lengthOfPlayItem;
