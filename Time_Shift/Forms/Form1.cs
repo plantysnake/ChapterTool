@@ -24,7 +24,6 @@ using System.Text;
 using System.Linq;
 using System.Drawing;
 using ChapterTool.Util;
-using System.Diagnostics;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -59,7 +58,7 @@ namespace ChapterTool.Forms
             MoreModeShow = false;
             Size = new Size(Size.Width, Size.Height - 80);
             savingType.SelectedIndex = 0;
-            btnTrans.Text = ((Environment.TickCount % 2 == 0) ? "↺" : "↻");
+            btnTrans.Text = (Environment.TickCount % 2 == 0 ? "↺" : "↻");
             folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
             if (!string.IsNullOrEmpty(_paths[0]))
             {
@@ -74,8 +73,9 @@ namespace ChapterTool.Forms
 
         static void InitialLog()
         {
-            if (Environment.UserName.ToLowerInvariant().IndexOf("yzy", StringComparison.Ordinal) > 0) { CTLogger.Log("武总好~"); }
-            else { CTLogger.Log(Environment.UserName + "，你好呀"); }
+            CTLogger.Log(Environment.UserName.ToLowerInvariant().IndexOf("yzy", StringComparison.Ordinal) > 0
+                ? "武总好~"
+                : $"{Environment.UserName}，你好呀");
             CTLogger.Log(Environment.OSVersion.ToString());
             if (Environment.GetLogicalDrives().Length > 10) { CTLogger.Log("硬盘壕，给我块硬盘呗~"); }
             using (var registryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0"))
@@ -136,7 +136,7 @@ namespace ChapterTool.Forms
         {
             _paths = e.Data.GetData(DataFormats.FileDrop) as string[];
             if (!IsPathValid) { return; }
-            CTLogger.Log("+从窗口拖拽中载入文件:" + _paths?[0]);
+            CTLogger.Log($"+从窗口拖拽中载入文件: {_paths?[0]}");
             comboBox2.Items.Clear();
             Loadfile();
             UpdataGridView();
@@ -211,8 +211,8 @@ namespace ChapterTool.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
-                CTLogger.Log("ERROR: " + ex.Message);
+                MessageBox.Show(ex.Message, @"ChapterTool Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                CTLogger.Log($"ERROR: {ex.Message}");
                 label1.Text = SnotLoaded;
             }
             Cursor = Cursors.Default;
@@ -223,6 +223,11 @@ namespace ChapterTool.Forms
         void LoadIfo()
         {
             _rawIfo = new IfoData().GetStreams(_paths[0]);
+            if (_rawIfo[0] == null)
+            {
+                Tips.Text = Swhatsthis2;
+                return;
+            }
             if (Math.Abs(_rawIfo[0].FramesPerSecond - 25) > 1e-5)
             {
                 IfoMul1K1();
@@ -251,8 +256,7 @@ namespace ChapterTool.Forms
 
         void LoadOgm()
         {
-            byte[] buffer = File.ReadAllBytes(_paths[0]);
-            GenerateChapterInfoFromOgm(ConvertMethod.GetUTF8String(buffer));
+            GenerateChapterInfoFromOgm(ConvertMethod.GetUTF8String(File.ReadAllBytes(_paths[0])));
             progressBar1.Value = 33;
             Tips.Text = Ssuccess;
         }
@@ -288,7 +292,7 @@ namespace ChapterTool.Forms
                 if (e.Button != MouseButtons.Right || folderBrowserDialog1.ShowDialog() != DialogResult.OK) return;
                 _customSavingPath = folderBrowserDialog1.SelectedPath;
                 RegistryStorage.Save(_customSavingPath);
-                CTLogger.Log("设置保存路径为:" + _customSavingPath);
+                CTLogger.Log($"设置保存路径为: {_customSavingPath}");
             }
             catch (Exception exception)
             {
@@ -379,10 +383,18 @@ namespace ChapterTool.Forms
                 ogmData.MoveNext();
                 string buffer2 = ogmData.Current;
                 if (string.IsNullOrEmpty(buffer1) ||
-                    string.IsNullOrEmpty(buffer2)) { break; }
+                    string.IsNullOrEmpty(buffer2))
+                {
+                    CTLogger.Log($"interrupt at '{buffer1}'  '{buffer2}'");
+                    break;
+                }
                 if (_rLineOne.IsMatch(buffer1) && _rLineTwo.IsMatch(buffer2))
                 {
                     _info.Chapters.Add(WriteToChapterInfo(buffer1, buffer2, order++, iniTime));
+                }
+                else
+                {
+                    throw new Exception($"invalid format: \n'{buffer1}' \n'{buffer2}' ");
                 }
             } while (ogmData.MoveNext());
             if (_info.Chapters.Count>1)
@@ -642,7 +654,7 @@ namespace ChapterTool.Forms
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 {
                     string chapterPath = openFileDialog1.FileName;
-                    CTLogger.Log("+载入自定义章节名模板：" + chapterPath);
+                    CTLogger.Log($"+载入自定义章节名模板：{chapterPath}");
                     return ConvertMethod.GetUTF8String(File.ReadAllBytes(chapterPath));
                 }
                 cbChapterName.CheckState = CheckState.Unchecked;
@@ -735,17 +747,17 @@ namespace ChapterTool.Forms
             try
             {
                 string mkvToolnixPath = RegistryStorage.Load("Software\\ChapterTool", "mkvToolnixPath");
-                if (string.IsNullOrEmpty(mkvToolnixPath) && File.Exists(mkvToolnixPath + "/mkvextract.exe"))
+                if (string.IsNullOrEmpty(mkvToolnixPath) && File.Exists($"{mkvToolnixPath}/mkvextract.exe"))
                 {
                     mkvToolnixPath = MatroskaInfo.GetMkvToolnixPathViaRegistry();
                     RegistryStorage.Save(mkvToolnixPath, "Software\\ChapterTool", "mkvToolnixPath");
                 }
-                matroska = new MatroskaInfo(_paths[0], mkvToolnixPath+ "/mkvextract.exe");
+                matroska = new MatroskaInfo(_paths[0], $"{mkvToolnixPath}/mkvextract.exe");
                 GetChapterInfoFromXml(matroska.Result);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                CTLogger.Log(ex.Message);
                 if (File.Exists("mkvextract.exe"))
                 {
                     matroska = new MatroskaInfo(_paths[0], "mkvextract.exe");
