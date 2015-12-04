@@ -557,7 +557,7 @@ namespace ChapterTool.Forms
 
             foreach (var item in _info.Chapters)
             {
-                var frams      = ((decimal)item.Time.TotalMilliseconds * _frameRate[index] / 1000M);
+                var frams      = ((decimal)(item.Time+_info.Offset).TotalMilliseconds * _frameRate[index] / 1000M);
                 var answer     = cbRound.Checked ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
                 bool accuracy  = (Math.Abs(frams - answer) < settingAccuracy);
                 item.FramsInfo = $"{answer}{(accuracy ? " K" : " *")}";
