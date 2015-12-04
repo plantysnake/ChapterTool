@@ -60,7 +60,7 @@ namespace ChapterTool.Util
             int i = 1;
             foreach (Chapter c in Chapters)
             {
-                lines.Append($"CHAPTER{c.Number:D2}={ConvertMethod.Time2String(c.Time)}{Environment.NewLine}");
+                lines.Append($"CHAPTER{c.Number:D2}={ConvertMethod.Time2String(c.Time + Offset)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{c.Number:D2}NAME=");
                 lines.Append(donotuseName ? $"Chapter {i++:D2}" : c.Name);
                 lines.Append(Environment.NewLine);
@@ -103,7 +103,7 @@ namespace ChapterTool.Util
                 xmlchap.WriteElementString("ChapterLanguage", lang);
                 xmlchap.WriteEndElement();
                 xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                xmlchap.WriteElementString("ChapterTimeStart", ConvertMethod.Time2String(c.Time) + "0000");
+                xmlchap.WriteElementString("ChapterTimeStart", ConvertMethod.Time2String(c.Time + Offset) + "0000");
                 xmlchap.WriteElementString("ChapterFlagHidden", "0");
                 xmlchap.WriteElementString("ChapterFlagEnabled", "1");
                 xmlchap.WriteEndElement();
