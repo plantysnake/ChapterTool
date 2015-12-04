@@ -317,26 +317,36 @@ namespace ChapterTool.Forms
             if (_paths[0].ToLowerInvariant().EndsWith(".mpls") && !combineToolStripMenuItem.Checked)
                 savePath.Append($"__{_rawMpls.ChapterClips[MplsFileSeletIndex].Name}");
             if (_paths[0].ToLowerInvariant().EndsWith(".ifo"))
-                savePath.Append("__{_rawIfo[MplsFileSeletIndex].SourceName}");
+                savePath.Append($"__{_rawIfo[MplsFileSeletIndex].SourceName}");
 
             string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf"};
             while (File.Exists($"{savePath}{saveingTypeSuffix[savingType.SelectedIndex]}")) { savePath.Append("_"); }
             savePath.Append(saveingTypeSuffix[savingType.SelectedIndex]);
 
             CTLogger.Log("+保存信息");
+            switch (_info.SourceType)
+            {
+                case "MPLS":
+                    CTLogger.Log($"|+对应视频文件: {_rawMpls.ChapterClips[MplsFileSeletIndex].Name}");
+                    break;
+                case "DVD":
+                    CTLogger.Log($"|+对应视频文件: {_rawIfo[MplsFileSeletIndex].SourceName}");
+                    break;
+            }
             CTLogger.Log($"|+保存文件名: {savePath}");
-            CTLogger.Log($"|+保存格式: {saveingTypeSuffix[savingType.SelectedIndex]}");
+            CTLogger.Log($" |+保存格式: {savingType.SelectedItem}");
             if (savingType.SelectedIndex == 1)
             {
-                CTLogger.Log($" |+语言选择: {xmlLang.Items[xmlLang.SelectedIndex]}");
+                CTLogger.Log($"  |+语言选择: {xmlLang.Items[xmlLang.SelectedIndex]}");
             }
-            CTLogger.Log($"|+使用自定义章节名: {cbChapterName.Checked}");
             CTLogger.Log($"|+使用章节名: {!cbAutoGenName.Checked}");
+            CTLogger.Log($" |+使用章节名模板: {cbChapterName.Checked}");
             CTLogger.Log($"|+章节号平移: {numericUpDown1.Value}");
             CTLogger.Log($"|+章节开始时间 x 1.001: {cbMul1k1.Checked}");
+            CTLogger.Log($"|+时间平移: {cbShift.Checked}");
             if (cbShift.Checked)
             {
-                CTLogger.Log($"|+时间平移: {ConvertMethod.Time2String(_info.Offset)}");
+                CTLogger.Log($" |+平移量 {ConvertMethod.Time2String(_info.Offset)}");
             }
 
             switch (savingType.SelectedIndex)
