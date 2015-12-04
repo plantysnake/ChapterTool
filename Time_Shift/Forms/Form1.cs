@@ -734,8 +734,13 @@ namespace ChapterTool.Forms
             MatroskaInfo matroska;
             try
             {
-                string mkvToolnixPath = MatroskaInfo.GetMkvToolnixPathViaRegistry();
-                matroska = new MatroskaInfo(_paths[0], mkvToolnixPath);
+                string mkvToolnixPath = RegistryStorage.Load("Software\\ChapterTool", "mkvToolnixPath");
+                if (string.IsNullOrEmpty(mkvToolnixPath) && File.Exists(mkvToolnixPath + "/mkvextract.exe"))
+                {
+                    mkvToolnixPath = MatroskaInfo.GetMkvToolnixPathViaRegistry();
+                    RegistryStorage.Save(mkvToolnixPath, "Software\\ChapterTool", "mkvToolnixPath");
+                }
+                matroska = new MatroskaInfo(_paths[0], mkvToolnixPath+ "/mkvextract.exe");
                 GetChapterInfoFromXml(matroska.Result);
             }
             catch (Exception ex)
@@ -743,12 +748,12 @@ namespace ChapterTool.Forms
                 Debug.WriteLine(ex);
                 if (File.Exists("mkvextract.exe"))
                 {
-                    matroska = new MatroskaInfo(_paths[0]);
+                    matroska = new MatroskaInfo(_paths[0], "mkvextract.exe");
                     GetChapterInfoFromXml(matroska.Result);
                 }
                 else
                 {
-                    MessageBox.Show($"无可用 MkvExtract\n{ex}");
+                    MessageBox.Show(@"无可用 MkvExtract, 安装个呗~");
                 }
             }
         }

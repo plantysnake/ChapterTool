@@ -29,18 +29,8 @@ namespace ChapterTool.Util
     class MatroskaInfo
     {
         public System.Xml.XmlDocument Result = new System.Xml.XmlDocument();
-        public MatroskaInfo(string path, string excutePath = "")
+        public MatroskaInfo(string path, string program)
         {
-            string program = "mkvextract.exe";
-            try
-            {
-                string mkvToolnixPath = GetMkvToolnixPathViaRegistry();
-                program = mkvToolnixPath + @"\mkvextract.exe";
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
             string arg = $"chapters \"{path}\"";
             string xmlresult = RunMkvextract(arg, program);
             Result.LoadXml(xmlresult);
