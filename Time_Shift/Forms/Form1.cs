@@ -91,7 +91,6 @@ namespace ChapterTool.Forms
             Screen.AllScreens.ToList().ForEach(item => CTLogger.Log( $"{item.DeviceName} 分辨率：{item.Bounds.Width}*{item.Bounds.Height}"));
         }
 
-
         void LoadLang()
         {
             xmlLang.Items.Add("----常用----");
@@ -103,14 +102,12 @@ namespace ChapterTool.Forms
             LanguageSelectionContainer.Languages.ToList().ForEach(item => xmlLang.Items.Add($"{item.Value} ({item.Key})"));
         }
 
-
         ChapterInfo _info;
 
         static string SchapterFitter => !File.Exists("mkvextract.exe") ? "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo" : "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
         private const string SnotLoaded = "尚未载入文件";
         private const string Ssuccess = "载入完成 (≧▽≦)";
         private const string Swhatsthis2 = "当前片段并没有章节 (¬_¬)";
-
 
         void SetDefault()
         {
@@ -133,7 +130,6 @@ namespace ChapterTool.Forms
 
         readonly Regex _rLineOne    = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
         readonly Regex _rLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
-
         string[] _paths = new string[20];
 
         void Form1_DragDrop(object sender,  DragEventArgs e)
@@ -149,7 +145,6 @@ namespace ChapterTool.Forms
         {
             e.Effect = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
         }
-
 
         readonly int[] _poi = { 0, 10 };
 
@@ -192,7 +187,6 @@ namespace ChapterTool.Forms
             }
         }
 
-
         void Loadfile()
         {
             if (!IsPathValid) { return; }
@@ -222,11 +216,9 @@ namespace ChapterTool.Forms
                 label1.Text = SnotLoaded;
             }
             Cursor = Cursors.Default;
-
         }
 
         List<ChapterInfo> _rawIfo;
-
 
         void LoadIfo()
         {
@@ -256,8 +248,6 @@ namespace ChapterTool.Forms
                             item2 => item2.Time =
                                     ConvertMethod.Pts2Time((int) item2.Time.TotalSeconds*45045)));
         }
-
-
 
         void LoadOgm()
         {
@@ -352,7 +342,6 @@ namespace ChapterTool.Forms
 
         void refresh_Click(object sender, EventArgs e) => UpdataGridView();
 
-
         TimeSpan OffsetCal(string line)//获取第一行的时间
         {
             if (_rLineOne.IsMatch(line))
@@ -432,10 +421,7 @@ namespace ChapterTool.Forms
             UpdataInfo(_chapterNameTemplate);
         }
 
-
         List<ChapterInfo> _xmlGroup;
-
-
 
         void GetChapterInfoFromXml(XmlDocument doc)
         {
@@ -496,8 +482,6 @@ namespace ChapterTool.Forms
         }
         #endregion
 
-
-
         void UpdataGridView(int fpsIndex = 0)
         {
             if (!IsPathValid || _info == null) { return; }
@@ -532,7 +516,6 @@ namespace ChapterTool.Forms
             }
             progressBar1.Value = (dataGridView1.RowCount > 1) ? 66 : 33;
         }
-
 
         void AddRow(Chapter item,int index)
         {
@@ -613,7 +596,6 @@ namespace ChapterTool.Forms
             return TimeSpan.Zero;
         }
 
-
         #region form resize support
         bool MoreModeShow
         {
@@ -683,16 +665,12 @@ namespace ChapterTool.Forms
             UpdataGridView();
         }
 
-        /////////////////XML support
         void LoadXml()
         {
             var doc = new XmlDocument();
             doc.Load(_paths[0]);
             GetChapterInfoFromXml(doc);
         }
-
-        /////////////////mpls support
-
 
         readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24000M / 1000,
                                                                     25000M / 1000, 30000M / 1001,
@@ -723,7 +701,6 @@ namespace ChapterTool.Forms
             GetChapterInfoFromMpls(MplsFileSeletIndex);
         }
 
-
         void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_rawMpls != null)
@@ -740,7 +717,6 @@ namespace ChapterTool.Forms
             updata:
             UpdataGridView();
         }
-
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -792,10 +768,7 @@ namespace ChapterTool.Forms
                 BackColor                                    = value;
                 cbMore.BackColor                             = value;
             }
-            get
-            {
-                return BackColor;
-            }
+            get { return BackColor; }
         }
         public Color TextBack
         {
@@ -809,10 +782,7 @@ namespace ChapterTool.Forms
                 xmlLang.BackColor                            = value;
                 savingType.BackColor                         = value;
             }
-            get
-            {
-                return dataGridView1.BackgroundColor;
-            }
+            get { return dataGridView1.BackgroundColor; }
         }
         public Color MouseOverColor
         {
@@ -825,10 +795,7 @@ namespace ChapterTool.Forms
                 btnPreview.FlatAppearance.MouseOverBackColor = value;
                 cbMore.FlatAppearance.MouseOverBackColor     = value;
             }
-            get
-            {
-                return btnLoad.FlatAppearance.MouseOverBackColor;
-            }
+            get { return btnLoad.FlatAppearance.MouseOverBackColor; }
         }
         public Color MouseDownColor
         {
@@ -841,11 +808,7 @@ namespace ChapterTool.Forms
                 btnPreview.FlatAppearance.MouseDownBackColor = value;
                 cbMore.FlatAppearance.MouseDownBackColor     = value;
             }
-            get
-            {
-                return btnLoad.FlatAppearance.MouseDownBackColor;
-            }
-
+            get { return btnLoad.FlatAppearance.MouseDownBackColor; }
         }
         public Color BordBackColor
         {
@@ -859,10 +822,7 @@ namespace ChapterTool.Forms
                 cbMore.FlatAppearance.BorderColor            = value;
                 dataGridView1.GridColor                      = value;
             }
-            get
-            {
-                return btnLoad.FlatAppearance.BorderColor;
-            }
+            get { return btnLoad.FlatAppearance.BorderColor; }
         }
         public Color TextFrontColor
         {
@@ -878,10 +838,7 @@ namespace ChapterTool.Forms
                 savingType.ForeColor                         = value;
                 dataGridView1.ForeColor                      = value;
             }
-            get
-            {
-                return ForeColor;
-            }
+            get { return ForeColor; }
         }
         #endregion
 

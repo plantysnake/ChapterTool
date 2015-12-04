@@ -16,11 +16,7 @@ namespace ChapterTool.Util
         public event EventHandler<ProgramChainArg> StreamDetected;
         public event EventHandler ExtractionComplete;
 
-        public static string ComputeMd5Sum(string path)
-        {
-            return BitConverter.ToString(new MD5CryptoServiceProvider().ComputeHash(File.ReadAllBytes(path))).Replace("-", "").ToLowerInvariant();
-        }
-
+        public static string ComputeMd5Sum(string path) => BitConverter.ToString(new MD5CryptoServiceProvider().ComputeHash(File.ReadAllBytes(path))).Replace("-", "").ToLowerInvariant();
 
         public List<ChapterInfo> GetStreams(string ifoFile)
         {
