@@ -24,6 +24,7 @@ using System.Text;
 using System.Linq;
 using System.Drawing;
 using ChapterTool.Util;
+using System.Diagnostics;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -104,7 +105,6 @@ namespace ChapterTool.Forms
 
         ChapterInfo _info;
 
-        static string SchapterFitter => !File.Exists("mkvextract.exe") ? "章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo" : "所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
         private const string SnotLoaded = "尚未载入文件";
         private const string Ssuccess = "载入完成 (≧▽≦)";
         private const string Swhatsthis2 = "当前片段并没有章节 (¬_¬)";
@@ -259,7 +259,7 @@ namespace ChapterTool.Forms
 
         void btnLoad_Click(object sender, EventArgs e)                  //载入键
         {
-            openFileDialog1.Filter = SchapterFitter;
+            openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
             try
             {
                 if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
@@ -731,9 +731,26 @@ namespace ChapterTool.Forms
         /// </summary>
         void LoadMatroska()
         {
-            if (!File.Exists("mkvextract.exe")) return;
-            var matroska = new MatroskaInfo(_paths[0]);
-            GetChapterInfoFromXml(matroska.Result);
+            MatroskaInfo matroska;
+            try
+            {
+                string mkvToolnixPath = MatroskaInfo.GetMkvToolnixPathViaRegistry();
+                matroska = new MatroskaInfo(_paths[0], mkvToolnixPath);
+                GetChapterInfoFromXml(matroska.Result);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                if (File.Exists("mkvextract.exe"))
+                {
+                    matroska = new MatroskaInfo(_paths[0]);
+                    GetChapterInfoFromXml(matroska.Result);
+                }
+                else
+                {
+                    MessageBox.Show($"无可用 MkvExtract\n{ex}");
+                }
+            }
         }
 
         #region color support
