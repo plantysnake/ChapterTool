@@ -110,6 +110,10 @@ namespace ChapterTool.Util
             List<ChapterInfo> result = new List<ChapterInfo>();
             XmlElement root = doc.DocumentElement;
             if (root == null) return result;
+            if (root.Name != "Chapters")
+            {
+                throw new Exception($"Invalid Xml file.\nroot node Name: {root.Name}");
+            }
             foreach (XmlNode editionEntry in root.ChildNodes)//Get Entrance for each chapter
             {
                 ChapterInfo buff = new ChapterInfo {SourceType = "XML"};

@@ -57,6 +57,10 @@ namespace ChapterTool.Util
 
         private void ParseHeader()
         {
+            if (Encoding.ASCII.GetString(_data, 0, 4) != "MPLS")
+            {
+                throw new Exception($"Invalid Mpls file.\n type: {Encoding.ASCII.GetString(_data, 0, 4)}");
+            }
             _playlistSectionStartAddress     = Byte2Int32(_data, 0x08);
             _playlistMarkSectionStartAddress = Byte2Int32(_data, 0x0c);
             _playItemNumber  = Byte2Int16(_data, _playlistSectionStartAddress + 0x06);

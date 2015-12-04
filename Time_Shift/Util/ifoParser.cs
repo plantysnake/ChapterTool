@@ -73,6 +73,10 @@ namespace ChapterTool.Util
 
         internal static byte[] GetFileBlock(string strFile, long pos, int count)
         {
+            if (pos < 0)
+            {
+                throw new Exception("Invalid Ifo file");
+            }
             using (FileStream stream = new FileStream(strFile, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 byte[] buf = new byte[count];
