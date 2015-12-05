@@ -36,15 +36,15 @@ namespace ChapterTool.Controls
         {
             try
             {
-                if (e.Control && (e.KeyCode == Keys.A))
+                if (e.Control && e.KeyCode == Keys.A)
                 {
                     SelectAll();
                 }
-                else if (e.Control && (e.KeyCode == Keys.C))
+                else if (e.Control && e.KeyCode == Keys.C)
                 {
                     Clipboard.SetText(SelectedText, TextDataFormat.UnicodeText);
                 }
-                else if (e.Alt && (e.KeyCode == Keys.A))
+                else if (e.Alt && e.KeyCode == Keys.A)
                 {
                     int totalLine = GetLineFromCharIndex(Text.Length);
                     int charIndex = GetFirstCharIndexFromLine(totalLine / 2);
