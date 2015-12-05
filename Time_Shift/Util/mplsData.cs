@@ -27,7 +27,7 @@ namespace ChapterTool.Util
 {
     public class MplsData
     {
-        /// <summary>include all chapter in mpls divisionally</summary>
+        /// <summary>include all chapters in mpls divisionally</summary>
         public List<Clip> ChapterClips { get; set; }
         /// <summary>include all time code in mpls</summary>
         public List<int> EntireTimeStamp { get; set; }
@@ -57,20 +57,26 @@ namespace ChapterTool.Util
 
         private void ParseHeader()
         {
-            _playlistSectionStartAddress     = Byte2Int(_data, 0x08, 0x04);
-            _playlistMarkSectionStartAddress = Byte2Int(_data, 0x0c, 0x04);
-            _playItemNumber = Byte2Int(_data, _playlistSectionStartAddress + 0x06, 0x02);
+            if (Encoding.ASCII.GetString(_data, 0, 4) != "MPLS")
+            {
+                throw new Exception($"Invalid Mpls file.\n type: {Encoding.ASCII.GetString(_data, 0, 4)}");
+            }
+            _playlistSectionStartAddress     = Byte2Int32(_data, 0x08);
+            _playlistMarkSectionStartAddress = Byte2Int32(_data, 0x0c);
+            _playItemNumber  = Byte2Int16(_data, _playlistSectionStartAddress + 0x06);
             _playItemEntries = _playlistSectionStartAddress + 0x0a;
         }
 
         private int ParsePlayItem(int playItemEntries, out int itemStartAdress, out int streamCount)
         {
-            int lengthOfPlayItem       = Byte2Int(_data, playItemEntries + 0x00, 0x02);
+            int lengthOfPlayItem = Byte2Int16(_data, playItemEntries);
+            byte[] bytes = new byte[lengthOfPlayItem + 2];
+            Array.Copy(_data, playItemEntries, bytes, 0, lengthOfPlayItem);
             Clip streamClip = new Clip
             {
-                Name = Encoding.ASCII.GetString(_data, playItemEntries + 0x02, 0x09),
-                TimeIn = Byte2Int(_data, playItemEntries + 0x0e, 0x04),
-                TimeOut = Byte2Int(_data, playItemEntries + 0x12, 0x04)
+                Name    = Encoding.ASCII.GetString(bytes, 0x02, 0x09),
+                TimeIn  = Byte2Int32(bytes, 0x0e),
+                TimeOut = Byte2Int32(bytes, 0x12)
             };
             streamClip.Length          = streamClip.TimeOut - streamClip.TimeIn;
             streamClip.RelativeTimeIn  = ChapterClips.Sum(clip => clip.Length);
@@ -78,12 +84,13 @@ namespace ChapterTool.Util
             ChapterClips.Add(streamClip);
 
             itemStartAdress            = playItemEntries + 0x32;
-            streamCount                = Byte2Int(_data, playItemEntries + 0x23, 0x01) >> 4;
-            int uo2                    = Byte2Int(_data, playItemEntries + 0x22, 0x01);
-            System.Diagnostics.Trace.Assert(uo2 == 1 || uo2 == 2);
-            if (0x02 == uo2)//ignore angles, can only operate angles == 1 or 2
+            streamCount                = bytes[0x23] >> 4;
+            int uo2                    = bytes[0x22];
+            //System.Diagnostics.Trace.Assert(uo2 == 0 || uo2 == 1 || uo2 == 2);
+            if (0x02 == uo2)//ignore angles, only operate case that angles == 2, it normally be 0
             {
-                streamCount     = Byte2Int(_data, playItemEntries + 0x2f, 0x01) >> 4;
+                CTLogger.Log($"Chapter with {uo2} Angle, file name: {streamClip.Name}");
+                streamCount     = bytes[0x2f] >> 4;
                 itemStartAdress = playItemEntries + 0x3e;
             }
             return lengthOfPlayItem;
@@ -93,58 +100,50 @@ namespace ChapterTool.Util
             byte[] stream = new byte[16];
             Array.Copy(_data, itemStartAdress + streamOrder * 16, stream, 0, 16);
             if (0x01 != stream[01]) return;
-            int streamCodingType = Byte2Int(stream, 0x0b, 0x01);
-            if (0x1b != streamCodingType) return;
-            int attr = Byte2Int(stream, 0x0c, 0x01);
-            ChapterClips[playItemOrder].Fps = (attr & 0xf);//last 4 bits is the fps
+            int streamCodingType = stream[0x0b];
+            if (0x1b != streamCodingType && // AVC
+                0x02 != streamCodingType && // MPEG-I/II
+                0xea != streamCodingType)   // VC-1
+                return;
+            ChapterClips[playItemOrder].Fps = (stream[0x0c] & 0xf);//last 4 bits is the fps
         }
         private void ParsePlaylistMark()
         {
-            int playlistMarkNumber  = Byte2Int(_data, _playlistMarkSectionStartAddress + 0x04, 0x02);
+            int playlistMarkNumber  = Byte2Int16(_data, _playlistMarkSectionStartAddress + 0x04);
             int playlistMarkEntries = _playlistMarkSectionStartAddress + 0x06;
-            byte[] bytelist = new byte[14];// eg. 0001 yyyy xxxxxxxx FFFF 000000
-                                           // 00       mark_id
-                                           // 01       mark_type
-                                           // 02 - 03  play_item_ref
-                                           // 04 - 07  time
-                                           // 08 - 09  entry_es_pid
-                                           // 10 - 13  duration
+            byte[] bytelist = new byte[14]; // eg. 0001 yyyy xxxxxxxx FFFF 000000
+                                            // 00       mark_id
+                                            // 01       mark_type
+                                            // 02 - 03  play_item_ref
+                                            // 04 - 07  time
+                                            // 08 - 09  entry_es_pid
+                                            // 10 - 13  duration
             for (var mark = 0; mark < playlistMarkNumber; ++mark)
             {
                 Array.Copy(_data, playlistMarkEntries, bytelist, 0, 14);
-                if (0x01 == bytelist[1])// the playlist mark type is an entry mark
+                if (0x01 == bytelist[1])//make sure the playlist mark type is an entry mark
                 {
-                    int streamFileIndex = Byte2Int(bytelist, 0x02, 0x02);
+                    int streamFileIndex = Byte2Int16(bytelist, 0x02);
                     Clip streamClip     = ChapterClips[streamFileIndex];
-                    int timeStamp       = Byte2Int(bytelist, 0x04, 0x04);
+                    int timeStamp       = Byte2Int32(bytelist, 0x04);
                     int relativeSeconds = timeStamp - streamClip.TimeIn + streamClip.RelativeTimeIn;
-                    ChapterClips[streamFileIndex].TimeStamp.Add(timeStamp);
+                    streamClip.TimeStamp.Add(timeStamp);
                     EntireTimeStamp.Add(relativeSeconds);
                 }
                 playlistMarkEntries += 14;
             }
         }
 
-        private static int Byte2Int(IList<byte> bytes, int index, int count)//0xFF
+        private static short Byte2Int16(byte[] bytes, int index, bool bigEndian = true)
         {
-            int intValue = 0;
-            for (var i = index; i < index + count; ++i)
-            {
-                intValue += bytes[i] << (8 * ((index + count - 1) - i));
-            }
-            return intValue;
+            return (short)(bigEndian ? ((bytes[index] << 8) + bytes[index + 1]) :
+                                       ((bytes[index + 1] << 8) + bytes[index]));
         }
-    }
 
-    public class Clip
-    {
-        public string Name;
-        public List<int> TimeStamp = new List<int>();
-        public int Fps;
-        public int Length;
-        public int RelativeTimeIn;
-        public int RelativeTimeOut;
-        public int TimeIn;
-        public int TimeOut;
+        private static int Byte2Int32(byte[] bytes, int index, bool bigEndian = true)
+        {
+            return bigEndian ? ((bytes[index] << 24) + (bytes[index + 1] << 16) + (bytes[index + 2] << 8) + bytes[index + 3]) :
+                               ((bytes[index + 3] << 24) + (bytes[index + 2] << 16) + (bytes[index + 1] << 8) + bytes[index]);
+        }
     }
 }

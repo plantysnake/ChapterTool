@@ -16,17 +16,13 @@ namespace ChapterTool.Util
         public event EventHandler<ProgramChainArg> StreamDetected;
         public event EventHandler ExtractionComplete;
 
-        public static string ComputeMd5Sum(string path)
-        {
-            return BitConverter.ToString(new MD5CryptoServiceProvider().ComputeHash(File.ReadAllBytes(path))).Replace("-", "").ToLowerInvariant();
-        }
-
+        public static string ComputeMd5Sum(string path) => BitConverter.ToString(new MD5CryptoServiceProvider().ComputeHash(File.ReadAllBytes(path))).Replace("-", "").ToLowerInvariant();
 
         public List<ChapterInfo> GetStreams(string ifoFile)
         {
             List<ChapterInfo> oList = new List<ChapterInfo>();
 
-            int pgcCount = (int)IfoParser.getPGCnb(ifoFile);
+            int pgcCount = (int)IfoParser.GetPGCnb(ifoFile);
             for (int i = 1; i <= pgcCount; i++)
             {
                 var oChapterInfo = GetChapterInfo(ifoFile, i);
@@ -62,13 +58,13 @@ namespace ChapterTool.Util
             ChapterInfo pgc = new ChapterInfo
             {
                 SourceType = "DVD",
-                SourceName = "PGC " + titleSetNum.ToString("D2"),
+                SourceName = $"PGC {titleSetNum:D2}",
                 TitleNumber = titleSetNum,
                 SourceHash = ComputeMd5Sum(location),
                 Title = Path.GetFileNameWithoutExtension(location)
             };
             if (pgc.Title.Split('_').Length == 3)
-                pgc.Title = pgc.Title.Split('_')[0] + "_" + pgc.Title.Split('_')[1];
+                pgc.Title = $"{pgc.Title.Split('_')[0]}_{pgc.Title.Split('_')[1]}";
 
             TimeSpan duration;
             double fps;

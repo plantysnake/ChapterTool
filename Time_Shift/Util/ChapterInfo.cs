@@ -7,26 +7,6 @@ using System.Linq;
 
 namespace ChapterTool.Util
 {
-    public class Chapter
-    {
-        public Chapter()
-        {
-            FramsInfo = string.Empty;
-        }
-
-        /// <summary>Chapter Number</summary>
-        public int Number { get; set; }
-        /// <summary>Chapter TimeStamp</summary>
-        public TimeSpan Time { get; set; }
-        /// <summary>Chapter Name</summary>
-        public string Name { get; set; }
-        /// <summary>Fram Count</summary>
-        public string FramsInfo { get; set; }
-        public override string ToString()
-        {
-            return $"{Name} - {ConvertMethod.Time2String(Time)}";
-        }
-    }
     public class ChapterInfo
     {
         public ChapterInfo()
@@ -44,10 +24,7 @@ namespace ChapterTool.Util
         public TimeSpan Duration { get; set; }
         public List<Chapter> Chapters { get; set; }
         public TimeSpan Offset { get; set; }
-        public override string ToString()
-        {
-            return $"{Title} - {SourceName}  -  {$"{Math.Floor(Duration.TotalHours):00}:{Duration.Minutes:00}:{Duration.Seconds:00}.{Duration.Milliseconds:000}"}  -  [{Chapters.Count} Chapter]";
-        }
+        public override string ToString() => $"{Title} - {SourceName}  -  {ConvertMethod.Time2String(Duration)}  -  [{Chapters.Count} Chapter]";
 
         public void ChangeFps(double fps)
         {
@@ -83,23 +60,17 @@ namespace ChapterTool.Util
             int i = 1;
             foreach (Chapter c in Chapters)
             {
-                lines.Append($"CHAPTER{c.Number:D2}={ConvertMethod.Time2String(c.Time)}{Environment.NewLine}");
+                lines.Append($"CHAPTER{c.Number:D2}={ConvertMethod.Time2String(c.Time + Offset)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{c.Number:D2}NAME=");
-                lines.Append(donotuseName ? ("Chapter " + i++.ToString("00")) : c.Name);
+                lines.Append(donotuseName ? $"Chapter {i++:D2}" : c.Name);
                 lines.Append(Environment.NewLine);
             }
             File.WriteAllText(filename, lines.ToString(), Encoding.UTF8);
         }
 
-        public void SaveQpfile(string filename)
-        {
-            File.WriteAllLines(filename, Chapters.Select(c => c.FramsInfo.ToString()).ToArray());
-        }
+        public void SaveQpfile(string filename) => File.WriteAllLines(filename, Chapters.Select(c => c.FramsInfo.ToString()).ToArray());
 
-        public void SaveCelltimes(string filename)
-        {
-            File.WriteAllLines(filename, Chapters.Select(c => ((long) Math.Round(c.Time.TotalSeconds*FramesPerSecond)).ToString()).ToArray());
-        }
+        public void SaveCelltimes(string filename) => File.WriteAllLines(filename, Chapters.Select(c => ((long) Math.Round(c.Time.TotalSeconds*FramesPerSecond)).ToString()).ToArray());
 
         public void SaveTsmuxerMeta(string filename)
         {
@@ -109,12 +80,9 @@ namespace ChapterTool.Util
             File.WriteAllText(filename, text);
         }
 
-        public void SaveTimecodes(string filename)
-        {
-            File.WriteAllLines(filename, Chapters.Select(c => c.Time.ToString()).ToArray());
-        }
+        public void SaveTimecodes(string filename) => File.WriteAllLines(filename, Chapters.Select(c => c.Time.ToString()).ToArray());
 
-        public void SaveXml(string filename,string lang)
+        public void SaveXml(string filename,string lang, bool donotuseName)
         {
             if (string.IsNullOrEmpty(lang)) { lang = "und"; }
             Random rndb           = new Random();
@@ -126,15 +94,16 @@ namespace ChapterTool.Util
             xmlchap.WriteElementString("EditionFlagHidden", "0");
             xmlchap.WriteElementString("EditionFlagDefault", "0");
             xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
+            int i = 1;
             foreach (Chapter c in Chapters)
             {
                 xmlchap.WriteStartElement("ChapterAtom");
                 xmlchap.WriteStartElement("ChapterDisplay");
-                xmlchap.WriteElementString("ChapterString", c.Name);
+                xmlchap.WriteElementString("ChapterString", donotuseName ? $"Chapter {i++:D2}" : c.Name);
                 xmlchap.WriteElementString("ChapterLanguage", lang);
                 xmlchap.WriteEndElement();
                 xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                xmlchap.WriteElementString("ChapterTimeStart", ConvertMethod.Time2String(c.Time) + "0000");
+                xmlchap.WriteElementString("ChapterTimeStart", ConvertMethod.Time2String(c.Time + Offset) + "0000");
                 xmlchap.WriteElementString("ChapterFlagHidden", "0");
                 xmlchap.WriteElementString("ChapterFlagEnabled", "1");
                 xmlchap.WriteEndElement();
