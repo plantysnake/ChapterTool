@@ -157,6 +157,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ChangeLog.txt" />
     <Content Include="Images\about.ico" />
     <Content Include="Images\Ct.ico" />
     <Content Include="Images\icon.ico" />
