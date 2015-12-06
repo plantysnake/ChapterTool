@@ -114,4 +114,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ChapterTool_Error" xml:space="preserve">
+    <value>ChapterTool Error</value>
+  </data>
+  <data name="File_Unloaded" xml:space="preserve">
+    <value>文件还没载入呢</value>
+  </data>
+  <data name="Load_Success" xml:space="preserve">
+    <value>载入完成 (≧▽≦)</value>
+  </data>
+  <data name="Chapter_Not_find" xml:space="preserve">
+    <value>当前片段并没有章节 (¬_¬)</value>
+  </data>
 </root>

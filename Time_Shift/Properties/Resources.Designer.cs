@@ -59,5 +59,41 @@ namespace ChapterTool.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查找类似 当前片段并没有章节 (¬_¬) 的本地化字符串。
+        /// </summary>
+        internal static string Chapter_Not_find {
+            get {
+                return ResourceManager.GetString("Chapter_Not_find", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ChapterTool Error 的本地化字符串。
+        /// </summary>
+        internal static string ChapterTool_Error {
+            get {
+                return ResourceManager.GetString("ChapterTool_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 文件还没载入呢 的本地化字符串。
+        /// </summary>
+        internal static string File_Unloaded {
+            get {
+                return ResourceManager.GetString("File_Unloaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 载入完成 (≧▽≦) 的本地化字符串。
+        /// </summary>
+        internal static string Load_Success {
+            get {
+                return ResourceManager.GetString("Load_Success", resourceCulture);
+            }
+        }
     }
 }
