@@ -70,12 +70,12 @@ namespace ChapterTool.Util
         private int ParsePlayItem(int playItemEntries, out int itemStartAdress, out int streamCount)
         {
             int lengthOfPlayItem = Byte2Int16(_data, playItemEntries);
-            byte[] bytes = new byte[lengthOfPlayItem + 2];
+            var bytes = new byte[lengthOfPlayItem + 2];
             Array.Copy(_data, playItemEntries, bytes, 0, lengthOfPlayItem);
             Clip streamClip = new Clip
             {
-                Name    = Encoding.ASCII.GetString(bytes, 0x02, 0x09),
-                TimeIn  = Byte2Int32(bytes, 0x0e),
+                Name = Encoding.ASCII.GetString(bytes, 0x02, 0x09),
+                TimeIn = Byte2Int32(bytes, 0x0e),
                 TimeOut = Byte2Int32(bytes, 0x12)
             };
             streamClip.Length          = streamClip.TimeOut - streamClip.TimeIn;
@@ -86,18 +86,16 @@ namespace ChapterTool.Util
             itemStartAdress            = playItemEntries + 0x32;
             streamCount                = bytes[0x23] >> 4;
             int uo2                    = bytes[0x22];
-            //System.Diagnostics.Trace.Assert(uo2 == 0 || uo2 == 1 || uo2 == 2);
-            if (0x02 == uo2)//ignore angles, only operate case that angles == 2, it normally be 0
-            {
-                CTLogger.Log($"Chapter with {uo2} Angle, file name: {streamClip.Name}");
-                streamCount     = bytes[0x2f] >> 4;
-                itemStartAdress = playItemEntries + 0x3e;
-            }
+            //ignore angles, only operate case that angles == 2, it normally be 0
+            if (0x02 != uo2) return lengthOfPlayItem;
+            CTLogger.Log($"Chapter with {uo2} Angle, file name: {streamClip.Name}");
+            streamCount     = bytes[0x2f] >> 4;
+            itemStartAdress = playItemEntries + 0x3e;
             return lengthOfPlayItem;
         }
         private void ParseStream(int itemStartAdress,int streamOrder,int playItemOrder)
         {
-            byte[] stream = new byte[16];
+            var stream = new byte[16];
             Array.Copy(_data, itemStartAdress + streamOrder * 16, stream, 0, 16);
             if (0x01 != stream[01]) return;
             int streamCodingType = stream[0x0b];
@@ -105,13 +103,13 @@ namespace ChapterTool.Util
                 0x02 != streamCodingType && // MPEG-I/II
                 0xea != streamCodingType)   // VC-1
                 return;
-            ChapterClips[playItemOrder].Fps = (stream[0x0c] & 0xf);//last 4 bits is the fps
+            ChapterClips[playItemOrder].Fps = stream[0x0c] & 0xf;//last 4 bits is the fps
         }
         private void ParsePlaylistMark()
         {
             int playlistMarkNumber  = Byte2Int16(_data, _playlistMarkSectionStartAddress + 0x04);
             int playlistMarkEntries = _playlistMarkSectionStartAddress + 0x06;
-            byte[] bytelist = new byte[14]; // eg. 0001 yyyy xxxxxxxx FFFF 000000
+            var bytelist = new byte[14];    // eg. 0001 yyyy xxxxxxxx FFFF 000000
                                             // 00       mark_id
                                             // 01       mark_type
                                             // 02 - 03  play_item_ref
@@ -134,16 +132,16 @@ namespace ChapterTool.Util
             }
         }
 
-        private static short Byte2Int16(byte[] bytes, int index, bool bigEndian = true)
+        private static short Byte2Int16(IList<byte> bytes, int index, bool bigEndian = true)
         {
-            return (short)(bigEndian ? ((bytes[index] << 8) + bytes[index + 1]) :
-                                       ((bytes[index + 1] << 8) + bytes[index]));
+            return (short)(bigEndian ? (bytes[index] << 8) + bytes[index + 1] :
+                                       (bytes[index + 1] << 8) + bytes[index]);
         }
 
-        private static int Byte2Int32(byte[] bytes, int index, bool bigEndian = true)
+        private static int Byte2Int32(IList<byte> bytes, int index, bool bigEndian = true)
         {
-            return bigEndian ? ((bytes[index] << 24) + (bytes[index + 1] << 16) + (bytes[index + 2] << 8) + bytes[index + 3]) :
-                               ((bytes[index + 3] << 24) + (bytes[index + 2] << 16) + (bytes[index + 1] << 8) + bytes[index]);
+            return bigEndian ? (bytes[index] << 24) + (bytes[index + 1] << 16) + (bytes[index + 2] << 8) + bytes[index + 3] :
+                               (bytes[index + 3] << 24) + (bytes[index + 2] << 16) + (bytes[index + 1] << 8) + bytes[index];
         }
     }
 }

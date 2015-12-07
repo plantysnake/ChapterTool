@@ -81,20 +81,20 @@ namespace ChapterTool.Util
             return pgc;
         }
 
-        static List<Chapter> GetChapters(string ifoFile, int programChain, out TimeSpan duration, out double fps)
+        private static List<Chapter> GetChapters(string ifoFile, int programChain, out TimeSpan duration, out double fps)
         {
-            List<Chapter> chapters = new List<Chapter>();
+            var chapters = new List<Chapter>();
             duration = TimeSpan.Zero;
             fps = 0;
 
             long pcgItPosition = IfoParser.GetPCGIP_Position(ifoFile);
             int programChainPrograms = -1;
             TimeSpan programTime = TimeSpan.Zero;
-            double FPS;
+            double fpsLocal;
             if (programChain >= 0)
             {
                 uint chainOffset = IfoParser.GetChainOffset(ifoFile, pcgItPosition, programChain);
-                programTime = IfoParser.ReadTimeSpan(ifoFile, pcgItPosition, chainOffset, out FPS) ?? TimeSpan.Zero;
+                programTime = IfoParser.ReadTimeSpan(ifoFile, pcgItPosition, chainOffset, out fpsLocal) ?? TimeSpan.Zero;
                 programChainPrograms = IfoParser.GetNumberOfPrograms(ifoFile, pcgItPosition, chainOffset);
             }
             else
@@ -103,20 +103,16 @@ namespace ChapterTool.Util
                 for (int curChain = 1; curChain <= programChains; curChain++)
                 {
                     uint chainOffset = IfoParser.GetChainOffset(ifoFile, pcgItPosition, curChain);
-                    TimeSpan? time = IfoParser.ReadTimeSpan(ifoFile, pcgItPosition, chainOffset, out FPS);
-                    if (time == null)
-                        break;
+                    TimeSpan? time = IfoParser.ReadTimeSpan(ifoFile, pcgItPosition, chainOffset, out fpsLocal);
+                    if (time == null) break;
 
-                    if (time.Value > programTime)
-                    {
-                        programChain = curChain;
-                        programChainPrograms = IfoParser.GetNumberOfPrograms(ifoFile, pcgItPosition, chainOffset);
-                        programTime = time.Value;
-                    }
+                    if (time.Value <= programTime) continue;
+                    programChain = curChain;
+                    programChainPrograms = IfoParser.GetNumberOfPrograms(ifoFile, pcgItPosition, chainOffset);
+                    programTime = time.Value;
                 }
             }
-            if (programChain < 0)
-                return null;
+            if (programChain < 0) return null;
 
             chapters.Add(new Chapter() { Name = "Chapter 01" });
 

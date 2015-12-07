@@ -8,7 +8,7 @@ namespace ChapterTool.Forms
 {
     public partial class FormPreview : Form
     {
-        Point _mainPos;
+        private Point _mainPos;
 
         public FormPreview(string text,Point pos)
         {

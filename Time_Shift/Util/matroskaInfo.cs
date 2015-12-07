@@ -26,7 +26,7 @@ using Microsoft.Win32;
 
 namespace ChapterTool.Util
 {
-    class MatroskaInfo
+    internal class MatroskaInfo
     {
         public System.Xml.XmlDocument Result = new System.Xml.XmlDocument();
         public MatroskaInfo(string path, string program)
@@ -35,7 +35,8 @@ namespace ChapterTool.Util
             string xmlresult = RunMkvextract(arg, program);
             Result.LoadXml(xmlresult);
         }
-        static string RunMkvextract(string arguments, string program)
+
+        private static string RunMkvextract(string arguments, string program)
         {
             Process process = new Process
             {
@@ -63,8 +64,8 @@ namespace ChapterTool.Util
 
             // First check for Installed MkvToolnix
             // First check Win32 registry
-            regUninstall = Registry.LocalMachine.OpenSubKey("SOFTWARE").OpenSubKey("Microsoft").
-                OpenSubKey("Windows").OpenSubKey("CurrentVersion").OpenSubKey("Uninstall");
+            regUninstall = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
+
 
             if (regUninstall.GetSubKeyNames().Any(subKeyName => subKeyName.ToLower().Equals("MKVToolNix".ToLower())))
             {
@@ -86,9 +87,7 @@ namespace ChapterTool.Util
             if (!valueFound)
             {
                 subKeyFound = false;
-
-                regUninstall = Registry.LocalMachine.OpenSubKey("SOFTWARE").OpenSubKey("Wow6432Node").OpenSubKey("Microsoft").
-                    OpenSubKey("Windows").OpenSubKey("CurrentVersion").OpenSubKey("Uninstall");
+                regUninstall = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall");
 
                 if (regUninstall.GetSubKeyNames().Any(subKeyName => subKeyName.ToLower().Equals("MKVToolNix".ToLower())))
                 {

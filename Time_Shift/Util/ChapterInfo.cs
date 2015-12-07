@@ -32,9 +32,8 @@ namespace ChapterTool.Util
             {
                 Chapter c = Chapters[i];
                 double frames = c.Time.TotalSeconds * FramesPerSecond;
-                Chapters[i] = new Chapter() { Name = c.Name, Time = new TimeSpan((long)Math.Round(frames / fps * TimeSpan.TicksPerSecond)) };
+                Chapters[i] = new Chapter { Name = c.Name, Time = new TimeSpan((long)Math.Round(frames / fps * TimeSpan.TicksPerSecond)) };
             }
-
             double totalFrames = Duration.TotalSeconds * FramesPerSecond;
             Duration = new TimeSpan((long)Math.Round((totalFrames / fps) * TimeSpan.TicksPerSecond));
             FramesPerSecond = fps;
@@ -54,7 +53,7 @@ namespace ChapterTool.Util
             return lines.ToString();
         }
 
-        public void SaveText(string filename,bool notUseName)
+        public void SaveText(string filename, bool notUseName)
         {
             StringBuilder lines = new StringBuilder();
             int i = 1;

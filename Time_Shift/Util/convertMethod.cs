@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 
 namespace ChapterTool.Util
 {
-    static class ConvertMethod
+    internal static class ConvertMethod
     {
         //format a pts as hh:mm:ss.sss
         public static string Time2String(int pts)
@@ -94,11 +94,7 @@ namespace ChapterTool.Util
         {
             if (buffer == null) return null;
             if (buffer.Length <= 3) return Encoding.UTF8.GetString(buffer);
-            byte[] bomBuffer = new byte[] { 0xef, 0xbb, 0xbf };
-
-            if (buffer[0] == bomBuffer[0]
-             && buffer[1] == bomBuffer[1]
-             && buffer[2] == bomBuffer[2])
+            if (buffer[0] == 0xef && buffer[1] == 0xbb && buffer[2] == 0xbf)
             {
                 return new UTF8Encoding(false).GetString(buffer, 3, buffer.Length - 3);
             }
@@ -164,10 +160,7 @@ namespace ChapterTool.Util
         public static void SaveColor(List<Color> colorList)
         {
             StringBuilder json = new StringBuilder("[");
-            foreach (var item in colorList)
-            {
-                json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\",");
-            }
+            colorList.ForEach(item => json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\","));
             json[json.Length - 1] = ']';
             File.WriteAllText(ColorProfile, json.ToString());
         }

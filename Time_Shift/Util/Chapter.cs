@@ -16,7 +16,6 @@ namespace ChapterTool.Util
         public string Name { get; set; }
         /// <summary>Fram Count</summary>
         public string FramsInfo { get; set; }
-        public override int GetHashCode() => Time.GetHashCode();
         public override string ToString() => $"{Name} - {ConvertMethod.Time2String(Time)}";
     }
 }
