@@ -43,13 +43,13 @@ namespace ChapterTool.Util
         {
             StringBuilder lines = new StringBuilder();
             int i = 1;
-            foreach (Chapter c in Chapters)
+            Chapters.ForEach(item =>
             {
-                lines.Append($"CHAPTER{c.Number:D2}={ConvertMethod.Time2String(c.Time)}{Environment.NewLine}");
-                lines.Append($"CHAPTER{c.Number:D2}NAME=");
-                lines.Append(donotuseName ? $"Chapter {i++:D2}" : c.Name);
+                lines.Append($"CHAPTER{item.Number:D2}={ConvertMethod.Time2String(item.Time)}{Environment.NewLine}");
+                lines.Append($"CHAPTER{item.Number:D2}NAME=");
+                lines.Append(donotuseName ? $"Chapter {i++:D2}" : item.Name);
                 lines.Append(Environment.NewLine);
-            }
+            });
             return lines.ToString();
         }
 
@@ -57,13 +57,13 @@ namespace ChapterTool.Util
         {
             StringBuilder lines = new StringBuilder();
             int i = 1;
-            foreach (Chapter c in Chapters)
+            Chapters.ForEach(item =>
             {
-                lines.Append($"CHAPTER{c.Number:D2}={ConvertMethod.Time2String(c.Time + Offset)}{Environment.NewLine}");
-                lines.Append($"CHAPTER{c.Number:D2}NAME=");
-                lines.Append(notUseName ? $"Chapter {i++:D2}" : c.Name);
+                lines.Append($"CHAPTER{item.Number:D2}={ConvertMethod.Time2String(item.Time + Offset)}{Environment.NewLine}");
+                lines.Append($"CHAPTER{item.Number:D2}NAME=");
+                lines.Append(notUseName ? $"Chapter {i++:D2}" : item.Name);
                 lines.Append(Environment.NewLine);
-            }
+            });
             File.WriteAllText(filename, lines.ToString(), Encoding.UTF8);
         }
 
@@ -94,19 +94,19 @@ namespace ChapterTool.Util
             xmlchap.WriteElementString("EditionFlagDefault", "0");
             xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
             int i = 1;
-            foreach (Chapter c in Chapters)
+            Chapters.ForEach(item =>
             {
                 xmlchap.WriteStartElement("ChapterAtom");
                 xmlchap.WriteStartElement("ChapterDisplay");
-                xmlchap.WriteElementString("ChapterString", notUseName ? $"Chapter {i++:D2}" : c.Name);
+                xmlchap.WriteElementString("ChapterString", notUseName ? $"Chapter {i++:D2}" : item.Name);
                 xmlchap.WriteElementString("ChapterLanguage", lang);
                 xmlchap.WriteEndElement();
                 xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                xmlchap.WriteElementString("ChapterTimeStart", ConvertMethod.Time2String(c.Time + Offset) + "0000");
+                xmlchap.WriteElementString("ChapterTimeStart", ConvertMethod.Time2String(item.Time + Offset) + "0000");
                 xmlchap.WriteElementString("ChapterFlagHidden", "0");
                 xmlchap.WriteElementString("ChapterFlagEnabled", "1");
                 xmlchap.WriteEndElement();
-            }
+            });
             xmlchap.WriteEndElement();
             xmlchap.WriteEndElement();
             xmlchap.Flush();

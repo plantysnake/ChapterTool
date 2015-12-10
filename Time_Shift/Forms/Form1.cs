@@ -186,7 +186,7 @@ namespace ChapterTool.Forms
         {
             if (!IsPathValid) { return; }
             var fileName = Path.GetFileName(_paths[0]);
-            label1.Text   = (fileName?.Length > 55) ? $"{fileName.Substring(0, 40)}…{fileName.Substring(fileName.Length - 15, 15)}" : fileName;
+            label1.Text   = fileName?.Length > 55 ? $"{fileName.Substring(0, 40)}…{fileName.Substring(fileName.Length - 15, 15)}" : fileName;
             SetDefault();
             Cursor = Cursors.AppStarting;
             try
@@ -455,13 +455,13 @@ namespace ChapterTool.Forms
             {
                 comboBox2.Items.Clear();
                 int i = 1;
-                foreach (var item in _xmlGroup)
+                _xmlGroup.ForEach(item =>
                 {
                     string name = $"Edition {i++:D2}";
                     comboBox2.Items.Add(name);
                     CTLogger.Log($" |+{name}");
                     CTLogger.Log($"  |+包含 {item.Chapters.Count} 个时间戳");
-                }
+                });
             }
             _info = _xmlGroup[0];
             comboBox2.SelectedIndex = MplsFileSeletIndex;
@@ -481,25 +481,29 @@ namespace ChapterTool.Forms
         #endregion
 
         #region updataInfo
-        void UpdataInfo(TimeSpan shift)
+
+        private void UpdataInfo(TimeSpan shift)
         {
             if (!IsPathValid) { return; }
             _info.Chapters.ForEach(item => item.Time -= shift);
         }
-        void UpdataInfo(int shift)
+
+        private void UpdataInfo(int shift)
         {
             if (!IsPathValid) { return; }
             int index = 0;
             _info.Chapters.ForEach(item => item.Number = ++index + shift);
         }
-        void UpdataInfo(string chapterNameTemplate)
+
+        private void UpdataInfo(string chapterNameTemplate)
         {
             if (!IsPathValid || string.IsNullOrEmpty(chapterNameTemplate)) { return; }
             var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();
             _info.Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name);
             cn.Dispose();
         }
-        void UpdataInfo(decimal coefficient)
+
+        private void UpdataInfo(decimal coefficient)
         {
             if (!IsPathValid) { return; }
             _info.Chapters.ForEach(item => item.Time = ConvertMethod.Pts2Time((int)((decimal)item.Time.TotalSeconds * coefficient * 45000M)));
@@ -558,14 +562,13 @@ namespace ChapterTool.Forms
             var settingAccuracy = CostumeAccuracy;
             index = index == 0 ? GetAutofps(settingAccuracy) : index;
             comboBox1.SelectedIndex = index - 1;
-
-            foreach (var item in _info.Chapters)
+            _info.Chapters.ForEach(item =>
             {
-                var frams      = ((decimal)(item.Time+_info.Offset).TotalMilliseconds * _frameRate[index] / 1000M);
+                var frams      = ((decimal) (item.Time + _info.Offset).TotalMilliseconds*_frameRate[index]/1000M);
                 var answer     = cbRound.Checked ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
                 bool accuracy  = (Math.Abs(frams - answer) < settingAccuracy);
                 item.FramsInfo = $"{answer}{(accuracy ? " K" : " *")}";
-            }
+            });
         }
 
         private int GetAutofps(decimal accuracy)

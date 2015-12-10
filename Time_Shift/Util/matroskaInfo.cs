@@ -19,16 +19,17 @@
 // ****************************************************************************
 
 using System;
-using System.Diagnostics;
 using System.IO;
+using System.Xml;
 using System.Linq;
 using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace ChapterTool.Util
 {
     internal class MatroskaInfo
     {
-        public System.Xml.XmlDocument Result = new System.Xml.XmlDocument();
+        public XmlDocument Result = new XmlDocument();
         public MatroskaInfo(string path, string program)
         {
             string arg = $"chapters \"{path}\"";
