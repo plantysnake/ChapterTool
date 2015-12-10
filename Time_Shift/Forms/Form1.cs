@@ -567,7 +567,7 @@ namespace ChapterTool.Forms
         private void GetFramInfo(int index = 0)
         {
             var settingAccuracy = CostumeAccuracy;
-            index = index == 0 ? GetAutofps(settingAccuracy) : index;
+            index = (index == 0 && _rawMpls == null) ? GetAutofps(settingAccuracy) : index;
             comboBox1.SelectedIndex = index - 1;
             _info.Chapters.ForEach(item =>
             {
