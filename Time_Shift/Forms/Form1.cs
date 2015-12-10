@@ -901,7 +901,7 @@ namespace ChapterTool.Forms
 
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
-            if (!IsPathValid || !_paths[0].ToLowerInvariant().EndsWith(".mpls")) return;
+            if (!IsPathValid || !_paths[0].ToLowerInvariant().EndsWith(".mpls") || _rawMpls == null) return;
             int index = MplsFileSeletIndex;
             if (_rawMpls.ChapterClips[index].TimeStamp.Count != 2) return;
             string sFakeChapter2 = $"但是这第二个章节点{Environment.NewLine}离视频结尾太近了呢，应该没有用处吧 (-｡-;)";
