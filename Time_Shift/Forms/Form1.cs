@@ -25,9 +25,10 @@ using System.Linq;
 using System.Drawing;
 using ChapterTool.Util;
 using System.Windows.Forms;
+using ChapterTool.Properties;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using ChapterTool.Properties;
+
 
 namespace ChapterTool.Forms
 {
@@ -59,12 +60,14 @@ namespace ChapterTool.Forms
             MoreModeShow = false;
             Size = new Size(Size.Width, Size.Height - 80);
             savingType.SelectedIndex = 0;
-            btnTrans.Text = (Environment.TickCount % 2 == 0 ? "↺" : "↻");
+            btnTrans.Text = Environment.TickCount % 2 == 0 ? "↺" : "↻";
             folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
             if (!string.IsNullOrEmpty(_paths[0]))
             {
-                Loadfile();
-                UpdataGridView();
+                if (Loadfile())
+                {
+                    UpdataGridView();
+                }
                 RegistryStorage.Save(Resources.How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
             }
             var countS = RegistryStorage.Load(@"Software\ChapterTool\Statistics", @"Count");
@@ -90,7 +93,7 @@ namespace ChapterTool.Forms
             Screen.AllScreens.ToList().ForEach(item => CTLogger.Log( $"{item.DeviceName}{Resources.Resolution}{item.Bounds.Width}*{item.Bounds.Height}"));
         }
 
-        public void LoadLang(ComboBox target)
+        private static void LoadLang(ComboBox target)
         {
             target.Items.Add("----常用----");
             target.Items.Add("und (Undetermined)");
@@ -132,8 +135,10 @@ namespace ChapterTool.Forms
             if (!IsPathValid) { return; }
             CTLogger.Log($"+{Resources.Load_File_By_Dragging}{_paths?[0]}");
             comboBox2.Items.Clear();
-            Loadfile();
-            UpdataGridView();
+            if (Loadfile())
+            {
+                UpdataGridView();
+            }
         }
 
         private void Form1_DragEnter(object sender, DragEventArgs e)
@@ -174,17 +179,17 @@ namespace ChapterTool.Forms
                     return false;
                 }
                 if (_rFileType.IsMatch(_paths[0].ToLowerInvariant())) return true;
-                Tips.Text = @"这个文件我不认识啊 _ (:3」∠)_";
-                CTLogger.Log("文件格式非法");
+                Tips.Text = Resources.InValid_Type;
+                CTLogger.Log(Resources.InValid_Type_Log);
                 _paths[0] = string.Empty;
                 label1.Text = Resources.File_Unloaded;
                 return false;
             }
         }
 
-        private void Loadfile()
+        private bool Loadfile()
         {
-            if (!IsPathValid) { return; }
+            if (!IsPathValid) { return false; }
             var fileName = Path.GetFileName(_paths[0]);
             label1.Text   = fileName?.Length > 55 ? $"{fileName.Substring(0, 40)}…{fileName.Substring(fileName.Length - 15, 15)}" : fileName;
             SetDefault();
@@ -207,8 +212,11 @@ namespace ChapterTool.Forms
                 MessageBox.Show(ex.Message, Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 CTLogger.Log($"ERROR: {ex.Message}");
                 label1.Text = Resources.File_Unloaded;
+                Cursor = Cursors.Default;
+                return false;
             }
             Cursor = Cursors.Default;
+            return true;
         }
 
         private List<ChapterInfo> _rawIfo;
@@ -234,7 +242,7 @@ namespace ChapterTool.Forms
             });
             _info = _rawIfo[0];
             comboBox2.SelectedIndex = _rawIfo.IndexOf(_info);
-            Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.Load_Success;
+            Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.IFO_WARNING;
         }
 
         private void LoadOgm()
@@ -254,8 +262,10 @@ namespace ChapterTool.Forms
                 _paths[0] = openFileDialog1.FileName;
                 CTLogger.Log($"+从载入键中载入文件: {_paths[0]}");
                 comboBox2.Items.Clear();
-                Loadfile();
-                UpdataGridView();
+                if (Loadfile())
+                {
+                    UpdataGridView();
+                }
             }
             catch (Exception exception)
             {
@@ -356,7 +366,7 @@ namespace ChapterTool.Forms
             Tips.Text = @"保存成功";
         }
 
-        private void savingType_SelectedIndexChanged(object sender, EventArgs e) => xmlLang.Enabled = (savingType.SelectedIndex == 1);
+        private void savingType_SelectedIndexChanged(object sender, EventArgs e) => xmlLang.Enabled = savingType.SelectedIndex == 1;
 
         private void refresh_Click(object sender, EventArgs e) => UpdataGridView();
 
@@ -384,7 +394,7 @@ namespace ChapterTool.Forms
         private ChapterInfo GenerateChapterInfoFromOgm(string text, int orderOffset)
         {
             var info = new ChapterInfo { SourceType = "OGM" };
-            var ogmData = text.Trim(' ', '\r', '\n').Split('\n').SkipWhile(item => (string.IsNullOrEmpty(item))).ToList().GetEnumerator();
+            var ogmData = text.Trim(' ', '\r', '\n').Split('\n').SkipWhile(string.IsNullOrEmpty).ToList().GetEnumerator();
             if (!ogmData.MoveNext()) return info;
             TimeSpan iniTime = OffsetCal(ogmData.Current);
             do
@@ -408,8 +418,9 @@ namespace ChapterTool.Forms
             } while (ogmData.MoveNext());
             if (info.Chapters.Count>1)
             {
-                info.Duration = info.Chapters[info.Chapters.Count - 1].Time;
+                info.Duration = info.Chapters.Last().Time;
             }
+
             ogmData.Dispose();
             //UpdataInfo(_chapterNameTemplate);
             return info;
@@ -421,7 +432,6 @@ namespace ChapterTool.Forms
             _info = new ChapterInfo
             {
                 Title = combineToolStripMenuItem.Checked ? "FULL Chapter" : _rawMpls.ChapterClips[index].Name,
-                SourceHash = IfoData.ComputeMd5Sum(_paths[0]),
                 SourceType = "MPLS",
                 Duration = ConvertMethod.Pts2Time(mplsClip.TimeOut - mplsClip.TimeIn),
                 FramesPerSecond = (double) _frameRate[_rawMpls.ChapterClips[index].Fps]
@@ -449,7 +459,7 @@ namespace ChapterTool.Forms
         private void GetChapterInfoFromXml(XmlDocument doc)
         {
             _xmlGroup = ConvertMethod.PraseXml(doc);
-            comboBox2.Enabled = comboBox2.Visible = (_xmlGroup.Count >= 1);
+            comboBox2.Enabled = comboBox2.Visible = _xmlGroup.Count >= 1;
             if (comboBox2.Enabled)
             {
                 comboBox2.Items.Clear();
@@ -471,11 +481,9 @@ namespace ChapterTool.Forms
             if (_rawIfo[index] != null)
             {
                 _info = _rawIfo[index];
+                return;
             }
-            else
-            {
-                Tips.Text = Resources.Chapter_Not_find;
-            }
+            Tips.Text = Resources.Chapter_Not_find;
         }
         #endregion
 
@@ -536,12 +544,12 @@ namespace ChapterTool.Forms
             for (var i = 0; i < _info.Chapters.Count; i++)
             {
                 if (clearAllRows) { dataGridView1.Rows.Add(); }
-                dataGridView1.Rows[i].DefaultCellStyle.BackColor = (i%2 == 0)
+                dataGridView1.Rows[i].DefaultCellStyle.BackColor = i%2 == 0
                     ? Color.FromArgb(0x92, 0xaa, 0xf3)
                     : Color.FromArgb(0xf3, 0xf7, 0xf7);
                 AddRow(_info.Chapters[i], i);
             }
-            progressBar1.Value = (dataGridView1.RowCount > 1) ? 66 : 33;
+            progressBar1.Value = dataGridView1.RowCount > 1 ? 66 : 33;
         }
 
         private void AddRow(Chapter item,int index)
@@ -549,7 +557,7 @@ namespace ChapterTool.Forms
             dataGridView1.Rows[index].Tag = item;
             dataGridView1.Rows[index].Cells[0].Value = $"{item.Number:D2}";
             dataGridView1.Rows[index].Cells[1].Value = ConvertMethod.Time2String(item.Time + _info.Offset);
-            dataGridView1.Rows[index].Cells[2].Value = cbAutoGenName.Checked ? $"Chapter {(index + 1):D2}" : item.Name;
+            dataGridView1.Rows[index].Cells[2].Value = cbAutoGenName.Checked ? $"Chapter {index + 1:D2}" : item.Name;
             dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
         }
 
@@ -563,9 +571,9 @@ namespace ChapterTool.Forms
             comboBox1.SelectedIndex = index - 1;
             _info.Chapters.ForEach(item =>
             {
-                var frams      = ((decimal) (item.Time + _info.Offset).TotalMilliseconds*_frameRate[index]/1000M);
+                var frams      = (decimal) (item.Time + _info.Offset).TotalMilliseconds*_frameRate[index]/1000M;
                 var answer     = cbRound.Checked ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
-                bool accuracy  = (Math.Abs(frams - answer) < settingAccuracy);
+                bool accuracy  = Math.Abs(frams - answer) < settingAccuracy;
                 item.FramsInfo = $"{answer}{(accuracy ? " K" : " *")}";
             });
         }
@@ -617,7 +625,8 @@ namespace ChapterTool.Forms
         }
 
         #region form resize support
-        bool MoreModeShow
+
+        private bool MoreModeShow
         {
             set
             {
@@ -636,9 +645,9 @@ namespace ChapterTool.Forms
             }
         }
 
-        void cbMore_CheckedChanged(object sender, EventArgs e) => Form1_Resize();
+        private void cbMore_CheckedChanged(object sender, EventArgs e) => Form1_Resize();
 
-        void Form1_Resize()
+        private void Form1_Resize()
         {
             if (cbMore.Checked)
             {
@@ -706,7 +715,7 @@ namespace ChapterTool.Forms
             CTLogger.Log("+成功载入MPLS格式章节文件");
             CTLogger.Log($"|+MPLS中共有 {_rawMpls.ChapterClips.Count} 个m2ts片段");
 
-            comboBox2.Enabled = comboBox2.Visible = (_rawMpls.ChapterClips.Count >= 1);
+            comboBox2.Enabled = comboBox2.Visible = _rawMpls.ChapterClips.Count >= 1;
             if (comboBox2.Enabled)
             {
                 comboBox2.Items.Clear();
@@ -720,7 +729,9 @@ namespace ChapterTool.Forms
             comboBox2.SelectedIndex = MplsFileSeletIndex;
             GetChapterInfoFromMpls(MplsFileSeletIndex);
         }
-
+        /// <summary>
+        /// Load chapter according to the selected index
+        /// </summary>
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_rawMpls != null)
@@ -810,7 +821,7 @@ namespace ChapterTool.Forms
                 BackColor                                    = value;
                 cbMore.BackColor                             = value;
             }
-            get { return BackColor; }
+            private get { return BackColor; }
         }
         public Color TextBack
         {
@@ -824,7 +835,7 @@ namespace ChapterTool.Forms
                 xmlLang.BackColor                            = value;
                 savingType.BackColor                         = value;
             }
-            get { return dataGridView1.BackgroundColor; }
+            private get { return dataGridView1.BackgroundColor; }
         }
         public Color MouseOverColor
         {
@@ -837,7 +848,7 @@ namespace ChapterTool.Forms
                 btnPreview.FlatAppearance.MouseOverBackColor = value;
                 cbMore.FlatAppearance.MouseOverBackColor     = value;
             }
-            get { return btnLoad.FlatAppearance.MouseOverBackColor; }
+            private get { return btnLoad.FlatAppearance.MouseOverBackColor; }
         }
         public Color MouseDownColor
         {
@@ -850,7 +861,7 @@ namespace ChapterTool.Forms
                 btnPreview.FlatAppearance.MouseDownBackColor = value;
                 cbMore.FlatAppearance.MouseDownBackColor     = value;
             }
-            get { return btnLoad.FlatAppearance.MouseDownBackColor; }
+            private get { return btnLoad.FlatAppearance.MouseDownBackColor; }
         }
         public Color BordBackColor
         {
@@ -864,7 +875,7 @@ namespace ChapterTool.Forms
                 cbMore.FlatAppearance.BorderColor            = value;
                 dataGridView1.GridColor                      = value;
             }
-            get { return btnLoad.FlatAppearance.BorderColor; }
+            private get { return btnLoad.FlatAppearance.BorderColor; }
         }
         public Color TextFrontColor
         {
@@ -880,7 +891,7 @@ namespace ChapterTool.Forms
                 savingType.ForeColor                         = value;
                 dataGridView1.ForeColor                      = value;
             }
-            get { return ForeColor; }
+            private get { return ForeColor; }
         }
         #endregion
 
@@ -890,27 +901,28 @@ namespace ChapterTool.Forms
 
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
-            string sFakeChapter2 = $"但是这第二个章节点{Environment.NewLine}离视频结尾太近了呢，应该没有用处吧 (-｡-;)";
-            string sFakeChapter3 = $"虽然只有两个章节点{Environment.NewLine}应该还是能安心的呢 (～￣▽￣)→))*￣▽￣*)o";
             if (!IsPathValid || !_paths[0].ToLowerInvariant().EndsWith(".mpls")) return;
             int index = MplsFileSeletIndex;
             if (_rawMpls.ChapterClips[index].TimeStamp.Count != 2) return;
+            string sFakeChapter2 = $"但是这第二个章节点{Environment.NewLine}离视频结尾太近了呢，应该没有用处吧 (-｡-;)";
+            string sFakeChapter3 = $"虽然只有两个章节点{Environment.NewLine}应该还是能安心的呢 (～￣▽￣)→))*￣▽￣*)o";
             Clip streamClip = _rawMpls.ChapterClips[index];
             string lastTime = ConvertMethod.Time2String(streamClip.TimeOut - streamClip.TimeIn);
             toolTip1.Show(
-                ((streamClip.TimeOut - streamClip.TimeIn) - (streamClip.TimeStamp[1] - streamClip.TimeStamp[0])) <=
+                streamClip.TimeOut - streamClip.TimeIn - (streamClip.TimeStamp.Last() - streamClip.TimeStamp.First()) <=
                 5*45000
                     ? $"本片段时长为: {lastTime}，{sFakeChapter2}"
                     : $"本片段时长为: {lastTime}，{sFakeChapter3}", btnSave);
         }
 
-        private void comboBox2_MouseEnter(object sender, EventArgs e) => toolTip1.Show((comboBox2.Items.Count > 20) ? "不用看了，这是播放菜单的mpls" : comboBox2.Items.Count.ToString(), comboBox2);
+        private void comboBox2_MouseEnter(object sender, EventArgs e) => toolTip1.Show(comboBox2.Items.Count > 20 ? "不用看了，这是播放菜单的mpls" : comboBox2.Items.Count.ToString(), comboBox2);
         private void cbMul1k1_MouseEnter(object sender, EventArgs e) => toolTip1.Show("用于DVD Decrypter提取的Chapter", cbMul1k1);
         private void ToolTipRemoveAll(object sender, EventArgs e) => toolTip1.RemoveAll();
         #endregion
 
         #region closing animation support
-        public int SystemVersion => Environment.OSVersion.Version.Major;
+
+        private static int SystemVersion => Environment.OSVersion.Version.Major;
         //Windows95/98/Me	     	 4
         //Windows2000/XP/2003        5
         //WindowsVista/7/8/8.1/10 	 6
@@ -1000,7 +1012,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        FormPreview _previewForm;
+        private FormPreview _previewForm;
         private void btnPreview_Click(object sender, EventArgs e)
         {
             if (!IsPathValid) { return; }

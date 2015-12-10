@@ -181,7 +181,7 @@ namespace ChapterTool.Util
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
-        static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
         //1 = normal (green);
         //2 = error (red);
         //3 = warning (yellow).

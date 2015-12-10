@@ -115,6 +115,33 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 IFO格式的章节，请注意是否需要修正时间 的本地化字符串。
+        /// </summary>
+        internal static string IFO_WARNING {
+            get {
+                return ResourceManager.GetString("IFO_WARNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 这个文件我不认识啊 _ (:3」∠)_ 的本地化字符串。
+        /// </summary>
+        internal static string InValid_Type {
+            get {
+                return ResourceManager.GetString("InValid_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 文件格式非法 的本地化字符串。
+        /// </summary>
+        internal static string InValid_Type_Log {
+            get {
+                return ResourceManager.GetString("InValid_Type_Log", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 从窗口拖拽中载入文件: 的本地化字符串。
         /// </summary>
         internal static string Load_File_By_Dragging {

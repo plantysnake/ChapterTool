@@ -5,7 +5,7 @@ namespace ChapterTool.Controls
 {
     class CustomProgressBar : ProgressBar
     {
-        Color _barColor = Color.Blue;        // Color of progress meter
+        private Color _barColor = Color.Blue;        // Color of progress meter
 
 
 
