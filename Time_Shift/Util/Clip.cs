@@ -24,7 +24,7 @@ namespace ChapterTool.Util
     public class Clip
     {
         public string Name;
-        public List<int> TimeStamp = new List<int>();
+        public readonly List<int> TimeStamp = new List<int>();
         public int Fps;
         public int Length;
         public int RelativeTimeIn;

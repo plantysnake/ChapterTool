@@ -57,9 +57,11 @@ namespace ChapterTool.Util
 
         private void ParseHeader()
         {
-            if (Encoding.ASCII.GetString(_data, 0, 4) != "MPLS")
+            string fileType = Encoding.ASCII.GetString(_data, 0, 8);
+            if ((fileType != "MPLS0100" && fileType != "MPLS0200")
+            /*|| _data[45] != 1*/)
             {
-                throw new Exception($"Invalid Mpls file.\n type: {Encoding.ASCII.GetString(_data, 0, 4)}");
+                throw new Exception($"This Playlist has an unknown file type {fileType}.");
             }
             _playlistSectionStartAddress     = Byte2Int32(_data, 0x08);
             _playlistMarkSectionStartAddress = Byte2Int32(_data, 0x0c);
@@ -83,16 +85,12 @@ namespace ChapterTool.Util
             streamClip.RelativeTimeOut = streamClip.RelativeTimeIn + streamClip.Length;
             ChapterClips.Add(streamClip);
 
-            itemStartAdress            = playItemEntries + 0x32;
+            itemStartAdress            = playItemEntries + lengthOfPlayItem;    //ignore angles
             streamCount                = bytes[0x23] >> 4;
-            int uo2                    = bytes[0x22];
-            //ignore angles, only operate case that angles == 2, it normally be 0
-            if (0x02 != uo2) return lengthOfPlayItem;
-            CTLogger.Log($"Chapter with {uo2} Angle, file name: {streamClip.Name}");
-            streamCount     = bytes[0x2f] >> 4;
-            itemStartAdress = playItemEntries + 0x3e;
+            CTLogger.Log($"Chapter with {bytes[0x22]} Angle, file name: {streamClip.Name}");
             return lengthOfPlayItem;
         }
+
         private void ParseStream(int itemStartAdress,int streamOrder,int playItemOrder)
         {
             var stream = new byte[16];
