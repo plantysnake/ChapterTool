@@ -19,7 +19,6 @@ namespace ChapterTool.Util
         public string SourceName { get; set; }
         public int TitleNumber { get; set; }
         public string SourceType { get; set; }
-        public string SourceHash { get; set; }
         public double FramesPerSecond { get; set; }
         public TimeSpan Duration { get; set; }
         public List<Chapter> Chapters { get; set; }

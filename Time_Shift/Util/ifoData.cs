@@ -60,7 +60,6 @@ namespace ChapterTool.Util
                 SourceType = "DVD",
                 SourceName = $"PGC {titleSetNum:D2}",
                 TitleNumber = titleSetNum,
-                SourceHash = ComputeMd5Sum(location),
                 Title = Path.GetFileNameWithoutExtension(location)
             };
             if (pgc.Title.Split('_').Length == 3)
