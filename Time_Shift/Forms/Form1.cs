@@ -215,36 +215,26 @@ namespace ChapterTool.Forms
 
         private void LoadIfo()
         {
-            _rawIfo = new IfoData().GetStreams(_paths[0]);
-            if (_rawIfo[0] == null)
+            _rawIfo = new IfoData().GetStreams(_paths[0]).Where(item => item != null).ToList();
+            if (_rawIfo.Count == 0)
             {
-                Tips.Text = Resources.Chapter_Not_find;
-                return;
+                throw new Exception("No Chapter in this Ifo at all");
             }
-            if (Math.Abs(_rawIfo[0].FramesPerSecond - 25) > 1e-5)
-            {
-                IfoMul1K1();
-            }
+            //if (Math.Abs(_rawIfo[0].FramesPerSecond - 25) > 1e-5)
+            //{
+            //    _rawIfo.ForEach( item => item.Chapters.ForEach( item2 => item2.Time = ConvertMethod.Pts2Time((int) ((decimal) item2.Time.TotalSeconds*45045M))));
+            //}
             comboBox2.Items.Clear();
-            comboBox2.Enabled = comboBox2.Visible = (_rawIfo.Count >= 1);
-            foreach (var item in _rawIfo.Where(item => comboBox2.Enabled && item != null))
+            comboBox2.Enabled = comboBox2.Visible = _rawIfo.Count >= 1;
+            _rawIfo.ForEach(item =>
             {
                 comboBox2.Items.Add($"{item.SourceName}__{item.Chapters.Count}");
                 CTLogger.Log($" |+{item.SourceName}");
                 CTLogger.Log($"  |+包含 {item.Chapters.Count} 个时间戳");
-            }
-
-            _info = _rawIfo.First(item => item != null);
+            });
+            _info = _rawIfo[0];
             comboBox2.SelectedIndex = _rawIfo.IndexOf(_info);
-            Tips.Text = (comboBox2.SelectedIndex == -1) ? Resources.Chapter_Not_find : Resources.Load_Success;
-        }
-
-        private void IfoMul1K1()
-        {
-            (from item in _rawIfo where item != null select item.Chapters).ToList().ForEach(
-                    item => item.ForEach(
-                            item2 => item2.Time =
-                                    ConvertMethod.Pts2Time((int) item2.Time.TotalSeconds*45045)));
+            Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.Load_Success;
         }
 
         private void LoadOgm()
@@ -978,8 +968,8 @@ namespace ChapterTool.Forms
         }
         private void cbMul1k1_CheckedChanged(object sender, EventArgs e)
         {
-            if (_info == null || _info.SourceType == "DVD") return;
-            UpdataInfo(cbMul1k1.Checked?1.001M: 1 / 1.001M);
+            if (_info == null) return;
+            UpdataInfo(cbMul1k1.Checked ? 1.001M : 1/1.001M);
             UpdataGridView();
         }
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
