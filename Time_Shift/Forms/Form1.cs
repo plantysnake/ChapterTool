@@ -321,17 +321,16 @@ namespace ChapterTool.Forms
         private void SaveFile()
         {
             if (!IsPathValid) { return; }
+            string fileName = Path.GetFileNameWithoutExtension(_paths[0]);
 
-            string pn = _paths[0].Substring(0, _paths[0].LastIndexOf(".", StringComparison.Ordinal));
-            //modify for custom saving path
-            int slashPosition = _paths[0].LastIndexOf(@"\", StringComparison.Ordinal);
-            if (!string.IsNullOrEmpty(_customSavingPath))
-                pn = _customSavingPath + _paths[0].Substring(slashPosition, _paths[0].LastIndexOf(".", StringComparison.Ordinal) - slashPosition);
-            StringBuilder savePath = new StringBuilder(pn);
+            StringBuilder savePath =
+                new StringBuilder(
+                    $"{(string.IsNullOrEmpty(_customSavingPath) ? Path.GetDirectoryName(_paths[0]) : _customSavingPath)}//{fileName}");
 
-            if (_paths[0].ToLowerInvariant().EndsWith(".mpls") && !combineToolStripMenuItem.Checked)
+            string ext = Path.GetExtension(_paths[0])?.ToLowerInvariant();
+            if (ext == ".mpls" && !combineToolStripMenuItem.Checked)
                 savePath.Append($"__{_rawMpls.ChapterClips[MplsFileSeletIndex].Name}");
-            if (_paths[0].ToLowerInvariant().EndsWith(".ifo"))
+            if (ext == ".ifo")
                 savePath.Append($"__{_rawIfo[MplsFileSeletIndex].SourceName}");
 
             string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf"};
