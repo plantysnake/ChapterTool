@@ -28,9 +28,9 @@ namespace ChapterTool.Util
     public class MplsData
     {
         /// <summary>include all chapters in mpls divisionally</summary>
-        public List<Clip> ChapterClips { get; set; }
+        public List<Clip> ChapterClips { get; }
         /// <summary>include all time code in mpls</summary>
-        public List<int> EntireTimeStamp { get; set; }
+        public List<int> EntireTimeStamp { get; }
 
         private readonly byte[] _data;
         private int _playlistSectionStartAddress;
@@ -72,22 +72,35 @@ namespace ChapterTool.Util
         private int ParsePlayItem(int playItemEntries, out int itemStartAdress, out int streamCount)
         {
             int lengthOfPlayItem = Byte2Int16(_data, playItemEntries);
-            var bytes = new byte[lengthOfPlayItem + 2];
+            var bytes            = new byte[lengthOfPlayItem + 2];
             Array.Copy(_data, playItemEntries, bytes, 0, lengthOfPlayItem);
             Clip streamClip = new Clip
             {
-                Name = Encoding.ASCII.GetString(bytes, 0x02, 0x09),
-                TimeIn = Byte2Int32(bytes, 0x0e),
+                TimeIn  = Byte2Int32(bytes, 0x0e),
                 TimeOut = Byte2Int32(bytes, 0x12)
             };
             streamClip.Length          = streamClip.TimeOut - streamClip.TimeIn;
             streamClip.RelativeTimeIn  = ChapterClips.Sum(clip => clip.Length);
             streamClip.RelativeTimeOut = streamClip.RelativeTimeIn + streamClip.Length;
-            ChapterClips.Add(streamClip);
 
-            itemStartAdress            = playItemEntries + lengthOfPlayItem;    //ignore angles
+            itemStartAdress            = playItemEntries + 0x32;
             streamCount                = bytes[0x23] >> 4;
-            CTLogger.Log($"Chapter with {bytes[0x22]} Angle, file name: {streamClip.Name}");
+            int isMultiAngle = (bytes[0x0c] >> 4) & 0x01;
+
+            StringBuilder sb = new StringBuilder(Encoding.ASCII.GetString(bytes, 0x02, 0x05));
+
+            if (isMultiAngle == 1)
+            {
+                int numberOfAngles = bytes[0x22];
+                for (int i = 1; i < numberOfAngles; i++)
+                {
+                    sb.Append("&" + Encoding.ASCII.GetString(bytes, 0x24 + (i - 1) * 0x0a, 0x05));
+                }
+                itemStartAdress = playItemEntries + 0x02 + (numberOfAngles - 1) * 0x0a;
+                CTLogger.Log($"Chapter with {numberOfAngles} Angle, file name: {sb}");
+            }
+            streamClip.Name = sb.ToString();
+            ChapterClips.Add(streamClip);
             return lengthOfPlayItem;
         }
 
@@ -130,13 +143,13 @@ namespace ChapterTool.Util
             }
         }
 
-        private static short Byte2Int16(IList<byte> bytes, int index, bool bigEndian = true)
+        private static short Byte2Int16(IReadOnlyList<byte> bytes, int index, bool bigEndian = true)
         {
             return (short)(bigEndian ? (bytes[index] << 8) + bytes[index + 1] :
                                        (bytes[index + 1] << 8) + bytes[index]);
         }
 
-        private static int Byte2Int32(IList<byte> bytes, int index, bool bigEndian = true)
+        private static int Byte2Int32(IReadOnlyList<byte> bytes, int index, bool bigEndian = true)
         {
             return bigEndian ? (bytes[index] << 24) + (bytes[index + 1] << 16) + (bytes[index + 2] << 8) + bytes[index + 3] :
                                (bytes[index + 3] << 24) + (bytes[index + 2] << 16) + (bytes[index + 1] << 8) + bytes[index];

@@ -122,6 +122,9 @@ namespace ChapterTool.Forms
             _rawMpls  = null;
             _rawIfo   = null;
             _xmlGroup = null;
+            _info     = null;
+
+            dataGridView1.Rows.Clear();
             xmlLang.SelectedIndex = 2;
         }
 
@@ -210,6 +213,7 @@ namespace ChapterTool.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                _paths[0] = string.Empty;
                 CTLogger.Log($"ERROR: {ex.Message}");
                 label1.Text = Resources.File_Unloaded;
                 Cursor = Cursors.Default;
