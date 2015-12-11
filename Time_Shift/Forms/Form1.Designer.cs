@@ -522,7 +522,9 @@
             this.savingType.Items.AddRange(new object[] {
             "OGM",
             "XML",
-            "QPF"});
+            "QPF",
+            "Time Codes",
+            "TsMuxeR Meta"});
             this.savingType.Location = new System.Drawing.Point(74, 489);
             this.savingType.Name = "savingType";
             this.savingType.Size = new System.Drawing.Size(108, 25);

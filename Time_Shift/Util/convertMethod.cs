@@ -51,7 +51,15 @@ namespace ChapterTool.Util
             return $"{temp.Hours:D2}:{temp.Minutes:D2}:{temp.Seconds:D2}.{temp.Milliseconds:D3}";
         }
 
-        public static Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
+        public static string Time2String(Chapter item, TimeSpan offset, bool mul1K1)
+        {
+            return
+                Time2String(mul1K1
+                    ? Pts2Time((int) ((decimal) (item.Time + offset).TotalSeconds*45045M))
+                    : item.Time + offset);
+        }
+
+        public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
 
         public static TimeSpan String2Time(string input)
         {
@@ -71,6 +79,9 @@ namespace ChapterTool.Util
             decimal millisecondPart = Math.Round((total - secondPart) * 1000M);
             return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
         }
+
+
+
         public static Point String2Point(string input)
         {
             var rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");

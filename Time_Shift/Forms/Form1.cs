@@ -347,7 +347,7 @@ namespace ChapterTool.Forms
             if (ext == ".ifo")
                 savePath.Append($"__{_rawIfo[MplsFileSeletIndex].SourceName}");
 
-            string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf"};
+            string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf", ".TimeCodes.txt", ".TsMuxeR_Meta.txt" };
             while (File.Exists($"{savePath}{saveingTypeSuffix[savingType.SelectedIndex]}")) { savePath.Append("_"); }
             savePath.Append(saveingTypeSuffix[savingType.SelectedIndex]);
 
@@ -364,6 +364,12 @@ namespace ChapterTool.Forms
                     break;
                 case 2://QPF
                     _info.SaveQpfile(savePath.ToString());
+                    break;
+                case 3://Time Codes
+                    _info.SaveTimecodes(savePath.ToString());
+                    break;
+                case 4://Tsmuxer
+                    _info.SaveTsmuxerMeta(savePath.ToString());
                     break;
             }
             progressBar1.Value = 100;
@@ -514,11 +520,6 @@ namespace ChapterTool.Forms
             cn.Dispose();
         }
 
-        private void UpdataInfo(decimal coefficient)
-        {
-            if (!IsPathValid) { return; }
-            _info.Chapters.ForEach(item => item.Time = ConvertMethod.Pts2Time((int)((decimal)item.Time.TotalSeconds * coefficient * 45000M)));
-        }
         #endregion
 
         private void UpdataGridView(int fpsIndex = 0)
@@ -560,7 +561,7 @@ namespace ChapterTool.Forms
         {
             dataGridView1.Rows[index].Tag = item;
             dataGridView1.Rows[index].Cells[0].Value = $"{item.Number:D2}";
-            dataGridView1.Rows[index].Cells[1].Value = ConvertMethod.Time2String(item.Time + _info.Offset);
+            dataGridView1.Rows[index].Cells[1].Value = ConvertMethod.Time2String(item, _info.Offset, _info.Mul1k1);
             dataGridView1.Rows[index].Cells[2].Value = cbAutoGenName.Checked ? $"Chapter {index + 1:D2}" : item.Name;
             dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
         }
@@ -571,11 +572,12 @@ namespace ChapterTool.Forms
         private void GetFramInfo(int index = 0)
         {
             var settingAccuracy = CostumeAccuracy;
+            var coefficient = _info.Mul1k1 ? 1.001M : 1M;
             index = (index == 0 && _rawMpls == null) ? GetAutofps(settingAccuracy) : index;
             comboBox1.SelectedIndex = index - 1;
             _info.Chapters.ForEach(item =>
             {
-                var frams      = (decimal) (item.Time + _info.Offset).TotalMilliseconds*_frameRate[index]/1000M;
+                var frams      = (decimal) (item.Time + _info.Offset).TotalMilliseconds * coefficient * _frameRate[index]/1000M;
                 var answer     = cbRound.Checked ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
                 bool accuracy  = Math.Abs(frams - answer) < settingAccuracy;
                 item.FramsInfo = $"{answer}{(accuracy ? " K" : " *")}";
@@ -586,7 +588,7 @@ namespace ChapterTool.Forms
         {
             CTLogger.Log($"|+自动帧率识别开始，允许误差为：{accuracy}");
             var settingAccuracy = CostumeAccuracy;
-            List<int> result = _frameRate.Select(fps => _info.Chapters.Sum(item => GetAccuracy(item.Time, fps, settingAccuracy))).ToList();
+            var result = _frameRate.Select(fps => _info.Chapters.Sum(item => GetAccuracy(item.Time, fps, settingAccuracy))).ToList();
             result.ForEach(count => CTLogger.Log($" | {count:D2} 个精确点"));
             result[0] = 0;
             int autofpsCode = result.IndexOf(result.Max());
@@ -987,7 +989,8 @@ namespace ChapterTool.Forms
         private void cbMul1k1_CheckedChanged(object sender, EventArgs e)
         {
             if (_info == null) return;
-            UpdataInfo(cbMul1k1.Checked ? 1.001M : 1/1.001M);
+            _info.Mul1k1 = cbMul1k1.Checked;
+            //UpdataInfo(cbMul1k1.Checked ? 1.001M : 1/1.001M);
             UpdataGridView();
         }
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
