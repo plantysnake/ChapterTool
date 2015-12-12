@@ -23,7 +23,7 @@ namespace ChapterTool.Util
         public TimeSpan Duration { get; set; }
         public List<Chapter> Chapters { get; set; }
         public TimeSpan Offset { get; set; }
-        public bool Mul1k1 { get; set; }
+        public bool Mul1K1 { get; set; }
         public override string ToString() => $"{Title} - {SourceName}  -  {ConvertMethod.Time2String(Duration)}  -  [{Chapters.Count} Chapter]";
 
         public void ChangeFps(double fps)
@@ -35,7 +35,7 @@ namespace ChapterTool.Util
                 Chapters[i] = new Chapter { Name = c.Name, Time = new TimeSpan((long)Math.Round(frames / fps * TimeSpan.TicksPerSecond)) };
             }
             double totalFrames = Duration.TotalSeconds * FramesPerSecond;
-            Duration = new TimeSpan((long)Math.Round((totalFrames / fps) * TimeSpan.TicksPerSecond));
+            Duration = new TimeSpan((long)Math.Round(totalFrames / fps * TimeSpan.TicksPerSecond));
             FramesPerSecond = fps;
         }
 
@@ -59,7 +59,7 @@ namespace ChapterTool.Util
             int i = 1;
             Chapters.ForEach(item =>
             {
-                lines.Append($"CHAPTER{item.Number:D2}={ConvertMethod.Time2String(item, Offset, Mul1k1)}{Environment.NewLine}");
+                lines.Append($"CHAPTER{item.Number:D2}={ConvertMethod.Time2String(item, Offset, Mul1K1)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{item.Number:D2}NAME=");
                 lines.Append(notUseName ? $"Chapter {i++:D2}" : item.Name);
                 lines.Append(Environment.NewLine);
@@ -74,12 +74,12 @@ namespace ChapterTool.Util
         public void SaveTsmuxerMeta(string filename)
         {
             string text = $"--custom-{Environment.NewLine}chapters=";
-            text = Chapters.Aggregate(text, (current, chapter) => current + ConvertMethod.Time2String(chapter, Offset, Mul1k1) + ";");
+            text = Chapters.Aggregate(text, (current, chapter) => current + ConvertMethod.Time2String(chapter, Offset, Mul1K1) + ";");
             text = text.Substring(0, text.Length - 1);
             File.WriteAllText(filename, text);
         }
 
-        public void SaveTimecodes(string filename) => File.WriteAllLines(filename, Chapters.Select(item => ConvertMethod.Time2String(item, Offset, Mul1k1)).ToArray());
+        public void SaveTimecodes(string filename) => File.WriteAllLines(filename, Chapters.Select(item => ConvertMethod.Time2String(item, Offset, Mul1K1)).ToArray());
 
         public void SaveXml(string filename,string lang, bool notUseName)
         {
@@ -102,7 +102,7 @@ namespace ChapterTool.Util
                 xmlchap.WriteElementString("ChapterLanguage", lang);
                 xmlchap.WriteEndElement();
                 xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                xmlchap.WriteElementString("ChapterTimeStart", ConvertMethod.Time2String(item, Offset, Mul1k1) + "0000");
+                xmlchap.WriteElementString("ChapterTimeStart", ConvertMethod.Time2String(item, Offset, Mul1K1) + "0000");
                 xmlchap.WriteElementString("ChapterFlagHidden", "0");
                 xmlchap.WriteElementString("ChapterFlagEnabled", "1");
                 xmlchap.WriteEndElement();

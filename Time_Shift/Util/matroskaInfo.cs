@@ -29,7 +29,7 @@ namespace ChapterTool.Util
 {
     internal class MatroskaInfo
     {
-        public XmlDocument Result = new XmlDocument();
+        public readonly XmlDocument Result = new XmlDocument();
         public MatroskaInfo(string path, string program)
         {
             string arg = $"chapters \"{path}\"";

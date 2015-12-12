@@ -97,7 +97,7 @@ namespace ChapterTool.Util
             decimal[] frameRate = { 0M, 24000M / 1001, 24000M / 1000,
                                         25000M / 1000, 30000M / 1001,
                                         50000M / 1000, 60000M / 1001 };
-            var result = Enumerable.Range(0, 7).Where(index => (Math.Abs(frame - (double)frameRate[index])) < 1e-5);
+            var result = Enumerable.Range(0, 7).Where(index => Math.Abs(frame - (double)frameRate[index]) < 1e-5);
             return result.First();
         }
 
@@ -192,10 +192,10 @@ namespace ChapterTool.Util
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
+        private static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
         //1 = normal (green);
         //2 = error (red);
-        //3 = warning (yellow).
+        //3 = warning (yellow);
         //
         public static void SetState(this System.Windows.Forms.ProgressBar pBar, int state)
         {

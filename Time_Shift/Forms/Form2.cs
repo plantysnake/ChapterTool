@@ -24,9 +24,9 @@ namespace ChapterTool.Forms
             notifyIcon1.Visible  = false;
         }
 
-        public string AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        private static string AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-        public string AssemblyProduct
+        private static string AssemblyProduct
         {
             get
             {
