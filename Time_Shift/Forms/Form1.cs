@@ -46,6 +46,8 @@ namespace ChapterTool.Forms
         }
         private void Form1_Load(object sender, EventArgs e)
         {
+            TargetHeight[0] = Height - 80;
+            TargetHeight[1] = Height;
             Text = $"ChapterTool v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
             Point saved = ConvertMethod.String2Point(RegistryStorage.Load(@"Software\ChapterTool", "location"));
@@ -57,8 +59,8 @@ namespace ChapterTool.Forms
             LoadLang(xmlLang);
             SetDefault();
             ConvertMethod.LoadColor(this);
+            Size = new Size(Size.Width, TargetHeight[0]);
             MoreModeShow = false;
-            Size = new Size(Size.Width, Size.Height - 80);
             savingType.SelectedIndex = 0;
             btnTrans.Text = Environment.TickCount % 2 == 0 ? "↺" : "↻";
             folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
@@ -108,15 +110,14 @@ namespace ChapterTool.Forms
 
         private void SetDefault()
         {
-            cbMore.CheckState = CheckState.Unchecked;
-            MoreModeShow = false;
+            //Size = new Size(Size.Width, TargetHeight[0]);
+            //MoreModeShow = false;
             comboBox2.Enabled = comboBox2.Visible = false;
 
             comboBox1.SelectedIndex = -1;
             btnSave.Enabled = btnSave.Visible = true;
 
             progressBar1.Visible = true;
-            cbMore.Enabled = true;
             cbMul1k1.Enabled = true;
 
             _rawMpls  = null;
@@ -154,6 +155,7 @@ namespace ChapterTool.Forms
         private void progressBar1_Click(object sender, EventArgs e)
         {
             ++_poi[0];
+            progressBar1.SetState(_poi[0]%2 == 0?1:3);
             CTLogger.Log($"点击了 {_poi[0]} 次进度条");
             if (_poi[0] >= _poi[1])
             {
@@ -209,9 +211,11 @@ namespace ChapterTool.Forms
                     case ".mka":  LoadMatroska(); break;
                 }
                 UpdataInfo(_chapterNameTemplate);
+                progressBar1.SetState(1);
             }
             catch (Exception ex)
             {
+                progressBar1.SetState(2);
                 MessageBox.Show(ex.Message, Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 _paths[0] = string.Empty;
                 CTLogger.Log($"ERROR: {ex.Message}");
@@ -270,9 +274,11 @@ namespace ChapterTool.Forms
                 {
                     UpdataGridView();
                 }
+                progressBar1.SetState(1);
             }
             catch (Exception exception)
             {
+                progressBar1.SetState(2);
                 MessageBox.Show($"Error opening file {_paths[0]}: {exception.Message}{Environment.NewLine}", Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 CTLogger.Log($"Error opening file {_paths[0]}: {exception.Message}");
             }
@@ -291,9 +297,11 @@ namespace ChapterTool.Forms
                 _customSavingPath = folderBrowserDialog1.SelectedPath;
                 RegistryStorage.Save(_customSavingPath);
                 CTLogger.Log($"设置保存路径为: {_customSavingPath}");
+                progressBar1.SetState(1);
             }
             catch (Exception exception)
             {
+                progressBar1.SetState(2);
                 MessageBox.Show($"Error opening path {_customSavingPath}: {exception.Message}{Environment.NewLine}", Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 CTLogger.Log($"Error opening path {_customSavingPath}: {exception.Message}");
             }
@@ -561,7 +569,7 @@ namespace ChapterTool.Forms
         {
             dataGridView1.Rows[index].Tag = item;
             dataGridView1.Rows[index].Cells[0].Value = $"{item.Number:D2}";
-            dataGridView1.Rows[index].Cells[1].Value = ConvertMethod.Time2String(item, _info.Offset, _info.Mul1k1);
+            dataGridView1.Rows[index].Cells[1].Value = ConvertMethod.Time2String(item, _info.Offset, _info.Mul1K1);
             dataGridView1.Rows[index].Cells[2].Value = cbAutoGenName.Checked ? $"Chapter {index + 1:D2}" : item.Name;
             dataGridView1.Rows[index].Cells[3].Value = item.FramsInfo;
         }
@@ -572,8 +580,8 @@ namespace ChapterTool.Forms
         private void GetFramInfo(int index = 0)
         {
             var settingAccuracy = CostumeAccuracy;
-            var coefficient = _info.Mul1k1 ? 1.001M : 1M;
-            index = (index == 0 && _rawMpls == null) ? GetAutofps(settingAccuracy) : index;
+            var coefficient = _info.Mul1K1 ? 1.001M : 1M;
+            index = index == 0 && _rawMpls == null ? GetAutofps(settingAccuracy) : index;
             comboBox1.SelectedIndex = index - 1;
             _info.Chapters.ForEach(item =>
             {
@@ -651,20 +659,32 @@ namespace ChapterTool.Forms
             }
         }
 
-        private void cbMore_CheckedChanged(object sender, EventArgs e) => Form1_Resize();
+        private void btnExpand_Click(object sender, EventArgs e) => Form1_Resize();
+
+        private static readonly int[] TargetHeight = new int[2];
 
         private void Form1_Resize()
         {
-            if (cbMore.Checked)
+            if (!TargetHeight.Any(item => item == Height)) { return; }
+            btnExpand.Text = @"#";
+            if (Height == TargetHeight[0])
             {
-                Enumerable.Range(Size.Height, 80).ToList().ForEach(x => Size = new Size(Size.Width, x));
+                while (Height < TargetHeight[1])
+                {
+                    Height += 2;
+                    Application.DoEvents();
+                }
             }
-            else
+            else if (Height == TargetHeight[1])
             {
-                Enumerable.Range(Size.Height - 80, 80).Reverse().ToList().ForEach(x => Size = new Size(Size.Width, x));
+                while (Height > TargetHeight[0])
+                {
+                    Height -= 2;
+                    Application.DoEvents();
+                }
             }
-            MoreModeShow = cbMore.Checked;
-            cbMore.Text = cbMore.Checked ? "∧" : "∨";
+            MoreModeShow = Height == TargetHeight[1];
+            btnExpand.Text  = Height == TargetHeight[0] ? "∨" : "∧";
         }
 
         #endregion
@@ -681,10 +701,12 @@ namespace ChapterTool.Forms
                     return ConvertMethod.GetUTF8String(File.ReadAllBytes(chapterPath));
                 }
                 cbChapterName.CheckState = CheckState.Unchecked;
+                progressBar1.SetState(1);
                 return string.Empty;
             }
             catch (Exception exception)
             {
+                progressBar1.SetState(2);
                 MessageBox.Show($"Error opening file {_paths[0]}: {exception.Message}{Environment.NewLine}", Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 CTLogger.Log($"Error opening file {_paths[0]}: {exception.Message}");
                 return string.Empty;
@@ -778,6 +800,7 @@ namespace ChapterTool.Forms
                 }
                 var matroska = new MatroskaInfo(_paths[0], $"{mkvToolnixPath}/mkvextract.exe");
                 GetChapterInfoFromXml(matroska.Result);
+                progressBar1.SetState(1);
             }
             catch (Exception ex)
             {
@@ -789,6 +812,7 @@ namespace ChapterTool.Forms
                 }
                 else
                 {
+                    progressBar1.SetState(3);
                     MessageBox.Show(@"无可用 MkvExtract, 安装个呗~", Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 }
             }
@@ -825,7 +849,7 @@ namespace ChapterTool.Forms
             set
             {
                 BackColor                                    = value;
-                cbMore.BackColor                             = value;
+                btnExpand.BackColor                          = value;
             }
             private get { return BackColor; }
         }
@@ -852,7 +876,7 @@ namespace ChapterTool.Forms
                 btnTrans.FlatAppearance.MouseOverBackColor   = value;
                 btnLog.FlatAppearance.MouseOverBackColor     = value;
                 btnPreview.FlatAppearance.MouseOverBackColor = value;
-                cbMore.FlatAppearance.MouseOverBackColor     = value;
+                btnExpand.FlatAppearance.MouseOverBackColor  = value;
             }
             private get { return btnLoad.FlatAppearance.MouseOverBackColor; }
         }
@@ -865,7 +889,7 @@ namespace ChapterTool.Forms
                 btnTrans.FlatAppearance.MouseDownBackColor   = value;
                 btnLog.FlatAppearance.MouseDownBackColor     = value;
                 btnPreview.FlatAppearance.MouseDownBackColor = value;
-                cbMore.FlatAppearance.MouseDownBackColor     = value;
+                btnExpand.FlatAppearance.MouseDownBackColor  = value;
             }
             private get { return btnLoad.FlatAppearance.MouseDownBackColor; }
         }
@@ -878,7 +902,7 @@ namespace ChapterTool.Forms
                 btnTrans.FlatAppearance.BorderColor          = value;
                 btnLog.FlatAppearance.BorderColor            = value;
                 btnPreview.FlatAppearance.BorderColor        = value;
-                cbMore.FlatAppearance.BorderColor            = value;
+                btnExpand.FlatAppearance.BorderColor         = value;
                 dataGridView1.GridColor                      = value;
             }
             private get { return btnLoad.FlatAppearance.BorderColor; }
@@ -890,7 +914,7 @@ namespace ChapterTool.Forms
                 ForeColor                                    = value;
                 numericUpDown1.ForeColor                     = value;
                 maskedTextBox1.ForeColor                     = value;
-                cbMore.ForeColor                             = value;
+                btnExpand.ForeColor                          = value;
                 comboBox1.ForeColor                          = value;
                 comboBox2.ForeColor                          = value;
                 xmlLang.ForeColor                            = value;
@@ -952,11 +976,11 @@ namespace ChapterTool.Forms
             int forward2   = forward.Next(1, 5);
             if (forward2 % 2 == 0 || SystemVersion == 5)
             {
-                for(var i = 0; i < 50; ++i)
+                for(var i = 0; i < 100; ++i)
                 {
                     FormMove(forward.Next(1, 5), ref origin);
-                    System.Threading.Thread.Sleep(4);
                     Location = origin;
+                    Application.DoEvents();
                 }
                 return;
             }
@@ -964,8 +988,8 @@ namespace ChapterTool.Forms
             {
                 Opacity -= 0.02;
                 FormMove(forward2, ref origin);
-                System.Threading.Thread.Sleep(4);
                 Location = origin;
+                Application.DoEvents();
             }
         }
         #endregion
@@ -989,7 +1013,7 @@ namespace ChapterTool.Forms
         private void cbMul1k1_CheckedChanged(object sender, EventArgs e)
         {
             if (_info == null) return;
-            _info.Mul1k1 = cbMul1k1.Checked;
+            _info.Mul1K1 = cbMul1k1.Checked;
             //UpdataInfo(cbMul1k1.Checked ? 1.001M : 1/1.001M);
             UpdataGridView();
         }
@@ -1036,5 +1060,7 @@ namespace ChapterTool.Forms
         private void cbAutoGenName_CheckedChanged(object sender, EventArgs e) => UpdataGridView();
 
         private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e) => CTLogger.Log($"+ {e.RowCount} 行被删除");
+
+
     }
 }

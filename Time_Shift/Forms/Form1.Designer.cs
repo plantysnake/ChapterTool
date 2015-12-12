@@ -49,7 +49,6 @@
             this.TSD_4unit = new System.Windows.Forms.ToolStripMenuItem();
             this.TSD_5unit = new System.Windows.Forms.ToolStripMenuItem();
             this.TSD_6unit = new System.Windows.Forms.ToolStripMenuItem();
-            this.cbMore = new System.Windows.Forms.CheckBox();
             this.cbMul1k1 = new System.Windows.Forms.CheckBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
@@ -73,6 +72,7 @@
             this.btnPreview = new System.Windows.Forms.Button();
             this.xmlLang = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.btnExpand = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
@@ -143,7 +143,7 @@
             // cbAutoGenName
             // 
             this.cbAutoGenName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbAutoGenName.Location = new System.Drawing.Point(318, 491);
+            this.cbAutoGenName.Location = new System.Drawing.Point(318, 488);
             this.cbAutoGenName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cbAutoGenName.Name = "cbAutoGenName";
             this.cbAutoGenName.Size = new System.Drawing.Size(97, 21);
@@ -214,7 +214,7 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 48);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(125, 26);
             // 
             // toolStripMenuItem1
             // 
@@ -228,33 +228,33 @@
             this.TSD_5unit,
             this.TSD_6unit});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(124, 22);
             this.toolStripMenuItem1.Text = "误差范围";
             this.toolStripMenuItem1.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.Accuracy_DropDownItemClicked);
             // 
             // TSD_0unit
             // 
             this.TSD_0unit.Name = "TSD_0unit";
-            this.TSD_0unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_0unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_0unit.Tag = "0.01";
             this.TSD_0unit.Text = "0.01";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(97, 6);
             // 
             // TSD_1unit
             // 
             this.TSD_1unit.Name = "TSD_1unit";
-            this.TSD_1unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_1unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_1unit.Tag = "0.05";
             this.TSD_1unit.Text = "0.05";
             // 
             // TSD_2unit
             // 
             this.TSD_2unit.Name = "TSD_2unit";
-            this.TSD_2unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_2unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_2unit.Tag = "0.10";
             this.TSD_2unit.Text = "0.10";
             // 
@@ -263,58 +263,36 @@
             this.TSD_3unit.Checked = true;
             this.TSD_3unit.CheckState = System.Windows.Forms.CheckState.Checked;
             this.TSD_3unit.Name = "TSD_3unit";
-            this.TSD_3unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_3unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_3unit.Tag = "0.15";
             this.TSD_3unit.Text = "0.15";
             // 
             // TSD_4unit
             // 
             this.TSD_4unit.Name = "TSD_4unit";
-            this.TSD_4unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_4unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_4unit.Tag = "0.20";
             this.TSD_4unit.Text = "0.20";
             // 
             // TSD_5unit
             // 
             this.TSD_5unit.Name = "TSD_5unit";
-            this.TSD_5unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_5unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_5unit.Tag = "0.25";
             this.TSD_5unit.Text = "0.25";
             // 
             // TSD_6unit
             // 
             this.TSD_6unit.Name = "TSD_6unit";
-            this.TSD_6unit.Size = new System.Drawing.Size(152, 22);
+            this.TSD_6unit.Size = new System.Drawing.Size(100, 22);
             this.TSD_6unit.Tag = "0.30";
             this.TSD_6unit.Text = "0.30";
-            // 
-            // cbMore
-            // 
-            this.cbMore.Appearance = System.Windows.Forms.Appearance.Button;
-            this.cbMore.AutoSize = true;
-            this.cbMore.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.cbMore.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.cbMore.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.cbMore.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
-            this.cbMore.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
-            this.cbMore.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbMore.Font = new System.Drawing.Font("微软雅黑", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cbMore.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.cbMore.Location = new System.Drawing.Point(544, 440);
-            this.cbMore.MaximumSize = new System.Drawing.Size(24, 24);
-            this.cbMore.Name = "cbMore";
-            this.cbMore.Size = new System.Drawing.Size(24, 24);
-            this.cbMore.TabIndex = 14;
-            this.cbMore.TabStop = false;
-            this.cbMore.Text = "∨";
-            this.cbMore.UseVisualStyleBackColor = false;
-            this.cbMore.CheckedChanged += new System.EventHandler(this.cbMore_CheckedChanged);
             // 
             // cbMul1k1
             // 
             this.cbMul1k1.AutoSize = true;
             this.cbMul1k1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbMul1k1.Location = new System.Drawing.Point(192, 521);
+            this.cbMul1k1.Location = new System.Drawing.Point(192, 518);
             this.cbMul1k1.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbMul1k1.Name = "cbMul1k1";
             this.cbMul1k1.Size = new System.Drawing.Size(117, 21);
@@ -332,7 +310,7 @@
             this.numericUpDown1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.numericUpDown1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.numericUpDown1.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.numericUpDown1.Location = new System.Drawing.Point(516, 491);
+            this.numericUpDown1.Location = new System.Drawing.Point(516, 488);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             50,
             0,
@@ -347,7 +325,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(430, 494);
+            this.label3.Location = new System.Drawing.Point(430, 491);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(68, 17);
             this.label3.TabIndex = 17;
@@ -357,7 +335,7 @@
             // 
             this.cbShift.AutoSize = true;
             this.cbShift.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbShift.Location = new System.Drawing.Point(318, 521);
+            this.cbShift.Location = new System.Drawing.Point(318, 518);
             this.cbShift.Name = "cbShift";
             this.cbShift.Size = new System.Drawing.Size(96, 21);
             this.cbShift.TabIndex = 18;
@@ -370,7 +348,7 @@
             // 
             this.cbChapterName.AutoSize = true;
             this.cbChapterName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbChapterName.Location = new System.Drawing.Point(192, 491);
+            this.cbChapterName.Location = new System.Drawing.Point(192, 488);
             this.cbChapterName.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbChapterName.Name = "cbChapterName";
             this.cbChapterName.Size = new System.Drawing.Size(120, 21);
@@ -389,7 +367,7 @@
             this.maskedTextBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.maskedTextBox1.ForeColor = System.Drawing.SystemColors.WindowText;
             this.maskedTextBox1.InsertKeyMode = System.Windows.Forms.InsertKeyMode.Overwrite;
-            this.maskedTextBox1.Location = new System.Drawing.Point(423, 519);
+            this.maskedTextBox1.Location = new System.Drawing.Point(423, 516);
             this.maskedTextBox1.Mask = "00:00:00.000";
             this.maskedTextBox1.Name = "maskedTextBox1";
             this.maskedTextBox1.PromptChar = 'T';
@@ -444,7 +422,7 @@
             this.btnLog.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnLog.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
             this.btnLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnLog.Location = new System.Drawing.Point(516, 519);
+            this.btnLog.Location = new System.Drawing.Point(516, 516);
             this.btnLog.Name = "btnLog";
             this.btnLog.Size = new System.Drawing.Size(52, 23);
             this.btnLog.TabIndex = 24;
@@ -525,7 +503,7 @@
             "QPF",
             "Time Codes",
             "TsMuxeR Meta"});
-            this.savingType.Location = new System.Drawing.Point(74, 489);
+            this.savingType.Location = new System.Drawing.Point(74, 486);
             this.savingType.Name = "savingType";
             this.savingType.Size = new System.Drawing.Size(108, 25);
             this.savingType.TabIndex = 26;
@@ -535,7 +513,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 494);
+            this.label2.Location = new System.Drawing.Point(12, 491);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(56, 17);
             this.label2.TabIndex = 27;
@@ -563,7 +541,7 @@
             this.xmlLang.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.xmlLang.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.xmlLang.FormattingEnabled = true;
-            this.xmlLang.Location = new System.Drawing.Point(74, 519);
+            this.xmlLang.Location = new System.Drawing.Point(74, 516);
             this.xmlLang.Name = "xmlLang";
             this.xmlLang.Size = new System.Drawing.Size(108, 25);
             this.xmlLang.TabIndex = 29;
@@ -572,11 +550,26 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 523);
+            this.label4.Location = new System.Drawing.Point(12, 520);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(58, 17);
             this.label4.TabIndex = 30;
             this.label4.Text = "XML语言";
+            // 
+            // btnExpand
+            // 
+            this.btnExpand.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnExpand.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
+            this.btnExpand.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
+            this.btnExpand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExpand.Location = new System.Drawing.Point(544, 440);
+            this.btnExpand.Name = "btnExpand";
+            this.btnExpand.Size = new System.Drawing.Size(24, 24);
+            this.btnExpand.TabIndex = 31;
+            this.btnExpand.TabStop = false;
+            this.btnExpand.Text = "∨";
+            this.btnExpand.UseVisualStyleBackColor = true;
+            this.btnExpand.Click += new System.EventHandler(this.btnExpand_Click);
             // 
             // Form1
             // 
@@ -585,6 +578,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(580, 551);
+            this.Controls.Add(this.btnExpand);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.xmlLang);
             this.Controls.Add(this.btnPreview);
@@ -599,7 +593,6 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.cbMul1k1);
-            this.Controls.Add(this.cbMore);
             this.Controls.Add(this.cbRound);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.progressBar1);
@@ -643,7 +636,6 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.CheckBox cbRound;
-        private System.Windows.Forms.CheckBox cbMore;
         private System.Windows.Forms.CheckBox cbMul1k1;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.Label label3;
@@ -677,6 +669,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn cFrams;
         private System.Windows.Forms.ComboBox xmlLang;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button btnExpand;
     }
 }
 
