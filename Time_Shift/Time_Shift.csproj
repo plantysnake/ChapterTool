@@ -87,9 +87,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Util\CTLogger.cs" />
-    <Compile Include="Controls\CustomProgressBar.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Forms\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
