@@ -534,6 +534,7 @@
             this.btnPreview.Text = "P";
             this.btnPreview.UseVisualStyleBackColor = true;
             this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
+            this.btnPreview.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnPreview_MouseUp);
             // 
             // xmlLang
             // 

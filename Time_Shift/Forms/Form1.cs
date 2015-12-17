@@ -23,11 +23,14 @@ using System.Xml;
 using System.Text;
 using System.Linq;
 using System.Drawing;
+using Microsoft.Win32;
 using ChapterTool.Util;
 using System.Windows.Forms;
 using ChapterTool.Properties;
+using System.Security.Principal;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+
 
 
 namespace ChapterTool.Forms
@@ -83,8 +86,13 @@ namespace ChapterTool.Forms
                 ? Resources.Ye_Zong
                 : $"{Environment.UserName}{Resources.Helloo}");
             CTLogger.Log(Environment.OSVersion.ToString());
+
+            bool hasAdministrativeRight = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+
+            CTLogger.Log(hasAdministrativeRight ? "噫，有权限( •̀ ω •́ )y，可以瞎搞了" : "哎，木有权限，好伤心");
+
             if (Environment.GetLogicalDrives().Length > 10) { CTLogger.Log(Resources.Hard_Drive_Plz); }
-            using (var registryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0"))
+            using (var registryKey = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0"))
             {
                 //\HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0
                 if (registryKey != null)
@@ -540,14 +548,14 @@ namespace ChapterTool.Forms
                     comboBox1.Enabled = false;
                     break;
                 case "MPLS":
-                    int index = _rawMpls.ChapterClips[MplsFileSeletIndex].Fps;
+                    int index         = _rawMpls.ChapterClips[MplsFileSeletIndex].Fps;
                     GetFramInfo(index);
                     comboBox1.Enabled = false;
                     break;
                 default:
                     GetFramInfo(fpsIndex);
                     _info.FramesPerSecond = (double)_frameRate[comboBox1.SelectedIndex];
-                    comboBox1.Enabled = true;
+                    comboBox1.Enabled     = true;
                     break;
             }
 
@@ -597,8 +605,8 @@ namespace ChapterTool.Forms
             CTLogger.Log($"|+自动帧率识别开始，允许误差为：{accuracy}");
             var settingAccuracy = CostumeAccuracy;
             var result = _frameRate.Select(fps => _info.Chapters.Sum(item => GetAccuracy(item.Time, fps, settingAccuracy))).ToList();
-            result.ForEach(count => CTLogger.Log($" | {count:D2} 个精确点"));
             result[0] = 0;
+            result.ForEach(count => CTLogger.Log($" | {count:D2} 个精确点"));
             int autofpsCode = result.IndexOf(result.Max());
             CTLogger.Log($" |自动帧率识别结果为 {_frameRate[autofpsCode]:F4} fps");
             return autofpsCode == 0 ? 1 : autofpsCode;
@@ -1062,5 +1070,57 @@ namespace ChapterTool.Forms
         private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e) => CTLogger.Log($"+ {e.RowCount} 行被删除");
 
 
+        private static bool RunElevated(string fileName)
+        {
+            //MessageBox.Show("Run: " + fileName);
+            System.Diagnostics.ProcessStartInfo processInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                Verb = "runas",
+                FileName = fileName
+            };
+            try
+            {
+                System.Diagnostics.Process.Start(processInfo);
+                return true;
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                //Do nothing. Probably the user canceled the UAC window
+            }
+            return false;
+        }
+
+        private bool RunAsAdministrator()
+        {
+            WindowsPrincipal pricipal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+            bool hasAdministrativeRight = pricipal.IsInRole(WindowsBuiltInRole.Administrator);
+            if (hasAdministrativeRight) return true;
+            if (!RunElevated(Application.ExecutablePath)) return false;
+            Close();
+            Application.Exit();
+            return true;
+        }
+
+        private static void SetOpenMethod()
+        {
+            const string strProject = "ChapterTool";
+            Registry.ClassesRoot.CreateSubKey(".mpls")?.SetValue("ChapterTool.MPLS", strProject, RegistryValueKind.String);
+            using (RegistryKey key = Registry.ClassesRoot.CreateSubKey(strProject))
+            {
+                string strExePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                key?.CreateSubKey(@"Shell\Open\Command")?.SetValue("", strExePath + " \"%1\"", RegistryValueKind.ExpandString);
+            }
+        }
+
+        private void btnPreview_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right) return;
+            if (!RunAsAdministrator())          return;
+
+            if (MessageBox.Show("使用 Chapter Tool 打开 .mpls 文件？", "Chapter Tool Information", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                SetOpenMethod();
+            }
+        }
     }
 }
