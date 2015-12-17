@@ -57,11 +57,11 @@ namespace ChapterTool.Util
         /// <returns></returns>
         public static string GetMkvToolnixPathViaRegistry()
         {
-            RegistryKey regUninstall = null;
+            RegistryKey regUninstall  = null;
             RegistryKey regMkvToolnix = null;
-            string valuePath = string.Empty;
-            bool subKeyFound = false;
-            bool valueFound = false;
+            string valuePath          = string.Empty;
+            bool subKeyFound          = false;
+            bool valueFound           = false;
 
             // First check for Installed MkvToolnix
             // First check Win32 registry
