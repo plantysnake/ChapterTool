@@ -17,6 +17,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
+
+using System.Windows.Forms;
+using Microsoft.Win32;
+
 namespace ChapterTool.Util
 {
     internal static class RegistryStorage
@@ -38,6 +42,17 @@ namespace ChapterTool.Util
             var registryKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(subKey);
             registryKey?.SetValue(name, value);
             registryKey?.Close();
+        }
+
+
+        public static void SetOpenMethod()
+        {
+            const string strProject = "ChapterTool";
+            Registry.ClassesRoot.CreateSubKey(".mpls")?.SetValue("ChapterTool.MPLS", strProject, RegistryValueKind.String);
+            using (RegistryKey key = Registry.ClassesRoot.CreateSubKey(strProject))
+            {
+                key?.CreateSubKey(@"Shell\Open\Command")?.SetValue("", Application.ExecutablePath + " \"%1\"", RegistryValueKind.ExpandString);
+            }
         }
     }
 }

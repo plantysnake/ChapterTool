@@ -27,7 +27,6 @@ using Microsoft.Win32;
 using ChapterTool.Util;
 using System.Windows.Forms;
 using ChapterTool.Properties;
-using System.Security.Principal;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -87,9 +86,7 @@ namespace ChapterTool.Forms
                 : $"{Environment.UserName}{Resources.Helloo}");
             CTLogger.Log(Environment.OSVersion.ToString());
 
-            bool hasAdministrativeRight = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-
-            CTLogger.Log(hasAdministrativeRight ? "噫，有权限( •̀ ω •́ )y，可以瞎搞了" : "哎，木有权限，好伤心");
+            CTLogger.Log(ConvertMethod.IsAdministrator() ? "噫，有权限( •̀ ω •́ )y，可以瞎搞了" : "哎，木有权限，好伤心");
 
             if (Environment.GetLogicalDrives().Length > 10) { CTLogger.Log(Resources.Hard_Drive_Plz); }
             using (var registryKey = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0"))
@@ -1069,57 +1066,12 @@ namespace ChapterTool.Forms
 
         private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e) => CTLogger.Log($"+ {e.RowCount} 行被删除");
 
-
-        private static bool RunElevated(string fileName)
-        {
-            //MessageBox.Show("Run: " + fileName);
-            System.Diagnostics.ProcessStartInfo processInfo = new System.Diagnostics.ProcessStartInfo
-            {
-                Verb = "runas",
-                FileName = fileName
-            };
-            try
-            {
-                System.Diagnostics.Process.Start(processInfo);
-                return true;
-            }
-            catch (System.ComponentModel.Win32Exception)
-            {
-                //Do nothing. Probably the user canceled the UAC window
-            }
-            return false;
-        }
-
-        private bool RunAsAdministrator()
-        {
-            WindowsPrincipal pricipal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
-            bool hasAdministrativeRight = pricipal.IsInRole(WindowsBuiltInRole.Administrator);
-            if (hasAdministrativeRight) return true;
-            if (!RunElevated(Application.ExecutablePath)) return false;
-            Close();
-            Application.Exit();
-            return true;
-        }
-
-        private static void SetOpenMethod()
-        {
-            const string strProject = "ChapterTool";
-            Registry.ClassesRoot.CreateSubKey(".mpls")?.SetValue("ChapterTool.MPLS", strProject, RegistryValueKind.String);
-            using (RegistryKey key = Registry.ClassesRoot.CreateSubKey(strProject))
-            {
-                string strExePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
-                key?.CreateSubKey(@"Shell\Open\Command")?.SetValue("", strExePath + " \"%1\"", RegistryValueKind.ExpandString);
-            }
-        }
-
         private void btnPreview_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Right) return;
-            if (!RunAsAdministrator())          return;
-
-            if (MessageBox.Show("使用 Chapter Tool 打开 .mpls 文件？", "Chapter Tool Information", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (e.Button != MouseButtons.Right || !ConvertMethod.RunAsAdministrator())    return;
+            if (MessageBox.Show(Resources.Open_With_CT, Resources.ChapterTool_Info, MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                SetOpenMethod();
+                RegistryStorage.SetOpenMethod();
             }
         }
     }
