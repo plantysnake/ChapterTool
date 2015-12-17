@@ -61,6 +61,9 @@ namespace ChapterTool.Util
                     : item.Time + offset);
         }
 
+        public static readonly Regex RLineOne = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
+        public static readonly Regex RLineTwo = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
+
         public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
 
         public static TimeSpan String2Time(string input)
@@ -80,6 +83,15 @@ namespace ChapterTool.Util
             decimal secondPart = Math.Floor(total);
             decimal millisecondPart = Math.Round((total - secondPart) * 1000M);
             return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
+        }
+
+        public static TimeSpan OffsetCal(string line)
+        {
+            if (RLineOne.IsMatch(line))
+            {
+                return String2Time(RTimeFormat.Match(line).Value);
+            }
+            throw new Exception($"ERROR: {line} <-该行与时间行格式不匹配");
         }
 
         public static Point String2Point(string input)
@@ -110,6 +122,13 @@ namespace ChapterTool.Util
                 return new UTF8Encoding(false).GetString(buffer, 3, buffer.Length - 3);
             }
             return Encoding.UTF8.GetString(buffer);
+        }
+
+        public static int GetAccuracy(TimeSpan time, decimal fps, decimal accuracy, bool round)
+        {
+            var frams = (decimal)time.TotalMilliseconds * fps / 1000M;
+            var answer = round ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
+            return Math.Abs(frams - answer) < accuracy ? 1 : 0;
         }
 
         public static List<ChapterInfo>  PraseXml(XmlDocument doc)

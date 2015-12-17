@@ -26,6 +26,16 @@ namespace ChapterTool.Util
         public bool Mul1K1 { get; set; }
         public override string ToString() => $"{Title} - {SourceName}  -  {ConvertMethod.Time2String(Duration)}  -  [{Chapters.Count} Chapter]";
 
+        public static Chapter WriteToChapterInfo(string line, string line2, int order, TimeSpan iniTime, bool notUseName)
+        {
+            Chapter temp = new Chapter { Number = order, Time = TimeSpan.Zero };
+            if (!ConvertMethod.RLineOne.IsMatch(line) || !ConvertMethod.RLineTwo.IsMatch(line2)) return temp;
+            temp.Name = notUseName ? $"Chapter {order:D2}"
+                : ConvertMethod.RLineTwo.Match(line2).Groups["chapterName"].Value;
+            temp.Time = ConvertMethod.String2Time(ConvertMethod.RTimeFormat.Match(line).Value) - iniTime;
+            return temp;
+        }
+
         public void ChangeFps(double fps)
         {
             for (var i = 0; i < Chapters.Count; i++)

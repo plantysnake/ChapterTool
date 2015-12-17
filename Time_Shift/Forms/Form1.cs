@@ -53,7 +53,7 @@ namespace ChapterTool.Forms
             Text = $"ChapterTool v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
             Point saved = ConvertMethod.String2Point(RegistryStorage.Load(@"Software\ChapterTool", "location"));
-            if (saved != new Point(-32000, -32000))
+            if (saved  != new Point(-32000, -32000))
             {
                 Location = saved;
                 CTLogger.Log($"{Resources.Load_Position_Successful}{saved}");
@@ -61,10 +61,10 @@ namespace ChapterTool.Forms
             LoadLang(xmlLang);
             SetDefault();
             ConvertMethod.LoadColor(this);
-            Size = new Size(Size.Width, TargetHeight[0]);
-            MoreModeShow = false;
-            savingType.SelectedIndex = 0;
-            btnTrans.Text = Environment.TickCount % 2 == 0 ? "↺" : "↻";
+            Size                              = new Size(Size.Width, TargetHeight[0]);
+            MoreModeShow                      = false;
+            savingType.SelectedIndex          = 0;
+            btnTrans.Text                     = Environment.TickCount % 2 == 0 ? "↺" : "↻";
             folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
             if (!string.IsNullOrEmpty(_paths[0]))
             {
@@ -75,7 +75,7 @@ namespace ChapterTool.Forms
                 RegistryStorage.Save(Resources.How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
             }
             var countS = RegistryStorage.Load(@"Software\ChapterTool\Statistics", @"Count");
-            int count = string.IsNullOrEmpty(countS) ? 0: int.Parse(countS);
+            int count  = string.IsNullOrEmpty(countS) ? 0: int.Parse(countS);
             RegistryStorage.Save((++count).ToString(), @"Software\ChapterTool\Statistics", @"Count");
         }
 
@@ -117,25 +117,24 @@ namespace ChapterTool.Forms
         {
             //Size = new Size(Size.Width, TargetHeight[0]);
             //MoreModeShow = false;
-            comboBox2.Enabled = comboBox2.Visible = false;
+            comboBox2.Enabled       = comboBox2.Visible = false;
 
             comboBox1.SelectedIndex = -1;
-            btnSave.Enabled = btnSave.Visible = true;
+            btnSave.Enabled         = btnSave.Visible   = true;
 
-            progressBar1.Visible = true;
-            cbMul1k1.Enabled = true;
+            progressBar1.Visible    = true;
+            cbMul1k1.Enabled        = true;
 
-            _rawMpls  = null;
-            _rawIfo   = null;
-            _xmlGroup = null;
-            _info     = null;
+            _rawMpls                = null;
+            _rawIfo                 = null;
+            _xmlGroup               = null;
+            _info                   = null;
 
             dataGridView1.Rows.Clear();
-            xmlLang.SelectedIndex = 2;
+            xmlLang.SelectedIndex   = 2;
         }
 
-        private readonly Regex _rLineOne    = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
-        private readonly Regex _rLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
+
         private string[] _paths = new string[20];
 
         private void Form1_DragDrop(object sender,  DragEventArgs e)
@@ -208,10 +207,10 @@ namespace ChapterTool.Forms
             {
                 switch (_rFileType.Match(_paths[0].ToLowerInvariant()).Value)
                 {
-                    case ".mpls": LoadMpls(); break;
-                    case ".xml":   LoadXml(); break;
-                    case ".txt":   LoadOgm(); break;
-                    case ".ifo":   LoadIfo(); break;
+                    case ".mpls": LoadMpls();     break;
+                    case ".xml":   LoadXml();     break;
+                    case ".txt":   LoadOgm();     break;
+                    case ".ifo":   LoadIfo();     break;
                     case ".mkv":
                     case ".mka":  LoadMatroska(); break;
                 }
@@ -222,10 +221,10 @@ namespace ChapterTool.Forms
             {
                 progressBar1.SetState(2);
                 MessageBox.Show(ex.Message, Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                _paths[0] = string.Empty;
+                _paths[0]   = string.Empty;
                 CTLogger.Log($"ERROR: {ex.Message}");
                 label1.Text = Resources.File_Unloaded;
-                Cursor = Cursors.Default;
+                Cursor      = Cursors.Default;
                 return false;
             }
             Cursor = Cursors.Default;
@@ -253,7 +252,7 @@ namespace ChapterTool.Forms
                 CTLogger.Log($" |+{item.SourceName}");
                 CTLogger.Log($"  |+包含 {item.Chapters.Count} 个时间戳");
             });
-            _info = _rawIfo[0];
+            _info                   = _rawIfo[0];
             comboBox2.SelectedIndex = _rawIfo.IndexOf(_info);
             Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.IFO_WARNING;
         }
@@ -393,25 +392,7 @@ namespace ChapterTool.Forms
 
         private void refresh_Click(object sender, EventArgs e) => UpdataGridView();
 
-        private TimeSpan OffsetCal(string line)//获取第一行的时间
-        {
-            if (_rLineOne.IsMatch(line))
-            {
-                return ConvertMethod.String2Time(ConvertMethod.RTimeFormat.Match(line).Value);
-            }
-            CTLogger.Log($"ERROR: {line} <-该行与时间行格式不匹配");
-            return TimeSpan.Zero;
-        }
 
-        private Chapter WriteToChapterInfo(string line, string line2, int order,TimeSpan iniTime)
-        {
-            Chapter temp = new Chapter {Number = order, Time = TimeSpan.Zero};
-            if (!_rLineOne.IsMatch(line) || !_rLineTwo.IsMatch(line2)) return temp;
-            temp.Name = cbAutoGenName.Checked  ? $"Chapter {order:D2}"
-                : _rLineTwo.Match(line2).Groups["chapterName"].Value;
-            temp.Time = ConvertMethod.String2Time(ConvertMethod.RTimeFormat.Match(line).Value) - iniTime;
-            return temp;
-        }
         #region geneRateCI
 
         private ChapterInfo GenerateChapterInfoFromOgm(string text, int orderOffset)
@@ -419,33 +400,38 @@ namespace ChapterTool.Forms
             var info = new ChapterInfo { SourceType = "OGM" };
             var ogmData = text.Trim(' ', '\r', '\n').Split('\n').SkipWhile(string.IsNullOrEmpty).ToList().GetEnumerator();
             if (!ogmData.MoveNext()) return info;
-            TimeSpan iniTime = OffsetCal(ogmData.Current);
-            do
+            try
             {
-                string buffer1 = ogmData.Current;
-                ogmData.MoveNext();
-                string buffer2 = ogmData.Current;
-                if (string.IsNullOrEmpty(buffer1) || string.IsNullOrEmpty(buffer2))
+                TimeSpan iniTime = ConvertMethod.OffsetCal(ogmData.Current);
+                do
                 {
-                    CTLogger.Log($"interrupt at '{buffer1}'  '{buffer2}'");
-                    break;
-                }
-                if (_rLineOne.IsMatch(buffer1) && _rLineTwo.IsMatch(buffer2))
-                {
-                    info.Chapters.Add(WriteToChapterInfo(buffer1, buffer2, ++orderOffset, iniTime));
-                }
-                else
-                {
-                    throw new Exception($"invalid format: \n'{buffer1}' \n'{buffer2}' ");
-                }
-            } while (ogmData.MoveNext());
+                    string buffer1 = ogmData.Current;
+                    ogmData.MoveNext();
+                    string buffer2 = ogmData.Current;
+                    if (string.IsNullOrEmpty(buffer1) || string.IsNullOrEmpty(buffer2))
+                    {
+                        CTLogger.Log($"interrupt at '{buffer1}'  '{buffer2}'");
+                        break;
+                    }
+                    if (ConvertMethod.RLineOne.IsMatch(buffer1) && ConvertMethod.RLineTwo.IsMatch(buffer2))
+                    {
+                        info.Chapters.Add(ChapterInfo.WriteToChapterInfo(buffer1, buffer2, ++orderOffset, iniTime, cbAutoGenName.Checked));
+                    }
+                    else
+                    {
+                        throw new Exception($"invalid format: \n'{buffer1}' \n'{buffer2}' ");
+                    }
+                } while (ogmData.MoveNext());
+            }
+            catch (Exception ex)
+            {
+                CTLogger.Log(ex.Message);
+            }
             if (info.Chapters.Count>1)
             {
                 info.Duration = info.Chapters.Last().Time;
             }
-
             ogmData.Dispose();
-            //UpdataInfo(_chapterNameTemplate);
             return info;
         }
 
@@ -470,8 +456,8 @@ namespace ChapterTool.Forms
             int defaultOrder = 1;
             _info.Chapters = current.Select(item => new Chapter
             {
-                Time = ConvertMethod.Pts2Time(item - current[0]),
-                Name = $"Chapter {defaultOrder:D2}",
+                Time   = ConvertMethod.Pts2Time(item - current[0]),
+                Name   = $"Chapter {defaultOrder:D2}",
                 Number = defaultOrder++
             }).ToList();
             UpdataInfo(_chapterNameTemplate);
@@ -601,7 +587,9 @@ namespace ChapterTool.Forms
         {
             CTLogger.Log($"|+自动帧率识别开始，允许误差为：{accuracy}");
             var settingAccuracy = CostumeAccuracy;
-            var result = _frameRate.Select(fps => _info.Chapters.Sum(item => GetAccuracy(item.Time, fps, settingAccuracy))).ToList();
+            var result = _frameRate.Select(fps  =>
+                        _info.Chapters.Sum(item =>
+                        ConvertMethod.GetAccuracy(item.Time, fps, settingAccuracy, cbRound.Checked))) .ToList();
             result[0] = 0;
             result.ForEach(count => CTLogger.Log($" | {count:D2} 个精确点"));
             int autofpsCode = result.IndexOf(result.Max());
@@ -609,12 +597,6 @@ namespace ChapterTool.Forms
             return autofpsCode == 0 ? 1 : autofpsCode;
         }
 
-        private int GetAccuracy(TimeSpan time, decimal fps, decimal accuracy)
-        {
-            var frams  = (decimal)time.TotalMilliseconds * fps / 1000M;
-            var answer = cbRound.Checked ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
-            return Math.Abs(frams - answer) < accuracy ? 1 : 0;
-        }
 
         private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e) => UpdataGridView(comboBox1.SelectedIndex + 1);
 
@@ -627,21 +609,27 @@ namespace ChapterTool.Forms
         private void cbShift_CheckedChanged(object sender, EventArgs e)
         {
             if (!IsPathValid) { return; }
-            _info.Offset = cbShift.Checked ? GetOffsetFromMaskedTextBox() : TimeSpan.Zero;
+            if (cbShift.Checked)
+            {
+                try
+                {
+                    _info.Offset = ConvertMethod.String2Time(maskedTextBox1.Text);
+                }
+                catch (Exception)
+                {
+                    _info.Offset = TimeSpan.Zero;
+                    Tips.Text = @"位移时间不科学的样子";
+                }
+            }
+            else
+            {
+                _info.Offset = TimeSpan.Zero;
+            }
             UpdataGridView();
         }
 
         private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e) => Tips.Text = @"位移时间不科学的样子";
 
-        private TimeSpan GetOffsetFromMaskedTextBox()
-        {
-            if (ConvertMethod.RTimeFormat.IsMatch(maskedTextBox1.Text))
-            {
-                return ConvertMethod.String2Time(maskedTextBox1.Text);
-            }
-            Tips.Text = @"位移时间不科学的样子";
-            return TimeSpan.Zero;
-        }
 
         #region form resize support
 
@@ -957,11 +945,6 @@ namespace ChapterTool.Forms
 
         #region closing animation support
 
-        private static int SystemVersion => Environment.OSVersion.Version.Major;
-        //Windows95/98/Me	     	 4
-        //Windows2000/XP/2003        5
-        //WindowsVista/7/8/8.1/10 	 6
-
         private static void FormMove(int forward,ref Point p)
         {
             switch (forward)
@@ -979,7 +962,7 @@ namespace ChapterTool.Forms
             Point origin   = Location;
             Random forward = new Random();
             int forward2   = forward.Next(1, 5);
-            if (forward2 % 2 == 0 || SystemVersion == 5)
+            if (forward2 % 2 == 0 || Environment.OSVersion.Version.Major == 5)
             {
                 for(var i = 0; i < 100; ++i)
                 {
