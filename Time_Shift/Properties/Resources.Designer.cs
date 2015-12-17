@@ -79,6 +79,15 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 ChapterTool Information 的本地化字符串。
+        /// </summary>
+        internal static string ChapterTool_Info {
+            get {
+                return ResourceManager.GetString("ChapterTool_Info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 文件还没载入呢 的本地化字符串。
         /// </summary>
         internal static string File_Unloaded {
@@ -165,6 +174,15 @@ namespace ChapterTool.Properties {
         internal static string Load_Success {
             get {
                 return ResourceManager.GetString("Load_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 使用 Chapter Tool 打开 .mpls 文件？ 的本地化字符串。
+        /// </summary>
+        internal static string Open_With_CT {
+            get {
+                return ResourceManager.GetString("Open_With_CT", resourceCulture);
             }
         }
         

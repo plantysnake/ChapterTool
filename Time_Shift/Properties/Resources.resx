@@ -159,4 +159,10 @@
   <data name="InValid_Type_Log" xml:space="preserve">
     <value>文件格式非法</value>
   </data>
+  <data name="ChapterTool_Info" xml:space="preserve">
+    <value>ChapterTool Information</value>
+  </data>
+  <data name="Open_With_CT" xml:space="preserve">
+    <value>使用 Chapter Tool 打开 .mpls 文件？</value>
+  </data>
 </root>
