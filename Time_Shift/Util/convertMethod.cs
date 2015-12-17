@@ -24,9 +24,11 @@ using System.Text;
 using System.Linq;
 using System.Drawing;
 using ChapterTool.Forms;
+using System.Security.Principal;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
@@ -38,13 +40,13 @@ namespace ChapterTool.Util
             decimal total = pts / 45000M;
             return Time2String(total);
         }
-        public static string Time2String(decimal second)
+
+        private static string Time2String(decimal second)
         {
             decimal secondPart = Math.Floor(second);
             decimal millisecondPart = Math.Round((second - secondPart) * 1000M);
             return Time2String(new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart));
         }
-
 
         public static string Time2String(TimeSpan temp)
         {
@@ -80,8 +82,6 @@ namespace ChapterTool.Util
             return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
         }
 
-
-
         public static Point String2Point(string input)
         {
             var rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");
@@ -114,7 +114,7 @@ namespace ChapterTool.Util
 
         public static List<ChapterInfo>  PraseXml(XmlDocument doc)
         {
-            List<ChapterInfo> result = new List<ChapterInfo>();
+            var result = new List<ChapterInfo>();
             XmlElement root = doc.DocumentElement;
             if (root == null) return result;
             if (root.Name != "Chapters")
@@ -191,13 +191,50 @@ namespace ChapterTool.Util
             window.TextFrontColor = ColorTranslator.FromHtml(matchesOfJson[5].Groups["hex"].Value);
         }
 
+        public static bool IsAdministrator()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            if (identity == null) return false;
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        public static bool RunAsAdministrator()
+        {
+            if (IsAdministrator()) return true;
+            if (!RunElevated(Application.ExecutablePath)) return false;
+            Environment.Exit(0);
+            return true;
+        }
+
+        private static bool RunElevated(string fileName)
+        {
+            System.Diagnostics.ProcessStartInfo processInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                Verb = "runas",
+                FileName = fileName
+            };
+            try
+            {
+                System.Diagnostics.Process.Start(processInfo);
+                return true;
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                //Do nothing. Probably the user canceled the UAC window
+            }
+            return false;
+        }
+
+
+
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
         //1 = normal (green);
         //2 = error (red);
         //3 = warning (yellow);
         //
-        public static void SetState(this System.Windows.Forms.ProgressBar pBar, int state)
+        public static void SetState(this ProgressBar pBar, int state)
         {
             SendMessage(pBar.Handle, 1040, (IntPtr)state, IntPtr.Zero);
         }
