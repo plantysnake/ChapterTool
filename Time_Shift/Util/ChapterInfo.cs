@@ -31,7 +31,7 @@ namespace ChapterTool.Util
             Chapter temp = new Chapter { Number = order, Time = TimeSpan.Zero };
             if (!ConvertMethod.RLineOne.IsMatch(line) || !ConvertMethod.RLineTwo.IsMatch(line2)) return temp;
             temp.Name = notUseName ? $"Chapter {order:D2}"
-                : ConvertMethod.RLineTwo.Match(line2).Groups["chapterName"].Value;
+                : ConvertMethod.RLineTwo.Match(line2).Groups["chapterName"].Value.Trim('\r');
             temp.Time = ConvertMethod.String2Time(ConvertMethod.RTimeFormat.Match(line).Value) - iniTime;
             return temp;
         }

@@ -63,7 +63,6 @@ namespace ChapterTool.Util
 
         public static readonly Regex RLineOne = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
         public static readonly Regex RLineTwo = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
-
         public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
 
         public static TimeSpan String2Time(string input)

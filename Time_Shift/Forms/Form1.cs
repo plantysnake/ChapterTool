@@ -97,7 +97,8 @@ namespace ChapterTool.Forms
                     CTLogger.Log((string)registryKey.GetValue("ProcessorNameString"));
                 }
             }
-            Screen.AllScreens.ToList().ForEach(item => CTLogger.Log( $"{item.DeviceName}{Resources.Resolution}{item.Bounds.Width}*{item.Bounds.Height}"));
+            Screen.AllScreens.ToList().ForEach(item =>
+                        CTLogger.Log($"{item.DeviceName}{Resources.Resolution}{item.Bounds.Width}*{item.Bounds.Height}"));
         }
 
         private static void LoadLang(ComboBox target)
