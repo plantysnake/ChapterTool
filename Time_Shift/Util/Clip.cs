@@ -23,13 +23,13 @@ namespace ChapterTool.Util
 {
     public class Clip
     {
-        public string Name;
-        public readonly List<int> TimeStamp = new List<int>();
-        public int Fps;
-        public int Length;
-        public int RelativeTimeIn;
-        public int RelativeTimeOut;
-        public int TimeIn;
-        public int TimeOut;
+        public string Name         { get; set; }
+        public List<int> TimeStamp { get; } = new List<int>();
+        public int Fps             { get; set; }
+        public int Length          { get; set; }
+        public int RelativeTimeIn  { get; set; }
+        public int RelativeTimeOut { get; set; }
+        public int TimeIn          { get; set; }
+        public int TimeOut         { get; set; }
     }
 }

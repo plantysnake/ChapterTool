@@ -9,21 +9,16 @@ namespace ChapterTool.Util
 {
     public class ChapterInfo
     {
-        public ChapterInfo()
-        {
-            Chapters = new List<Chapter>();
-            Offset   = TimeSpan.Zero;
-        }
-        public string Title { get; set; }
-        public string LangCode { get; set; }
-        public string SourceName { get; set; }
-        public int TitleNumber { get; set; }
-        public string SourceType { get; set; }
+        public string Title           { get; set; }
+        public string LangCode        { get; set; }
+        public string SourceName      { get; set; }
+        public int TitleNumber        { get; set; }
+        public string SourceType      { get; set; }
         public double FramesPerSecond { get; set; }
-        public TimeSpan Duration { get; set; }
-        public List<Chapter> Chapters { get; set; }
-        public TimeSpan Offset { get; set; }
-        public bool Mul1K1 { get; set; }
+        public TimeSpan Duration      { get; set; }
+        public List<Chapter> Chapters { get; set; } = new List<Chapter>();
+        public TimeSpan Offset        { get; set; } = TimeSpan.Zero;
+        public bool Mul1K1            { get; set; }
         public override string ToString() => $"{Title} - {SourceName}  -  {ConvertMethod.Time2String(Duration)}  -  [{Chapters.Count} Chapter]";
 
         public static Chapter WriteToChapterInfo(string line, string line2, int order, TimeSpan iniTime, bool notUseName)
