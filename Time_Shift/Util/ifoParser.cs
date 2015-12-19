@@ -19,8 +19,8 @@
 // ****************************************************************************
 using System;
 using System.IO;
-using System.Collections;
 using System.Linq;
+using System.Collections;
 using System.Windows.Forms;
 
 namespace ChapterTool.Util
@@ -89,7 +89,7 @@ namespace ChapterTool.Util
 
         internal static short ToInt16(byte[] bytes) { return (short)((bytes[0] << 8) + bytes[1]); }
         private static uint ToInt32(byte[] bytes) { return (uint)((bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3]); }
-        internal static long ToFilePosition(byte[] bytes) { return ToInt32(bytes) * 0x800L; }
+        private static long ToFilePosition(byte[] bytes) { return ToInt32(bytes) * 0x800L; }
 
         private static long GetTotalFrames(TimeSpan time, int fps)
         {

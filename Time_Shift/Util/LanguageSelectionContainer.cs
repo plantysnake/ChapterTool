@@ -22,7 +22,7 @@ using System.Collections.Generic;
 
 namespace ChapterTool.Util
 {
-    public class LanguageSelectionContainer
+    public static class LanguageSelectionContainer
     {
         // used by all tools except MP4box
         private static readonly Dictionary<string, string> languagesReverseBibliographic;

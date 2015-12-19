@@ -57,7 +57,6 @@ namespace ChapterTool.Util
         /// <returns></returns>
         public static string GetMkvToolnixPathViaRegistry()
         {
-            RegistryKey regUninstall  = null;
             RegistryKey regMkvToolnix = null;
             string valuePath          = string.Empty;
             bool subKeyFound          = false;
@@ -65,8 +64,11 @@ namespace ChapterTool.Util
 
             // First check for Installed MkvToolnix
             // First check Win32 registry
-            regUninstall = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
-
+            RegistryKey regUninstall = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
+            if (regUninstall == null)
+            {
+                throw new Exception("Failed to create a RegistryKey variable");
+            }
 
             if (regUninstall.GetSubKeyNames().Any(subKeyName => subKeyName.ToLower().Equals("MKVToolNix".ToLower())))
             {

@@ -81,7 +81,7 @@ namespace ChapterTool.Util
             };
             streamClip.Length          = streamClip.TimeOut - streamClip.TimeIn;
             streamClip.RelativeTimeIn  = ChapterClips.Sum(clip => clip.Length);
-            streamClip.RelativeTimeOut = streamClip.RelativeTimeIn + streamClip.Length;
+            //streamClip.RelativeTimeOut = streamClip.RelativeTimeIn + streamClip.Length;
 
             itemStartAdress            = playItemEntries + 0x32;
             streamCount                = bytes[0x23] >> 4;
