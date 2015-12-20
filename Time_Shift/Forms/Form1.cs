@@ -238,6 +238,33 @@ namespace ChapterTool.Forms
         }
 
         private List<ChapterInfo> _rawIfo;
+        private ChapterInfo _fullIfoChapter;
+
+        private ChapterInfo CombineChapter(List<ChapterInfo> source)
+        {
+            var fullChapter = new ChapterInfo
+            {
+                Title = "FULL Chapter",
+                SourceType = "DVD",
+                FramesPerSecond = _rawIfo.First().FramesPerSecond
+            };
+            TimeSpan duration = TimeSpan.Zero;
+            int index = 0;
+            _rawIfo.ForEach(chapterClip =>
+            {
+                chapterClip.Chapters.ForEach(item =>
+                    fullChapter.Chapters.Add(
+                        new Chapter
+                        {
+                            Time = duration + item.Time,
+                            Number = ++index,
+                            Name = $"Chapter {index:D2}"
+                        }));
+                duration += chapterClip.Duration;
+            });
+            fullChapter.Duration = duration;
+            return fullChapter;
+        }
 
         private void LoadIfo()
         {
@@ -246,6 +273,9 @@ namespace ChapterTool.Forms
             {
                 throw new Exception("No Chapter in this Ifo at all");
             }
+
+            _fullIfoChapter = CombineChapter(_rawIfo);
+
             //if (Math.Abs(_rawIfo[0].FramesPerSecond - 25) > 1e-5)
             //{
             //    _rawIfo.ForEach( item => item.Chapters.ForEach( item2 => item2.Time = ConvertMethod.Pts2Time((int) ((decimal) item2.Time.TotalSeconds*45045M))));
@@ -483,13 +513,14 @@ namespace ChapterTool.Forms
                 });
             }
             _info = _xmlGroup.First();
-            comboBox2.SelectedIndex = MplsFileSeletIndex;
+            //comboBox2.SelectedIndex = MplsFileSeletIndex;
         }
 
         private void GetChapterInfoFromIFO(int index)
         {
-            _info = _rawIfo[index];
+            _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _rawIfo[index];
         }
+
         #endregion
 
         #region updataInfo
@@ -766,9 +797,16 @@ namespace ChapterTool.Forms
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_rawMpls == null) { return; }
+            if (_rawMpls == null && _rawIfo == null) { return; }
             combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
-            GetChapterInfoFromMpls(comboBox2.SelectedIndex);
+            if (_rawMpls != null)
+            {
+                GetChapterInfoFromMpls(comboBox2.SelectedIndex);
+            }
+            if (_rawIfo != null)
+            {
+                GetChapterInfoFromIFO(comboBox2.SelectedIndex);
+            }
             UpdataGridView();
         }
 
