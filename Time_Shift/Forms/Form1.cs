@@ -246,7 +246,7 @@ namespace ChapterTool.Forms
             {
                 Title = "FULL Chapter",
                 SourceType = "DVD",
-                FramesPerSecond = _rawIfo.First().FramesPerSecond
+                FramesPerSecond = source.First().FramesPerSecond
             };
             TimeSpan duration = TimeSpan.Zero;
             int index = 0;
@@ -276,15 +276,13 @@ namespace ChapterTool.Forms
 
             _fullIfoChapter = CombineChapter(_rawIfo);
 
-            //if (Math.Abs(_rawIfo[0].FramesPerSecond - 25) > 1e-5)
-            //{
-            //    _rawIfo.ForEach( item => item.Chapters.ForEach( item2 => item2.Time = ConvertMethod.Pts2Time((int) ((decimal) item2.Time.TotalSeconds*45045M))));
-            //}
             comboBox2.Items.Clear();
             comboBox2.Enabled = comboBox2.Visible = _rawIfo.Count >= 1;
             _rawIfo.ForEach(item =>
             {
                 comboBox2.Items.Add($"{item.Title}_{item.SourceName}__{item.Chapters.Count}");
+                int index = 0;
+                item.Chapters.ForEach(chapter => chapter.Number = ++index);
                 Log($" |+{item.SourceName}");
                 Log($"  |+包含 {item.Chapters.Count} 个时间戳");
             });
