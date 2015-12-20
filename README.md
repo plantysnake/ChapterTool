@@ -15,7 +15,7 @@
 
     Install
 --------------------
--      You must have .NET Framework 3.5 available from Windows Update.
+-      You must have .NET Framework 4.5 available from Windows Update.
 
     Directions
 --------------------
