@@ -108,7 +108,7 @@ namespace ChapterTool.Util
         {
             var stream = new byte[16];
             Array.Copy(_data, itemStartAdress + streamOrder * 16, stream, 0, 16);
-            if (0x01 != stream[01]) return;
+            if (0x01 != stream[01]) return; //make sure this stream is Play Item
             int streamCodingType = stream[0x0b];
             if (0x1b != streamCodingType && // AVC
                 0x02 != streamCodingType && // MPEG-I/II
@@ -129,17 +129,14 @@ namespace ChapterTool.Util
                                             // 10 - 13  duration
             for (var mark = 0; mark < playlistMarkNumber; ++mark)
             {
-                Array.Copy(_data, playlistMarkEntries, bytelist, 0, 14);
-                if (0x01 == bytelist[1])//make sure the playlist mark type is an entry mark
-                {
-                    int streamFileIndex = Byte2Int16(bytelist, 0x02);
-                    Clip streamClip     = ChapterClips[streamFileIndex];
-                    int timeStamp       = Byte2Int32(bytelist, 0x04);
-                    int relativeSeconds = timeStamp - streamClip.TimeIn + streamClip.RelativeTimeIn;
-                    streamClip.TimeStamp.Add(timeStamp);
-                    EntireTimeStamp.Add(relativeSeconds);
-                }
-                playlistMarkEntries += 14;
+                Array.Copy(_data, playlistMarkEntries + mark * 14, bytelist, 0, 14);
+                if (0x01 != bytelist[1]) continue;//make sure the playlist mark type is an entry mark
+                int streamFileIndex = Byte2Int16(bytelist, 0x02);
+                Clip streamClip     = ChapterClips[streamFileIndex];
+                int timeStamp       = Byte2Int32(bytelist, 0x04);
+                int relativeSeconds = timeStamp - streamClip.TimeIn + streamClip.RelativeTimeIn;
+                streamClip.TimeStamp.Add(timeStamp);
+                EntireTimeStamp.Add(relativeSeconds);
             }
         }
 

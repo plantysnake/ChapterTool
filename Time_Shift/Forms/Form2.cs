@@ -44,8 +44,8 @@ namespace ChapterTool.Forms
 
         private void notifyIcon1_Click(object sender, EventArgs e)
         {
-            Visible = true;
-            WindowState = FormWindowState.Normal;
+            Visible             = true;
+            WindowState         = FormWindowState.Normal;
             notifyIcon1.Visible = false;
         }
 
@@ -79,7 +79,7 @@ namespace ChapterTool.Forms
             if (e.Button != MouseButtons.Left) return;
             Point mousePos = MousePosition;
             mousePos.Offset(_startPoint.X, _startPoint.Y);
-            Location = mousePos;
+            Location       = mousePos;
         }
 
         private void button5_Click(object sender, EventArgs e)

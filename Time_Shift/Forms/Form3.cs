@@ -13,9 +13,9 @@ namespace ChapterTool.Forms
         private readonly List<Color> _currentSetting;
         public Form3(Form1 mainWindow)
         {
-            MaximizeBox = false;
             InitializeComponent();
-            _mainWindow = mainWindow;
+            MaximizeBox     = false;
+            _mainWindow     = mainWindow;
             _currentSetting = mainWindow.CurrentColor;
             SetDefault();
         }
