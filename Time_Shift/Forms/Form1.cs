@@ -251,11 +251,11 @@ namespace ChapterTool.Forms
             comboBox2.Enabled = comboBox2.Visible = _rawIfo.Count >= 1;
             _rawIfo.ForEach(item =>
             {
-                comboBox2.Items.Add($"{item.SourceName}__{item.Chapters.Count}");
+                comboBox2.Items.Add($"{item.Title}_{item.SourceName}__{item.Chapters.Count}");
                 Log($" |+{item.SourceName}");
                 Log($"  |+包含 {item.Chapters.Count} 个时间戳");
             });
-            _info                   = _rawIfo[0];
+            _info                   = _rawIfo.First();
             comboBox2.SelectedIndex = _rawIfo.IndexOf(_info);
             Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.IFO_WARNING;
         }
@@ -322,10 +322,10 @@ namespace ChapterTool.Forms
             switch (_info.SourceType)
             {
                 case "MPLS":
-                    Log($"|+对应视频文件: {_rawMpls.ChapterClips[MplsFileSeletIndex].Name}");
+                    Log($"|+对应视频文件: {_info.Title}");
                     break;
                 case "DVD":
-                    Log($"|+对应视频文件: {_rawIfo[MplsFileSeletIndex].SourceName}");
+                    Log($"|+对应视频文件: {_info.Title}_{_info.SourceName}");
                     break;
                 case "OGM":
                     break;
@@ -357,34 +357,36 @@ namespace ChapterTool.Forms
                     $"{(string.IsNullOrEmpty(_customSavingPath) ? Path.GetDirectoryName(_paths[0]) : _customSavingPath)}//{fileName}");
 
             string ext = Path.GetExtension(_paths[0])?.ToLowerInvariant();
-            if (ext == ".mpls" && !combineToolStripMenuItem.Checked)
-                savePath.Append($"__{_rawMpls.ChapterClips[MplsFileSeletIndex].Name}");
+            if (ext == ".mpls")
+                savePath.Append($"__{_info.Title}");
             if (ext == ".ifo")
-                savePath.Append($"__{_rawIfo[MplsFileSeletIndex].SourceName}");
+                savePath.Append($"__{_info.Title}_{_info.SourceName}");
 
             string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf", ".TimeCodes.txt", ".TsMuxeR_Meta.txt" };
             while (File.Exists($"{savePath}{saveingTypeSuffix[savingType.SelectedIndex]}")) { savePath.Append("_"); }
             savePath.Append(saveingTypeSuffix[savingType.SelectedIndex]);
 
-            SaveInfoLog(savePath.ToString());
+            var savePathS = savePath.ToString();
+
+            SaveInfoLog(savePathS);
 
             switch (savingType.SelectedIndex)
             {
                 case 0://TXT
-                    _info.SaveText(savePath.ToString(), cbAutoGenName.Checked);
+                    _info.SaveText(savePathS, cbAutoGenName.Checked);
                     break;
                 case 1://XML
                     string key = _rLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
-                    _info.SaveXml(savePath.ToString(),string.IsNullOrEmpty(key)? "": LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
+                    _info.SaveXml(savePathS, string.IsNullOrEmpty(key)? "": LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
                     break;
                 case 2://QPF
-                    _info.SaveQpfile(savePath.ToString());
+                    _info.SaveQpfile(savePathS);
                     break;
                 case 3://Time Codes
-                    _info.SaveTimecodes(savePath.ToString());
+                    _info.SaveTimecodes(savePathS);
                     break;
                 case 4://Tsmuxer
-                    _info.SaveTsmuxerMeta(savePath.ToString());
+                    _info.SaveTsmuxerMeta(savePathS);
                     break;
             }
             progressBar1.Value = 100;

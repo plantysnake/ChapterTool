@@ -56,7 +56,7 @@ namespace ChapterTool.Util
             ChapterInfo pgc = new ChapterInfo
             {
                 SourceType  = "DVD",
-                SourceName  = $"PGC {titleSetNum:D2}",
+                SourceName  = $"{titleSetNum:D2}",
                 TitleNumber = titleSetNum,
                 Title       = Path.GetFileNameWithoutExtension(location)
             };
