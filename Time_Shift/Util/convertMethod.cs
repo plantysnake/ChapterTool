@@ -24,13 +24,15 @@ using System.Text;
 using System.Linq;
 using System.Drawing;
 using ChapterTool.Forms;
+using System.Security.Principal;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
-    static class ConvertMethod
+    internal static class ConvertMethod
     {
         //format a pts as hh:mm:ss.sss
         public static string Time2String(int pts)
@@ -38,20 +40,30 @@ namespace ChapterTool.Util
             decimal total = pts / 45000M;
             return Time2String(total);
         }
-        public static string Time2String(decimal second)
+
+        private static string Time2String(decimal second)
         {
             decimal secondPart = Math.Floor(second);
             decimal millisecondPart = Math.Round((second - secondPart) * 1000M);
             return Time2String(new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart));
         }
 
-
         public static string Time2String(TimeSpan temp)
         {
             return $"{temp.Hours:D2}:{temp.Minutes:D2}:{temp.Seconds:D2}.{temp.Milliseconds:D3}";
         }
 
-        public static Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
+        public static string Time2String(Chapter item, TimeSpan offset, bool mul1K1)
+        {
+            return
+                Time2String(mul1K1
+                    ? Pts2Time((int) ((decimal) (item.Time + offset).TotalSeconds*45045M))
+                    : item.Time + offset);
+        }
+
+        public static readonly Regex RLineOne    = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
+        public static readonly Regex RLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
+        public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
 
         public static TimeSpan String2Time(string input)
         {
@@ -71,6 +83,16 @@ namespace ChapterTool.Util
             decimal millisecondPart = Math.Round((total - secondPart) * 1000M);
             return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
         }
+
+        public static TimeSpan OffsetCal(string line)
+        {
+            if (RLineOne.IsMatch(line))
+            {
+                return String2Time(RTimeFormat.Match(line).Value);
+            }
+            throw new Exception($"ERROR: {line} <-该行与时间行格式不匹配");
+        }
+
         public static Point String2Point(string input)
         {
             var rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");
@@ -86,7 +108,7 @@ namespace ChapterTool.Util
             decimal[] frameRate = { 0M, 24000M / 1001, 24000M / 1000,
                                         25000M / 1000, 30000M / 1001,
                                         50000M / 1000, 60000M / 1001 };
-            var result = Enumerable.Range(0, 7).Where(index => (Math.Abs(frame - (double)frameRate[index])) < 1e-5);
+            var result = Enumerable.Range(0, 7).Where(index => Math.Abs(frame - (double)frameRate[index]) < 1e-5);
             return result.First();
         }
 
@@ -94,20 +116,23 @@ namespace ChapterTool.Util
         {
             if (buffer == null) return null;
             if (buffer.Length <= 3) return Encoding.UTF8.GetString(buffer);
-            byte[] bomBuffer = new byte[] { 0xef, 0xbb, 0xbf };
-
-            if (buffer[0] == bomBuffer[0]
-             && buffer[1] == bomBuffer[1]
-             && buffer[2] == bomBuffer[2])
+            if (buffer[0] == 0xef && buffer[1] == 0xbb && buffer[2] == 0xbf)
             {
                 return new UTF8Encoding(false).GetString(buffer, 3, buffer.Length - 3);
             }
             return Encoding.UTF8.GetString(buffer);
         }
 
+        public static int GetAccuracy(TimeSpan time, decimal fps, decimal accuracy, bool round)
+        {
+            var frams = (decimal)time.TotalMilliseconds * fps / 1000M;
+            var answer = round ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
+            return Math.Abs(frams - answer) < accuracy ? 1 : 0;
+        }
+
         public static List<ChapterInfo>  PraseXml(XmlDocument doc)
         {
-            List<ChapterInfo> result = new List<ChapterInfo>();
+            var result = new List<ChapterInfo>();
             XmlElement root = doc.DocumentElement;
             if (root == null) return result;
             if (root.Name != "Chapters")
@@ -164,10 +189,7 @@ namespace ChapterTool.Util
         public static void SaveColor(List<Color> colorList)
         {
             StringBuilder json = new StringBuilder("[");
-            foreach (var item in colorList)
-            {
-                json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\",");
-            }
+            colorList.ForEach(item => json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\","));
             json[json.Length - 1] = ']';
             File.WriteAllText(ColorProfile, json.ToString());
         }
@@ -187,13 +209,50 @@ namespace ChapterTool.Util
             window.TextFrontColor = ColorTranslator.FromHtml(matchesOfJson[5].Groups["hex"].Value);
         }
 
+        public static bool IsAdministrator()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            if (identity == null) return false;
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        public static bool RunAsAdministrator()
+        {
+            if (IsAdministrator()) return true;
+            if (!RunElevated(Application.ExecutablePath)) return false;
+            Environment.Exit(0);
+            return true;
+        }
+
+        private static bool RunElevated(string fileName)
+        {
+            System.Diagnostics.ProcessStartInfo processInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                Verb = "runas",
+                FileName = fileName
+            };
+            try
+            {
+                System.Diagnostics.Process.Start(processInfo);
+                return true;
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                //Do nothing. Probably the user canceled the UAC window
+            }
+            return false;
+        }
+
+
+
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
-        static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
+        private static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
         //1 = normal (green);
         //2 = error (red);
-        //3 = warning (yellow).
+        //3 = warning (yellow);
         //
-        public static void SetState(this System.Windows.Forms.ProgressBar pBar, int state)
+        public static void SetState(this ProgressBar pBar, int state)
         {
             SendMessage(pBar.Handle, 1040, (IntPtr)state, IntPtr.Zero);
         }

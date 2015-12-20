@@ -19,23 +19,25 @@
 // ****************************************************************************
 
 using System;
-using System.Diagnostics;
 using System.IO;
+using System.Xml;
 using System.Linq;
 using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace ChapterTool.Util
 {
-    class MatroskaInfo
+    internal class MatroskaInfo
     {
-        public System.Xml.XmlDocument Result = new System.Xml.XmlDocument();
+        public readonly XmlDocument Result = new XmlDocument();
         public MatroskaInfo(string path, string program)
         {
             string arg = $"chapters \"{path}\"";
             string xmlresult = RunMkvextract(arg, program);
             Result.LoadXml(xmlresult);
         }
-        static string RunMkvextract(string arguments, string program)
+
+        private static string RunMkvextract(string arguments, string program)
         {
             Process process = new Process
             {
@@ -55,16 +57,18 @@ namespace ChapterTool.Util
         /// <returns></returns>
         public static string GetMkvToolnixPathViaRegistry()
         {
-            RegistryKey regUninstall = null;
             RegistryKey regMkvToolnix = null;
-            string valuePath = string.Empty;
-            bool subKeyFound = false;
-            bool valueFound = false;
+            string valuePath          = string.Empty;
+            bool subKeyFound          = false;
+            bool valueFound           = false;
 
             // First check for Installed MkvToolnix
             // First check Win32 registry
-            regUninstall = Registry.LocalMachine.OpenSubKey("SOFTWARE").OpenSubKey("Microsoft").
-                OpenSubKey("Windows").OpenSubKey("CurrentVersion").OpenSubKey("Uninstall");
+            RegistryKey regUninstall = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
+            if (regUninstall == null)
+            {
+                throw new Exception("Failed to create a RegistryKey variable");
+            }
 
             if (regUninstall.GetSubKeyNames().Any(subKeyName => subKeyName.ToLower().Equals("MKVToolNix".ToLower())))
             {
@@ -86,9 +90,7 @@ namespace ChapterTool.Util
             if (!valueFound)
             {
                 subKeyFound = false;
-
-                regUninstall = Registry.LocalMachine.OpenSubKey("SOFTWARE").OpenSubKey("Wow6432Node").OpenSubKey("Microsoft").
-                    OpenSubKey("Windows").OpenSubKey("CurrentVersion").OpenSubKey("Uninstall");
+                regUninstall = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall");
 
                 if (regUninstall.GetSubKeyNames().Any(subKeyName => subKeyName.ToLower().Equals("MKVToolNix".ToLower())))
                 {

@@ -30,9 +30,12 @@
         {
             this.cTextBox1 = new ChapterTool.Controls.cTextBox();
             this.SuspendLayout();
-            //
+            // 
             // cTextBox1
-            //
+            // 
+            this.cTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.cTextBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.cTextBox1.Location = new System.Drawing.Point(0, 0);
@@ -45,16 +48,16 @@
             this.cTextBox1.TabStop = false;
             this.cTextBox1.WordWrap = false;
             this.cTextBox1.DoubleClick += new System.EventHandler(this.cTextBox1_DoubleClick);
-            //
+            // 
             // FormPreview
-            //
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(230, 300);
             this.Controls.Add(this.cTextBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FormPreview";
-            this.Text = "FormPreview";
+            this.Text = "Preview";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormPreview_FormClosing);
             this.Load += new System.EventHandler(this.FormPreview_Load);
             this.ResumeLayout(false);

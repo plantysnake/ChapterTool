@@ -9,7 +9,7 @@ namespace ChapterTool.Util
 {
     public delegate void LogLineAddedEventHandler(string lineAdded, DateTime actionDate);
     // ReSharper disable once InconsistentNaming
-    public class CTLogger
+    public static class CTLogger
     {
         private static readonly StringBuilder LogContext = new StringBuilder();
 
@@ -25,7 +25,7 @@ namespace ChapterTool.Util
             OnLogLineAdded(logMessage, actionDate);
         }
 
-        protected static void OnLogLineAdded(string lineAdded, DateTime actionDate)
+        private static void OnLogLineAdded(string lineAdded, DateTime actionDate)
         {
             LogLineAdded?.Invoke(lineAdded, actionDate);
         }

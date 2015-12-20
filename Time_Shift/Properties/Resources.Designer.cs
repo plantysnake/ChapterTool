@@ -59,5 +59,149 @@ namespace ChapterTool.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查找类似 当前片段并没有章节 (¬_¬) 的本地化字符串。
+        /// </summary>
+        internal static string Chapter_Not_find {
+            get {
+                return ResourceManager.GetString("Chapter_Not_find", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ChapterTool Error 的本地化字符串。
+        /// </summary>
+        internal static string ChapterTool_Error {
+            get {
+                return ResourceManager.GetString("ChapterTool_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ChapterTool Information 的本地化字符串。
+        /// </summary>
+        internal static string ChapterTool_Info {
+            get {
+                return ResourceManager.GetString("ChapterTool_Info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 文件还没载入呢 的本地化字符串。
+        /// </summary>
+        internal static string File_Unloaded {
+            get {
+                return ResourceManager.GetString("File_Unloaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 硬盘壕，给我块硬盘呗~ 的本地化字符串。
+        /// </summary>
+        internal static string Hard_Drive_Plz {
+            get {
+                return ResourceManager.GetString("Hard_Drive_Plz", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 , 你好呀 的本地化字符串。
+        /// </summary>
+        internal static string Helloo {
+            get {
+                return ResourceManager.GetString("Helloo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 你好呀，找到这里来干嘛呀 的本地化字符串。
+        /// </summary>
+        internal static string How_Can_You_Find_Here {
+            get {
+                return ResourceManager.GetString("How_Can_You_Find_Here", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 IFO格式的章节，请注意是否需要修正时间 的本地化字符串。
+        /// </summary>
+        internal static string IFO_WARNING {
+            get {
+                return ResourceManager.GetString("IFO_WARNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 这个文件我不认识啊 _ (:3」∠)_ 的本地化字符串。
+        /// </summary>
+        internal static string InValid_Type {
+            get {
+                return ResourceManager.GetString("InValid_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 文件格式非法 的本地化字符串。
+        /// </summary>
+        internal static string InValid_Type_Log {
+            get {
+                return ResourceManager.GetString("InValid_Type_Log", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 从窗口拖拽中载入文件: 的本地化字符串。
+        /// </summary>
+        internal static string Load_File_By_Dragging {
+            get {
+                return ResourceManager.GetString("Load_File_By_Dragging", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 成功载入保存的窗体位置 的本地化字符串。
+        /// </summary>
+        internal static string Load_Position_Successful {
+            get {
+                return ResourceManager.GetString("Load_Position_Successful", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 载入完成 (≧▽≦) 的本地化字符串。
+        /// </summary>
+        internal static string Load_Success {
+            get {
+                return ResourceManager.GetString("Load_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 使用 Chapter Tool 打开 .mpls 文件？ 的本地化字符串。
+        /// </summary>
+        internal static string Open_With_CT {
+            get {
+                return ResourceManager.GetString("Open_With_CT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 分辨率： 的本地化字符串。
+        /// </summary>
+        internal static string Resolution {
+            get {
+                return ResourceManager.GetString("Resolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 武总好~ 的本地化字符串。
+        /// </summary>
+        internal static string Ye_Zong {
+            get {
+                return ResourceManager.GetString("Ye_Zong", resourceCulture);
+            }
+        }
     }
 }

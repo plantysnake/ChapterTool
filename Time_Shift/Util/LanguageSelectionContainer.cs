@@ -22,14 +22,12 @@ using System.Collections.Generic;
 
 namespace ChapterTool.Util
 {
-    public class LanguageSelectionContainer
+    public static class LanguageSelectionContainer
     {
         // used by all tools except MP4box
-        private static readonly Dictionary<string, string> languagesBibliographic;
         private static readonly Dictionary<string, string> languagesReverseBibliographic;
 
         // used by MP4box
-        private static readonly Dictionary<string, string> languagesTerminology;
         private static readonly Dictionary<string, string> languagesReverseTerminology;
 
         //private static readonly Dictionary<string, string> languagesISO2;
@@ -38,26 +36,26 @@ namespace ChapterTool.Util
         /// <summary>
         /// uses the ISO 639-2/B language codes
         /// </summary>
-        public static Dictionary<string, string> Languages => languagesBibliographic;
+        public static Dictionary<string, string> Languages { get; }
 
         /// <summary>
         /// uses the ISO 639-2/T language codes
         /// </summary>
-        public static Dictionary<string, string> LanguagesTerminology => languagesTerminology;
+        public static Dictionary<string, string> LanguagesTerminology { get; }
 
         private static void addLanguage(string name, string iso3B, string iso3T, string iso2)
         {
-            languagesBibliographic.Add(name, iso3B);
+            Languages.Add(name, iso3B);
             languagesReverseBibliographic.Add(iso3B, name);
 
             if (string.IsNullOrEmpty(iso3T))
             {
-                languagesTerminology.Add(name, iso3B);
+                LanguagesTerminology.Add(name, iso3B);
                 languagesReverseTerminology.Add(iso3B, name);
             }
             else
             {
-                languagesTerminology.Add(name, iso3T);
+                LanguagesTerminology.Add(name, iso3T);
                 languagesReverseTerminology.Add(iso3T, name);
             }
 
@@ -74,10 +72,10 @@ namespace ChapterTool.Util
             // https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
             // Attention: check all tools (eac3to, mkvmerge, mediainfo, ...)
 
-            languagesBibliographic = new Dictionary<string, string>();
+            Languages = new Dictionary<string, string>();
             languagesReverseBibliographic = new Dictionary<string, string>();
 
-            languagesTerminology = new Dictionary<string, string>();
+            LanguagesTerminology = new Dictionary<string, string>();
             languagesReverseTerminology = new Dictionary<string, string>();
 
             //languagesISO2 = new Dictionary<string, string>();
@@ -455,35 +453,28 @@ namespace ChapterTool.Util
             addLanguage("Zuni", "zun", "", "");
         }
 
-        private LanguageSelectionContainer()
-        {
-        }
 
         ///<summary>
         ///Convert the 2 or 3 char string to the full language name
         ///</summary>
         public static string LookupISOCode(string code)
         {
-            if (code.Length == 2)
+            switch (code.Length)
             {
-                if (languagesReverseISO2.ContainsKey(code))
-                    return languagesReverseISO2[code];
-            }
-            else if (code.Length == 3)
-            {
-                if (languagesReverseBibliographic.ContainsKey(code))
-                    return languagesReverseBibliographic[code];
-                else if (languagesReverseTerminology.ContainsKey(code))
-                    return languagesReverseTerminology[code];
+                case 2:
+                    if (languagesReverseISO2.ContainsKey(code))
+                        return languagesReverseISO2[code];
+                    break;
+                case 3:
+                    if (languagesReverseBibliographic.ContainsKey(code))
+                        return languagesReverseBibliographic[code];
+                    if (languagesReverseTerminology.ContainsKey(code))
+                        return languagesReverseTerminology[code];
+                    break;
             }
             return "";
         }
 
-        public static bool IsLanguageAvailable(string language)
-        {
-            if (languagesBibliographic.ContainsKey(language))
-                return true;
-            return false;
-        }
+        public static bool IsLanguageAvailable(string language) => Languages.ContainsKey(language);
     }
 }
