@@ -27,50 +27,6 @@ namespace ChapterTool.Util
 {
     public sealed class IfoParser
     {
-        /// <summary>
-        /// Determine the IFO file that contains the menu: although it often is the largest
-        /// IFO, this is not always the case, especially with elaborate DVDs with many extras.
-        /// Therefore, look for the largest VOBs, and determine the IFO based on that.
-        /// </summary>
-        /// <param name="inputPath">Path that contains the DVD</param>
-        /// <returns>Filename of the IFO that contains the movie</returns>
-        public static string DetermineMovieIFO(string inputPath)
-        {
-            // The first 7 characters are the same for each VOB set, e.g.
-            // VTS_24_0.VOB, VTS_24_1.VOB etc.
-            string[] vobFiles = Directory.GetFiles(inputPath, "vts*.vob");
-            if (vobFiles.Length == 0) return null;
-
-            // Look for the largest VOB set
-            string vtsNamePrevious = Path.GetFileName(vobFiles[0]).Substring(0, 7);
-            long vtsSizeLargest = 0;
-            long vtsSize = 0;
-            string vtsNumber = "01";
-            foreach (string file in vobFiles)
-            {
-                var vtsNameCurrent = Path.GetFileName(file).Substring(0, 7);
-                if (vtsNameCurrent.Equals(vtsNamePrevious))
-                    vtsSize += new FileInfo(file).Length;
-                else
-                {
-                    if (vtsSize > vtsSizeLargest)
-                    {
-                        vtsSizeLargest = vtsSize;
-                        vtsNumber = vtsNamePrevious.Substring(4, 2);
-                    }
-                    vtsNamePrevious = vtsNameCurrent;
-                    vtsSize = new FileInfo(file).Length;
-                }
-            }
-            // Check whether the last one isn't the largest
-            if (vtsSize > vtsSizeLargest)
-                vtsNumber = vtsNamePrevious.Substring(4, 2);
-
-            string ifoFile = inputPath + Path.DirectorySeparatorChar + "VTS_" + vtsNumber + "_0.IFO";
-            // Name of largest VOB set is the name of the IFO, so we can now create the IFO file
-            return ifoFile;
-        }
-
         internal static byte[] GetFileBlock(string strFile, long pos, int count)
         {
             if (pos < 0)
@@ -79,16 +35,15 @@ namespace ChapterTool.Util
             }
             using (FileStream stream = new FileStream(strFile, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                byte[] buf = new byte[count];
+                var buf = new byte[count];
                 stream.Seek(pos, SeekOrigin.Begin);
-                if (stream.Read(buf, 0, count) != count)
-                    return buf;
+                stream.Read(buf, 0, count);
                 return buf;
             }
         }
 
         internal static short ToInt16(byte[] bytes) { return (short)((bytes[0] << 8) + bytes[1]); }
-        private static uint ToInt32(byte[] bytes) { return (uint)((bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3]); }
+        private static  uint  ToInt32(byte[] bytes) { return (uint)((bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3]); }
         private static long ToFilePosition(byte[] bytes) { return ToInt32(bytes) * 0x800L; }
 
         private static long GetTotalFrames(TimeSpan time, int fps)
@@ -168,167 +123,6 @@ namespace ChapterTool.Util
         }
 
         /// <summary>
-        /// get Audio Language from the IFO file
-        /// </summary>
-        /// <param name="fileName">name of the IFO file</param>
-        /// <param name="count">the audio stream number</param>
-        /// <returns>Language as String</returns>
-        public static string GetAudioLanguage(string fileName, int count)
-        {
-            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            BinaryReader br = new BinaryReader(fs);
-            Stream sr = br.BaseStream;
-
-            // go to audio stream number
-            sr.Seek(0x203, SeekOrigin.Begin);
-            byte a = br.ReadByte();
-            sr.Seek(2, SeekOrigin.Current);
-            if (count > 0) sr.Seek(8 * count, SeekOrigin.Current);
-            byte[] buff = new byte[2];
-            br.Read(buff, 0, 2);
-            string shortLangCode = $"{(char) buff[0]}{(char) buff[1]}";
-            string audioLang = LanguageSelectionContainer.LookupISOCode(shortLangCode);
-            fs.Close();
-            return audioLang;
-        }
-
-        /// <summary>
-        /// get several Subtitles Informations from the IFO file
-        /// </summary>
-        /// <param name="fileName">name of the IFO file</param>
-        /// <param name="iPGC"></param>
-        /// <param name="bGetAllStreams"></param>
-        /// <returns>several infos as String</returns>
-        public static string[] GetSubtitlesStreamsInfos(string fileName, int iPGC, bool bGetAllStreams)
-        {
-            byte[] buff = new byte[4];
-            byte s = 0;
-            string[] subdesc = new string[s];
-            string[] substreams = new string[s];
-
-            try
-            {
-                FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-                BinaryReader br = new BinaryReader(fs);
-                Stream sr = br.BaseStream;
-
-                // go to the substream #1
-                sr.Seek(0x255, SeekOrigin.Begin);
-
-                s = br.ReadByte();
-                if (s > 32 || bGetAllStreams)
-                    s = 32; // force the max #. According to the specs 32 is the max value for subtitles streams.
-
-                subdesc = new string[s];
-
-                // go to the Language Code
-                sr.Seek(2, SeekOrigin.Current);
-
-                for (int i = 0; i < s; i++)
-                {
-                    // Presence (1 bit), Coding Mode (1bit), Short Language Code (2bits), Language Extension (1bit), Sub Picture Caption Type (1bit)
-                    br.Read(buff, 0, 2);
-
-                    if (buff[0] == 0 && buff[1] == 0)
-                    {
-                        subdesc[i] = "unknown";
-                    }
-                    else
-                    {
-                        string shortLangCode = $"{(char) buff[0]}{(char) buff[1]}";
-                        subdesc[i] = LanguageSelectionContainer.LookupISOCode(shortLangCode);
-                    }
-
-                    // Go to Code Extension
-                    sr.Seek(1, SeekOrigin.Current);
-                    buff[0] = br.ReadByte();
-
-                    switch (buff[0] & 0x0F)
-                    {
-                        // from http://dvd.sourceforge.net/dvdinfo/sprm.html
-                        case 01: subdesc[i] += " - (Caption/Normal Size Char)"; break;
-                        case 02: subdesc[i] += " - (Caption/Large Size Char)"; break;
-                        case 03: subdesc[i] += " - (Caption For Children)"; break;
-                        case 05: subdesc[i] += " - (Closed Caption/Normal Size Char)"; break;
-                        case 06: subdesc[i] += " - (Closed Caption/Large Size Char)"; break;
-                        case 07: subdesc[i] += " - (Closed Caption For Children)"; break;
-                        case 09: subdesc[i] += " - (Forced Caption)"; break;
-                        case 13: subdesc[i] += " - (Director Comments/Normal Size Char)"; break;
-                        case 14: subdesc[i] += " - (Director Comments/Large Size Char)"; break;
-                        case 15: subdesc[i] += " - (Director Comments for Children)"; break;
-                    }
-
-                    if (buff[0] == 0) buff[0] = 1;
-
-                    // go to the next sub stream
-                    sr.Seek(2, SeekOrigin.Current);
-                }
-
-                // find the PGC starting address of the requested PGC number
-                sr.Seek(0x1000 + 0x0C + (iPGC - 1) * 0x08, SeekOrigin.Begin);
-                br.Read(buff, 0, 4);
-
-                // go to the starting address of the requested PGC number
-                sr.Seek(0x1000 + buff[3] + buff[2] * 256 + buff[1] * 256 ^ 2 + buff[0] * 256 ^ 3, SeekOrigin.Begin);
-
-                // go to the subtitle starting address
-                sr.Seek(0x1B, SeekOrigin.Current);
-
-                substreams = new string[32];
-                for (int i = 0; i < 32; i++)
-                {
-                    if (i >= subdesc.Length)
-                        break;
-
-                    br.Read(buff, 0, 4);
-
-                    if (buff[0] == 0)
-                        continue;
-                    buff[0] -= 128;
-
-                    if (buff[0] > 0)
-                        if (string.IsNullOrEmpty(substreams[buff[0]]))
-                            substreams[buff[0]] = $"[{buff[0]:00}] - {subdesc[i]}";
-                    if (buff[1] > 0)
-                        if (string.IsNullOrEmpty(substreams[buff[1]]))
-                            substreams[buff[1]] = $"[{buff[1]:00}] - {subdesc[i]}";
-                    if (buff[2] > 0)
-                        if (string.IsNullOrEmpty(substreams[buff[2]]))
-                            substreams[buff[2]] = $"[{buff[2]:00}] - {subdesc[i]}";
-                    if (buff[3] > 0)
-                        if (string.IsNullOrEmpty(substreams[buff[3]]))
-                            substreams[buff[3]] = $"[{buff[3]:00}] - {subdesc[i]}";
-                    if (buff[0] == 0 && buff[1] == 0 && buff[2] == 0 && buff[3] == 0)
-                        if (string.IsNullOrEmpty(substreams[buff[0]]))
-                            substreams[buff[0]] = $"[{buff[4]:00}] - {subdesc[i]}";
-                }
-
-                if (bGetAllStreams)
-                {
-                    for (int i = 0; i < 32; i++)
-                        if (string.IsNullOrEmpty(substreams[i]))
-                            substreams[i] = $"[{i:00}] - not detected";
-                }
-                else
-                {
-                    ArrayList arrList = new ArrayList();
-                    foreach (string strItem in substreams.Where(strItem => !string.IsNullOrEmpty(strItem)))
-                        arrList.Add(strItem);
-                    substreams = new string[arrList.Count];
-                    for (int i = 0; i < arrList.Count; i++)
-                        substreams[i] = arrList[i].ToString();
-                }
-
-                fs.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            return substreams;
-        }
-
-        /// <summary>
         /// get number of PGCs
         /// </summary>
         /// <param name="fileName">name of the IFO file</param>
@@ -342,7 +136,7 @@ namespace ChapterTool.Util
             sr.Seek(0xCC, SeekOrigin.Begin);
             uint buf = ReadUInt32(br);									// Read PGC offset
             sr.Seek(2048 * buf + 0x1, SeekOrigin.Begin);			// Move to beginning of PGC
-            long VTS_PGCITI_start_position = sr.Position - 1;
+            //long VTS_PGCITI_start_position = sr.Position - 1;
             byte nPGCs = br.ReadByte();									// Number of PGCs
             fs.Close();
 
@@ -357,35 +151,6 @@ namespace ChapterTool.Util
                 ((uint)br.ReadByte()) << 8 |
                 ((uint)br.ReadByte()));
             return val;
-        }
-
-        /// <summary>
-        /// get Aspect Ratio Video Information from the IFO file
-        /// </summary>
-        /// <param name="fileName">name of the IFO file</param>
-        /// <returns>aspect ratio info as String</returns>
-        public static string GetVideoAR(string fileName)
-        {
-            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            BinaryReader br = new BinaryReader(fs);
-            Stream sr = br.BaseStream;
-
-            sr.Seek(0x200, SeekOrigin.Begin);
-            byte[] array = new byte[2];
-            fs.Read(array, 0, 2);
-            fs.Close();
-
-            byte b = (byte)((0x0C & array[0]) >> 2);
-            string ar = string.Empty;
-
-            switch (b)
-            {
-                case 0: ar = "4:3"; break;
-                case 1:
-                case 2: ar = string.Empty; break;
-                case 3: ar = "16:9"; break;
-            }
-            return ar;
         }
     }
 }
