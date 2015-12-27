@@ -240,7 +240,7 @@ namespace ChapterTool.Forms
         private List<ChapterInfo> _rawIfo;
         private ChapterInfo _fullIfoChapter;
 
-        private ChapterInfo CombineChapter(List<ChapterInfo> source)
+        private static ChapterInfo CombineChapter(List<ChapterInfo> source)
         {
             var fullChapter = new ChapterInfo
             {
@@ -250,11 +250,10 @@ namespace ChapterTool.Forms
             };
             TimeSpan duration = TimeSpan.Zero;
             int index = 0;
-            _rawIfo.ForEach(chapterClip =>
+            source.ForEach(chapterClip =>
             {
                 chapterClip.Chapters.ForEach(item =>
-                    fullChapter.Chapters.Add(
-                        new Chapter
+                    fullChapter.Chapters.Add( new Chapter
                         {
                             Time = duration + item.Time,
                             Number = ++index,
@@ -745,9 +744,7 @@ namespace ChapterTool.Forms
             GetChapterInfoFromXml(doc);
         }
 
-        private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24000M / 1000,
-                                                                            25000M / 1000, 30000M / 1001,
-                                                                            50000M / 1000, 60000M / 1001 };
+        private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
 
         private MplsData _rawMpls;
 
@@ -778,7 +775,7 @@ namespace ChapterTool.Forms
         /// </summary>
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (_rawMpls != null)
+            if (_rawMpls  != null)
             {
                 GetChapterInfoFromMpls(comboBox2.SelectedIndex);
             }
@@ -786,7 +783,7 @@ namespace ChapterTool.Forms
             {
                 _info = _xmlGroup[comboBox2.SelectedIndex];
             }
-            if (_rawIfo != null)
+            if (_rawIfo   != null)
             {
                 GetChapterInfoFromIFO(comboBox2.SelectedIndex);
             }
@@ -801,7 +798,7 @@ namespace ChapterTool.Forms
             {
                 GetChapterInfoFromMpls(comboBox2.SelectedIndex);
             }
-            if (_rawIfo != null)
+            if (_rawIfo  != null)
             {
                 GetChapterInfoFromIFO(comboBox2.SelectedIndex);
             }
