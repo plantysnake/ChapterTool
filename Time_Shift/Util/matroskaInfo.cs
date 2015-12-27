@@ -116,7 +116,7 @@ namespace ChapterTool.Util
             {
                 RegistryKey regSoftware = Registry.CurrentUser.OpenSubKey("Software");
                 subKeyFound = false;
-                if (regSoftware.GetSubKeyNames().Any(subKey => subKey.ToLower().Equals("mkvmergeGUI".ToLower())))
+                if (regSoftware != null && regSoftware.GetSubKeyNames().Any(subKey => subKey.ToLower().Equals("mkvmergeGUI".ToLower())))
                 {
                     subKeyFound = true;
                     regMkvToolnix = regSoftware.OpenSubKey("mkvmergeGUI");
@@ -129,7 +129,7 @@ namespace ChapterTool.Util
                 }
                 RegistryKey regGui = null;
                 bool foundGuiKey = false;
-                if (regMkvToolnix.GetSubKeyNames().Any(subKey => subKey.ToLower().Equals("GUI".ToLower())))
+                if (regMkvToolnix != null && regMkvToolnix.GetSubKeyNames().Any(subKey => subKey.ToLower().Equals("GUI".ToLower())))
                 {
                     foundGuiKey = true;
                     regGui = regMkvToolnix.OpenSubKey("GUI");
@@ -140,7 +140,7 @@ namespace ChapterTool.Util
                     throw new Exception("Found MKVToolNix in your system but not the registry Key GUI!");
                 }
 
-                if (regGui.GetValueNames().Any(valueName => valueName.ToLower().Equals("mkvmerge_executable".ToLower())))
+                if (regGui != null && regGui.GetValueNames().Any(valueName => valueName.ToLower().Equals("mkvmerge_executable".ToLower())))
                 {
                     valueFound = true;
                     valuePath = (string)regGui.GetValue("mkvmerge_executable");
