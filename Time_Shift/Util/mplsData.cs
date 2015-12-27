@@ -28,50 +28,48 @@ namespace ChapterTool.Util
     public class MplsData
     {
         /// <summary>include all chapters in mpls divisionally</summary>
-        public List<Clip> ChapterClips { get; }
+        public List<Clip> ChapterClips   { get; } = new List<Clip>();
         /// <summary>include all time code in mpls</summary>
-        public List<int> EntireTimeStamp { get; }
+        public List<int> EntireTimeStamp { get; } = new List<int>();
 
         private readonly byte[] _data;
-        private int _playlistSectionStartAddress;
-        private int _playlistMarkSectionStartAddress;
-        private int _playItemNumber;
-        private int _playItemEntries;
+
 
         public MplsData(string path)
         {
-            ChapterClips    = new List<Clip>();
-            EntireTimeStamp = new List<int>();
-            _data           = File.ReadAllBytes(path);
-            ParseHeader();
-            int shift = 0;
-            for (var playItemOrder = 0; playItemOrder < _playItemNumber; playItemOrder++)
+            _data = File.ReadAllBytes(path);
+            int playlistMarkSectionStartAddress, playItemNumber, playItemEntries;
+            ParseHeader(out playlistMarkSectionStartAddress, out playItemNumber, out playItemEntries);
+            for (var playItemOrder = 0; playItemOrder < playItemNumber; playItemOrder++)
             {
-                int itemStartAdress, streamCount;
-                int lengthOfPlayItem = ParsePlayItem(_playItemEntries + shift, out itemStartAdress, out streamCount);
-                Enumerable.Range(0, streamCount).ToList().ForEach(streamOrder => ParseStream(itemStartAdress, streamOrder, playItemOrder));
-                shift += lengthOfPlayItem + 2;//for that not counting the two length bytes themselves.
+                int lengthOfPlayItem, itemStartAdress, streamCount;
+                ParsePlayItem(playItemEntries, out lengthOfPlayItem, out itemStartAdress, out streamCount);
+                for (int streamOrder = 0; streamOrder < streamCount; streamOrder++)
+                {
+                    ParseStream(itemStartAdress, streamOrder, playItemOrder);
+                }
+                //Enumerable.Range(0, streamCount).ToList().ForEach(streamOrder => ParseStream(itemStartAdress, streamOrder, playItemOrder));
+                playItemEntries += lengthOfPlayItem + 2;//for that not counting the two length bytes themselves.
             }
-            ParsePlaylistMark();
+            ParsePlaylistMark(playlistMarkSectionStartAddress);
         }
 
-        private void ParseHeader()
+        private void ParseHeader(out int playlistMarkSectionStartAddress,out int playItemNumber, out int playItemEntries)
         {
             string fileType = Encoding.ASCII.GetString(_data, 0, 8);
-            if ((fileType != "MPLS0100" && fileType != "MPLS0200")
-            /*|| _data[45] != 1*/)
+            if ((fileType != "MPLS0100" && fileType != "MPLS0200") /*|| _data[45] != 1*/)
             {
                 throw new Exception($"This Playlist has an unknown file type {fileType}.");
             }
-            _playlistSectionStartAddress     = Byte2Int32(_data, 0x08);
-            _playlistMarkSectionStartAddress = Byte2Int32(_data, 0x0c);
-            _playItemNumber  = Byte2Int16(_data, _playlistSectionStartAddress + 0x06);
-            _playItemEntries = _playlistSectionStartAddress + 0x0a;
+            int playlistSectionStartAddress = Byte2Int32(_data, 0x08);
+            playlistMarkSectionStartAddress = Byte2Int32(_data, 0x0c);
+            playItemNumber                  = Byte2Int16(_data, playlistSectionStartAddress + 0x06);
+            playItemEntries                 = playlistSectionStartAddress + 0x0a;
         }
 
-        private int ParsePlayItem(int playItemEntries, out int itemStartAdress, out int streamCount)
+        private void ParsePlayItem(int playItemEntries, out int lengthOfPlayItem, out int itemStartAdress, out int streamCount)
         {
-            int lengthOfPlayItem = Byte2Int16(_data, playItemEntries);
+            lengthOfPlayItem = Byte2Int16(_data, playItemEntries);
             var bytes            = new byte[lengthOfPlayItem + 2];
             Array.Copy(_data, playItemEntries, bytes, 0, lengthOfPlayItem);
             Clip streamClip      = new Clip
@@ -101,10 +99,9 @@ namespace ChapterTool.Util
             }
             streamClip.Name = sb.ToString();
             ChapterClips.Add(streamClip);
-            return lengthOfPlayItem;
         }
 
-        private void ParseStream(int itemStartAdress,int streamOrder,int playItemOrder)
+        private void ParseStream(int itemStartAdress, int streamOrder, int playItemOrder)
         {
             var stream = new byte[16];
             Array.Copy(_data, itemStartAdress + streamOrder * 16, stream, 0, 16);
@@ -116,10 +113,10 @@ namespace ChapterTool.Util
                 return;
             ChapterClips[playItemOrder].Fps = stream[0x0c] & 0xf;//last 4 bits is the fps
         }
-        private void ParsePlaylistMark()
+        private void ParsePlaylistMark(int playlistMarkSectionStartAddress)
         {
-            int playlistMarkNumber  = Byte2Int16(_data, _playlistMarkSectionStartAddress + 0x04);
-            int playlistMarkEntries = _playlistMarkSectionStartAddress + 0x06;
+            int playlistMarkNumber  = Byte2Int16(_data, playlistMarkSectionStartAddress + 0x04);
+            int playlistMarkEntries = playlistMarkSectionStartAddress + 0x06;
             var bytelist = new byte[14];    // eg. 0001 yyyy xxxxxxxx FFFF 000000
                                             // 00       mark_id
                                             // 01       mark_type
