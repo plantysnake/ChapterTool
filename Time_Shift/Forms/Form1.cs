@@ -171,7 +171,7 @@ namespace ChapterTool.Forms
                 Form2 version = new Form2();
                 Log("打开了关于界面");
                 version.Show();
-                _poi[0] = 0;
+                _poi[0]  = 00;
                 _poi[1] += 10;
                 Log("进度条点击计数清零");
             }
@@ -181,7 +181,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        private readonly Regex _rFileType = new Regex(@".(txt|xml|mpls|ifo|mkv|mka)$");
+        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka)$");
 
         private bool IsPathValid
         {
@@ -210,7 +210,7 @@ namespace ChapterTool.Forms
             Cursor = Cursors.AppStarting;
             try
             {
-                switch (_rFileType.Match(_paths[0].ToLowerInvariant()).Value)
+                switch (Path.GetExtension(_paths[0])?.ToLowerInvariant())
                 {
                     case ".mpls": LoadMpls();     break;
                     case ".xml":   LoadXml();     break;
@@ -218,6 +218,8 @@ namespace ChapterTool.Forms
                     case ".ifo":   LoadIfo();     break;
                     case ".mkv":
                     case ".mka":  LoadMatroska(); break;
+                    default:
+                        throw new Exception("Invalid File Format");
                 }
                 UpdataInfo(_chapterNameTemplate);
                 progressBar1.SetState(1);
@@ -294,11 +296,10 @@ namespace ChapterTool.Forms
         {
             _info = GenerateChapterInfoFromOgm(GetUTF8String(File.ReadAllBytes(_paths[0])), (int)numericUpDown1.Value);
             progressBar1.Value = 33;
-
             Tips.Text = Resources.Load_Success;
         }
 
-        private void btnLoad_Click(object sender, EventArgs e)                  //载入键
+        private void btnLoad_Click(object sender, EventArgs e)
         {
             openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
             try
@@ -587,7 +588,7 @@ namespace ChapterTool.Forms
             row.Cells[3].Value = item.FramsInfo;
         }
 
-        /// FPS Cal Part /////////////////////
+
         private decimal CostumeAccuracy => decimal.Parse(toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>().First(item => item.Checked).Tag.ToString());
 
         private void GetFramInfo(int index = 0)

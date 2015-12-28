@@ -139,14 +139,14 @@ namespace ChapterTool.Util
 
         private static short Byte2Int16(IReadOnlyList<byte> bytes, int index, bool bigEndian = true)
         {
-            return (short)(bigEndian ? (bytes[index] << 8) + bytes[index + 1] :
-                                       (bytes[index + 1] << 8) + bytes[index]);
+            return (short)(bigEndian ? (bytes[index] << 8) | bytes[index + 1] :
+                                       (bytes[index + 1] << 8) | bytes[index]);
         }
 
         private static int Byte2Int32(IReadOnlyList<byte> bytes, int index, bool bigEndian = true)
         {
-            return bigEndian ? (bytes[index] << 24) + (bytes[index + 1] << 16) + (bytes[index + 2] << 8) + bytes[index + 3] :
-                               (bytes[index + 3] << 24) + (bytes[index + 2] << 16) + (bytes[index + 1] << 8) + bytes[index];
+            return bigEndian ? (bytes[index] << 24) | (bytes[index + 1] << 16) | (bytes[index + 2] << 8) | bytes[index + 3]:
+                               (bytes[index + 3] << 24) | (bytes[index + 2] << 16) | (bytes[index + 1] << 8) | bytes[index];
         }
     }
 }
