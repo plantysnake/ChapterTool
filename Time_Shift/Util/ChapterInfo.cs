@@ -19,7 +19,7 @@ namespace ChapterTool.Util
         public List<Chapter> Chapters { get; set; } = new List<Chapter>();
         public TimeSpan Offset        { get; set; } = TimeSpan.Zero;
         public bool Mul1K1            { get; set; }
-        public override string ToString() => $"{Title} - {SourceName}  -  {ConvertMethod.Time2String(Duration)}  -  [{Chapters.Count} Chapter]";
+        public override string ToString() => $"{Title} - {SourceName}  -  {Duration.Time2String()}  -  [{Chapters.Count} Chapter]";
 
         public static Chapter WriteToChapterInfo(string line, string line2, int order, TimeSpan iniTime, bool notUseName)
         {
@@ -27,7 +27,7 @@ namespace ChapterTool.Util
             if (!ConvertMethod.RLineOne.IsMatch(line) || !ConvertMethod.RLineTwo.IsMatch(line2)) return temp;
             temp.Name = notUseName ? $"Chapter {order:D2}"
                 : ConvertMethod.RLineTwo.Match(line2).Groups["chapterName"].Value.Trim('\r');
-            temp.Time = ConvertMethod.String2Time(ConvertMethod.RTimeFormat.Match(line).Value) - iniTime;
+            temp.Time = ConvertMethod.RTimeFormat.Match(line).Value.ToTimeSpan() - iniTime;
             return temp;
         }
 
@@ -50,7 +50,7 @@ namespace ChapterTool.Util
             int i = 1;
             Chapters.ForEach(item =>
             {
-                lines.Append($"CHAPTER{item.Number:D2}={ConvertMethod.Time2String(item.Time)}{Environment.NewLine}");
+                lines.Append($"CHAPTER{item.Number:D2}={item.Time.Time2String()}{Environment.NewLine}");
                 lines.Append($"CHAPTER{item.Number:D2}NAME=");
                 lines.Append(donotuseName ? $"Chapter {i++:D2}" : item.Name);
                 lines.Append(Environment.NewLine);
@@ -64,7 +64,7 @@ namespace ChapterTool.Util
             int i = 1;
             Chapters.ForEach(item =>
             {
-                lines.Append($"CHAPTER{item.Number:D2}={ConvertMethod.Time2String(item, Offset, Mul1K1)}{Environment.NewLine}");
+                lines.Append($"CHAPTER{item.Number:D2}={item.Time2String(Offset, Mul1K1)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{item.Number:D2}NAME=");
                 lines.Append(notUseName ? $"Chapter {i++:D2}" : item.Name);
                 lines.Append(Environment.NewLine);
@@ -79,12 +79,12 @@ namespace ChapterTool.Util
         public void SaveTsmuxerMeta(string filename)
         {
             string text = $"--custom-{Environment.NewLine}chapters=";
-            text = Chapters.Aggregate(text, (current, chapter) => current + ConvertMethod.Time2String(chapter, Offset, Mul1K1) + ";");
+            text = Chapters.Aggregate(text, (current, chapter) => current + chapter.Time2String(Offset, Mul1K1) + ";");
             text = text.Substring(0, text.Length - 1);
             File.WriteAllText(filename, text);
         }
 
-        public void SaveTimecodes(string filename) => File.WriteAllLines(filename, Chapters.Select(item => ConvertMethod.Time2String(item, Offset, Mul1K1)).ToArray());
+        public void SaveTimecodes(string filename) => File.WriteAllLines(filename, Chapters.Select(item => item.Time2String(Offset, Mul1K1)).ToArray());
 
         public void SaveXml(string filename,string lang, bool notUseName)
         {
@@ -107,7 +107,7 @@ namespace ChapterTool.Util
                 xmlchap.WriteElementString("ChapterLanguage", lang);
                 xmlchap.WriteEndElement();
                 xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                xmlchap.WriteElementString("ChapterTimeStart", ConvertMethod.Time2String(item, Offset, Mul1K1) + "0000");
+                xmlchap.WriteElementString("ChapterTimeStart", item.Time2String(Offset, Mul1K1) + "0000");
                 xmlchap.WriteElementString("ChapterFlagHidden", "0");
                 xmlchap.WriteElementString("ChapterFlagEnabled", "1");
                 xmlchap.WriteEndElement();

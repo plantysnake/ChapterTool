@@ -374,7 +374,7 @@ namespace ChapterTool.Forms
             Log($"|+时间平移: {cbShift.Checked}");
             if (cbShift.Checked)
             {
-                Log($" |+平移量 {Time2String(_info.Offset)}");
+                Log($" |+平移量 {_info.Offset.Time2String()}");
             }
         }
 
@@ -583,7 +583,7 @@ namespace ChapterTool.Forms
                 ? ColorTranslator.FromHtml("#92AAF3")
                 : ColorTranslator.FromHtml("#F3F7F7");
             row.Cells[0].Value = $"{item.Number:D2}";
-            row.Cells[1].Value = Time2String(item, _info.Offset, _info.Mul1K1);
+            row.Cells[1].Value = item.Time2String(_info.Offset, _info.Mul1K1);
             row.Cells[2].Value = cbAutoGenName.Checked ? $"Chapter {row.Index + 1:D2}" : item.Name;
             row.Cells[3].Value = item.FramsInfo;
         }
@@ -636,7 +636,7 @@ namespace ChapterTool.Forms
             {
                 try
                 {
-                    _info.Offset = String2Time(maskedTextBox1.Text);
+                    _info.Offset = maskedTextBox1.Text.ToTimeSpan();
                 }
                 catch (Exception)
                 {

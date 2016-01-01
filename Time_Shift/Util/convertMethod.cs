@@ -44,9 +44,9 @@ namespace ChapterTool.Util
             return Time2String(new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart));
         }
 
-        public static string Time2String(TimeSpan time) => $"{time.Hours:D2}:{time.Minutes:D2}:{time.Seconds:D2}.{time.Milliseconds:D3}";
+        public static string Time2String(this TimeSpan time) => $"{time.Hours:D2}:{time.Minutes:D2}:{time.Seconds:D2}.{time.Milliseconds:D3}";
 
-        public static string Time2String(Chapter item, TimeSpan offset, bool mul1K1)
+        public static string Time2String(this Chapter item, TimeSpan offset, bool mul1K1)
         {
             return mul1K1 ? Time2String((decimal) (item.Time + offset).TotalSeconds*1.001M) : Time2String(item.Time + offset);
         }
@@ -55,7 +55,7 @@ namespace ChapterTool.Util
         public static readonly Regex RLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
         public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
 
-        public static TimeSpan String2Time(string input)
+        public static TimeSpan ToTimeSpan(this string input)
         {
             if (string.IsNullOrEmpty(input)) { return TimeSpan.Zero; }
             var        temp = RTimeFormat.Match(input);
@@ -78,7 +78,7 @@ namespace ChapterTool.Util
         {
             if (RLineOne.IsMatch(line))
             {
-                return String2Time(RTimeFormat.Match(line).Value);
+                return RTimeFormat.Match(line).Value.ToTimeSpan();
             }
             throw new Exception($"ERROR: {line} <-该行与时间行格式不匹配");
         }
@@ -115,7 +115,7 @@ namespace ChapterTool.Util
             return Math.Abs(frams - answer) < accuracy ? 1 : 0;
         }
 
-        public static List<ChapterInfo>  PraseXml(XmlDocument doc)
+        public static List<ChapterInfo> PraseXml(XmlDocument doc)
         {
             var result = new List<ChapterInfo>();
             XmlElement root = doc.DocumentElement;
@@ -138,10 +138,10 @@ namespace ChapterTool.Util
                         switch (chapterAtomChildNode.Name)
                         {
                             case "ChapterTimeStart":
-                                temp.Time = String2Time(RTimeFormat.Match(chapterAtomChildNode.InnerText).Value);
+                                temp.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
                                 break;
                             case "ChapterTimeEnd":
-                                temp2.Time = String2Time(RTimeFormat.Match(chapterAtomChildNode.InnerText).Value);
+                                temp2.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
                                 break;
                             case "ChapterDisplay":
                                 temp.Name  = ((XmlElement) chapterAtomChildNode).ChildNodes.Item(0)?.InnerText;
@@ -171,7 +171,7 @@ namespace ChapterTool.Util
 
         private const string ColorProfile = "color-config.json";
 
-        public static void SaveColor(List<Color> colorList)
+        public static void SaveColor(this List<Color> colorList)
         {
             var json = new StringBuilder("[");
             foreach (var color in colorList)

@@ -75,7 +75,7 @@ namespace ChapterTool.Forms
 
         private void Form3_FormClosing(object sender, FormClosingEventArgs e)
         {
-            ConvertMethod.SaveColor(_mainWindow.CurrentColor);
+            _mainWindow.CurrentColor.SaveColor();
             e.Cancel = true;
             Hide();
         }
