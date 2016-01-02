@@ -511,7 +511,7 @@ namespace ChapterTool.Forms
                 });
             }
             _info = _xmlGroup.First();
-            //comboBox2.SelectedIndex = MplsFileSeletIndex;
+            comboBox2.SelectedIndex = MplsFileSeletIndex;
         }
 
         private void GetChapterInfoFromIFO(int index)
@@ -771,12 +771,13 @@ namespace ChapterTool.Forms
             comboBox2.SelectedIndex = MplsFileSeletIndex;
             GetChapterInfoFromMpls(MplsFileSeletIndex);
         }
+
         /// <summary>
         /// Load chapter according to the selected index
         /// </summary>
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBox2_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            if (_rawMpls  != null)
+            if (_rawMpls != null)
             {
                 GetChapterInfoFromMpls(comboBox2.SelectedIndex);
             }
@@ -784,12 +785,13 @@ namespace ChapterTool.Forms
             {
                 _info = _xmlGroup[comboBox2.SelectedIndex];
             }
-            if (_rawIfo   != null)
+            if (_rawIfo != null)
             {
                 GetChapterInfoFromIFO(comboBox2.SelectedIndex);
             }
             UpdataGridView();
         }
+
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1085,5 +1087,7 @@ namespace ChapterTool.Forms
                 RegistryStorage.SetOpenMethod();
             }
         }
+
+
     }
 }
