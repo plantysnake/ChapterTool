@@ -1087,7 +1087,5 @@ namespace ChapterTool.Forms
                 RegistryStorage.SetOpenMethod();
             }
         }
-
-
     }
 }
