@@ -512,6 +512,7 @@ namespace ChapterTool.Forms
             }
             _info = _xmlGroup.First();
             comboBox2.SelectedIndex = MplsFileSeletIndex;
+            Tips.Text = Resources.Load_Success;
         }
 
         private void GetChapterInfoFromIFO(int index)
