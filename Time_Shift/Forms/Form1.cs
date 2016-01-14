@@ -171,7 +171,7 @@ namespace ChapterTool.Forms
                 Form2 version = new Form2();
                 Log("打开了关于界面");
                 version.Show();
-                _poi[0] = 0;
+                _poi[0]  = 00;
                 _poi[1] += 10;
                 Log("进度条点击计数清零");
             }
@@ -181,7 +181,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        private readonly Regex _rFileType = new Regex(@".(txt|xml|mpls|ifo|mkv|mka)$");
+        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka)$");
 
         private bool IsPathValid
         {
@@ -210,7 +210,7 @@ namespace ChapterTool.Forms
             Cursor = Cursors.AppStarting;
             try
             {
-                switch (_rFileType.Match(_paths[0].ToLowerInvariant()).Value)
+                switch (Path.GetExtension(_paths[0])?.ToLowerInvariant())
                 {
                     case ".mpls": LoadMpls();     break;
                     case ".xml":   LoadXml();     break;
@@ -218,6 +218,8 @@ namespace ChapterTool.Forms
                     case ".ifo":   LoadIfo();     break;
                     case ".mkv":
                     case ".mka":  LoadMatroska(); break;
+                    default:
+                        throw new Exception("Invalid File Format");
                 }
                 UpdataInfo(_chapterNameTemplate);
                 progressBar1.SetState(1);
@@ -240,7 +242,7 @@ namespace ChapterTool.Forms
         private List<ChapterInfo> _rawIfo;
         private ChapterInfo _fullIfoChapter;
 
-        private ChapterInfo CombineChapter(List<ChapterInfo> source)
+        private static ChapterInfo CombineChapter(List<ChapterInfo> source)
         {
             var fullChapter = new ChapterInfo
             {
@@ -250,11 +252,10 @@ namespace ChapterTool.Forms
             };
             TimeSpan duration = TimeSpan.Zero;
             int index = 0;
-            _rawIfo.ForEach(chapterClip =>
+            source.ForEach(chapterClip =>
             {
                 chapterClip.Chapters.ForEach(item =>
-                    fullChapter.Chapters.Add(
-                        new Chapter
+                    fullChapter.Chapters.Add( new Chapter
                         {
                             Time = duration + item.Time,
                             Number = ++index,
@@ -295,11 +296,10 @@ namespace ChapterTool.Forms
         {
             _info = GenerateChapterInfoFromOgm(GetUTF8String(File.ReadAllBytes(_paths[0])), (int)numericUpDown1.Value);
             progressBar1.Value = 33;
-
             Tips.Text = Resources.Load_Success;
         }
 
-        private void btnLoad_Click(object sender, EventArgs e)                  //载入键
+        private void btnLoad_Click(object sender, EventArgs e)
         {
             openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
             try
@@ -374,7 +374,7 @@ namespace ChapterTool.Forms
             Log($"|+时间平移: {cbShift.Checked}");
             if (cbShift.Checked)
             {
-                Log($" |+平移量 {Time2String(_info.Offset)}");
+                Log($" |+平移量 {_info.Offset.Time2String()}");
             }
         }
 
@@ -511,7 +511,8 @@ namespace ChapterTool.Forms
                 });
             }
             _info = _xmlGroup.First();
-            //comboBox2.SelectedIndex = MplsFileSeletIndex;
+            comboBox2.SelectedIndex = MplsFileSeletIndex;
+            Tips.Text = Resources.Load_Success;
         }
 
         private void GetChapterInfoFromIFO(int index)
@@ -583,12 +584,12 @@ namespace ChapterTool.Forms
                 ? ColorTranslator.FromHtml("#92AAF3")
                 : ColorTranslator.FromHtml("#F3F7F7");
             row.Cells[0].Value = $"{item.Number:D2}";
-            row.Cells[1].Value = Time2String(item, _info.Offset, _info.Mul1K1);
+            row.Cells[1].Value = item.Time2String(_info.Offset, _info.Mul1K1);
             row.Cells[2].Value = cbAutoGenName.Checked ? $"Chapter {row.Index + 1:D2}" : item.Name;
             row.Cells[3].Value = item.FramsInfo;
         }
 
-        /// FPS Cal Part /////////////////////
+
         private decimal CostumeAccuracy => decimal.Parse(toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>().First(item => item.Checked).Tag.ToString());
 
         private void GetFramInfo(int index = 0)
@@ -636,7 +637,7 @@ namespace ChapterTool.Forms
             {
                 try
                 {
-                    _info.Offset = String2Time(maskedTextBox1.Text);
+                    _info.Offset = maskedTextBox1.Text.ToTimeSpan();
                 }
                 catch (Exception)
                 {
@@ -745,9 +746,7 @@ namespace ChapterTool.Forms
             GetChapterInfoFromXml(doc);
         }
 
-        private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24000M / 1000,
-                                                                            25000M / 1000, 30000M / 1001,
-                                                                            50000M / 1000, 60000M / 1001 };
+        private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
 
         private MplsData _rawMpls;
 
@@ -773,10 +772,11 @@ namespace ChapterTool.Forms
             comboBox2.SelectedIndex = MplsFileSeletIndex;
             GetChapterInfoFromMpls(MplsFileSeletIndex);
         }
+
         /// <summary>
         /// Load chapter according to the selected index
         /// </summary>
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBox2_SelectionChangeCommitted(object sender, EventArgs e)
         {
             if (_rawMpls != null)
             {
@@ -793,6 +793,7 @@ namespace ChapterTool.Forms
             UpdataGridView();
         }
 
+
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_rawMpls == null && _rawIfo == null) { return; }
@@ -801,7 +802,7 @@ namespace ChapterTool.Forms
             {
                 GetChapterInfoFromMpls(comboBox2.SelectedIndex);
             }
-            if (_rawIfo != null)
+            if (_rawIfo  != null)
             {
                 GetChapterInfoFromIFO(comboBox2.SelectedIndex);
             }

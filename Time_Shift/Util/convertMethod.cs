@@ -35,11 +35,7 @@ namespace ChapterTool.Util
     internal static class ConvertMethod
     {
         //format a pts as hh:mm:ss.sss
-        public static string Time2String(int pts)
-        {
-            decimal total = pts / 45000M;
-            return Time2String(total);
-        }
+        public static string Time2String(int pts) => Time2String(pts / 45000M);
 
         private static string Time2String(decimal second)
         {
@@ -48,24 +44,18 @@ namespace ChapterTool.Util
             return Time2String(new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart));
         }
 
-        public static string Time2String(TimeSpan temp)
-        {
-            return $"{temp.Hours:D2}:{temp.Minutes:D2}:{temp.Seconds:D2}.{temp.Milliseconds:D3}";
-        }
+        public static string Time2String(this TimeSpan time) => $"{time.Hours:D2}:{time.Minutes:D2}:{time.Seconds:D2}.{time.Milliseconds:D3}";
 
-        public static string Time2String(Chapter item, TimeSpan offset, bool mul1K1)
+        public static string Time2String(this Chapter item, TimeSpan offset, bool mul1K1)
         {
-            return
-                Time2String(mul1K1
-                    ? Pts2Time((int) ((decimal) (item.Time + offset).TotalSeconds*45045M))
-                    : item.Time + offset);
+            return mul1K1 ? Time2String((decimal) (item.Time + offset).TotalSeconds*1.001M) : Time2String(item.Time + offset);
         }
 
         public static readonly Regex RLineOne    = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
         public static readonly Regex RLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
         public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
 
-        public static TimeSpan String2Time(string input)
+        public static TimeSpan ToTimeSpan(this string input)
         {
             if (string.IsNullOrEmpty(input)) { return TimeSpan.Zero; }
             var        temp = RTimeFormat.Match(input);
@@ -88,7 +78,7 @@ namespace ChapterTool.Util
         {
             if (RLineOne.IsMatch(line))
             {
-                return String2Time(RTimeFormat.Match(line).Value);
+                return RTimeFormat.Match(line).Value.ToTimeSpan();
             }
             throw new Exception($"ERROR: {line} <-该行与时间行格式不匹配");
         }
@@ -103,14 +93,9 @@ namespace ChapterTool.Util
             return new Point(x, y);
         }
 
-        public static int ConvertFr2Index(double frame)
-        {
-            decimal[] frameRate = { 0M, 24000M / 1001, 24000M / 1000,
-                                        25000M / 1000, 30000M / 1001,
-                                        50000M / 1000, 60000M / 1001 };
-            var result = Enumerable.Range(0, 7).Where(index => Math.Abs(frame - (double)frameRate[index]) < 1e-5);
-            return result.First();
-        }
+        private static readonly decimal[] FrameRate = { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
+
+        public static int ConvertFr2Index(double frame) => Enumerable.Range(0, 7).First(index => Math.Abs(frame - (double)FrameRate[index]) < 1e-5);
 
         public static string GetUTF8String(byte[] buffer)
         {
@@ -130,7 +115,7 @@ namespace ChapterTool.Util
             return Math.Abs(frams - answer) < accuracy ? 1 : 0;
         }
 
-        public static List<ChapterInfo>  PraseXml(XmlDocument doc)
+        public static List<ChapterInfo> PraseXml(XmlDocument doc)
         {
             var result = new List<ChapterInfo>();
             XmlElement root = doc.DocumentElement;
@@ -153,10 +138,10 @@ namespace ChapterTool.Util
                         switch (chapterAtomChildNode.Name)
                         {
                             case "ChapterTimeStart":
-                                temp.Time = String2Time(RTimeFormat.Match(chapterAtomChildNode.InnerText).Value);
+                                temp.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
                                 break;
                             case "ChapterTimeEnd":
-                                temp2.Time = String2Time(RTimeFormat.Match(chapterAtomChildNode.InnerText).Value);
+                                temp2.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
                                 break;
                             case "ChapterDisplay":
                                 temp.Name  = ((XmlElement) chapterAtomChildNode).ChildNodes.Item(0)?.InnerText;
@@ -186,10 +171,14 @@ namespace ChapterTool.Util
 
         private const string ColorProfile = "color-config.json";
 
-        public static void SaveColor(List<Color> colorList)
+        public static void SaveColor(this List<Color> colorList)
         {
-            StringBuilder json = new StringBuilder("[");
-            colorList.ForEach(item => json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\","));
+            var json = new StringBuilder("[");
+            foreach (var color in colorList)
+            {
+                json.Append($"\"#{color.R:X2}{color.G:X2}{color.B:X2}\",");
+            }
+            //colorList.ForEach(item => json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\","));
             json[json.Length - 1] = ']';
             File.WriteAllText(ColorProfile, json.ToString());
         }
@@ -200,7 +189,7 @@ namespace ChapterTool.Util
             string json = File.ReadAllText(ColorProfile);
             Regex rcolor = new Regex("\"(?<hex>.+?)\"");
             var matchesOfJson = rcolor.Matches(json);
-            if (matchesOfJson.Count < 6) { return; }
+            if (matchesOfJson.Count < 6)  return;
             window.BackChange     = ColorTranslator.FromHtml(matchesOfJson[0].Groups["hex"].Value);
             window.TextBack       = ColorTranslator.FromHtml(matchesOfJson[1].Groups["hex"].Value);
             window.MouseOverColor = ColorTranslator.FromHtml(matchesOfJson[2].Groups["hex"].Value);

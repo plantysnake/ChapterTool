@@ -18,7 +18,7 @@ namespace ChapterTool.Util
 
         public List<ChapterInfo> GetStreams(string ifoFile)
         {
-            List<ChapterInfo> oList = new List<ChapterInfo>();
+            var oList = new List<ChapterInfo>();
 
             int pgcCount = (int)IfoParser.GetPGCnb(ifoFile);
             for (int i = 1; i <= pgcCount; i++)
@@ -29,7 +29,7 @@ namespace ChapterTool.Util
             return oList;
         }
 
-        protected void OnStreamDetected(ChapterInfo pgc)
+        private void OnStreamDetected(ChapterInfo pgc)
         {
             if (StreamDetected == null) return;
             ProgramChainArg e = new ProgramChainArg
@@ -38,7 +38,8 @@ namespace ChapterTool.Util
             };
             StreamDetected(this, e);
         }
-        protected void OnExtractionComplete()
+
+        private void OnExtractionComplete()
         {
             ExtractionComplete?.Invoke(this, EventArgs.Empty);
         }
@@ -129,7 +130,7 @@ namespace ChapterTool.Util
                     int cellStart     = cellTableOffset + ((currentCell - 1) * 0x18);
                     byte[] bytes      = IfoParser.GetFileBlock(ifoFile, (pcgItPosition + longestChainOffset) + cellStart, 4);
                     int cellType      = bytes[0] >> 6;
-                    if (cellType      == 0x00 || cellType == 0x01)
+                    if (cellType == 0x00 || cellType == 0x01)
                     {
                         bytes         = IfoParser.GetFileBlock(ifoFile, ((pcgItPosition + longestChainOffset) + cellStart) + 4, 4);
                         TimeSpan time = IfoParser.ReadTimeSpan(bytes, out fps) ?? TimeSpan.Zero;
