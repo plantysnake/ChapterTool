@@ -32,8 +32,6 @@ using System.Text.RegularExpressions;
 using static ChapterTool.Util.CTLogger;
 using static ChapterTool.Util.ConvertMethod;
 
-
-
 namespace ChapterTool.Forms
 {
     public partial class Form1 : Form
@@ -52,7 +50,7 @@ namespace ChapterTool.Forms
         {
             TargetHeight[0] = Height - 80;
             TargetHeight[1] = Height;
-            Text = $"ChapterTool v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
+            Text = $"[VCB-Studio] ChapterTool v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
             Point saved = String2Point(RegistryStorage.Load(@"Software\ChapterTool", "location"));
             if (saved  != new Point(-32000, -32000))
@@ -70,10 +68,7 @@ namespace ChapterTool.Forms
             folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
             if (!string.IsNullOrEmpty(_paths[0]))
             {
-                if (Loadfile())
-                {
-                    UpdataGridView();
-                }
+                if (Loadfile()) UpdataGridView();
                 RegistryStorage.Save(Resources.How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
             }
             var countS = RegistryStorage.Load(@"Software\ChapterTool\Statistics", @"Count");
@@ -100,8 +95,10 @@ namespace ChapterTool.Forms
                     Log((string)registryKey.GetValue("ProcessorNameString"));
                 }
             }
-            Screen.AllScreens.ToList().ForEach(item =>
-                        Log($"{item.DeviceName}{Resources.Resolution}{item.Bounds.Width}*{item.Bounds.Height}"));
+            foreach (var screen in Screen.AllScreens)
+            {
+                Log($"{screen.DeviceName}{Resources.Resolution}{screen.Bounds.Width}*{screen.Bounds.Height}");
+            }
         }
 
         private static void LoadLang(ComboBox target)
@@ -112,8 +109,10 @@ namespace ChapterTool.Forms
             target.Items.Add("jpn (Japanese    )");
             target.Items.Add("chi (Chinese     )");
             target.Items.Add("----全部----"      );
-            LanguageSelectionContainer.Languages.ToList()
-                .ForEach(item => target.Items.Add($"{item.Value} ({item.Key})"));
+            foreach (var language in LanguageSelectionContainer.Languages)
+            {
+                target.Items.Add($"{language.Value} ({language.Key})");
+            }
         }
 
         private ChapterInfo _info;
@@ -504,7 +503,7 @@ namespace ChapterTool.Forms
                 int i = 1;
                 _xmlGroup.ForEach(item =>
                 {
-                    string name = $"Edition {i++:D2}";
+                    var name = $"Edition {i++:D2}";
                     comboBox2.Items.Add(name);
                     Log($" |+{name}");
                     Log($"  |+包含 {item.Chapters.Count} 个时间戳");
@@ -1068,7 +1067,7 @@ namespace ChapterTool.Forms
             if (!IsPathValid) { return; }
             if (_previewForm == null)
             {
-                _previewForm = new FormPreview(_info.GetText(cbAutoGenName.Checked), Location);
+                _previewForm = new FormPreview(_info.GetText(cbAutoGenName.Checked), this);
             }
             _previewForm.UpdateText(_info.GetText(cbAutoGenName.Checked));
             _previewForm.Show();

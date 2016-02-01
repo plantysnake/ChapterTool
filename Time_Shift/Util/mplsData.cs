@@ -69,7 +69,7 @@ namespace ChapterTool.Util
 
         private void ParsePlayItem(int playItemEntries, out int lengthOfPlayItem, out int itemStartAdress, out int streamCount)
         {
-            lengthOfPlayItem = Byte2Int16(_data, playItemEntries);
+            lengthOfPlayItem     = Byte2Int16(_data, playItemEntries);
             var bytes            = new byte[lengthOfPlayItem + 2];
             Array.Copy(_data, playItemEntries, bytes, 0, lengthOfPlayItem);
             Clip streamClip      = new Clip
@@ -83,21 +83,20 @@ namespace ChapterTool.Util
 
             itemStartAdress            = playItemEntries + 0x32;
             streamCount                = bytes[0x23] >> 4;
-            int isMultiAngle = (bytes[0x0c] >> 4) & 0x01;
-
-            StringBuilder sb = new StringBuilder(Encoding.ASCII.GetString(bytes, 0x02, 0x05));
+            int isMultiAngle           = (bytes[0x0c] >> 4) & 0x01;
+            StringBuilder nameBuilder  = new StringBuilder(Encoding.ASCII.GetString(bytes, 0x02, 0x05));
 
             if (isMultiAngle == 1)
             {
                 int numberOfAngles = bytes[0x22];
                 for (int i = 1; i < numberOfAngles; i++)
                 {
-                    sb.Append("&" + Encoding.ASCII.GetString(bytes, 0x24 + (i - 1) * 0x0a, 0x05));
+                    nameBuilder.Append("&" + Encoding.ASCII.GetString(bytes, 0x24 + (i - 1) * 0x0a, 0x05));
                 }
                 itemStartAdress = playItemEntries + 0x02 + (numberOfAngles - 1) * 0x0a;
-                CTLogger.Log($"Chapter with {numberOfAngles} Angle, file name: {sb}");
+                CTLogger.Log($"Chapter with {numberOfAngles} Angle, file name: {nameBuilder}");
             }
-            streamClip.Name = sb.ToString();
+            streamClip.Name = nameBuilder.ToString();
             ChapterClips.Add(streamClip);
         }
 

@@ -9,12 +9,14 @@ namespace ChapterTool.Forms
     public partial class FormPreview : Form
     {
         private Point _mainPos;
+        private Form1 _mainWindow;
 
-        public FormPreview(string text,Point pos)
+        public FormPreview(string text,Form1 mainWindow)
         {
             InitializeComponent();
             cTextBox1.Text = text;
-            _mainPos       = pos;
+            _mainWindow    = mainWindow;
+            _mainPos       = mainWindow.Location;
             ScrollBarSet();
             Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
         }
@@ -50,6 +52,12 @@ namespace ChapterTool.Forms
         {
             e.Cancel = true;
             Hide();
+        }
+
+
+        private void FormPreview_Activated(object sender, EventArgs e)
+        {
+            //_mainWindow.Activate();
         }
     }
 }
