@@ -147,10 +147,7 @@ namespace ChapterTool.Forms
             if (!IsPathValid) { return; }
             Log($"+{Resources.Load_File_By_Dragging}{_paths?[0]}");
             comboBox2.Items.Clear();
-            if (Loadfile())
-            {
-                UpdataGridView();
-            }
+            if (Loadfile()) UpdataGridView();
         }
 
         private void Form1_DragEnter(object sender, DragEventArgs e)
@@ -307,10 +304,7 @@ namespace ChapterTool.Forms
                 _paths[0] = openFileDialog1.FileName;
                 Log($"+从载入键中载入文件: {_paths[0]}");
                 comboBox2.Items.Clear();
-                if (Loadfile())
-                {
-                    UpdataGridView();
-                }
+                if (Loadfile()) UpdataGridView();
                 progressBar1.SetState(1);
             }
             catch (Exception exception)
