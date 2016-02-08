@@ -373,12 +373,12 @@ namespace ChapterTool.Forms
 
         private void SaveFile()
         {
-            if (!IsPathValid) { return; }
+            if (!IsPathValid) return;//防止保存先于载入
             string fileName = Path.GetFileNameWithoutExtension(_paths[0]);
 
             StringBuilder savePath =
                 new StringBuilder(
-                    $"{(string.IsNullOrEmpty(_customSavingPath) ? Path.GetDirectoryName(_paths[0]) : _customSavingPath)}//{fileName}");
+                    $"{(string.IsNullOrEmpty(_customSavingPath) ? Path.GetDirectoryName(_paths[0]) : _customSavingPath)}{Path.PathSeparator}{fileName}");
 
             string ext = Path.GetExtension(_paths[0])?.ToLowerInvariant();
             if (ext == ".mpls")
