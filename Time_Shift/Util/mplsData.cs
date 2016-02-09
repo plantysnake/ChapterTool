@@ -147,5 +147,30 @@ namespace ChapterTool.Util
             return bigEndian ? (bytes[index] << 24) | (bytes[index + 1] << 16) | (bytes[index + 2] << 8) | bytes[index + 3]:
                                (bytes[index + 3] << 24) | (bytes[index + 2] << 16) | (bytes[index + 1] << 8) | bytes[index];
         }
+
+        private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
+
+        public ChapterInfo GetChapterInfo(int index, bool combineChapter)
+        {
+            Clip mplsClip = ChapterClips[index];
+            ChapterInfo info = new ChapterInfo
+            {
+                Title = combineChapter ? "FULL Chapter" : mplsClip.Name,
+                SourceType = "MPLS",
+                Duration = ConvertMethod.Pts2Time(mplsClip.TimeOut - mplsClip.TimeIn),
+                FramesPerSecond = (double)_frameRate[mplsClip.Fps]
+            };
+            var current = combineChapter ? EntireTimeStamp : mplsClip.TimeStamp;
+            if (current.Count < 2) return info;
+
+            int defaultOrder = 1;
+            info.Chapters = current.Select(item => new Chapter
+            {
+                Time = ConvertMethod.Pts2Time(item - current.First()),
+                Name = $"Chapter {defaultOrder:D2}",
+                Number = defaultOrder++
+            }).ToList();
+            return info;
+        }
     }
 }

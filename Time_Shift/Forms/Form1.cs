@@ -144,7 +144,7 @@ namespace ChapterTool.Forms
         private void Form1_DragDrop(object sender,  DragEventArgs e)
         {
             _paths = e.Data.GetData(DataFormats.FileDrop) as string[];
-            if (!IsPathValid) { return; }
+            if (!IsPathValid) return;
             Log($"+{Resources.Load_File_By_Dragging}{_paths?[0]}");
             comboBox2.Items.Clear();
             if (Loadfile()) UpdataGridView();
@@ -177,7 +177,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka)$");
+        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka)$", RegexOptions.IgnoreCase);
 
         private bool IsPathValid
         {
@@ -188,7 +188,7 @@ namespace ChapterTool.Forms
                     Tips.Text = Resources.File_Unloaded;
                     return false;
                 }
-                if (_rFileType.IsMatch(_paths[0].ToLowerInvariant())) return true;
+                if (_rFileType.IsMatch(_paths[0])) return true;
                 Tips.Text = Resources.InValid_Type;
                 Log(Resources.InValid_Type_Log);
                 _paths[0] = string.Empty;
@@ -199,7 +199,7 @@ namespace ChapterTool.Forms
 
         private bool Loadfile()
         {
-            if (!IsPathValid) { return false; }
+            if (!IsPathValid) return false;
             var fileName = Path.GetFileName(_paths[0]);
             label1.Text   = fileName?.Length > 55 ? $"{fileName.Substring(0, 40)}…{fileName.Substring(fileName.Length - 15, 15)}" : fileName;
             SetDefault();
@@ -374,13 +374,12 @@ namespace ChapterTool.Forms
         private void SaveFile()
         {
             if (!IsPathValid) return;//防止保存先于载入
-            string fileName = Path.GetFileNameWithoutExtension(_paths[0]);
 
-            StringBuilder savePath =
-                new StringBuilder(
-                    $"{(string.IsNullOrEmpty(_customSavingPath) ? Path.GetDirectoryName(_paths[0]) : _customSavingPath)}{Path.PathSeparator}{fileName}");
+            var rootPath = string.IsNullOrEmpty(_customSavingPath) ? Path.GetDirectoryName(_paths[0]) : _customSavingPath;
+            var fileName = Path.GetFileNameWithoutExtension(_paths[0]);
+            StringBuilder savePath = new StringBuilder($"{rootPath}{Path.PathSeparator}{fileName}");
 
-            string ext = Path.GetExtension(_paths[0])?.ToLowerInvariant();
+            var ext = Path.GetExtension(_paths[0])?.ToLowerInvariant();
             if (ext == ".mpls")
                 savePath.Append($"__{_info.Title}");
             if (ext == ".ifo")
@@ -459,29 +458,8 @@ namespace ChapterTool.Forms
 
         private void GetChapterInfoFromMpls(int index)
         {
-            Clip mplsClip = _rawMpls.ChapterClips[index];
-            _info = new ChapterInfo
-            {
-                Title = combineToolStripMenuItem.Checked ? "FULL Chapter" : mplsClip.Name,
-                SourceType = "MPLS",
-                Duration = Pts2Time(mplsClip.TimeOut - mplsClip.TimeIn),
-                FramesPerSecond = (double) _frameRate[mplsClip.Fps]
-            };
-            var current = combineToolStripMenuItem.Checked ? _rawMpls.EntireTimeStamp : mplsClip.TimeStamp;
-            if (current.Count < 2)
-            {
-                Tips.Text = Resources.Chapter_Not_find;
-                return;
-            }
-            Tips.Text = Resources.Load_Success;
-
-            int defaultOrder = 1;
-            _info.Chapters = current.Select(item => new Chapter
-            {
-                Time   = Pts2Time(item - current.First()),
-                Name   = $"Chapter {defaultOrder:D2}",
-                Number = defaultOrder++
-            }).ToList();
+            _info = _rawMpls.GetChapterInfo(index, combineToolStripMenuItem.Checked);
+            Tips.Text = _info.Chapters.Count < 2 ? Resources.Chapter_Not_find : Resources.Load_Success;
             UpdataInfo(_chapterNameTemplate);
         }
 
@@ -519,20 +497,20 @@ namespace ChapterTool.Forms
 
         private void UpdataInfo(TimeSpan shift)
         {
-            if (!IsPathValid) { return; }
+            if (!IsPathValid) return;
             _info.Chapters.ForEach(item => item.Time -= shift);
         }
 
         private void UpdataInfo(int shift)
         {
-            if (!IsPathValid) { return; }
+            if (!IsPathValid) return;
             int index = 0;
             _info.Chapters.ForEach(item => item.Number = ++index + shift);
         }
 
         private void UpdataInfo(string chapterNameTemplate)
         {
-            if (!IsPathValid || string.IsNullOrEmpty(chapterNameTemplate)) { return; }
+            if (!IsPathValid || string.IsNullOrEmpty(chapterNameTemplate)) return;
             var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();
             _info.Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name);
             cn.Dispose();
@@ -542,7 +520,7 @@ namespace ChapterTool.Forms
 
         private void UpdataGridView(int fpsIndex = 0)
         {
-            if (!IsPathValid || _info == null) { return; }
+            if (!IsPathValid || _info == null) return;
             switch (_info.SourceType)
             {
                 case "DVD":
@@ -574,8 +552,8 @@ namespace ChapterTool.Forms
         {
             row.Tag = item;
             row.DefaultCellStyle.BackColor = row.Index%2 == 0
-                ? ColorTranslator.FromHtml("#92AAF3")
-                : ColorTranslator.FromHtml("#F3F7F7");
+                ? Color.FromArgb(0x92, 0xAA, 0xF3)
+                : Color.FromArgb(0xF3, 0xF7, 0xF7);
             row.Cells[0].Value = $"{item.Number:D2}";
             row.Cells[1].Value = item.Time2String(_info.Offset, _info.Mul1K1);
             row.Cells[2].Value = cbAutoGenName.Checked ? $"Chapter {row.Index + 1:D2}" : item.Name;
@@ -625,7 +603,7 @@ namespace ChapterTool.Forms
 
         private void cbShift_CheckedChanged(object sender, EventArgs e)
         {
-            if (!IsPathValid) { return; }
+            if (!IsPathValid) return;
             if (cbShift.Checked)
             {
                 try
@@ -675,7 +653,7 @@ namespace ChapterTool.Forms
 
         private void Form1_Resize()
         {
-            if (!TargetHeight.Any(item => item == Height)) { return; }
+            if (!TargetHeight.Any(item => item == Height)) return;
             btnExpand.Text = @"#";
             if (Height == TargetHeight[0])
             {
@@ -775,11 +753,11 @@ namespace ChapterTool.Forms
             {
                 GetChapterInfoFromMpls(comboBox2.SelectedIndex);
             }
-            if (_xmlGroup != null)
+            else if (_xmlGroup != null)
             {
                 _info = _xmlGroup[comboBox2.SelectedIndex];
             }
-            if (_rawIfo != null)
+            else if (_rawIfo != null)
             {
                 GetChapterInfoFromIFO(comboBox2.SelectedIndex);
             }
@@ -789,7 +767,7 @@ namespace ChapterTool.Forms
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_rawMpls == null && _rawIfo == null) { return; }
+            if (_rawMpls == null && _rawIfo == null) return;
             combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
             if (_rawMpls != null)
             {
@@ -948,7 +926,7 @@ namespace ChapterTool.Forms
 
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
-            if (!IsPathValid || !_paths[0].ToLowerInvariant().EndsWith(".mpls") || _rawMpls == null) return;
+            if (_rawMpls == null || !IsPathValid || !_paths[0].ToLowerInvariant().EndsWith(".mpls")) return;
             int index = MplsFileSeletIndex;
             Clip streamClip = _rawMpls.ChapterClips[index];
             if (streamClip.TimeStamp.Count != 2) return;
@@ -1058,7 +1036,7 @@ namespace ChapterTool.Forms
         private FormPreview _previewForm;
         private void btnPreview_Click(object sender, EventArgs e)
         {
-            if (!IsPathValid) { return; }
+            if (!IsPathValid) return;
             if (_previewForm == null)
             {
                 _previewForm = new FormPreview(_info.GetText(cbAutoGenName.Checked), this);
