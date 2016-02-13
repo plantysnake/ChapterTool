@@ -53,7 +53,7 @@ namespace ChapterTool.Forms
             Text = $"[VCB-Studio] ChapterTool v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
             Point saved = String2Point(RegistryStorage.Load(@"Software\ChapterTool", "location"));
-            if (saved  != new Point(-32000, -32000))
+            if (saved != new Point(-32000, -32000))
             {
                 Location = saved;
                 Log($"{Resources.Load_Position_Successful}{saved}");
@@ -544,6 +544,7 @@ namespace ChapterTool.Forms
             {
                 if (clearAllRows) { dataGridView1.Rows.Add(); }
                 AddRow(_info.Chapters[i], dataGridView1.Rows[i]);
+                Application.DoEvents();
             }
             progressBar1.Value = dataGridView1.RowCount > 1 ? 66 : 33;
         }
