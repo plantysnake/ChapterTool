@@ -177,7 +177,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka)$", RegexOptions.IgnoreCase);
+        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue)$", RegexOptions.IgnoreCase);
 
         private bool IsPathValid
         {
@@ -214,6 +214,7 @@ namespace ChapterTool.Forms
                     case ".ifo":   LoadIfo();     break;
                     case ".mkv":
                     case ".mka":  LoadMatroska(); break;
+                    case ".cue":  LoadCue(); break;
                     default:
                         throw new Exception("Invalid File Format");
                 }
@@ -295,9 +296,18 @@ namespace ChapterTool.Forms
             Tips.Text = Resources.Load_Success;
         }
 
+        private void LoadCue()
+        {
+            _info = PraseCue(GetUTF8String(File.ReadAllBytes(_paths[0])));
+            progressBar1.Value = 33;
+            Tips.Text = Resources.Load_Success;
+        }
+
         private void btnLoad_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.mkv;*.mka|章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
+            openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.cue,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.cue;*.mkv;*.mka|"+
+                                     @"章节文件(*.txt,*.xml,*.mpls,*.ifo,*.cue)|*.txt;*.xml;*.mpls;*.ifo;*.cue|"+
+                                     @"Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
             try
             {
                 if (openFileDialog1.ShowDialog() != DialogResult.OK) return;

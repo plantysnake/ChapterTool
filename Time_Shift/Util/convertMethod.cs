@@ -32,7 +32,7 @@ using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
-    internal static class ConvertMethod
+    public static class ConvertMethod
     {
         //format a pts as hh:mm:ss.sss
         public static string Time2String(int pts) => Time2String(pts / 45000M);
@@ -195,6 +195,112 @@ namespace ChapterTool.Util
             {
                 yield return endChapter;
             }
+        }
+
+        private enum NextState
+        {
+            NsStart,
+            NsTitle,
+            NsNewTrack,
+            NsTrack,
+            NsError,
+            NsFin
+        }
+
+        public static ChapterInfo PraseCue(string context)
+        {
+            var line = context.Split('\n');
+            var cue = new ChapterInfo {SourceType = "CUE"};
+            Regex rTitle = new Regex(@"TITLE\s+\""(.+)\""");
+            Regex rTrack = new Regex(@"TRACK (\d+) AUDIO");
+            Regex rPerformer = new Regex(@"PERFORMER\s+\""(.+)\""");
+            Regex rTime = new Regex(@"INDEX (?<index>\d+) (?<M>\d{2}):(?<S>\d{2}):(?<m>\d{2})");
+            NextState nxState = NextState.NsStart;
+            Chapter beginChapter = null;
+
+            foreach (var l in line)
+            {
+                switch (nxState)
+                {
+                    case NextState.NsStart:
+                        var r = rTitle.Match(l);
+                        if (r.Success)
+                        {
+                            nxState = NextState.NsNewTrack;
+                            cue.Title = r.Groups[0].Value;
+                        }
+                        break;
+                    case NextState.NsNewTrack:
+                        var tt = rTrack.Match(l);
+                        if (tt.Success)
+                        {
+                            beginChapter = new Chapter {Number = int.Parse(tt.Groups[1].Value)};
+                            nxState = NextState.NsTitle;
+                        }
+                        break;
+                    case NextState.NsTitle:
+                        var rr = rTitle.Match(l);
+                        if (rr.Success)
+                        {
+                            beginChapter.Name = rr.Groups[1].Value;
+                            nxState = NextState.NsTrack;
+                        }
+                        break;
+                    case NextState.NsTrack:
+                        if (string.IsNullOrEmpty(l))
+                        {
+                            nxState = NextState.NsFin;
+                            break;
+                        }
+                        var p = rPerformer.Match(l);
+                        var t = rTime.Match(l);
+                        var state = (1 << (p.Success ? 3 : 2)) | (1 << (t.Success ? 1 : 0));
+                        switch (state)
+                        {
+                            case (1 << 2 | 1 << 0):
+                                //nothing find
+                                break;
+                            case (1 << 2 | 1 << 1):
+                                var trackIndex = int.Parse(t.Groups["index"].Value);
+                                switch (trackIndex)
+                                {
+                                    case 0:
+                                        // last track's end
+                                        break;
+                                    case 1:
+                                        beginChapter.Time = new TimeSpan(0, 0, int.Parse(t.Groups["M"].Value),
+                                               int.Parse(t.Groups["S"].Value), int.Parse(t.Groups["m"].Value)*10);
+                                        cue.Chapters.Add(beginChapter);
+                                        nxState = NextState.NsNewTrack;
+                                        break;
+                                    default:
+                                        nxState = NextState.NsError;
+                                        break;
+                                }
+                                break;
+                            case (1 << 3 | 1 << 0):
+                                beginChapter.Name += $" [{p.Groups[1].Value}]";
+                                break;
+                            case (1 << 3 | 1 << 1):
+                                nxState = NextState.NsError;
+                                break;
+                            default:
+                                nxState = NextState.NsError;
+                                break;
+                        }
+                        break;
+                    case NextState.NsError:
+                        throw new Exception("Unable to Prase this cue");
+                    case NextState.NsFin:
+                        goto EXIT_1;
+                    default:
+                        nxState = NextState.NsError;
+                        break;
+                }
+            }
+            EXIT_1:
+            cue.Duration = cue.Chapters.Last().Time;
+            return cue;
         }
 
         private const string ColorProfile = "color-config.json";
