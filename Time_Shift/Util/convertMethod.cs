@@ -209,68 +209,70 @@ namespace ChapterTool.Util
 
         public static ChapterInfo PraseCue(string context)
         {
-            var line = context.Split('\n');
-            var cue = new ChapterInfo {SourceType = "CUE"};
-            Regex rTitle = new Regex(@"TITLE\s+\""(.+)\""");
-            Regex rTrack = new Regex(@"TRACK (\d+) AUDIO");
-            Regex rPerformer = new Regex(@"PERFORMER\s+\""(.+)\""");
-            Regex rTime = new Regex(@"INDEX (?<index>\d+) (?<M>\d{2}):(?<S>\d{2}):(?<m>\d{2})");
+            var lines         = context.Split('\n');
+            var cue           = new ChapterInfo {SourceType = "CUE"};
+            Regex rTitle      = new Regex(@"TITLE\s+\""(.+)\""");
+            Regex rTrack      = new Regex(@"TRACK (\d+) AUDIO");
+            Regex rPerformer  = new Regex(@"PERFORMER\s+\""(.+)\""");
+            Regex rTime       = new Regex(@"INDEX (?<index>\d+) (?<M>\d{2}):(?<S>\d{2}):(?<m>\d{2})");
             NextState nxState = NextState.NsStart;
-            Chapter beginChapter = null;
+            Chapter chapter   = null;
 
-            foreach (var l in line)
+            foreach (var line in lines)
             {
                 switch (nxState)
                 {
                     case NextState.NsStart:
-                        var r = rTitle.Match(l);
-                        if (r.Success)
+                        var chapterTitleMatch = rTitle.Match(line);
+                        if (chapterTitleMatch.Success)
                         {
+                            cue.Title = chapterTitleMatch.Groups[0].Value;
                             nxState = NextState.NsNewTrack;
-                            cue.Title = r.Groups[0].Value;
                         }
                         break;
                     case NextState.NsNewTrack:
-                        var tt = rTrack.Match(l);
-                        if (tt.Success)
+                        var trackMatch = rTrack.Match(line);
+                        if (trackMatch.Success)
                         {
-                            beginChapter = new Chapter {Number = int.Parse(tt.Groups[1].Value)};
+                            chapter = new Chapter {Number = int.Parse(trackMatch.Groups[1].Value)};
                             nxState = NextState.NsTitle;
                         }
                         break;
                     case NextState.NsTitle:
-                        var rr = rTitle.Match(l);
-                        if (rr.Success)
+                        var trackTitleMatch = rTitle.Match(line);
+                        if (trackTitleMatch.Success)
                         {
-                            beginChapter.Name = rr.Groups[1].Value;
+                            chapter.Name = trackTitleMatch.Groups[1].Value;
                             nxState = NextState.NsTrack;
                         }
                         break;
                     case NextState.NsTrack:
-                        if (string.IsNullOrEmpty(l))
+                        if (string.IsNullOrEmpty(line))
                         {
                             nxState = NextState.NsFin;
                             break;
                         }
-                        var p = rPerformer.Match(l);
-                        var t = rTime.Match(l);
-                        var state = (1 << (p.Success ? 3 : 2)) | (1 << (t.Success ? 1 : 0));
+                        var performerMatch = rPerformer.Match(line);
+                        var timeMatch      = rTime.Match(line);
+                        var state          = (1 << (performerMatch.Success ? 3 : 2)) | (1 << (timeMatch.Success ? 1 : 0));
                         switch (state)
                         {
                             case (1 << 2 | 1 << 0):
                                 //nothing find
                                 break;
                             case (1 << 2 | 1 << 1):
-                                var trackIndex = int.Parse(t.Groups["index"].Value);
+                                var trackIndex = int.Parse(timeMatch.Groups["index"].Value);
                                 switch (trackIndex)
                                 {
                                     case 0:
                                         // last track's end
                                         break;
                                     case 1:
-                                        beginChapter.Time = new TimeSpan(0, 0, int.Parse(t.Groups["M"].Value),
-                                               int.Parse(t.Groups["S"].Value), int.Parse(t.Groups["m"].Value)*10);
-                                        cue.Chapters.Add(beginChapter);
+                                        var minute        = int.Parse(timeMatch.Groups["M"].Value);
+                                        var second        = int.Parse(timeMatch.Groups["S"].Value);
+                                        var millisecond   = int.Parse(timeMatch.Groups["m"].Value)*10;
+                                        chapter.Time = new TimeSpan(0, 0, minute, second, millisecond);
+                                        cue.Chapters.Add(chapter);
                                         nxState = NextState.NsNewTrack;
                                         break;
                                     default:
@@ -279,7 +281,7 @@ namespace ChapterTool.Util
                                 }
                                 break;
                             case (1 << 3 | 1 << 0):
-                                beginChapter.Name += $" [{p.Groups[1].Value}]";
+                                chapter.Name += $" [{performerMatch.Groups[1].Value}]";
                                 break;
                             case (1 << 3 | 1 << 1):
                                 nxState = NextState.NsError;
