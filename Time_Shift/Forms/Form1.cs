@@ -105,9 +105,9 @@ namespace ChapterTool.Forms
         {
             target.Items.Add("----常用----"      );
             target.Items.Add("und (Undetermined)");
-            target.Items.Add("eng (English     )");
-            target.Items.Add("jpn (Japanese    )");
-            target.Items.Add("chi (Chinese     )");
+            target.Items.Add("eng (English)"     );
+            target.Items.Add("jpn (Japanese)"    );
+            target.Items.Add("chi (Chinese)"     );
             target.Items.Add("----全部----"      );
             foreach (var language in LanguageSelectionContainer.Languages)
             {
@@ -387,7 +387,7 @@ namespace ChapterTool.Forms
 
             var rootPath = string.IsNullOrEmpty(_customSavingPath) ? Path.GetDirectoryName(_paths[0]) : _customSavingPath;
             var fileName = Path.GetFileNameWithoutExtension(_paths[0]);
-            StringBuilder savePath = new StringBuilder($"{rootPath}{Path.PathSeparator}{fileName}");
+            StringBuilder savePath = new StringBuilder($"{rootPath}\\{fileName}");
 
             var ext = Path.GetExtension(_paths[0])?.ToLowerInvariant();
             if (ext == ".mpls")
