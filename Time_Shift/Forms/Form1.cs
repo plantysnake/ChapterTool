@@ -458,7 +458,7 @@ namespace ChapterTool.Forms
 
         private void GetChapterInfoFromMpls(int index)
         {
-            _info = _rawMpls.GetChapterInfo(index, combineToolStripMenuItem.Checked);
+            _info = _rawMpls.ToChapterInfo(index, combineToolStripMenuItem.Checked);
             Tips.Text = _info.Chapters.Count < 2 ? Resources.Chapter_Not_find : Resources.Load_Success;
             UpdataInfo(_chapterNameTemplate);
         }

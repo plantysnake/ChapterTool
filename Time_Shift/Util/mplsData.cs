@@ -32,6 +32,8 @@ namespace ChapterTool.Util
         /// <summary>include all time code in mpls</summary>
         public List<int> EntireTimeStamp { get; } = new List<int>();
 
+        public override string ToString() => $"MPLS: {ChapterClips.Count} Viedo Clips, {ChapterClips.Sum(item=>item.TimeStamp.Count)} Time Stamps";
+
         private readonly byte[] _data;
 
 
@@ -150,24 +152,30 @@ namespace ChapterTool.Util
 
         private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
 
-        public ChapterInfo GetChapterInfo(int index, bool combineChapter)
+        public ChapterInfo ToChapterInfo(int index, bool combineChapter)
         {
-            Clip mplsClip = ChapterClips[index];
+            if (index > ChapterClips.Count && !combineChapter)
+            {
+                throw new IndexOutOfRangeException("Index of Video Clip out of range");
+            }
             ChapterInfo info = new ChapterInfo
             {
-                Title = combineChapter ? "FULL Chapter" : mplsClip.Name,
                 SourceType = "MPLS",
-                Duration = ConvertMethod.Pts2Time(mplsClip.TimeOut - mplsClip.TimeIn),
-                FramesPerSecond = (double)_frameRate[mplsClip.Fps]
+                Title      = combineChapter ? "FULL Chapter" : ChapterClips[index].Name,
+                Duration   = ConvertMethod.Pts2Time(combineChapter
+                    ? EntireTimeStamp.Last() - EntireTimeStamp.First()
+                    : ChapterClips[index].TimeOut - ChapterClips[index].TimeIn),
+                FramesPerSecond = (double) _frameRate[ChapterClips.First().Fps]
             };
-            var current = combineChapter ? EntireTimeStamp : mplsClip.TimeStamp;
-            if (current.Count < 2) return info;
 
+            var current = combineChapter ? EntireTimeStamp : ChapterClips[index].TimeStamp;
+            if (current.Count < 2) return info;
+            int offset  = current.First();
             int defaultOrder = 1;
             info.Chapters = current.Select(item => new Chapter
             {
-                Time = ConvertMethod.Pts2Time(item - current.First()),
-                Name = $"Chapter {defaultOrder:D2}",
+                Time   = ConvertMethod.Pts2Time(item - offset),
+                Name   = $"Chapter {defaultOrder:D2}",
                 Number = defaultOrder++
             }).ToList();
             return info;

@@ -19,7 +19,7 @@ namespace ChapterTool.Util
         public List<Chapter> Chapters { get; set; } = new List<Chapter>();
         public TimeSpan Offset        { get; set; } = TimeSpan.Zero;
         public bool Mul1K1            { get; set; }
-        public override string ToString() => $"{Title} - {SourceName}  -  {Duration.Time2String()}  -  [{Chapters.Count} Chapter]";
+        public override string ToString() => $"{Title} - {SourceType} - {Duration.Time2String()} - [{Chapters.Count} Chapters]";
 
         public static Chapter WriteToChapterInfo(string line, string line2, int order, TimeSpan iniTime, bool notUseName)
         {
