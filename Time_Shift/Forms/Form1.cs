@@ -467,7 +467,7 @@ namespace ChapterTool.Forms
 
         private void GetChapterInfoFromXml(XmlDocument doc)
         {
-            _xmlGroup = PraseXml(doc);
+            _xmlGroup = PraseXml(doc).ToList();
             comboBox2.Enabled = comboBox2.Visible = _xmlGroup.Count >= 1;
             if (comboBox2.Enabled)
             {

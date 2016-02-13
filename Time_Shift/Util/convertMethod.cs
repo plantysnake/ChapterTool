@@ -115,49 +115,37 @@ namespace ChapterTool.Util
             return Math.Abs(frams - answer) < accuracy ? 1 : 0;
         }
 
-        public static List<ChapterInfo> PraseXml(XmlDocument doc)
+        public static IEnumerable<ChapterInfo> PraseXml(XmlDocument doc)
         {
-            var result = new List<ChapterInfo>();
             XmlElement root = doc.DocumentElement;
-            if (root == null) return result;
+            if (root == null)
+            {
+                throw new ArgumentException("Empty Xml file");
+            }
             if (root.Name != "Chapters")
             {
                 throw new Exception($"Invalid Xml file.\nroot node Name: {root.Name}");
             }
+
             foreach (XmlNode editionEntry in root.ChildNodes)//Get Entrance for each chapter
             {
-                if (editionEntry.NodeType == XmlNodeType.Comment)
+                if (editionEntry.NodeType == XmlNodeType.Comment) continue;
+                if (editionEntry.Name != "EditionEntry")
                 {
-                    continue;
+                    throw new Exception($"Invalid Xml file.\nroot Entry Name: {editionEntry.Name}");
                 }
                 ChapterInfo buff = new ChapterInfo {SourceType = "XML"};
                 int index = 0;
                 foreach (XmlNode editionEntryChildNode in ((XmlElement)editionEntry).ChildNodes)//Get all the child nodes in current chapter
                 {
-                    if (editionEntryChildNode.Name != "ChapterAtom") { continue; }
-                    Chapter temp  = new Chapter();
-                    Chapter temp2 = new Chapter();
-                    foreach (XmlNode chapterAtomChildNode in ((XmlElement)editionEntryChildNode).ChildNodes)//Get detail info for current chapter node
+                    if (editionEntryChildNode.Name != "ChapterAtom") continue;
+                    ++index;
+                    var chapterAtom = PraseChapterAtom(editionEntryChildNode);
+                    foreach (var chapter in chapterAtom)
                     {
-                        switch (chapterAtomChildNode.Name)
-                        {
-                            case "ChapterTimeStart":
-                                temp.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
-                                break;
-                            case "ChapterTimeEnd":
-                                temp2.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
-                                break;
-                            case "ChapterDisplay":
-                                temp.Name  = ((XmlElement) chapterAtomChildNode).ChildNodes.Item(0)?.InnerText;
-                                temp2.Name = temp.Name;
-                                break;
-                        }
+                        chapter.Number = index;
+                        buff.Chapters.Add(chapter);
                     }
-                    temp.Number = ++index;          // Chapter node for ChapterTimeStart
-                    buff.Chapters.Add(temp);
-                    if (!(temp2.Time.TotalSeconds > 1e-5)) continue;
-                    temp2.Number = index;           // Chapter node for ChapterTimeEnd
-                    buff.Chapters.Add(temp2);
                 }
 
                 for (int i = 0; i < buff.Chapters.Count - 1; i++)
@@ -168,9 +156,45 @@ namespace ChapterTool.Util
                     }
                 }
                 //buff.Chapters = buff.Chapters.Distinct().ToList();
-                result.Add(buff);
+                yield return buff;
             }
-            return result;
+        }
+
+        private static IEnumerable<Chapter> PraseChapterAtom(XmlNode chapterAtom)
+        {
+            Chapter startChapter = new Chapter();
+            Chapter endChapter   = new Chapter();
+            var innerChapterAtom = new List<Chapter>();
+            foreach (XmlNode chapterAtomChildNode in ((XmlElement)chapterAtom).ChildNodes) //Get detail info for current chapter node
+            {
+                switch (chapterAtomChildNode.Name)
+                {
+                    case "ChapterTimeStart":
+                        startChapter.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
+                        break;
+                    case "ChapterTimeEnd":
+                        endChapter.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
+                        break;
+                    case "ChapterDisplay":
+                        startChapter.Name = ((XmlElement) chapterAtomChildNode).ChildNodes.Item(0)?.InnerText;
+                        endChapter.Name = startChapter.Name;
+                        break;
+                    case "ChapterAtom"://Handling sub chapters.
+                        innerChapterAtom.AddRange(PraseChapterAtom(chapterAtomChildNode));
+                        break;
+                }
+            }
+            yield return startChapter;
+
+            foreach (var chapter in innerChapterAtom)
+            {
+                yield return chapter;
+            }
+
+            if (endChapter.Time.TotalSeconds > startChapter.Time.TotalSeconds)
+            {
+                yield return endChapter;
+            }
         }
 
         private const string ColorProfile = "color-config.json";
