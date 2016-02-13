@@ -118,6 +118,7 @@
     <Compile Include="Forms\FormLog.Designer.cs">
       <DependentUpon>FormLog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Util\CueData.cs" />
     <Compile Include="Util\IfoData.cs" />
     <Compile Include="Util\IfoParser.cs" />
     <Compile Include="Util\LanguageSelectionContainer.cs" />

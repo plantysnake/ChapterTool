@@ -28,6 +28,7 @@ using ChapterTool.Util;
 using System.Windows.Forms;
 using ChapterTool.Properties;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using static ChapterTool.Util.CTLogger;
 using static ChapterTool.Util.ConvertMethod;
@@ -177,7 +178,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue)$", RegexOptions.IgnoreCase);
+        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac)$", RegexOptions.IgnoreCase);
 
         private bool IsPathValid
         {
@@ -214,7 +215,9 @@ namespace ChapterTool.Forms
                     case ".ifo":   LoadIfo();     break;
                     case ".mkv":
                     case ".mka":  LoadMatroska(); break;
-                    case ".cue":  LoadCue(); break;
+                    case ".tak":  LoadTak();      break;
+                    case ".flac": LoadFlac();     break;
+                    case ".cue":  LoadCue();      break;
                     default:
                         throw new Exception("Invalid File Format");
                 }
@@ -298,15 +301,55 @@ namespace ChapterTool.Forms
 
         private void LoadCue()
         {
-            _info = PraseCue(GetUTF8String(File.ReadAllBytes(_paths[0])));
+            try
+            {
+                _info = CueData.PraseCue(GetUTF8String(File.ReadAllBytes(_paths[0])));
+                progressBar1.Value = 33;
+                Tips.Text = Resources.Load_Success;
+            }
+            catch (Exception ex)
+            {
+                Tips.Text = @"无效的Cue文件";
+                Debug.WriteLine(ex.Message);
+            }
+
+        }
+
+        private void LoadTak()
+        {
+            var cue = CueData.GetCueFromTak(_paths[0]);
+            if (string.IsNullOrEmpty(cue))
+            {
+                MessageBox.Show(@"该文件内无内嵌Cue");
+                _paths[0] = string.Empty;
+                return;
+            }
+            _info = CueData.PraseCue(cue);
             progressBar1.Value = 33;
             Tips.Text = Resources.Load_Success;
         }
 
+        private void LoadFlac()
+        {
+            var cue = CueData.GetCueFromFlac(_paths[0]);
+            if (string.IsNullOrEmpty(cue))
+            {
+                MessageBox.Show(@"该文件内无内嵌Cue");
+                _paths[0] = string.Empty;
+                return;
+            }
+            _info = CueData.PraseCue(cue);
+            progressBar1.Value = 33;
+            Tips.Text = Resources.Load_Success;
+        }
+
+
+
         private void btnLoad_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.cue,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.cue;*.mkv;*.mka|"+
-                                     @"章节文件(*.txt,*.xml,*.mpls,*.ifo,*.cue)|*.txt;*.xml;*.mpls;*.ifo;*.cue|"+
+            openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.cue,*tak,*flac,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.cue;*.tak;*.flac;*.mkv;*.mka|" +
+                                     @"章节文件(*.txt,*.xml,*.mpls,*.ifo,*.cue)|*.txt;*.xml;*.mpls;*.ifo;*.cue|" +
+                                     @"Cue文件[包括内嵌](*.cue,*.tak,*.flac)|*.cue;*.tak;*.flac|" +
                                      @"Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
             try
             {
