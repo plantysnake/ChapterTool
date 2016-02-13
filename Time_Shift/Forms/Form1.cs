@@ -309,10 +309,10 @@ namespace ChapterTool.Forms
             }
             catch (Exception ex)
             {
-                Tips.Text = @"无效的Cue文件";
+                MessageBox.Show(@"无效的Cue文件");
+                _paths[0] = string.Empty;
                 Debug.WriteLine(ex.Message);
             }
-
         }
 
         private void LoadTak()

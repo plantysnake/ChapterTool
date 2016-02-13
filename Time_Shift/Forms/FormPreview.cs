@@ -23,7 +23,8 @@ namespace ChapterTool.Forms
 
         private void ScrollBarSet()
         {
-            if (cTextBox1.Lines.Select(item => item.Length).Max() > 40 && cTextBox1.Lines.Length > 20)
+
+            if (cTextBox1.Lines.Length > 20 && cTextBox1.Lines.Select(item => item.Length).Max() > 40)
             {
                 cTextBox1.ScrollBars = ScrollBars.Both;
             }
