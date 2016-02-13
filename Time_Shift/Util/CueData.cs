@@ -54,6 +54,7 @@ namespace ChapterTool.Util
                         var trackTitleMatch = rTitle.Match(line);
                         if (trackTitleMatch.Success)
                         {
+                            Debug.Assert(chapter != null);
                             chapter.Name = trackTitleMatch.Groups[1].Value;
                             nxState = NextState.NsTrack;
                         }
@@ -69,10 +70,10 @@ namespace ChapterTool.Util
                         var state = (1 << (performerMatch.Success ? 3 : 2)) | (1 << (timeMatch.Success ? 1 : 0));
                         switch (state)
                         {
-                            case (1 << 2 | 1 << 0):
+                            case 1 << 2 | 1 << 0:
                                 //nothing find
                                 break;
-                            case (1 << 2 | 1 << 1):
+                            case 1 << 2 | 1 << 1:
                                 var trackIndex = int.Parse(timeMatch.Groups["index"].Value);
                                 switch (trackIndex)
                                 {
@@ -83,6 +84,7 @@ namespace ChapterTool.Util
                                         var minute = int.Parse(timeMatch.Groups["M"].Value);
                                         var second = int.Parse(timeMatch.Groups["S"].Value);
                                         var millisecond = int.Parse(timeMatch.Groups["m"].Value) * 10;
+                                        Debug.Assert(chapter != null);
                                         chapter.Time = new TimeSpan(0, 0, minute, second, millisecond);
                                         cue.Chapters.Add(chapter);
                                         nxState = NextState.NsNewTrack;
@@ -92,10 +94,11 @@ namespace ChapterTool.Util
                                         break;
                                 }
                                 break;
-                            case (1 << 3 | 1 << 0):
+                            case 1 << 3 | 1 << 0:
+                                Debug.Assert(chapter != null);
                                 chapter.Name += $" [{performerMatch.Groups[1].Value}]";
                                 break;
-                            case (1 << 3 | 1 << 1):
+                            case 1 << 3 | 1 << 1:
                                 nxState = NextState.NsError;
                                 break;
                             default:
@@ -228,7 +231,7 @@ namespace ChapterTool.Util
             if (Encoding.ASCII.GetString(header, 0, 4) != "tBaK")
             {
                 fs.Close();
-                throw new InvalidDataException($"Except an flac but get an {Encoding.ASCII.GetString(header, 0, 4)}");
+                throw new InvalidDataException($"Except an tak but get an {Encoding.ASCII.GetString(header, 0, 4)}");
             }
             fs.Seek(-20480, SeekOrigin.End);
             var buffer = new byte[20480];
