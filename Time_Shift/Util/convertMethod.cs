@@ -126,6 +126,10 @@ namespace ChapterTool.Util
             }
             foreach (XmlNode editionEntry in root.ChildNodes)//Get Entrance for each chapter
             {
+                if (editionEntry.NodeType == XmlNodeType.Comment)
+                {
+                    continue;
+                }
                 ChapterInfo buff = new ChapterInfo {SourceType = "XML"};
                 int index = 0;
                 foreach (XmlNode editionEntryChildNode in ((XmlElement)editionEntry).ChildNodes)//Get all the child nodes in current chapter
