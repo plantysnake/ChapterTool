@@ -12,7 +12,6 @@ namespace ChapterTool.Util
         private enum NextState
         {
             NsStart,
-            NsTitle,
             NsNewTrack,
             NsTrack,
             NsError,
@@ -21,14 +20,15 @@ namespace ChapterTool.Util
 
         public static ChapterInfo PraseCue(string context)
         {
-            var lines = context.Split('\n');
-            var cue = new ChapterInfo { SourceType = "CUE" };
-            Regex rTitle = new Regex(@"TITLE\s+\""(.+)\""");
-            Regex rTrack = new Regex(@"TRACK (\d+) AUDIO");
-            Regex rPerformer = new Regex(@"PERFORMER\s+\""(.+)\""");
-            Regex rTime = new Regex(@"INDEX (?<index>\d+) (?<M>\d{2}):(?<S>\d{2}):(?<m>\d{2})");
+            var lines         = context.Split('\n');
+            var cue           = new ChapterInfo {SourceType = "CUE", Tag = context};
+            Regex rTitle      = new Regex(@"TITLE\s+\""(.+)\""");
+            Regex rFile       = new Regex(@"FILE\s+\""(.+)\""\s+(WAVE|MP3|AIFF|BINARY|MOTOROLA)");
+            Regex rTrack      = new Regex(@"TRACK\s+(\d+)");
+            Regex rPerformer  = new Regex(@"PERFORMER\s+\""(.+)\""");
+            Regex rTime       = new Regex(@"INDEX\s+(?<index>\d+)\s+(?<M>\d{2}):(?<S>\d{2}):(?<F>\d{2})");
             NextState nxState = NextState.NsStart;
-            Chapter chapter = null;
+            Chapter chapter   = null;
 
             foreach (var line in lines)
             {
@@ -36,74 +36,68 @@ namespace ChapterTool.Util
                 {
                     case NextState.NsStart:
                         var chapterTitleMatch = rTitle.Match(line);
+                        var fileMatch = rFile.Match(line);
                         if (chapterTitleMatch.Success)
                         {
                             cue.Title = chapterTitleMatch.Groups[0].Value;
                             nxState = NextState.NsNewTrack;
+                            break;
+                        }
+                        if (fileMatch.Success)
+                        {
+                            nxState = NextState.NsNewTrack;
                         }
                         break;
                     case NextState.NsNewTrack:
-                        var trackMatch = rTrack.Match(line);
-                        if (trackMatch.Success)
-                        {
-                            chapter = new Chapter { Number = int.Parse(trackMatch.Groups[1].Value) };
-                            nxState = NextState.NsTitle;
-                        }
-                        break;
-                    case NextState.NsTitle:
-                        var trackTitleMatch = rTitle.Match(line);
-                        if (trackTitleMatch.Success)
-                        {
-                            Debug.Assert(chapter != null);
-                            chapter.Name = trackTitleMatch.Groups[1].Value;
-                            nxState = NextState.NsTrack;
-                        }
-                        break;
-                    case NextState.NsTrack:
                         if (string.IsNullOrEmpty(line))
                         {
                             nxState = NextState.NsFin;
                             break;
                         }
+                        var trackMatch = rTrack.Match(line);
+                        if (trackMatch.Success)
+                        {
+                            chapter = new Chapter { Number = int.Parse(trackMatch.Groups[1].Value) };
+                            nxState = NextState.NsTrack;
+                        }
+                        break;
+                    case NextState.NsTrack:
+                        var trackTitleMatch = rTitle.Match(line);
                         var performerMatch = rPerformer.Match(line);
                         var timeMatch = rTime.Match(line);
-                        var state = (1 << (performerMatch.Success ? 3 : 2)) | (1 << (timeMatch.Success ? 1 : 0));
-                        switch (state)
+
+                        if (trackTitleMatch.Success)
                         {
-                            case 1 << 2 | 1 << 0:
-                                //nothing find
-                                break;
-                            case 1 << 2 | 1 << 1:
-                                var trackIndex = int.Parse(timeMatch.Groups["index"].Value);
-                                switch (trackIndex)
-                                {
-                                    case 0:
-                                        // last track's end
-                                        break;
-                                    case 1:
-                                        var minute = int.Parse(timeMatch.Groups["M"].Value);
-                                        var second = int.Parse(timeMatch.Groups["S"].Value);
-                                        var millisecond = int.Parse(timeMatch.Groups["m"].Value) * 10;
-                                        Debug.Assert(chapter != null);
-                                        chapter.Time = new TimeSpan(0, 0, minute, second, millisecond);
-                                        cue.Chapters.Add(chapter);
-                                        nxState = NextState.NsNewTrack;
-                                        break;
-                                    default:
-                                        nxState = NextState.NsError;
-                                        break;
-                                }
-                                break;
-                            case 1 << 3 | 1 << 0:
-                                Debug.Assert(chapter != null);
-                                chapter.Name += $" [{performerMatch.Groups[1].Value}]";
-                                break;
-                            case 1 << 3 | 1 << 1:
-                                nxState = NextState.NsError;
-                                break;
-                            default:
-                                nxState = NextState.NsError;
-                                break;
+                            Debug.Assert(chapter != null);
+                            chapter.Name = trackTitleMatch.Groups[1].Value;
+                            break;
+                        }
+                        if (performerMatch.Success)
+                        {
+                            Debug.Assert(chapter != null);
+                            chapter.Name += $" [{performerMatch.Groups[1].Value}]";
+                            break;
+                        }
+                        if (timeMatch.Success)
+                        {
+                            var trackIndex = int.Parse(timeMatch.Groups["index"].Value);
+                            switch (trackIndex)
+                            {
+                                case 0: //pre-gap of a track
+                                    break;
+                                case 1: //beginning of a new track.
+                                    var minute = int.Parse(timeMatch.Groups["M"].Value);
+                                    var second = int.Parse(timeMatch.Groups["S"].Value);
+                                    var millisecond = (int)Math.Round(int.Parse(timeMatch.Groups["F"].Value)*(1000F/75));
+                                    Debug.Assert(chapter != null);
+                                    chapter.Time = new TimeSpan(0, 0, minute, second, millisecond);
+                                    cue.Chapters.Add(chapter);
+                                    nxState = NextState.NsNewTrack;
+                                    break;
+                                default:
+                                    nxState = NextState.NsError;
+                                    break;
+                            }
                         }
                         break;
                     case NextState.NsError:
@@ -116,6 +110,7 @@ namespace ChapterTool.Util
                 }
             }
             EXIT_1:
+            cue.Chapters.Sort((c1, c2) => c1.Number.CompareTo(c2.Number));
             cue.Duration = cue.Chapters.Last().Time;
             return cue;
         }
