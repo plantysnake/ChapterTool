@@ -478,7 +478,7 @@ namespace ChapterTool.Forms
 
         private ChapterInfo GenerateChapterInfoFromOgm(string text, int orderOffset)
         {
-            var info = new ChapterInfo { SourceType = "OGM" };
+            var info = new ChapterInfo { SourceType = "OGM" ,Tag = text};
             var ogmData = text.Trim(' ', '\r', '\n').Split('\n').SkipWhile(string.IsNullOrEmpty).GetEnumerator();
             if (!ogmData.MoveNext()) return info;
             TimeSpan iniTime = OffsetCal(ogmData.Current);
