@@ -132,20 +132,14 @@ namespace ChapterTool.Util
                 if (editionEntry.NodeType == XmlNodeType.Comment) continue;
                 if (editionEntry.Name != "EditionEntry")
                 {
-                    throw new Exception($"Invalid Xml file.\nroot Entry Name: {editionEntry.Name}");
+                    throw new Exception($"Invalid Xml file.\nEntry Name: {editionEntry.Name}");
                 }
-                ChapterInfo buff = new ChapterInfo {SourceType = "XML"};
+                ChapterInfo buff = new ChapterInfo {SourceType = "XML", Tag = doc};
                 int index = 0;
                 foreach (XmlNode editionEntryChildNode in ((XmlElement)editionEntry).ChildNodes)//Get all the child nodes in current chapter
                 {
                     if (editionEntryChildNode.Name != "ChapterAtom") continue;
-                    ++index;
-                    var chapterAtom = PraseChapterAtom(editionEntryChildNode);
-                    foreach (var chapter in chapterAtom)
-                    {
-                        chapter.Number = index;
-                        buff.Chapters.Add(chapter);
-                    }
+                    buff.Chapters.AddRange(PraseChapterAtom(editionEntryChildNode, ++index));
                 }
 
                 for (int i = 0; i < buff.Chapters.Count - 1; i++)
@@ -160,10 +154,10 @@ namespace ChapterTool.Util
             }
         }
 
-        private static IEnumerable<Chapter> PraseChapterAtom(XmlNode chapterAtom)
+        private static IEnumerable<Chapter> PraseChapterAtom(XmlNode chapterAtom, int index)
         {
-            Chapter startChapter = new Chapter();
-            Chapter endChapter   = new Chapter();
+            Chapter startChapter = new Chapter {Number = index};
+            Chapter endChapter   = new Chapter {Number = index};
             var innerChapterAtom = new List<Chapter>();
             foreach (XmlNode chapterAtomChildNode in ((XmlElement)chapterAtom).ChildNodes) //Get detail info for current chapter node
             {
@@ -176,11 +170,18 @@ namespace ChapterTool.Util
                         endChapter.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
                         break;
                     case "ChapterDisplay":
-                        startChapter.Name = ((XmlElement) chapterAtomChildNode).ChildNodes.Item(0)?.InnerText;
-                        endChapter.Name = startChapter.Name;
+                        try
+                        {
+                            startChapter.Name = ((XmlElement)chapterAtomChildNode).ChildNodes.Cast<XmlNode>().First(node => node.Name == "ChapterString").InnerText;
+                        }
+                        catch
+                        {
+                            startChapter.Name = string.Empty;
+                        }
+                        endChapter.Name   = startChapter.Name;
                         break;
                     case "ChapterAtom"://Handling sub chapters.
-                        innerChapterAtom.AddRange(PraseChapterAtom(chapterAtomChildNode));
+                        innerChapterAtom.AddRange(PraseChapterAtom(chapterAtomChildNode, index));
                         break;
                 }
             }
