@@ -57,7 +57,7 @@ namespace ChapterTool.Util
 
         public static TimeSpan ToTimeSpan(this string input)
         {
-            if (string.IsNullOrEmpty(input)) { return TimeSpan.Zero; }
+            if (string.IsNullOrWhiteSpace(input)) { return TimeSpan.Zero; }
             var        temp = RTimeFormat.Match(input);
             int        hour = int.Parse(temp.Groups["Hour"].Value);
             int      minute = int.Parse(temp.Groups["Minute"].Value);
@@ -86,7 +86,7 @@ namespace ChapterTool.Util
         public static Point String2Point(string input)
         {
             var rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");
-            if (string.IsNullOrEmpty(input)) { return new Point(-32000, -32000); }
+            if (string.IsNullOrWhiteSpace(input)) { return new Point(-32000, -32000); }
             var temp = rpos.Match(input);
             int x = int.Parse(temp.Groups["x"].Value);
             int y = int.Parse(temp.Groups["y"].Value);
@@ -134,7 +134,7 @@ namespace ChapterTool.Util
                 {
                     throw new Exception($"Invalid Xml file.\nEntry Name: {editionEntry.Name}");
                 }
-                ChapterInfo buff = new ChapterInfo {SourceType = "XML", Tag = doc};
+                ChapterInfo buff = new ChapterInfo {SourceType = "XML", Tag = doc, TagType = doc.GetType()};
                 int index = 0;
                 foreach (XmlNode editionEntryChildNode in ((XmlElement)editionEntry).ChildNodes)//Get all the child nodes in current chapter
                 {

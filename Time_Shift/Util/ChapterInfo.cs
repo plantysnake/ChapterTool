@@ -19,6 +19,7 @@ namespace ChapterTool.Util
         public List<Chapter> Chapters { get; set; } = new List<Chapter>();
         public TimeSpan Offset        { get; set; } = TimeSpan.Zero;
         public bool Mul1K1            { get; set; }
+        public Type TagType { get; set; }
         public object Tag
         {
             get { return _tag; }
@@ -100,7 +101,7 @@ namespace ChapterTool.Util
 
         public void SaveXml(string filename,string lang, bool notUseName)
         {
-            if (string.IsNullOrEmpty(lang)) { lang = "und"; }
+            if (string.IsNullOrWhiteSpace(lang)) { lang = "und"; }
             Random rndb           = new Random();
             XmlTextWriter xmlchap = new XmlTextWriter(filename, Encoding.UTF8) {Formatting = Formatting.Indented};
             xmlchap.WriteStartDocument();

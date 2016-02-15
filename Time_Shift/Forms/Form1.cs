@@ -25,10 +25,11 @@ using System.Linq;
 using System.Drawing;
 using Microsoft.Win32;
 using ChapterTool.Util;
+using System.Threading;
+using System.Diagnostics;
 using System.Windows.Forms;
 using ChapterTool.Properties;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using static ChapterTool.Util.CTLogger;
 using static ChapterTool.Util.ConvertMethod;
@@ -210,9 +211,9 @@ namespace ChapterTool.Forms
                 switch (Path.GetExtension(_paths[0])?.ToLowerInvariant())
                 {
                     case ".mpls": LoadMpls();     break;
-                    case ".xml":   LoadXml();     break;
-                    case ".txt":   LoadOgm();     break;
-                    case ".ifo":   LoadIfo();     break;
+                    case ".xml":  LoadXml();      break;
+                    case ".txt":  LoadOgm();      break;
+                    case ".ifo":  LoadIfo();      break;
                     case ".mkv":
                     case ".mka":  LoadMatroska(); break;
                     case ".tak":  LoadTak();      break;
@@ -318,7 +319,7 @@ namespace ChapterTool.Forms
         private void LoadTak()
         {
             var cue = CueData.GetCueFromTak(_paths[0]);
-            if (string.IsNullOrEmpty(cue))
+            if (string.IsNullOrWhiteSpace(cue))
             {
                 MessageBox.Show(@"该文件内无内嵌Cue");
                 _paths[0] = string.Empty;
@@ -332,7 +333,7 @@ namespace ChapterTool.Forms
         private void LoadFlac()
         {
             var cue = CueData.GetCueFromFlac(_paths[0]);
-            if (string.IsNullOrEmpty(cue))
+            if (string.IsNullOrWhiteSpace(cue))
             {
                 MessageBox.Show(@"该文件内无内嵌Cue");
                 _paths[0] = string.Empty;
@@ -428,7 +429,7 @@ namespace ChapterTool.Forms
         {
             if (!IsPathValid) return;//防止保存先于载入
 
-            var rootPath = string.IsNullOrEmpty(_customSavingPath) ? Path.GetDirectoryName(_paths[0]) : _customSavingPath;
+            var rootPath = string.IsNullOrWhiteSpace(_customSavingPath) ? Path.GetDirectoryName(_paths[0]) : _customSavingPath;
             var fileName = Path.GetFileNameWithoutExtension(_paths[0]);
             StringBuilder savePath = new StringBuilder($"{rootPath}\\{fileName}");
 
@@ -453,7 +454,7 @@ namespace ChapterTool.Forms
                     break;
                 case 1://XML
                     string key = _rLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
-                    _info.SaveXml(savePathS, string.IsNullOrEmpty(key)? "": LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
+                    _info.SaveXml(savePathS, string.IsNullOrWhiteSpace(key)? "": LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
                     break;
                 case 2://QPF
                     _info.SaveQpfile(savePathS);
@@ -478,8 +479,8 @@ namespace ChapterTool.Forms
 
         private ChapterInfo GenerateChapterInfoFromOgm(string text, int orderOffset)
         {
-            var info = new ChapterInfo { SourceType = "OGM" ,Tag = text};
-            var ogmData = text.Trim(' ', '\r', '\n').Split('\n').SkipWhile(string.IsNullOrEmpty).GetEnumerator();
+            var info = new ChapterInfo { SourceType = "OGM" ,Tag = text, TagType = text.GetType()};
+            var ogmData = text.Trim(' ', '\r', '\n').Split('\n').SkipWhile(string.IsNullOrWhiteSpace).GetEnumerator();
             if (!ogmData.MoveNext()) return info;
             TimeSpan iniTime = OffsetCal(ogmData.Current);
             do
@@ -487,7 +488,7 @@ namespace ChapterTool.Forms
                 string buffer1 = ogmData.Current;
                 ogmData.MoveNext();
                 string buffer2 = ogmData.Current;
-                if (string.IsNullOrEmpty(buffer1) || string.IsNullOrEmpty(buffer2))
+                if (string.IsNullOrWhiteSpace(buffer1) || string.IsNullOrWhiteSpace(buffer2))
                 {
                     Log($"interrupt at '{buffer1}'  '{buffer2}'");
                     break;
@@ -501,7 +502,7 @@ namespace ChapterTool.Forms
                     throw new FormatException($"invalid format: \n'{buffer1}' \n'{buffer2}' ");
                 }
             } while (ogmData.MoveNext());
-            if (info.Chapters.Count>1)
+            if (info.Chapters.Count > 1)
             {
                 info.Duration = info.Chapters.Last().Time;
             }
@@ -563,7 +564,7 @@ namespace ChapterTool.Forms
 
         private void UpdataInfo(string chapterNameTemplate)
         {
-            if (!IsPathValid || string.IsNullOrEmpty(chapterNameTemplate)) return;
+            if (!IsPathValid || string.IsNullOrWhiteSpace(chapterNameTemplate)) return;
             var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();
             _info.Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name);
             cn.Dispose();
@@ -842,7 +843,7 @@ namespace ChapterTool.Forms
             try
             {
                 string mkvToolnixPath = RegistryStorage.Load(@"Software\ChapterTool", "mkvToolnixPath");
-                if (string.IsNullOrEmpty(mkvToolnixPath) && File.Exists($"{mkvToolnixPath}/mkvextract.exe"))
+                if (string.IsNullOrWhiteSpace(mkvToolnixPath) && File.Exists($"{mkvToolnixPath}/mkvextract.exe"))
                 {
                     mkvToolnixPath = MatroskaInfo.GetMkvToolnixPathViaRegistry();
                     RegistryStorage.Save(mkvToolnixPath, @"Software\ChapterTool", "mkvToolnixPath");
@@ -981,12 +982,12 @@ namespace ChapterTool.Forms
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
             if (_rawMpls == null || !IsPathValid || !_paths[0].ToLowerInvariant().EndsWith(".mpls")) return;
-            int index = MplsFileSeletIndex;
+            int index       = MplsFileSeletIndex;
             Clip streamClip = _rawMpls.ChapterClips[index];
             if (streamClip.TimeStamp.Count != 2) return;
             string sFakeChapter2 = $"但是这第二个章节点{Environment.NewLine}离视频结尾太近了呢，应该没有用处吧 (-｡-;)";
             string sFakeChapter3 = $"虽然只有两个章节点{Environment.NewLine}应该还是能安心的呢 (～￣▽￣)→))*￣▽￣*)o";
-            string lastTime = Time2String(streamClip.TimeOut - streamClip.TimeIn);
+            string lastTime      = Time2String(streamClip.TimeOut - streamClip.TimeIn);
             toolTip1.Show(
                 streamClip.TimeOut - streamClip.TimeIn - (streamClip.TimeStamp.Last() - streamClip.TimeStamp.First()) <=
                 5*45000
@@ -1025,6 +1026,7 @@ namespace ChapterTool.Forms
                     FormMove(forward.Next(1, 5), ref origin);
                     Location = origin;
                     Application.DoEvents();
+                    Thread.Sleep(5);
                 }
                 return;
             }
@@ -1034,6 +1036,7 @@ namespace ChapterTool.Forms
                 FormMove(forward2, ref origin);
                 Location = origin;
                 Application.DoEvents();
+                Thread.Sleep(5);
             }
         }
         #endregion

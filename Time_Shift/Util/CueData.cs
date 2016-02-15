@@ -21,7 +21,7 @@ namespace ChapterTool.Util
         public static ChapterInfo PraseCue(string context)
         {
             var lines         = context.Split('\n');
-            var cue           = new ChapterInfo {SourceType = "CUE", Tag = context};
+            var cue           = new ChapterInfo {SourceType = "CUE", Tag = context, TagType = context.GetType()};
             Regex rTitle      = new Regex(@"TITLE\s+\""(.+)\""");
             Regex rFile       = new Regex(@"FILE\s+\""(.+)\""\s+(WAVE|MP3|AIFF|BINARY|MOTOROLA)");
             Regex rTrack      = new Regex(@"TRACK\s+(\d+)");
@@ -36,11 +36,11 @@ namespace ChapterTool.Util
                 {
                     case NextState.NsStart:
                         var chapterTitleMatch = rTitle.Match(line);
-                        var fileMatch = rFile.Match(line);
+                        var fileMatch         = rFile.Match(line);
                         if (chapterTitleMatch.Success)
                         {
                             cue.Title = chapterTitleMatch.Groups[0].Value;
-                            nxState = NextState.NsNewTrack;
+                            nxState   = NextState.NsNewTrack;
                             break;
                         }
                         if (fileMatch.Success)
@@ -49,7 +49,7 @@ namespace ChapterTool.Util
                         }
                         break;
                     case NextState.NsNewTrack:
-                        if (string.IsNullOrEmpty(line))
+                        if (string.IsNullOrWhiteSpace(line))
                         {
                             nxState = NextState.NsFin;
                             break;
@@ -63,8 +63,8 @@ namespace ChapterTool.Util
                         break;
                     case NextState.NsTrack:
                         var trackTitleMatch = rTitle.Match(line);
-                        var performerMatch = rPerformer.Match(line);
-                        var timeMatch = rTime.Match(line);
+                        var performerMatch  = rPerformer.Match(line);
+                        var timeMatch       = rTime.Match(line);
 
                         if (trackTitleMatch.Success)
                         {
@@ -86,13 +86,13 @@ namespace ChapterTool.Util
                                 case 0: //pre-gap of a track
                                     break;
                                 case 1: //beginning of a new track.
-                                    var minute = int.Parse(timeMatch.Groups["M"].Value);
-                                    var second = int.Parse(timeMatch.Groups["S"].Value);
-                                    var millisecond = (int)Math.Round(int.Parse(timeMatch.Groups["F"].Value)*(1000F/75));
                                     Debug.Assert(chapter != null);
-                                    chapter.Time = new TimeSpan(0, 0, minute, second, millisecond);
+                                    var minute      = int.Parse(timeMatch.Groups["M"].Value);
+                                    var second      = int.Parse(timeMatch.Groups["S"].Value);
+                                    var millisecond = (int)Math.Round(int.Parse(timeMatch.Groups["F"].Value)*(1000F/75));
+                                    chapter.Time    = new TimeSpan(0, 0, minute, second, millisecond);
                                     cue.Chapters.Add(chapter);
-                                    nxState = NextState.NsNewTrack;
+                                    nxState         = NextState.NsNewTrack;
                                     break;
                                 default:
                                     nxState = NextState.NsError;
