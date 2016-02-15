@@ -55,6 +55,31 @@ namespace ChapterTool.Util
             return row;
         }
 
+        public static ChapterInfo CombineChapter(List<ChapterInfo> source)
+        {
+            var fullChapter = new ChapterInfo
+            {
+                Title = "FULL Chapter",
+                SourceType = "DVD",
+                FramesPerSecond = source.First().FramesPerSecond
+            };
+            TimeSpan duration = TimeSpan.Zero;
+            int index = 0;
+            source.ForEach(chapterClip =>
+            {
+                chapterClip.Chapters.ForEach(item =>
+                    fullChapter.Chapters.Add(new Chapter
+                    {
+                        Time = duration + item.Time,
+                        Number = ++index,
+                        Name = $"Chapter {index:D2}"
+                    }));
+                duration += chapterClip.Duration;
+            });
+            fullChapter.Duration = duration;
+            return fullChapter;
+        }
+
         public static Chapter WriteToChapterInfo(string line, string line2, int order, TimeSpan iniTime, bool notUseName)
         {
             Chapter temp = new Chapter { Number = order, Time = TimeSpan.Zero };

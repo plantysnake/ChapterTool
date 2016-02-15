@@ -245,31 +245,6 @@ namespace ChapterTool.Forms
         private List<ChapterInfo> _rawIfo;
         private ChapterInfo _fullIfoChapter;
 
-        private static ChapterInfo CombineChapter(List<ChapterInfo> source)
-        {
-            var fullChapter = new ChapterInfo
-            {
-                Title = "FULL Chapter",
-                SourceType = "DVD",
-                FramesPerSecond = source.First().FramesPerSecond
-            };
-            TimeSpan duration = TimeSpan.Zero;
-            int index = 0;
-            source.ForEach(chapterClip =>
-            {
-                chapterClip.Chapters.ForEach(item =>
-                    fullChapter.Chapters.Add( new Chapter
-                        {
-                            Time = duration + item.Time,
-                            Number = ++index,
-                            Name = $"Chapter {index:D2}"
-                        }));
-                duration += chapterClip.Duration;
-            });
-            fullChapter.Duration = duration;
-            return fullChapter;
-        }
-
         private void LoadIfo()
         {
             _rawIfo = new IfoData().GetStreams(FilePath).Where(item => item != null).ToList();
@@ -278,7 +253,7 @@ namespace ChapterTool.Forms
                 throw new Exception("No Chapter in this Ifo at all");
             }
 
-            _fullIfoChapter = CombineChapter(_rawIfo);
+            _fullIfoChapter = ChapterInfo.CombineChapter(_rawIfo);
 
             comboBox2.Items.Clear();
             comboBox2.Enabled = comboBox2.Visible = _rawIfo.Count >= 1;
@@ -290,7 +265,7 @@ namespace ChapterTool.Forms
                 Log($" |+{item.SourceName}");
                 Log($"  |+包含 {item.Chapters.Count} 个时间戳");
             });
-            _info                   = _rawIfo.First();
+            _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _rawIfo.First();
             comboBox2.SelectedIndex = _rawIfo.IndexOf(_info);
             Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.IFO_WARNING;
         }
@@ -532,7 +507,7 @@ namespace ChapterTool.Forms
                 });
             }
             _info = _xmlGroup.First();
-            comboBox2.SelectedIndex = MplsFileSeletIndex;
+            comboBox2.SelectedIndex = ClipSeletIndex;
             Tips.Text = Resources.Load_Success;
         }
 
@@ -578,7 +553,7 @@ namespace ChapterTool.Forms
                     comboBox1.Enabled     = false;
                     break;
                 case "MPLS":
-                    GetFramInfo(_rawMpls.ChapterClips[MplsFileSeletIndex].Fps);
+                    GetFramInfo(_rawMpls.ChapterClips[ClipSeletIndex].Fps);
                     comboBox1.Enabled     = false;
                     break;
                 default:
@@ -765,7 +740,7 @@ namespace ChapterTool.Forms
 
         private MplsData _rawMpls;
 
-        private int MplsFileSeletIndex => comboBox2.SelectedIndex == -1 ? 0 : comboBox2.SelectedIndex;
+        private int ClipSeletIndex => comboBox2.SelectedIndex < 0 ? 0 : comboBox2.SelectedIndex;
 
         private void LoadMpls()
         {
@@ -784,8 +759,8 @@ namespace ChapterTool.Forms
                     Log($"  |+包含 {item.TimeStamp.Count} 个时间戳");
                 });
             }
-            comboBox2.SelectedIndex = MplsFileSeletIndex;
-            GetChapterInfoFromMpls(MplsFileSeletIndex);
+            comboBox2.SelectedIndex = ClipSeletIndex;
+            GetChapterInfoFromMpls(ClipSeletIndex);
         }
 
         /// <summary>
@@ -795,15 +770,15 @@ namespace ChapterTool.Forms
         {
             if (_rawMpls != null)
             {
-                GetChapterInfoFromMpls(comboBox2.SelectedIndex);
+                GetChapterInfoFromMpls(ClipSeletIndex);
             }
             else if (_xmlGroup != null)
             {
-                _info = _xmlGroup[comboBox2.SelectedIndex];
+                _info = _xmlGroup[ClipSeletIndex];
             }
             else if (_rawIfo != null)
             {
-                GetChapterInfoFromIFO(comboBox2.SelectedIndex);
+                GetChapterInfoFromIFO(ClipSeletIndex);
             }
             UpdataGridView();
         }
@@ -815,11 +790,11 @@ namespace ChapterTool.Forms
             combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
             if (_rawMpls != null)
             {
-                GetChapterInfoFromMpls(comboBox2.SelectedIndex);
+                GetChapterInfoFromMpls(ClipSeletIndex);
             }
             if (_rawIfo  != null)
             {
-                GetChapterInfoFromIFO(comboBox2.SelectedIndex);
+                GetChapterInfoFromIFO(ClipSeletIndex);
             }
             UpdataGridView();
         }
@@ -971,7 +946,7 @@ namespace ChapterTool.Forms
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
             if (_rawMpls == null || !IsPathValid || !FilePath.ToLowerInvariant().EndsWith(".mpls")) return;
-            int index       = MplsFileSeletIndex;
+            int index       = ClipSeletIndex;
             Clip streamClip = _rawMpls.ChapterClips[index];
             if (streamClip.TimeStamp.Count != 2) return;
             string sFakeChapter2 = $"但是这第二个章节点{Environment.NewLine}离视频结尾太近了呢，应该没有用处吧 (-｡-;)";
