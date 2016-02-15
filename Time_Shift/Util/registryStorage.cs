@@ -54,5 +54,16 @@ namespace ChapterTool.Util
                 key?.CreateSubKey(@"Shell\Open\Command")?.SetValue("", Application.ExecutablePath + " \"%1\"", RegistryValueKind.ExpandString);
             }
         }
+
+
+        public static int RegistryAddCount(string subKey, string name, int delta = 1)
+        {
+            var countS = Load(subKey, name);
+            int count = string.IsNullOrEmpty(countS) ? 0 : int.Parse(countS);
+            count += delta;
+            Save(count.ToString(), subKey, name);
+            return count - delta;
+        }
+
     }
 }

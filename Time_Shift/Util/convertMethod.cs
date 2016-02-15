@@ -19,16 +19,15 @@
 // ****************************************************************************
 using System;
 using System.IO;
-using System.Xml;
 using System.Text;
 using System.Linq;
 using System.Drawing;
 using ChapterTool.Forms;
+using System.Windows.Forms;
 using System.Security.Principal;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
@@ -57,7 +56,7 @@ namespace ChapterTool.Util
 
         public static TimeSpan ToTimeSpan(this string input)
         {
-            if (string.IsNullOrWhiteSpace(input)) { return TimeSpan.Zero; }
+            if (string.IsNullOrWhiteSpace(input)) return TimeSpan.Zero;
             var        temp = RTimeFormat.Match(input);
             int        hour = int.Parse(temp.Groups["Hour"].Value);
             int      minute = int.Parse(temp.Groups["Minute"].Value);
@@ -86,8 +85,8 @@ namespace ChapterTool.Util
         public static Point String2Point(string input)
         {
             var rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");
-            if (string.IsNullOrWhiteSpace(input)) { return new Point(-32000, -32000); }
             var temp = rpos.Match(input);
+            if (string.IsNullOrWhiteSpace(input) || !temp.Success) return new Point(-32000, -32000);
             int x = int.Parse(temp.Groups["x"].Value);
             int y = int.Parse(temp.Groups["y"].Value);
             return new Point(x, y);
@@ -97,7 +96,19 @@ namespace ChapterTool.Util
 
         public static int ConvertFr2Index(double frame) => Enumerable.Range(0, 7).First(index => Math.Abs(frame - (double)FrameRate[index]) < 1e-5);
 
-        public static string GetUTF8String(byte[] buffer)
+        public static void EditRow(this DataGridViewRow row, ChapterInfo info, bool autoGenName)
+        {
+            var item = (Chapter)row.Tag;
+            row.DefaultCellStyle.BackColor = row.Index % 2 == 0
+                ? Color.FromArgb(0x92, 0xAA, 0xF3)
+                : Color.FromArgb(0xF3, 0xF7, 0xF7);
+            row.Cells[0].Value = $"{item.Number:D2}";
+            row.Cells[1].Value = item.Time2String(info.Offset, info.Mul1K1);
+            row.Cells[2].Value = autoGenName ? $"Chapter {row.Index + 1:D2}" : item.Name;
+            row.Cells[3].Value = item.FramsInfo;
+        }
+
+        public static string GetUTF8String(this byte[] buffer)
         {
             if (buffer == null) return null;
             if (buffer.Length <= 3) return Encoding.UTF8.GetString(buffer);
@@ -115,104 +126,17 @@ namespace ChapterTool.Util
             return Math.Abs(frams - answer) < accuracy ? 1 : 0;
         }
 
-        public static IEnumerable<ChapterInfo> PraseXml(XmlDocument doc)
-        {
-            XmlElement root = doc.DocumentElement;
-            if (root == null)
-            {
-                throw new ArgumentException("Empty Xml file");
-            }
-            if (root.Name != "Chapters")
-            {
-                throw new Exception($"Invalid Xml file.\nroot node Name: {root.Name}");
-            }
-
-            foreach (XmlNode editionEntry in root.ChildNodes)//Get Entrance for each chapter
-            {
-                if (editionEntry.NodeType == XmlNodeType.Comment) continue;
-                if (editionEntry.Name != "EditionEntry")
-                {
-                    throw new Exception($"Invalid Xml file.\nEntry Name: {editionEntry.Name}");
-                }
-                ChapterInfo buff = new ChapterInfo {SourceType = "XML", Tag = doc, TagType = doc.GetType()};
-                int index = 0;
-                foreach (XmlNode editionEntryChildNode in ((XmlElement)editionEntry).ChildNodes)//Get all the child nodes in current chapter
-                {
-                    if (editionEntryChildNode.Name != "ChapterAtom") continue;
-                    buff.Chapters.AddRange(PraseChapterAtom(editionEntryChildNode, ++index));
-                }
-
-                for (int i = 0; i < buff.Chapters.Count - 1; i++)
-                {
-                    if (buff.Chapters[i].Time == buff.Chapters[i+1].Time)
-                    {
-                        buff.Chapters.Remove(buff.Chapters[i--]);
-                    }
-                }
-                //buff.Chapters = buff.Chapters.Distinct().ToList();
-                yield return buff;
-            }
-        }
-
-        private static IEnumerable<Chapter> PraseChapterAtom(XmlNode chapterAtom, int index)
-        {
-            Chapter startChapter = new Chapter {Number = index};
-            Chapter endChapter   = new Chapter {Number = index};
-            var innerChapterAtom = new List<Chapter>();
-            foreach (XmlNode chapterAtomChildNode in ((XmlElement)chapterAtom).ChildNodes) //Get detail info for current chapter node
-            {
-                switch (chapterAtomChildNode.Name)
-                {
-                    case "ChapterTimeStart":
-                        startChapter.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
-                        break;
-                    case "ChapterTimeEnd":
-                        endChapter.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
-                        break;
-                    case "ChapterDisplay":
-                        try
-                        {
-                            startChapter.Name = ((XmlElement)chapterAtomChildNode).ChildNodes.Cast<XmlNode>().First(node => node.Name == "ChapterString").InnerText;
-                        }
-                        catch
-                        {
-                            startChapter.Name = string.Empty;
-                        }
-                        endChapter.Name   = startChapter.Name;
-                        break;
-                    case "ChapterAtom"://Handling sub chapters.
-                        innerChapterAtom.AddRange(PraseChapterAtom(chapterAtomChildNode, index));
-                        break;
-                }
-            }
-            yield return startChapter;
-
-            foreach (var chapter in innerChapterAtom)
-            {
-                yield return chapter;
-            }
-
-            if (endChapter.Time.TotalSeconds > startChapter.Time.TotalSeconds)
-            {
-                yield return endChapter;
-            }
-        }
-
         private const string ColorProfile = "color-config.json";
 
         public static void SaveColor(this List<Color> colorList)
         {
             var json = new StringBuilder("[");
-            foreach (var color in colorList)
-            {
-                json.Append($"\"#{color.R:X2}{color.G:X2}{color.B:X2}\",");
-            }
-            //colorList.ForEach(item => json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\","));
+            colorList.ForEach(item => json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\","));
             json[json.Length - 1] = ']';
             File.WriteAllText(ColorProfile, json.ToString());
         }
 
-        public static void LoadColor(Form1 window)
+        public static void LoadColor(this Form1 window)
         {
             if (!File.Exists(ColorProfile)) return;
             string json = File.ReadAllText(ColorProfile);

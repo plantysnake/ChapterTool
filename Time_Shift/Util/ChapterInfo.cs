@@ -3,7 +3,9 @@ using System.IO;
 using System.Xml;
 using System.Text;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
@@ -33,6 +35,26 @@ namespace ChapterTool.Util
         private object _tag;
 
         public override string ToString() => $"{Title} - {SourceType} - {Duration.Time2String()} - [{Chapters.Count} Chapters]";
+
+        public DataGridViewRow GetRow(int index, bool autoGenName, DataGridView grid)
+        {
+            var row = new DataGridViewRow
+            {
+                Tag = Chapters[index],
+                DefaultCellStyle =
+                {
+                    BackColor = (Chapters[index].Number + 1)%2 == 0
+                        ? Color.FromArgb(0x92, 0xAA, 0xF3)
+                        : Color.FromArgb(0xF3, 0xF7, 0xF7)
+                }
+            };
+            row.CreateCells(grid);
+            row.Cells[0].Value = $"{Chapters[index].Number:D2}";
+            row.Cells[1].Value = Chapters[index].Time2String(Offset, Mul1K1);
+            row.Cells[2].Value = autoGenName ? $"Chapter {row.Index + 1:D2}" : Chapters[index].Name;
+            row.Cells[3].Value = Chapters[index].FramsInfo;
+            return row;
+        }
 
         public static Chapter WriteToChapterInfo(string line, string line2, int order, TimeSpan iniTime, bool notUseName)
         {
@@ -101,7 +123,7 @@ namespace ChapterTool.Util
 
         public void SaveXml(string filename,string lang, bool notUseName)
         {
-            if (string.IsNullOrWhiteSpace(lang)) { lang = "und"; }
+            if (string.IsNullOrWhiteSpace(lang)) lang = "und";
             Random rndb           = new Random();
             XmlTextWriter xmlchap = new XmlTextWriter(filename, Encoding.UTF8) {Formatting = Formatting.Indented};
             xmlchap.WriteStartDocument();
