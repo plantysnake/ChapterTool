@@ -45,7 +45,7 @@ namespace ChapterTool.Forms
         public Form1(string args)
         {
             InitializeComponent();
-            _paths[0] = args;
+            FilePath = args;
             Log($"+从运行参数中载入文件:{args}");
         }
         private void Form1_Load(object sender, EventArgs e)
@@ -68,7 +68,7 @@ namespace ChapterTool.Forms
             savingType.SelectedIndex          = 0;
             btnTrans.Text                     = Environment.TickCount % 2 == 0 ? "↺" : "↻";
             folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
-            if (!string.IsNullOrEmpty(_paths[0]))
+            if (!string.IsNullOrEmpty(FilePath))
             {
                 if (Loadfile()) UpdataGridView();
                 RegistryStorage.Save(Resources.How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
@@ -143,11 +143,17 @@ namespace ChapterTool.Forms
 
         private string[] _paths = new string[20];
 
+        private string FilePath
+        {
+            get { return _paths[0];  }
+            set { _paths[0] = value; }
+        }
+
         private void Form1_DragDrop(object sender,  DragEventArgs e)
         {
             _paths = e.Data.GetData(DataFormats.FileDrop) as string[];
             if (!IsPathValid) return;
-            Log($"+{Resources.Load_File_By_Dragging}{_paths?[0]}");
+            Log($"+{Resources.Load_File_By_Dragging}{FilePath}");
             comboBox2.Items.Clear();
             if (Loadfile()) UpdataGridView();
         }
@@ -185,15 +191,15 @@ namespace ChapterTool.Forms
         {
             get
             {
-                if (string.IsNullOrEmpty(_paths[0]))
+                if (string.IsNullOrEmpty(FilePath))
                 {
                     Tips.Text = Resources.File_Unloaded;
                     return false;
                 }
-                if (_rFileType.IsMatch(_paths[0])) return true;
+                if (_rFileType.IsMatch(FilePath)) return true;
                 Tips.Text = Resources.InValid_Type;
                 Log(Resources.InValid_Type_Log);
-                _paths[0] = string.Empty;
+                FilePath = string.Empty;
                 label1.Text = Resources.File_Unloaded;
                 return false;
             }
@@ -202,13 +208,13 @@ namespace ChapterTool.Forms
         private bool Loadfile()
         {
             if (!IsPathValid) return false;
-            var fileName = Path.GetFileName(_paths[0]);
+            var fileName = Path.GetFileName(FilePath);
             label1.Text   = fileName?.Length > 55 ? $"{fileName.Substring(0, 40)}…{fileName.Substring(fileName.Length - 15, 15)}" : fileName;
             SetDefault();
             Cursor = Cursors.AppStarting;
             try
             {
-                switch (Path.GetExtension(_paths[0])?.ToLowerInvariant())
+                switch (Path.GetExtension(FilePath)?.ToLowerInvariant())
                 {
                     case ".mpls": LoadMpls();     break;
                     case ".xml":  LoadXml();      break;
@@ -216,8 +222,8 @@ namespace ChapterTool.Forms
                     case ".ifo":  LoadIfo();      break;
                     case ".mkv":
                     case ".mka":  LoadMatroska(); break;
-                    case ".tak":  LoadTak();      break;
-                    case ".flac": LoadFlac();     break;
+                    case ".tak":
+                    case ".flac": GetCue();       break;
                     case ".cue":  LoadCue();      break;
                     default:
                         throw new Exception("Invalid File Format");
@@ -230,7 +236,7 @@ namespace ChapterTool.Forms
                 progressBar1.SetState(2);
                 MessageBox.Show(ex.Message, Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 progressBar1.Value = 0;
-                _paths[0]   = string.Empty;
+                FilePath   = string.Empty;
                 Log($"ERROR: {ex.Message}");
                 label1.Text = Resources.File_Unloaded;
                 Cursor      = Cursors.Default;
@@ -270,7 +276,7 @@ namespace ChapterTool.Forms
 
         private void LoadIfo()
         {
-            _rawIfo = new IfoData().GetStreams(_paths[0]).Where(item => item != null).ToList();
+            _rawIfo = new IfoData().GetStreams(FilePath).Where(item => item != null).ToList();
             if (_rawIfo.Count == 0)
             {
                 throw new Exception("No Chapter in this Ifo at all");
@@ -295,7 +301,7 @@ namespace ChapterTool.Forms
 
         private void LoadOgm()
         {
-            _info = GenerateChapterInfoFromOgm(GetUTF8String(File.ReadAllBytes(_paths[0])), (int)numericUpDown1.Value);
+            _info = GenerateChapterInfoFromOgm(GetUTF8String(File.ReadAllBytes(FilePath)), (int)numericUpDown1.Value);
             progressBar1.Value = 33;
             Tips.Text = Resources.Load_Success;
         }
@@ -304,47 +310,43 @@ namespace ChapterTool.Forms
         {
             try
             {
-                _info = CueData.PraseCue(GetUTF8String(File.ReadAllBytes(_paths[0])));
+                _info = CueData.PraseCue(GetUTF8String(File.ReadAllBytes(FilePath)));
                 progressBar1.Value = 33;
                 Tips.Text = Resources.Load_Success;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(@"无效的Cue文件");
-                _paths[0] = string.Empty;
+                FilePath = string.Empty;
                 Debug.WriteLine(ex.Message);
             }
         }
 
-        private void LoadTak()
+        private void GetCue()
         {
-            var cue = CueData.GetCueFromTak(_paths[0]);
+            var ext = Path.GetExtension(FilePath)?.ToLower();
+            string cue;
+            switch (ext)
+            {
+                case ".flac":
+                    cue = CueData.GetCueFromFlac(FilePath);
+                    break;
+                case ".tak":
+                    cue = CueData.GetCueFromTak(FilePath);
+                    break;
+                default:
+                    throw new Exception($"无效的后缀{ext}");
+            }
             if (string.IsNullOrWhiteSpace(cue))
             {
                 MessageBox.Show(@"该文件内无内嵌Cue");
-                _paths[0] = string.Empty;
+                FilePath = string.Empty;
                 return;
             }
             _info = CueData.PraseCue(cue);
             progressBar1.Value = 33;
             Tips.Text = Resources.Load_Success;
         }
-
-        private void LoadFlac()
-        {
-            var cue = CueData.GetCueFromFlac(_paths[0]);
-            if (string.IsNullOrWhiteSpace(cue))
-            {
-                MessageBox.Show(@"该文件内无内嵌Cue");
-                _paths[0] = string.Empty;
-                return;
-            }
-            _info = CueData.PraseCue(cue);
-            progressBar1.Value = 33;
-            Tips.Text = Resources.Load_Success;
-        }
-
-
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
@@ -355,8 +357,8 @@ namespace ChapterTool.Forms
             try
             {
                 if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
-                _paths[0] = openFileDialog1.FileName;
-                Log($"+从载入键中载入文件: {_paths[0]}");
+                FilePath = openFileDialog1.FileName;
+                Log($"+从载入键中载入文件: {FilePath}");
                 comboBox2.Items.Clear();
                 if (Loadfile()) UpdataGridView();
                 progressBar1.SetState(1);
@@ -364,8 +366,8 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show($"Error opening file {_paths[0]}: {exception.Message}{Environment.NewLine}", Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                Log($"Error opening file {_paths[0]}: {exception.Message}");
+                MessageBox.Show($"Error opening file {FilePath}: {exception.Message}{Environment.NewLine}", Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                Log($"Error opening file {FilePath}: {exception.Message}");
             }
         }
 
@@ -429,11 +431,11 @@ namespace ChapterTool.Forms
         {
             if (!IsPathValid) return;//防止保存先于载入
 
-            var rootPath = string.IsNullOrWhiteSpace(_customSavingPath) ? Path.GetDirectoryName(_paths[0]) : _customSavingPath;
-            var fileName = Path.GetFileNameWithoutExtension(_paths[0]);
+            var rootPath = string.IsNullOrWhiteSpace(_customSavingPath) ? Path.GetDirectoryName(FilePath) : _customSavingPath;
+            var fileName = Path.GetFileNameWithoutExtension(FilePath);
             StringBuilder savePath = new StringBuilder($"{rootPath}\\{fileName}");
 
-            var ext = Path.GetExtension(_paths[0])?.ToLowerInvariant();
+            var ext = Path.GetExtension(FilePath)?.ToLowerInvariant();
             if (ext == ".mpls")
                 savePath.Append($"__{_info.Title}");
             if (ext == ".ifo")
@@ -750,8 +752,8 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show($"Error opening file {_paths[0]}: {exception.Message}{Environment.NewLine}", Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                Log($"Error opening file {_paths[0]}: {exception.Message}");
+                MessageBox.Show($"Error opening file {FilePath}: {exception.Message}{Environment.NewLine}", Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                Log($"Error opening file {FilePath}: {exception.Message}");
                 return string.Empty;
             }
         }
@@ -768,7 +770,7 @@ namespace ChapterTool.Forms
         private void LoadXml()
         {
             var doc = new XmlDocument();
-            doc.Load(_paths[0]);
+            doc.Load(FilePath);
             GetChapterInfoFromXml(doc);
         }
 
@@ -780,7 +782,7 @@ namespace ChapterTool.Forms
 
         private void LoadMpls()
         {
-            _rawMpls = new MplsData(_paths[0]);
+            _rawMpls = new MplsData(FilePath);
             Log("+成功载入MPLS格式章节文件");
             Log($"|+MPLS中共有 {_rawMpls.ChapterClips.Count} 个m2ts片段");
 
@@ -848,7 +850,7 @@ namespace ChapterTool.Forms
                     mkvToolnixPath = MatroskaInfo.GetMkvToolnixPathViaRegistry();
                     RegistryStorage.Save(mkvToolnixPath, @"Software\ChapterTool", "mkvToolnixPath");
                 }
-                var matroska = new MatroskaInfo(_paths[0], $"{mkvToolnixPath}/mkvextract.exe");
+                var matroska = new MatroskaInfo(FilePath, $"{mkvToolnixPath}/mkvextract.exe");
                 GetChapterInfoFromXml(matroska.Result);
                 progressBar1.SetState(1);
             }
@@ -857,7 +859,7 @@ namespace ChapterTool.Forms
                 Log(ex.Message);
                 if (File.Exists("mkvextract.exe"))
                 {
-                    var matroska = new MatroskaInfo(_paths[0], "mkvextract.exe");
+                    var matroska = new MatroskaInfo(FilePath, "mkvextract.exe");
                     GetChapterInfoFromXml(matroska.Result);
                 }
                 else
@@ -977,11 +979,11 @@ namespace ChapterTool.Forms
 
         #region tips support
 
-        private void label1_MouseEnter(object sender, EventArgs e) => toolTip1.Show(_paths[0] ?? "", label1);
+        private void label1_MouseEnter(object sender, EventArgs e) => toolTip1.Show(FilePath ?? "", label1);
 
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
-            if (_rawMpls == null || !IsPathValid || !_paths[0].ToLowerInvariant().EndsWith(".mpls")) return;
+            if (_rawMpls == null || !IsPathValid || !FilePath.ToLowerInvariant().EndsWith(".mpls")) return;
             int index       = MplsFileSeletIndex;
             Clip streamClip = _rawMpls.ChapterClips[index];
             if (streamClip.TimeStamp.Count != 2) return;
@@ -1081,7 +1083,15 @@ namespace ChapterTool.Forms
             if (_info.Chapters.Count <= 1 || toBeDelete.IndexOf(0) < 0) return;
             TimeSpan ini = _info.Chapters.First().Time;
             UpdataInfo(ini);
+
+            if (_rawMpls != null || _rawIfo != null)
+            {
+                int index = 0;
+                _info.Chapters.ForEach(item => item.Name = $"Chapter {++index:D2}");
+            }
+            Application.DoEvents();
         }
+
         private void Form1_Move(object sender, EventArgs e)
         {
             if (_previewForm != null)
@@ -1106,7 +1116,11 @@ namespace ChapterTool.Forms
 
         private void cbAutoGenName_CheckedChanged(object sender, EventArgs e) => UpdataGridView();
 
-        private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e) => Log($"+ {e.RowCount} 行被删除");
+        private void dataGridView1_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            Log($"+ {e.RowCount} 行被删除");
+        }
+
 
         private void btnPreview_MouseUp(object sender, MouseEventArgs e)
         {
