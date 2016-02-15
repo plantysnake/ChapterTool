@@ -7,44 +7,16 @@ namespace ChapterTool.Util
 {
     public class IfoData
     {
-        public class ProgramChainArg : EventArgs
+        public IEnumerable<ChapterInfo> GetStreams(string ifoFile)
         {
-            public ChapterInfo ProgramChain { get; set; }
-        }
-
-        public event EventHandler<ProgramChainArg> StreamDetected;
-        public event EventHandler ExtractionComplete;
-
-
-        public List<ChapterInfo> GetStreams(string ifoFile)
-        {
-            var oList = new List<ChapterInfo>();
-
             int pgcCount = (int)IfoParser.GetPGCnb(ifoFile);
             for (int i = 1; i <= pgcCount; i++)
             {
-                var oChapterInfo = GetChapterInfo(ifoFile, i);
-                oList.Add(oChapterInfo);
+                yield return GetChapterInfo(ifoFile, i);
             }
-            return oList;
         }
 
-        private void OnStreamDetected(ChapterInfo pgc)
-        {
-            if (StreamDetected == null) return;
-            ProgramChainArg e = new ProgramChainArg
-            {
-                ProgramChain = pgc
-            };
-            StreamDetected(this, e);
-        }
-
-        private void OnExtractionComplete()
-        {
-            ExtractionComplete?.Invoke(this, EventArgs.Empty);
-        }
-
-        public ChapterInfo GetChapterInfo(string location, int titleSetNum)
+        private ChapterInfo GetChapterInfo(string location, int titleSetNum)
         {
             if (location.StartsWith("VTS_"))
             {
@@ -70,11 +42,8 @@ namespace ChapterTool.Util
             pgc.Duration        = duration;
             pgc.FramesPerSecond = fps;
 
-            if (pgc.Duration.TotalSeconds > 10)
-                OnStreamDetected(pgc);
-            else
+            if (pgc.Duration.TotalSeconds < 10)
                 pgc = null;
-            OnExtractionComplete();
 
             return pgc;
         }
