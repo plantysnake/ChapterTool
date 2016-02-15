@@ -266,7 +266,7 @@ namespace ChapterTool.Forms
                 Log($"  |+包含 {item.Chapters.Count} 个时间戳");
             });
             _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _rawIfo.First();
-            comboBox2.SelectedIndex = _rawIfo.IndexOf(_info);
+            comboBox2.SelectedIndex = ClipSeletIndex;
             Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.IFO_WARNING;
         }
 
