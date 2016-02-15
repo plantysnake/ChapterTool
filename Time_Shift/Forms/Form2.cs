@@ -18,7 +18,7 @@ namespace ChapterTool.Forms
             //this.BackColor = Color.DimGray;// "#252525";
             _poi                 = new Random().Next(1, 5);
             FormBorderStyle      = FormBorderStyle.None;
-            label1.Text          = AssemblyProduct;
+            linkLabel1.Text      = AssemblyProduct;
             label2.Text          = $"Version {AssemblyVersion}";
             label3.Text          = System.IO.File.GetLastWriteTime(GetType().Assembly.Location).ToString(CultureInfo.InvariantCulture);
             notifyIcon1.Visible  = false;
@@ -93,6 +93,11 @@ namespace ChapterTool.Forms
         {
             e.Cancel = true;
             Hide();
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://bitbucket.org/TautCony/chaptertool");
         }
     }
 }
