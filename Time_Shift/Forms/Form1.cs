@@ -322,7 +322,7 @@ namespace ChapterTool.Forms
         private void btnLoad_Click(object sender, EventArgs e)
         {
             openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.cue,*tak,*flac,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.cue;*.tak;*.flac;*.mkv;*.mka|" +
-                                     @"章节文件(*.txt,*.xml,*.mpls,*.ifo,*.cue)|*.txt;*.xml;*.mpls;*.ifo;*.cue|" +
+                                     @"章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|" +
                                      @"Cue文件[包括内嵌](*.cue,*.tak,*.flac)|*.cue;*.tak;*.flac|" +
                                      @"Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
             try
