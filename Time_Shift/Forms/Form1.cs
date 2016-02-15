@@ -257,6 +257,7 @@ namespace ChapterTool.Forms
 
             comboBox2.Items.Clear();
             comboBox2.Enabled = comboBox2.Visible = _rawIfo.Count >= 1;
+            Log($"|+IFO中共有 {_rawIfo.Count} 个片段");
             _rawIfo.ForEach(item =>
             {
                 comboBox2.Items.Add($"{item.Title}_{item.SourceName}__{item.Chapters.Count}");
