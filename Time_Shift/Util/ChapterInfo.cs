@@ -103,6 +103,29 @@ namespace ChapterTool.Util
             FramesPerSecond = fps;
         }
 
+        #region updataInfo
+
+        public void UpdataInfo(TimeSpan shift)
+        {
+            Chapters.ForEach(item => item.Time -= shift);
+        }
+
+        public void UpdataInfo(int shift)
+        {
+            int index = 0;
+            Chapters.ForEach(item => item.Number = ++index + shift);
+        }
+
+        public void UpdataInfo(string chapterNameTemplate)
+        {
+            if (string.IsNullOrWhiteSpace(chapterNameTemplate)) return;
+            var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();
+            Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name);
+            cn.Dispose();
+        }
+
+        #endregion
+
         public string GetText(bool donotuseName)
         {
             StringBuilder lines = new StringBuilder();

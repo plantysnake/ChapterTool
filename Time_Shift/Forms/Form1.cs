@@ -224,7 +224,7 @@ namespace ChapterTool.Forms
                     default:
                         throw new Exception("Invalid File Format");
                 }
-                UpdataInfo(_chapterNameTemplate);
+                _info.UpdataInfo(_chapterNameTemplate);
                 progressBar1.SetState(1);
             }
             catch (Exception ex)
@@ -273,7 +273,8 @@ namespace ChapterTool.Forms
 
         private void LoadOgm()
         {
-            _info = GenerateChapterInfoFromOgm(File.ReadAllBytes(FilePath).GetUTF8String(), (int)numericUpDown1.Value);
+            _info = OgmData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTF8String(), cbAutoGenName.Checked);
+            _info.UpdataInfo((int)numericUpDown1.Value);
             progressBar1.Value = 33;
             Tips.Text = Resources.Load_Success;
         }
@@ -451,42 +452,13 @@ namespace ChapterTool.Forms
 
         #region geneRateCI
 
-        private ChapterInfo GenerateChapterInfoFromOgm(string text, int orderOffset)
-        {
-            var info = new ChapterInfo { SourceType = "OGM" ,Tag = text, TagType = text.GetType()};
-            var ogmData = text.Trim(' ', '\r', '\n').Split('\n').SkipWhile(string.IsNullOrWhiteSpace).GetEnumerator();
-            if (!ogmData.MoveNext()) return info;
-            TimeSpan iniTime = OffsetCal(ogmData.Current);
-            do
-            {
-                string buffer1 = ogmData.Current;
-                ogmData.MoveNext();
-                string buffer2 = ogmData.Current;
-                if (string.IsNullOrWhiteSpace(buffer1) || string.IsNullOrWhiteSpace(buffer2))
-                {
-                    Log($"interrupt at '{buffer1}'  '{buffer2}'");
-                    break;
-                }
-                if (RLineOne.IsMatch(buffer1) && RLineTwo.IsMatch(buffer2))
-                {
-                    info.Chapters.Add(ChapterInfo.WriteToChapterInfo(buffer1, buffer2, ++orderOffset, iniTime, cbAutoGenName.Checked));
-                    continue;
-                }
-                throw new FormatException($"invalid format: \n'{buffer1}' \n'{buffer2}' ");
-            } while (ogmData.MoveNext());
-            if (info.Chapters.Count > 1)
-            {
-                info.Duration = info.Chapters.Last().Time;
-            }
-            ogmData.Dispose();
-            return info;
-        }
+
 
         private void GetChapterInfoFromMpls(int index)
         {
             _info = _rawMpls.ToChapterInfo(index, combineToolStripMenuItem.Checked);
             Tips.Text = _info.Chapters.Count < 2 ? Resources.Chapter_Not_find : Resources.Load_Success;
-            UpdataInfo(_chapterNameTemplate);
+            _info.UpdataInfo(_chapterNameTemplate);
         }
 
         private List<ChapterInfo> _xmlGroup;
@@ -519,30 +491,7 @@ namespace ChapterTool.Forms
 
         #endregion
 
-        #region updataInfo
 
-        private void UpdataInfo(TimeSpan shift)
-        {
-            if (!IsPathValid) return;
-            _info.Chapters.ForEach(item => item.Time -= shift);
-        }
-
-        private void UpdataInfo(int shift)
-        {
-            if (!IsPathValid) return;
-            int index = 0;
-            _info.Chapters.ForEach(item => item.Number = ++index + shift);
-        }
-
-        private void UpdataInfo(string chapterNameTemplate)
-        {
-            if (!IsPathValid || string.IsNullOrWhiteSpace(chapterNameTemplate)) return;
-            var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();
-            _info.Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name);
-            cn.Dispose();
-        }
-
-        #endregion
 
         private void UpdataGridView(int fpsIndex = 0)
         {
@@ -726,7 +675,8 @@ namespace ChapterTool.Forms
        private void cbChapterName_CheckedChanged(object sender, EventArgs e)
        {
             _chapterNameTemplate = cbChapterName.Checked ? LoadChapterName() : string.Empty;
-            UpdataInfo(_chapterNameTemplate);
+            if (!IsPathValid) return;
+            _info.UpdataInfo(_chapterNameTemplate);
             UpdataGridView();
         }
 
@@ -1019,7 +969,8 @@ namespace ChapterTool.Forms
         }
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            UpdataInfo((int)numericUpDown1.Value);
+            if (!IsPathValid) return;
+            _info.UpdataInfo((int)numericUpDown1.Value);
             UpdataGridView();
         }
         private void cbMul1k1_CheckedChanged(object sender, EventArgs e)
@@ -1038,10 +989,10 @@ namespace ChapterTool.Forms
         private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
             _info.Chapters.Remove((Chapter) e.Row.Tag);
-            UpdataInfo((int)numericUpDown1.Value);
+            _info.UpdataInfo((int)numericUpDown1.Value);
             if (_info.Chapters.Count < 1 || e.Row.Index != 0 ) return;
             TimeSpan newInitialTime = _info.Chapters.First().Time;
-            UpdataInfo(newInitialTime);
+            _info.UpdataInfo(newInitialTime);
             if ((_rawMpls != null || _rawIfo != null) && string.IsNullOrWhiteSpace(_chapterNameTemplate))
             {
                 int index = 0;
