@@ -1071,19 +1071,14 @@ namespace ChapterTool.Forms
             Log($"+更名: {_info.Chapters[e.RowIndex].Name} -> {dataGridView1.Rows[e.RowIndex].Cells[2].Value}");
             _info.Chapters[e.RowIndex].Name = dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
         }
+
         private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
-            var toBeDelete = new List<int>();
-            foreach (DataGridViewRow item in dataGridView1.SelectedRows)
-            {
-                toBeDelete.Add(item.Index);
-                _info.Chapters.Remove((Chapter)item.Tag);
-            }
+            _info.Chapters.Remove((Chapter) e.Row.Tag);
             UpdataInfo((int)numericUpDown1.Value);
-            if (_info.Chapters.Count <= 1 || toBeDelete.IndexOf(0) < 0) return;
+            if (_info.Chapters.Count <= 1 || e.Row.Index != 0 ) return;
             TimeSpan ini = _info.Chapters.First().Time;
             UpdataInfo(ini);
-
             if (_rawMpls != null || _rawIfo != null)
             {
                 int index = 0;
