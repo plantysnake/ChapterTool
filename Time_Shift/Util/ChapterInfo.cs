@@ -36,7 +36,7 @@ namespace ChapterTool.Util
 
         public override string ToString() => $"{Title} - {SourceType} - {Duration.Time2String()} - [{Chapters.Count} Chapters]";
 
-        public DataGridViewRow GetRow(int index, bool autoGenName, DataGridView grid)
+        public DataGridViewRow GetRow(int index, bool autoGenName)
         {
             var row = new DataGridViewRow
             {
@@ -48,11 +48,10 @@ namespace ChapterTool.Util
                         : Color.FromArgb(0xF3, 0xF7, 0xF7)
                 }
             };
-            row.CreateCells(grid);
-            row.Cells[0].Value = $"{Chapters[index].Number:D2}";
-            row.Cells[1].Value = Chapters[index].Time2String(Offset, Mul1K1);
-            row.Cells[2].Value = autoGenName ? $"Chapter {row.Index + 1:D2}" : Chapters[index].Name;
-            row.Cells[3].Value = Chapters[index].FramsInfo;
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = $"{Chapters[index].Number:D2}"});
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].Time2String(Offset, Mul1K1)});
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? $"Chapter {row.Index + 1:D2}" : Chapters[index].Name});
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].FramsInfo});
             return row;
         }
 

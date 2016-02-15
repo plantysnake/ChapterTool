@@ -28,11 +28,10 @@ namespace ChapterTool.Util
                         : Color.FromArgb(0xF3, 0xF7, 0xF7)
                 }
             };
-            row.CreateCells(grid);
-            row.Cells[0].Value = $"{Number:D2}";
-            row.Cells[1].Value = this.Time2String(info.Offset, info.Mul1K1);
-            row.Cells[2].Value = autoGenName ? $"Chapter {row.Index + 1:D2}" : Name;
-            row.Cells[3].Value = FramsInfo;
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = $"{Number:D2}" });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = this.Time2String(info.Offset, info.Mul1K1) });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = autoGenName ? $"Chapter {row.Index + 1:D2}" : Name });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = FramsInfo });
             return row;
         }
     }

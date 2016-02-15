@@ -594,14 +594,12 @@ namespace ChapterTool.Forms
             {
                 if (clearRows)
                 {
-                    dataGridView1.Rows.Add(_info.GetRow(i, cbAutoGenName.Checked, dataGridView1));
+                    dataGridView1.Rows.Add(_info.GetRow(i, cbAutoGenName.Checked));
                 }
                 else
                 {
                     dataGridView1.Rows[i].EditRow(_info, cbAutoGenName.Checked);
                 }
-                //if (clearAllRows) dataGridView1.Rows.Add();
-                //AddRow(_info.Chapters[i], dataGridView1.Rows[i]);
                 Application.DoEvents();
             }
             progressBar1.Value = dataGridView1.RowCount > 1 ? 66 : 33;
