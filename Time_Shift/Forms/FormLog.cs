@@ -3,8 +3,8 @@
 // code from http://sourceforge.net/projects/gmkvextractgui/
 // ****************************************************************************
 using System;
-using System.Reflection;
 using ChapterTool.Util;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace ChapterTool.Forms
