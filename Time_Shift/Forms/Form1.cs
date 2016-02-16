@@ -27,7 +27,6 @@ using Microsoft.Win32;
 using ChapterTool.Util;
 using System.Threading;
 using System.Reflection;
-using System.Diagnostics;
 using System.Windows.Forms;
 using ChapterTool.Properties;
 using System.Collections.Generic;
@@ -209,7 +208,9 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show($"Error opening file {FilePath}: {exception.Message}{Environment.NewLine}", Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageBox.Show(caption: Resources.ChapterTool_Error,
+                    text: $"Error opening file {FilePath}:{Environment.NewLine} {exception.Message}",
+                    buttons: MessageBoxButtons.OK,icon: MessageBoxIcon.Hand);
                 Log($"Error opening file {FilePath}: {exception.Message}");
             }
         }
@@ -246,13 +247,14 @@ namespace ChapterTool.Forms
                 _info.UpdataInfo(_chapterNameTemplate);
                 progressBar1.SetState(1);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show(ex.Message, Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageBox.Show(caption: Resources.ChapterTool_Error, text: exception.Message,
+                    buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
                 progressBar1.Value = 0;
                 FilePath = string.Empty;
-                Log($"ERROR: {ex.Message}");
+                Log($"ERROR: {exception.Message}");
                 label1.Text = Resources.File_Unloaded;
                 Cursor = Cursors.Default;
                 return false;
@@ -334,9 +336,9 @@ namespace ChapterTool.Forms
                 GetChapterInfoFromXml(matroska.GetXml(FilePath));
                 progressBar1.SetState(1);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                MessageBox.Show(caption: Resources.ChapterTool_Error, text: ex.Message,
+                MessageBox.Show(caption: Resources.ChapterTool_Error, text: exception.Message,
                                 buttons: MessageBoxButtons.OK,icon: MessageBoxIcon.Hand);
                 progressBar1.SetState(3);
             }
@@ -351,9 +353,10 @@ namespace ChapterTool.Forms
                 progressBar1.Value = 33;
                 Tips.Text = Resources.Load_Success;
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(caption: Resources.ChapterTool_Error, text: exception.Message,
+                                buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
                 FilePath = string.Empty;
             }
         }
@@ -377,7 +380,9 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show($"Error opening path {_customSavingPath}: {exception.Message}{Environment.NewLine}", Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageBox.Show(caption: Resources.ChapterTool_Error,
+                    text: $"Error opening path {_customSavingPath}:{Environment.NewLine} {exception.Message}",
+                    buttons: MessageBoxButtons.OK,icon: MessageBoxIcon.Hand);
                 Log($"Error opening path {_customSavingPath}: {exception.Message}");
             }
         }
@@ -905,7 +910,9 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show($"Error opening file {FilePath}: {exception.Message}{Environment.NewLine}", Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageBox.Show(caption: Resources.ChapterTool_Error,
+                    text: $"Error opening file {FilePath}:{Environment.NewLine} {exception.Message}",
+                    buttons: MessageBoxButtons.OK,icon: MessageBoxIcon.Hand);
                 Log($"Error opening file {FilePath}: {exception.Message}");
                 return string.Empty;
             }
@@ -1011,6 +1018,5 @@ namespace ChapterTool.Forms
             }
         }
         #endregion
-
     }
 }

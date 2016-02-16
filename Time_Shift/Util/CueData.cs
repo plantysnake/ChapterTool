@@ -39,7 +39,7 @@ namespace ChapterTool.Util
                     cueData = File.ReadAllBytes(path).GetUTF8String();
                     if (string.IsNullOrEmpty(cueData))
                     {
-                        throw new Exception("空的cue文件");
+                        throw new Exception("Empty cue file");
                     }
                     break;
                 case ".flac":
@@ -49,11 +49,11 @@ namespace ChapterTool.Util
                     cueData = GetCueFromTak(path);
                     break;
                 default:
-                    throw new Exception($"无效的后缀{ext}");
+                    throw new Exception($"Invalid extension: {ext}");
             }
             if (string.IsNullOrEmpty(cueData))
             {
-                throw new Exception("该文件内无内嵌Cue");
+                throw new Exception($"No Cue detected in {ext} file");
             }
             Chapter = PraseCue(cueData);
         }
@@ -150,7 +150,7 @@ namespace ChapterTool.Util
                         }
                         break;
                     case NextState.NsError:
-                        throw new Exception("Unable to Prase this cue");
+                        throw new Exception("Unable to Prase this cue file");
                     case NextState.NsFin:
                         goto EXIT_1;
                     default:
@@ -161,7 +161,7 @@ namespace ChapterTool.Util
             EXIT_1:
             if (cue.Chapters.Count < 1)
             {
-                throw new Exception("Empty cue");
+                throw new Exception("Empty cue file");
             }
             cue.Chapters.Sort((c1, c2) => c1.Number.CompareTo(c2.Number));
             cue.Duration = cue.Chapters.Last().Time;
@@ -266,7 +266,7 @@ namespace ChapterTool.Util
             return cueSheet;
         }
 
-        public static string GetCueFromTak(string takPath)
+        private static string GetCueFromTak(string takPath)
         {
             var fs = File.Open(takPath, FileMode.Open);
             if (fs.Length < 1048576)// 小于1M，文档太小了
@@ -288,7 +288,7 @@ namespace ChapterTool.Util
             return GetCueSheet(buffer, "tak");
         }
 
-        public static string GetCueFromFlac(string flacPath)
+        private static string GetCueFromFlac(string flacPath)
         {
             var fs = File.Open(flacPath, FileMode.Open);
             if (fs.Length < 1048576)// 小于1M，文档太小了

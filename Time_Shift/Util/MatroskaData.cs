@@ -43,9 +43,9 @@ namespace ChapterTool.Util
                     mkvToolnixPath = MatroskaData.GetMkvToolnixPathViaRegistry();
                     RegistryStorage.Save(mkvToolnixPath, @"Software\ChapterTool", "mkvToolnixPath");
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    CTLogger.Log($"ERROR: {ex.Message}");
+                    CTLogger.Log($"Warning: {exception.Message}");
                 }
                 if (string.IsNullOrEmpty(mkvToolnixPath)) //Installed path not found.
                 {
@@ -58,6 +58,7 @@ namespace ChapterTool.Util
                 throw new Exception("无可用 MkvExtract, 安装个呗~");
             }
         }
+
         public XmlDocument GetXml(string path)
         {
             string arg = $"chapters \"{path}\"";
@@ -84,7 +85,7 @@ namespace ChapterTool.Util
         /// If it doesn't find it, it throws an exception.
         /// </summary>
         /// <returns></returns>
-        public static string GetMkvToolnixPathViaRegistry()
+        private static string GetMkvToolnixPathViaRegistry()
         {
             RegistryKey regMkvToolnix = null;
             string valuePath          = string.Empty;
