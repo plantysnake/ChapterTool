@@ -216,9 +216,9 @@ namespace ChapterTool.Forms
         }
 
         private List<ChapterInfo> _rawIfo;
-        private MplsData _rawMpls;
-        private ChapterInfo _info;
-        private ChapterInfo _fullIfoChapter;
+        private MplsData          _rawMpls;
+        private ChapterInfo       _info;
+        private ChapterInfo       _fullIfoChapter;
 
         private bool Loadfile()
         {
@@ -292,7 +292,7 @@ namespace ChapterTool.Forms
             _rawIfo = new IfoData().GetStreams(FilePath).Where(item => item != null).ToList();
             if (_rawIfo.Count == 0)
             {
-                throw new Exception("No Chapter in this Ifo at all");
+                throw new Exception("No Chapter detected in ifo file");
             }
 
             _fullIfoChapter = ChapterInfo.CombineChapter(_rawIfo);
@@ -387,8 +387,6 @@ namespace ChapterTool.Forms
             }
         }
 
-        private readonly Regex _rLang = new Regex(@"\((?<lang>.+)\)");
-
         private void SaveInfoLog(string savePath)
         {
             Log("+保存信息");
@@ -438,6 +436,8 @@ namespace ChapterTool.Forms
 
              return savePath.ToString();
         }
+
+        private readonly Regex _rLang = new Regex(@"\((?<lang>.+)\)");
 
         private void SaveFile(int saveType)
         {
