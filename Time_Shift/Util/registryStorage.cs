@@ -22,7 +22,7 @@ using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
-    internal static class RegistryStorage
+    public static class RegistryStorage
     {
         public static string Load(string subKey = @"Software\ChapterTool", string name = "SavingPath")
         {

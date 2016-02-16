@@ -50,7 +50,6 @@ namespace ChapterTool.Util
                 {
                     ParseStream(itemStartAdress, streamOrder, playItemOrder);
                 }
-                //Enumerable.Range(0, streamCount).ToList().ForEach(streamOrder => ParseStream(itemStartAdress, streamOrder, playItemOrder));
                 playItemEntries += lengthOfPlayItem + 2;//for that not counting the two length bytes themselves.
             }
             ParsePlaylistMark(playlistMarkSectionStartAddress);

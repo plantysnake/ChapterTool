@@ -64,7 +64,8 @@ namespace ChapterTool.Util
 
         private static TimeSpan OffsetCal(string line)
         {
-            if (RLineOne.IsMatch(line))
+            var timeMatch = RLineOne.Match(line);
+            if (timeMatch.Success)
             {
                 return RTimeFormat.Match(line).Value.ToTimeSpan();
             }
