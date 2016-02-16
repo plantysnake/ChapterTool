@@ -120,7 +120,8 @@ namespace ChapterTool.Util
             var json = new StringBuilder("[");
             colorList.ForEach(item => json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\","));
             json[json.Length - 1] = ']';
-            File.WriteAllText(ColorProfile, json.ToString());
+            var path = $"{Path.GetDirectoryName(Application.ExecutablePath)}\\{ColorProfile}";
+            File.WriteAllText(path, json.ToString());
         }
 
         public static void LoadColor(this Form1 window)
