@@ -110,6 +110,10 @@ namespace ChapterTool.Util
                 }
             }
             EXIT_1:
+            if (cue.Chapters.Count < 1)
+            {
+                throw new Exception("Empty cue");
+            }
             cue.Chapters.Sort((c1, c2) => c1.Number.CompareTo(c2.Number));
             cue.Duration = cue.Chapters.Last().Time;
             return cue;

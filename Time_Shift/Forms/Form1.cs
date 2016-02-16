@@ -231,18 +231,19 @@ namespace ChapterTool.Forms
             {
                 switch (Path.GetExtension(FilePath)?.ToLowerInvariant())
                 {
-                    case ".mpls": LoadMpls(); break;
-                    case ".xml": LoadXml(); break;
-                    case ".txt": LoadOgm(); break;
-                    case ".ifo": LoadIfo(); break;
+                    case ".mpls": LoadMpls();      break;
+                    case ".xml":  LoadXml();       break;
+                    case ".txt":  LoadOgm();       break;
+                    case ".ifo":  LoadIfo();       break;
                     case ".mkv":
-                    case ".mka": LoadMatroska(); break;
+                    case ".mka":  LoadMatroska();  break;
                     case ".tak":
-                    case ".flac": GetCue(); break;
-                    case ".cue": LoadCue(); break;
+                    case ".flac": GetCue();        break;
+                    case ".cue":  LoadCue();       break;
                     default:
                         throw new Exception("Invalid File Format");
                 }
+                if (_info == null) return false;
                 _info.UpdataInfo(_chapterNameTemplate);
                 progressBar1.SetState(1);
             }
@@ -257,7 +258,10 @@ namespace ChapterTool.Forms
                 Cursor = Cursors.Default;
                 return false;
             }
-            Cursor = Cursors.Default;
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
             return true;
         }
 
