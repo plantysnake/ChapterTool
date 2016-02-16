@@ -106,20 +106,19 @@ namespace ChapterTool.Forms
 
         private void SetDefault()
         {
-            comboBox2.Enabled       = comboBox2.Visible = false;
+            comboBox2.Enabled       = false;
+            comboBox2.Visible       = false;
 
+            comboBox2.SelectedIndex = -1;
             comboBox1.SelectedIndex = -1;
-
-            progressBar1.Visible    = true;
-            cbMul1k1.Enabled        = true;
 
             _rawMpls                = null;
             _rawIfo                 = null;
             _xmlGroup               = null;
             _info                   = null;
+            _fullIfoChapter         = null;
 
             dataGridView1.Rows.Clear();
-            xmlLang.SelectedIndex   = 2;
         }
         #endregion
 
@@ -238,7 +237,7 @@ namespace ChapterTool.Forms
                     case ".mkv":
                     case ".mka":  LoadMatroska();  break;
                     case ".tak":
-                    case ".flac": GetCue();        break;
+                    case ".flac":
                     case ".cue":  LoadCue();       break;
                     default:
                         throw new Exception("Invalid File Format");
@@ -329,31 +328,17 @@ namespace ChapterTool.Forms
 
         private void LoadMatroska()
         {
+            var matroska = new MatroskaData();
             try
             {
-                string mkvToolnixPath = RegistryStorage.Load(@"Software\ChapterTool", "mkvToolnixPath");
-                if (string.IsNullOrWhiteSpace(mkvToolnixPath) && File.Exists($"{mkvToolnixPath}/mkvextract.exe"))
-                {
-                    mkvToolnixPath = MatroskaData.GetMkvToolnixPathViaRegistry();
-                    RegistryStorage.Save(mkvToolnixPath, @"Software\ChapterTool", "mkvToolnixPath");
-                }
-                var matroska = new MatroskaData(FilePath, $"{mkvToolnixPath}/mkvextract.exe");
-                GetChapterInfoFromXml(matroska.Result);
+                GetChapterInfoFromXml(matroska.GetXml(FilePath));
                 progressBar1.SetState(1);
             }
             catch (Exception ex)
             {
-                Log(ex.Message);
-                if (File.Exists("mkvextract.exe"))
-                {
-                    var matroska = new MatroskaData(FilePath, "mkvextract.exe");
-                    GetChapterInfoFromXml(matroska.Result);
-                }
-                else
-                {
-                    progressBar1.SetState(3);
-                    MessageBox.Show(@"无可用 MkvExtract, 安装个呗~", Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                }
+                MessageBox.Show(caption: Resources.ChapterTool_Error, text: ex.Message,
+                                buttons: MessageBoxButtons.OK,icon: MessageBoxIcon.Hand);
+                progressBar1.SetState(3);
             }
         }
 
@@ -361,47 +346,21 @@ namespace ChapterTool.Forms
         {
             try
             {
-                _info = CueData.PraseCue(File.ReadAllBytes(FilePath).GetUTF8String());
+                var cue = new CueData(FilePath);
+                _info = cue.Chapter;
                 progressBar1.Value = 33;
                 Tips.Text = Resources.Load_Success;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(@"无效的Cue文件");
+                MessageBox.Show(ex.Message);
                 FilePath = string.Empty;
-                Debug.WriteLine(ex.Message);
             }
-        }
-
-        private void GetCue()
-        {
-            var ext = Path.GetExtension(FilePath)?.ToLower();
-            string cue;
-            switch (ext)
-            {
-                case ".flac":
-                    cue = CueData.GetCueFromFlac(FilePath);
-                    break;
-                case ".tak":
-                    cue = CueData.GetCueFromTak(FilePath);
-                    break;
-                default:
-                    throw new Exception($"无效的后缀{ext}");
-            }
-            if (string.IsNullOrWhiteSpace(cue))
-            {
-                MessageBox.Show(@"该文件内无内嵌Cue");
-                FilePath = string.Empty;
-                return;
-            }
-            _info = CueData.PraseCue(cue);
-            progressBar1.Value = 33;
-            Tips.Text = Resources.Load_Success;
         }
         #endregion
 
         #region Save File
-        private void btnSave_Click(object sender, EventArgs e) => SaveFile();
+        private void btnSave_Click(object sender, EventArgs e) => SaveFile(savingType.SelectedIndex);
 
         private string _customSavingPath = string.Empty;
 
@@ -456,10 +415,8 @@ namespace ChapterTool.Forms
             }
         }
 
-        private void SaveFile()
+        private string GeneRateSavePath(int saveType)
         {
-            if (!IsPathValid) return;//防止保存先于载入
-
             var rootPath = string.IsNullOrWhiteSpace(_customSavingPath) ? Path.GetDirectoryName(FilePath) : _customSavingPath;
             var fileName = Path.GetFileNameWithoutExtension(FilePath);
             StringBuilder savePath = new StringBuilder($"{rootPath}\\{fileName}");
@@ -471,30 +428,37 @@ namespace ChapterTool.Forms
                 savePath.Append($"__{_info.Title}_{_info.SourceName}");
 
             string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf", ".TimeCodes.txt", ".TsMuxeR_Meta.txt" };
-            while (File.Exists($"{savePath}{saveingTypeSuffix[savingType.SelectedIndex]}")) savePath.Append("_");
-            savePath.Append(saveingTypeSuffix[savingType.SelectedIndex]);
+            while (File.Exists($"{savePath}{saveingTypeSuffix[saveType]}")) savePath.Append("_");
+            savePath.Append(saveingTypeSuffix[saveType]);
 
-            var savePathS = savePath.ToString();
+             return savePath.ToString();
+        }
 
-            SaveInfoLog(savePathS);
+        private void SaveFile(int saveType)
+        {
+            if (!IsPathValid) return;//防止保存先于载入
 
-            switch (savingType.SelectedIndex)
+            var savePath = GeneRateSavePath(saveType);
+
+            SaveInfoLog(savePath);
+
+            switch (saveType)
             {
                 case 0://TXT
-                    _info.SaveText(savePathS, cbAutoGenName.Checked);
+                    _info.SaveText(savePath, cbAutoGenName.Checked);
                     break;
                 case 1://XML
                     string key = _rLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
-                    _info.SaveXml(savePathS, string.IsNullOrWhiteSpace(key)? "": LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
+                    _info.SaveXml(savePath, string.IsNullOrWhiteSpace(key)? "": LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
                     break;
                 case 2://QPF
-                    _info.SaveQpfile(savePathS);
+                    _info.SaveQpfile(savePath);
                     break;
                 case 3://Time Codes
-                    _info.SaveTimecodes(savePathS);
+                    _info.SaveTimecodes(savePath);
                     break;
                 case 4://Tsmuxer
-                    _info.SaveTsmuxerMeta(savePathS);
+                    _info.SaveTsmuxerMeta(savePath);
                     break;
             }
             progressBar1.Value = 100;
@@ -909,6 +873,19 @@ namespace ChapterTool.Forms
 
         private void savingType_SelectedIndexChanged(object sender, EventArgs e) => xmlLang.Enabled = savingType.SelectedIndex == 1;
 
+        private void xmlLang_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            switch (xmlLang.SelectedIndex)
+            {
+                case 0:
+                    xmlLang.SelectedIndex = 2;
+                    break;
+                case 5:
+                    xmlLang.SelectedIndex = 6;
+                    break;
+            }
+        }
+
         #region ChapterNameTemplate
         private string LoadChapterName()
         {
@@ -1000,13 +977,6 @@ namespace ChapterTool.Forms
             _logForm.Select();
         }
 
-        private void Form1_Move(object sender, EventArgs e)
-        {
-            if (_previewForm != null)
-            {
-                _previewForm.Location = new Point(Location.X - _previewForm.Width, Location.Y);
-            }
-        }
         #endregion
 
         #region PreviewForm
@@ -1024,6 +994,14 @@ namespace ChapterTool.Forms
             _previewForm.Select();
         }
 
+        private void Form1_Move(object sender, EventArgs e)
+        {
+            if (_previewForm != null)
+            {
+                _previewForm.Location = new Point(Location.X - _previewForm.Width, Location.Y);
+            }
+        }
+
         private void btnPreview_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right || !RunAsAdministrator()) return;
@@ -1033,5 +1011,6 @@ namespace ChapterTool.Forms
             }
         }
         #endregion
+
     }
 }

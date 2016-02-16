@@ -23,17 +23,47 @@ using System.Xml;
 using System.Linq;
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
     internal class MatroskaData
     {
         public readonly XmlDocument Result = new XmlDocument();
-        public MatroskaData(string path, string program)
+
+        private readonly string _mkvextractPath;
+
+        public MatroskaData()
+        {
+            var mkvToolnixPath = RegistryStorage.Load(@"Software\ChapterTool", "mkvToolnixPath");
+            if (string.IsNullOrEmpty(mkvToolnixPath)) //saved path not found.
+            {
+                try
+                {
+                    mkvToolnixPath = MatroskaData.GetMkvToolnixPathViaRegistry();
+                    RegistryStorage.Save(mkvToolnixPath, @"Software\ChapterTool", "mkvToolnixPath");
+                }
+                catch (Exception ex)
+                {
+                    CTLogger.Log($"ERROR: {ex.Message}");
+                }
+                if (string.IsNullOrEmpty(mkvToolnixPath)) //Installed path not found.
+                {
+                    mkvToolnixPath = Path.GetDirectoryName(Application.ExecutablePath);
+                }
+            }
+            _mkvextractPath = mkvToolnixPath + "\\mkvextract.exe";
+            if (!File.Exists(_mkvextractPath))
+            {
+                throw new Exception("无可用 MkvExtract, 安装个呗~");
+            }
+        }
+        public XmlDocument GetXml(string path)
         {
             string arg = $"chapters \"{path}\"";
-            string xmlresult = RunMkvextract(arg, program);
+            string xmlresult = RunMkvextract(arg, _mkvextractPath);
             Result.LoadXml(xmlresult);
+            return Result;
         }
 
         private static string RunMkvextract(string arguments, string program)

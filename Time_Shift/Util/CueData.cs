@@ -26,8 +26,38 @@ using System.Text.RegularExpressions;
 
 namespace ChapterTool.Util
 {
-    public static class CueData
+    public class CueData
     {
+        public ChapterInfo Chapter { get; private set; }
+        public CueData(string path)
+        {
+            string cueData;
+            var ext = Path.GetExtension(path)?.ToLower();
+            switch (ext)
+            {
+                case ".cue":
+                    cueData = File.ReadAllBytes(path).GetUTF8String();
+                    if (string.IsNullOrEmpty(cueData))
+                    {
+                        throw new Exception("空的cue文件");
+                    }
+                    break;
+                case ".flac":
+                    cueData = GetCueFromFlac(path);
+                    break;
+                case ".tak":
+                    cueData = GetCueFromTak(path);
+                    break;
+                default:
+                    throw new Exception($"无效的后缀{ext}");
+            }
+            if (string.IsNullOrEmpty(cueData))
+            {
+                throw new Exception("该文件内无内嵌Cue");
+            }
+            Chapter = PraseCue(cueData);
+        }
+
         private enum NextState
         {
             NsStart,
