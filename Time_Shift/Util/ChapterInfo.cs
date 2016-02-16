@@ -3,7 +3,9 @@ using System.IO;
 using System.Xml;
 using System.Text;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
@@ -19,16 +21,63 @@ namespace ChapterTool.Util
         public List<Chapter> Chapters { get; set; } = new List<Chapter>();
         public TimeSpan Offset        { get; set; } = TimeSpan.Zero;
         public bool Mul1K1            { get; set; }
-        public override string ToString() => $"{Title} - {SourceName}  -  {Duration.Time2String()}  -  [{Chapters.Count} Chapter]";
-
-        public static Chapter WriteToChapterInfo(string line, string line2, int order, TimeSpan iniTime, bool notUseName)
+        public Type TagType { get; set; }
+        public object Tag
         {
-            Chapter temp = new Chapter { Number = order, Time = TimeSpan.Zero };
-            if (!ConvertMethod.RLineOne.IsMatch(line) || !ConvertMethod.RLineTwo.IsMatch(line2)) return temp;
-            temp.Name = notUseName ? $"Chapter {order:D2}"
-                : ConvertMethod.RLineTwo.Match(line2).Groups["chapterName"].Value.Trim('\r');
-            temp.Time = ConvertMethod.RTimeFormat.Match(line).Value.ToTimeSpan() - iniTime;
-            return temp;
+            get { return _tag; }
+            set
+            {
+                if (value == null)
+                    return;
+                _tag = value;
+            }
+        }
+        private object _tag;
+
+        public override string ToString() => $"{Title} - {SourceType} - {Duration.Time2String()} - [{Chapters.Count} Chapters]";
+
+        public DataGridViewRow GetRow(int index, bool autoGenName)
+        {
+            var row = new DataGridViewRow
+            {
+                Tag = Chapters[index],
+                DefaultCellStyle =
+                {
+                    BackColor = (Chapters[index].Number + 1)%2 == 0
+                        ? Color.FromArgb(0x92, 0xAA, 0xF3)
+                        : Color.FromArgb(0xF3, 0xF7, 0xF7)
+                }
+            };
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = $"{Chapters[index].Number:D2}"});
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].Time2String(Offset, Mul1K1)});
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? $"Chapter {row.Index + 1:D2}" : Chapters[index].Name});
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].FramsInfo});
+            return row;
+        }
+
+        public static ChapterInfo CombineChapter(List<ChapterInfo> source)
+        {
+            var fullChapter = new ChapterInfo
+            {
+                Title = "FULL Chapter",
+                SourceType = "DVD",
+                FramesPerSecond = source.First().FramesPerSecond
+            };
+            TimeSpan duration = TimeSpan.Zero;
+            int index = 0;
+            source.ForEach(chapterClip =>
+            {
+                chapterClip.Chapters.ForEach(item =>
+                    fullChapter.Chapters.Add(new Chapter
+                    {
+                        Time = duration + item.Time,
+                        Number = ++index,
+                        Name = $"Chapter {index:D2}"
+                    }));
+                duration += chapterClip.Duration;
+            });
+            fullChapter.Duration = duration;
+            return fullChapter;
         }
 
         public void ChangeFps(double fps)
@@ -43,6 +92,29 @@ namespace ChapterTool.Util
             Duration = new TimeSpan((long)Math.Round(totalFrames / fps * TimeSpan.TicksPerSecond));
             FramesPerSecond = fps;
         }
+
+        #region updataInfo
+
+        public void UpdataInfo(TimeSpan shift)
+        {
+            Chapters.ForEach(item => item.Time -= shift);
+        }
+
+        public void UpdataInfo(int shift)
+        {
+            int index = 0;
+            Chapters.ForEach(item => item.Number = ++index + shift);
+        }
+
+        public void UpdataInfo(string chapterNameTemplate)
+        {
+            if (string.IsNullOrWhiteSpace(chapterNameTemplate)) return;
+            var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();
+            Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name);
+            cn.Dispose();
+        }
+
+        #endregion
 
         public string GetText(bool donotuseName)
         {
@@ -88,31 +160,31 @@ namespace ChapterTool.Util
 
         public void SaveXml(string filename,string lang, bool notUseName)
         {
-            if (string.IsNullOrEmpty(lang)) { lang = "und"; }
+            if (string.IsNullOrWhiteSpace(lang)) lang = "und";
             Random rndb           = new Random();
             XmlTextWriter xmlchap = new XmlTextWriter(filename, Encoding.UTF8) {Formatting = Formatting.Indented};
             xmlchap.WriteStartDocument();
             xmlchap.WriteComment("<!DOCTYPE Tags SYSTEM \"matroskatags.dtd\">");
             xmlchap.WriteStartElement("Chapters");
-            xmlchap.WriteStartElement("EditionEntry");
-            xmlchap.WriteElementString("EditionFlagHidden", "0");
-            xmlchap.WriteElementString("EditionFlagDefault", "0");
-            xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-            int i = 1;
-            Chapters.ForEach(item =>
-            {
-                xmlchap.WriteStartElement("ChapterAtom");
-                xmlchap.WriteStartElement("ChapterDisplay");
-                xmlchap.WriteElementString("ChapterString", notUseName ? $"Chapter {i++:D2}" : item.Name);
-                xmlchap.WriteElementString("ChapterLanguage", lang);
-                xmlchap.WriteEndElement();
-                xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                xmlchap.WriteElementString("ChapterTimeStart", item.Time2String(Offset, Mul1K1) + "0000");
-                xmlchap.WriteElementString("ChapterFlagHidden", "0");
-                xmlchap.WriteElementString("ChapterFlagEnabled", "1");
-                xmlchap.WriteEndElement();
-            });
-            xmlchap.WriteEndElement();
+              xmlchap.WriteStartElement("EditionEntry");
+                xmlchap.WriteElementString("EditionFlagHidden", "0");
+                xmlchap.WriteElementString("EditionFlagDefault", "0");
+                xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
+                int i = 1;
+                Chapters.ForEach(item =>
+                {
+                    xmlchap.WriteStartElement("ChapterAtom");
+                      xmlchap.WriteStartElement("ChapterDisplay");
+                        xmlchap.WriteElementString("ChapterString", notUseName ? $"Chapter {i++:D2}" : item.Name);
+                        xmlchap.WriteElementString("ChapterLanguage", lang);
+                      xmlchap.WriteEndElement();
+                    xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
+                    xmlchap.WriteElementString("ChapterTimeStart", item.Time2String(Offset, Mul1K1) + "0000");
+                    xmlchap.WriteElementString("ChapterFlagHidden", "0");
+                    xmlchap.WriteElementString("ChapterFlagEnabled", "1");
+                    xmlchap.WriteEndElement();
+                });
+              xmlchap.WriteEndElement();
             xmlchap.WriteEndElement();
             xmlchap.Flush();
             xmlchap.Close();

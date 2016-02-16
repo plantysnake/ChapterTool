@@ -9,19 +9,22 @@ namespace ChapterTool.Forms
     public partial class FormPreview : Form
     {
         private Point _mainPos;
+        private Form1 _mainWindow;
 
-        public FormPreview(string text,Point pos)
+        public FormPreview(string text,Form1 mainWindow)
         {
             InitializeComponent();
             cTextBox1.Text = text;
-            _mainPos       = pos;
+            _mainWindow    = mainWindow;
+            _mainPos       = mainWindow.Location;
             ScrollBarSet();
             Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
         }
 
         private void ScrollBarSet()
         {
-            if (cTextBox1.Lines.Select(item => item.Length).Max() > 40 && cTextBox1.Lines.Length > 20)
+
+            if (cTextBox1.Lines.Length > 20 && cTextBox1.Lines.Select(item => item.Length).Max() > 40)
             {
                 cTextBox1.ScrollBars = ScrollBars.Both;
             }
@@ -50,6 +53,12 @@ namespace ChapterTool.Forms
         {
             e.Cancel = true;
             Hide();
+        }
+
+
+        private void FormPreview_Activated(object sender, EventArgs e)
+        {
+            //_mainWindow.Activate();
         }
     }
 }

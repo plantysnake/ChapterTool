@@ -18,6 +18,8 @@
 //
 // ****************************************************************************
 using System.Collections.Generic;
+using System.Windows.Forms;
+
 // ReSharper disable InconsistentNaming
 
 namespace ChapterTool.Util
@@ -476,5 +478,19 @@ namespace ChapterTool.Util
         }
 
         public static bool IsLanguageAvailable(string language) => Languages.ContainsKey(language);
+
+        public static void LoadLang(ComboBox target)
+        {
+            target.Items.Add("----常用----"       );
+            target.Items.Add("und (Undetermined)" );
+            target.Items.Add("eng (English)"      );
+            target.Items.Add("jpn (Japanese)"     );
+            target.Items.Add("chi (Chinese)"      );
+            target.Items.Add("----全部----"       );
+            foreach (var language in Languages)
+            {
+                target.Items.Add($"{language.Value} ({language.Key})");
+            }
+        }
     }
 }

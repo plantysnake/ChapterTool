@@ -58,6 +58,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FormPreview";
             this.Text = "Preview";
+            this.Activated += new System.EventHandler(this.FormPreview_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormPreview_FormClosing);
             this.Load += new System.EventHandler(this.FormPreview_Load);
             this.ResumeLayout(false);

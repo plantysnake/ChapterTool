@@ -32,6 +32,8 @@ namespace ChapterTool.Util
         /// <summary>include all time code in mpls</summary>
         public List<int> EntireTimeStamp { get; } = new List<int>();
 
+        public override string ToString() => $"MPLS: {ChapterClips.Count} Viedo Clips, {ChapterClips.Sum(item=>item.TimeStamp.Count)} Time Stamps";
+
         private readonly byte[] _data;
 
 
@@ -69,7 +71,7 @@ namespace ChapterTool.Util
 
         private void ParsePlayItem(int playItemEntries, out int lengthOfPlayItem, out int itemStartAdress, out int streamCount)
         {
-            lengthOfPlayItem = Byte2Int16(_data, playItemEntries);
+            lengthOfPlayItem     = Byte2Int16(_data, playItemEntries);
             var bytes            = new byte[lengthOfPlayItem + 2];
             Array.Copy(_data, playItemEntries, bytes, 0, lengthOfPlayItem);
             Clip streamClip      = new Clip
@@ -83,21 +85,20 @@ namespace ChapterTool.Util
 
             itemStartAdress            = playItemEntries + 0x32;
             streamCount                = bytes[0x23] >> 4;
-            int isMultiAngle = (bytes[0x0c] >> 4) & 0x01;
-
-            StringBuilder sb = new StringBuilder(Encoding.ASCII.GetString(bytes, 0x02, 0x05));
+            int isMultiAngle           = (bytes[0x0c] >> 4) & 0x01;
+            StringBuilder nameBuilder  = new StringBuilder(Encoding.ASCII.GetString(bytes, 0x02, 0x05));
 
             if (isMultiAngle == 1)
             {
                 int numberOfAngles = bytes[0x22];
                 for (int i = 1; i < numberOfAngles; i++)
                 {
-                    sb.Append("&" + Encoding.ASCII.GetString(bytes, 0x24 + (i - 1) * 0x0a, 0x05));
+                    nameBuilder.Append("&" + Encoding.ASCII.GetString(bytes, 0x24 + (i - 1) * 0x0a, 0x05));
                 }
                 itemStartAdress = playItemEntries + 0x02 + (numberOfAngles - 1) * 0x0a;
-                CTLogger.Log($"Chapter with {numberOfAngles} Angle, file name: {sb}");
+                CTLogger.Log($"Chapter with {numberOfAngles} Angle, file name: {nameBuilder}");
             }
-            streamClip.Name = sb.ToString();
+            streamClip.Name = nameBuilder.ToString();
             ChapterClips.Add(streamClip);
         }
 
@@ -147,6 +148,37 @@ namespace ChapterTool.Util
         {
             return bigEndian ? (bytes[index] << 24) | (bytes[index + 1] << 16) | (bytes[index + 2] << 8) | bytes[index + 3]:
                                (bytes[index + 3] << 24) | (bytes[index + 2] << 16) | (bytes[index + 1] << 8) | bytes[index];
+        }
+
+        private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
+
+        public ChapterInfo ToChapterInfo(int index, bool combineChapter)
+        {
+            if (index > ChapterClips.Count && !combineChapter)
+            {
+                throw new IndexOutOfRangeException("Index of Video Clip out of range");
+            }
+            ChapterInfo info = new ChapterInfo
+            {
+                SourceType = "MPLS",
+                Title      = combineChapter ? "FULL Chapter" : ChapterClips[index].Name,
+                Duration   = ConvertMethod.Pts2Time(combineChapter
+                    ? EntireTimeStamp.Last() - EntireTimeStamp.First()
+                    : ChapterClips[index].TimeOut - ChapterClips[index].TimeIn),
+                FramesPerSecond = (double) _frameRate[ChapterClips.First().Fps]
+            };
+
+            var current = combineChapter ? EntireTimeStamp : ChapterClips[index].TimeStamp;
+            if (current.Count < 2) return info;
+            int offset  = current.First();
+            int defaultOrder = 1;
+            info.Chapters = current.Select(item => new Chapter
+            {
+                Time   = ConvertMethod.Pts2Time(item - offset),
+                Name   = $"Chapter {defaultOrder:D2}",
+                Number = defaultOrder++
+            }).ToList();
+            return info;
         }
     }
 }

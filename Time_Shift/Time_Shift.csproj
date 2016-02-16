@@ -39,6 +39,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -118,10 +119,11 @@
     <Compile Include="Forms\FormLog.Designer.cs">
       <DependentUpon>FormLog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Util\CueData.cs" />
     <Compile Include="Util\IfoData.cs" />
     <Compile Include="Util\IfoParser.cs" />
     <Compile Include="Util\LanguageSelectionContainer.cs" />
-    <Compile Include="Util\MatroskaInfo.cs" />
+    <Compile Include="Util\MatroskaData.cs" />
     <Compile Include="Util\MplsData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -130,7 +132,9 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="Util\OgmData.cs" />
     <Compile Include="Util\RegistryStorage.cs" />
+    <Compile Include="Util\XmlData.cs" />
     <EmbeddedResource Include="Controls\cTextBox.resx">
       <DependentUpon>cTextBox.cs</DependentUpon>
     </EmbeddedResource>

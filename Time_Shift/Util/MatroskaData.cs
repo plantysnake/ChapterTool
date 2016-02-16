@@ -27,10 +27,10 @@ using System.Diagnostics;
 
 namespace ChapterTool.Util
 {
-    internal class MatroskaInfo
+    internal class MatroskaData
     {
         public readonly XmlDocument Result = new XmlDocument();
-        public MatroskaInfo(string path, string program)
+        public MatroskaData(string path, string program)
         {
             string arg = $"chapters \"{path}\"";
             string xmlresult = RunMkvextract(arg, program);
