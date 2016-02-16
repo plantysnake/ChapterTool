@@ -70,7 +70,7 @@ namespace ChapterTool.Forms
             SetDefault();
             this.LoadColor();
             Size                              = new Size(Size.Width, TargetHeight[0]);
-            MoreModeShow                      = false;
+            ExtensionPanelShow                = false;
             savingType.SelectedIndex          = 0;
             btnTrans.Text                     = Environment.TickCount % 2 == 0 ? "↺" : "↻";
             folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
@@ -578,7 +578,7 @@ namespace ChapterTool.Forms
         }
         #endregion
 
-        #region GridView
+        #region Grid View
         private void UpdataGridView(int fpsIndex = 0)
         {
             if (!IsPathValid || _info == null) return;
@@ -643,7 +643,7 @@ namespace ChapterTool.Forms
         }
         #endregion
 
-        #region FPS
+        #region Frame Info
         private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
 
         private decimal CostumeAccuracy => decimal.Parse(toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>().First(item => item.Checked).Tag.ToString());
@@ -684,7 +684,7 @@ namespace ChapterTool.Forms
         }
         #endregion
 
-        #region Color
+        #region Form Color
         private Form3 _fcolor;
 
         private void Color_MouseUp(object sender, MouseEventArgs e)
@@ -859,8 +859,7 @@ namespace ChapterTool.Forms
 
         #region Extension Panel
         #region form resize
-
-        private bool MoreModeShow
+        private bool ExtensionPanelShow
         {
             set
             {
@@ -903,10 +902,9 @@ namespace ChapterTool.Forms
                     Application.DoEvents();
                 }
             }
-            MoreModeShow = Height == TargetHeight[1];
+            ExtensionPanelShow = Height == TargetHeight[1];
             btnExpand.Text = Height == TargetHeight[0] ? "∨" : "∧";
         }
-
         #endregion
 
         private void savingType_SelectedIndexChanged(object sender, EventArgs e) => xmlLang.Enabled = savingType.SelectedIndex == 1;
@@ -952,7 +950,6 @@ namespace ChapterTool.Forms
         {
             if (_info == null) return;
             _info.Mul1K1 = cbMul1k1.Checked;
-            //UpdataInfo(cbMul1k1.Checked ? 1.001M : 1/1.001M);
             UpdataGridView();
         }
 
