@@ -50,36 +50,30 @@ namespace ChapterTool.Util
             return mul1K1 ? Time2String((decimal) (item.Time + offset).TotalSeconds*1.001M) : Time2String(item.Time + offset);
         }
 
-        public static readonly Regex RLineOne    = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
-        public static readonly Regex RLineTwo    = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
         public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)\.(?<Millisecond>\d{3})");
 
         public static TimeSpan ToTimeSpan(this string input)
         {
             if (string.IsNullOrWhiteSpace(input)) return TimeSpan.Zero;
-            var        temp = RTimeFormat.Match(input);
-            int        hour = int.Parse(temp.Groups["Hour"].Value);
-            int      minute = int.Parse(temp.Groups["Minute"].Value);
-            int      second = int.Parse(temp.Groups["Second"].Value);
-            int millisecond = int.Parse(temp.Groups["Millisecond"].Value);
+            var        timeMatch = RTimeFormat.Match(input);
+            if (!timeMatch.Success) return TimeSpan.Zero;
+            int        hour = int.Parse(timeMatch.Groups["Hour"].Value);
+            int      minute = int.Parse(timeMatch.Groups["Minute"].Value);
+            int      second = int.Parse(timeMatch.Groups["Second"].Value);
+            int millisecond = int.Parse(timeMatch.Groups["Millisecond"].Value);
             return new TimeSpan(0, hour, minute, second, millisecond);
         }
 
         public static TimeSpan Pts2Time(int pts)
         {
+            if (pts < 0)
+            {
+                throw new ArgumentOutOfRangeException($"InvalidArgument=\"{pts}\"的值对于{nameof(pts)}无效");
+            }
             decimal total = pts / 45000M;
             decimal secondPart = Math.Floor(total);
             decimal millisecondPart = Math.Round((total - secondPart) * 1000M);
             return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
-        }
-
-        public static TimeSpan OffsetCal(string line)
-        {
-            if (RLineOne.IsMatch(line))
-            {
-                return RTimeFormat.Match(line).Value.ToTimeSpan();
-            }
-            throw new Exception($"ERROR: {line} <-该行与时间行格式不匹配");
         }
 
         public static Point String2Point(string input)
@@ -117,13 +111,6 @@ namespace ChapterTool.Util
                 return new UTF8Encoding(false).GetString(buffer, 3, buffer.Length - 3);
             }
             return Encoding.UTF8.GetString(buffer);
-        }
-
-        public static int GetAccuracy(TimeSpan time, decimal fps, decimal accuracy, bool round)
-        {
-            var frams = (decimal)time.TotalMilliseconds * fps / 1000M;
-            var answer = round ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
-            return Math.Abs(frams - answer) < accuracy ? 1 : 0;
         }
 
         private const string ColorProfile = "color-config.json";

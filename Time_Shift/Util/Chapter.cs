@@ -34,5 +34,12 @@ namespace ChapterTool.Util
             row.Cells.Add(new DataGridViewTextBoxCell { Value = FramsInfo });
             return row;
         }
+
+        public int GetAccuracy(decimal fps, decimal accuracy, bool round)
+        {
+            var frams = (decimal)Time.TotalMilliseconds * fps / 1000M;
+            var answer = round ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
+            return Math.Abs(frams - answer) < accuracy ? 1 : 0;
+        }
     }
 }

@@ -106,12 +106,9 @@ namespace ChapterTool.Forms
 
         private void SetDefault()
         {
-            //Size = new Size(Size.Width, TargetHeight[0]);
-            //MoreModeShow = false;
             comboBox2.Enabled       = comboBox2.Visible = false;
 
             comboBox1.SelectedIndex = -1;
-            btnSave.Enabled         = btnSave.Visible   = true;
 
             progressBar1.Visible    = true;
             cbMul1k1.Enabled        = true;
@@ -675,7 +672,7 @@ namespace ChapterTool.Forms
             var settingAccuracy = CostumeAccuracy;
             var result = _frameRate.Select(fps  =>
                         _info.Chapters.Sum(item =>
-                        GetAccuracy(item.Time, fps, settingAccuracy, cbRound.Checked))).ToList();
+                        item.GetAccuracy(fps, settingAccuracy, cbRound.Checked))).ToList();
             result[0] = 0;
             result.ForEach(count => Log($" | {count:D2} 个精确点"));
             int autofpsCode = result.IndexOf(result.Max());
@@ -804,8 +801,7 @@ namespace ChapterTool.Forms
             string lastTime      = Time2String(streamClip.TimeOut - streamClip.TimeIn);
             toolTip1.Show(
                 streamClip.TimeOut - streamClip.TimeIn - (streamClip.TimeStamp.Last() - streamClip.TimeStamp.First()) <=
-                5*45000
-                    ? $"本片段时长为: {lastTime}，{sFakeChapter2}"
+                5*45000 ? $"本片段时长为: {lastTime}，{sFakeChapter2}"
                     : $"本片段时长为: {lastTime}，{sFakeChapter3}", btnSave);
         }
 
