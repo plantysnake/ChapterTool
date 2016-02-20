@@ -152,6 +152,8 @@
             this.cbAutoGenName.Text = "不使用章节名";
             this.cbAutoGenName.UseVisualStyleBackColor = true;
             this.cbAutoGenName.CheckedChanged += new System.EventHandler(this.cbAutoGenName_CheckedChanged);
+            this.cbAutoGenName.MouseEnter += new System.EventHandler(this.cbAutoGenName_MouseEnter);
+            this.cbAutoGenName.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // Tips
             // 
@@ -208,6 +210,8 @@
             this.cbRound.Text = "帧数取整 ";
             this.cbRound.UseVisualStyleBackColor = true;
             this.cbRound.CheckedChanged += new System.EventHandler(this.refresh_Click);
+            this.cbRound.MouseEnter += new System.EventHandler(this.cbRound_MouseEnter);
+            this.cbRound.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // contextMenuStrip1
             // 
@@ -351,12 +355,14 @@
             this.cbChapterName.Location = new System.Drawing.Point(192, 488);
             this.cbChapterName.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbChapterName.Name = "cbChapterName";
-            this.cbChapterName.Size = new System.Drawing.Size(120, 21);
+            this.cbChapterName.Size = new System.Drawing.Size(108, 21);
             this.cbChapterName.TabIndex = 21;
             this.cbChapterName.TabStop = false;
-            this.cbChapterName.Text = "自定义章节名模板";
+            this.cbChapterName.Text = "使用章节名模板";
             this.cbChapterName.UseVisualStyleBackColor = true;
             this.cbChapterName.CheckedChanged += new System.EventHandler(this.cbChapterName_CheckedChanged);
+            this.cbChapterName.MouseEnter += new System.EventHandler(this.cbChapterName_MouseEnter);
+            this.cbChapterName.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // maskedTextBox1
             // 

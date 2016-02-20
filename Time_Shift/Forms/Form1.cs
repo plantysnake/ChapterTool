@@ -761,7 +761,7 @@ namespace ChapterTool.Forms
         #endregion
 
         #region Tips
-        private void label1_MouseEnter(object sender, EventArgs e) => toolTip1.Show(FilePath ?? "", label1);
+        private void label1_MouseEnter(object sender, EventArgs e)        => toolTip1.Show(FilePath ?? "", (IWin32Window)sender);
 
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
@@ -775,14 +775,20 @@ namespace ChapterTool.Forms
             toolTip1.Show(
                 streamClip.TimeOut - streamClip.TimeIn - (streamClip.TimeStamp.Last() - streamClip.TimeStamp.First()) <=
                 5*45000 ? $"本片段时长为: {lastTime}，{sFakeChapter2}"
-                    : $"本片段时长为: {lastTime}，{sFakeChapter3}", btnSave);
+                    : $"本片段时长为: {lastTime}，{sFakeChapter3}", (IWin32Window)sender);
         }
 
-        private void comboBox2_MouseEnter(object sender, EventArgs e) => toolTip1.Show(comboBox2.Items.Count > 20 ? "不用看了，这是播放菜单的mpls" : comboBox2.Items.Count.ToString(), comboBox2);
+        private void comboBox2_MouseEnter(object sender, EventArgs e)     => toolTip1.Show(comboBox2.Items.Count > 20 ? "不用看了，这是播放菜单的mpls" :$"共 {comboBox2.Items.Count} 个片段", (IWin32Window)sender);
 
-        private void cbMul1k1_MouseEnter(object sender, EventArgs e)  => toolTip1.Show("用于DVD Decrypter提取的Chapter", cbMul1k1);
+        private void cbMul1k1_MouseEnter(object sender, EventArgs e)      => toolTip1.Show("用于DVD Decrypter提取的Chapter", (IWin32Window)sender);
 
-        private void ToolTipRemoveAll(object sender, EventArgs e)     => toolTip1.RemoveAll();
+        private void cbChapterName_MouseEnter(object sender, EventArgs e) => toolTip1.Show("不取消勾选时将持续生效", (IWin32Window)sender);
+
+        private void cbAutoGenName_MouseEnter(object sender, EventArgs e) => toolTip1.Show("将章节名重新从Chapter 01开始标记", (IWin32Window)sender);
+
+        private void cbRound_MouseEnter(object sender, EventArgs e)       => toolTip1.Show("右键菜单可设置误差范围", (IWin32Window)sender);
+
+        private void ToolTipRemoveAll(object sender, EventArgs e)         => toolTip1.Hide((IWin32Window)sender);
         #endregion
 
         #region Close Form
