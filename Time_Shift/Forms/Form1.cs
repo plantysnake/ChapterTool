@@ -315,7 +315,7 @@ namespace ChapterTool.Forms
 
         private void LoadOgm()
         {
-            _info = OgmData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTF8String(), cbAutoGenName.Checked);
+            _info = OgmData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTF8String());
             _info.UpdataInfo((int)numericUpDown1.Value);
             progressBar1.Value = 33;
             Tips.Text = Resources.Load_Success;

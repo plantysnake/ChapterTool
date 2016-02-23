@@ -27,44 +27,74 @@ namespace ChapterTool.Util
 {
     public static class OgmData
     {
-        private static readonly Regex RLineOne = new Regex(@"CHAPTER\d+=\d+:\d+:\d+\.\d+");
-        private static readonly Regex RLineTwo = new Regex(@"CHAPTER\d+NAME=(?<chapterName>.*)");
+        private static readonly Regex RTimeCodeLine = new Regex(@"^\s*CHAPTER\d+\s*=(.*)");
+        private static readonly Regex RNameLine = new Regex(@"^\s*CHAPTER\d+NAME\s*=(?<chapterName>.*)");
 
-        public static ChapterInfo GetChapterInfo(string text, bool autoGenName)
+        private enum LineState
+        {
+            LTimeCode,
+            LName,
+            LError,
+            LFin
+        }
+
+        public static ChapterInfo GetChapterInfo(string text)
         {
             int index = 0;
-            var info = new ChapterInfo { SourceType = "OGM", Tag = text, TagType = text.GetType() };
-            var ogmData = text.Trim(' ', '\r', '\n').Split('\n').SkipWhile(string.IsNullOrWhiteSpace).GetEnumerator();
-            if (!ogmData.MoveNext()) return info;
-            TimeSpan iniTime = OffsetCal(ogmData.Current);
-            do
+            var info  = new ChapterInfo { SourceType = "OGM", Tag = text, TagType = text.GetType() };
+            var lines = text.Trim(' ', '\t', '\r', '\n').Split('\n');
+            LineState state     = LineState.LTimeCode;
+            string timeCodeLine = string.Empty;
+            TimeSpan initalTime = OffsetCal(lines.First());
+            foreach (var line in lines)
             {
-                string buffer1 = ogmData.Current;
-                ogmData.MoveNext();
-                string buffer2 = ogmData.Current;
-                if (string.IsNullOrWhiteSpace(buffer1) || string.IsNullOrWhiteSpace(buffer2))
+                switch (state)
                 {
-                    Log($"interrupt at '{buffer1}'  '{buffer2}'");
-                    break;
+                    case LineState.LTimeCode:
+                        if (string.IsNullOrWhiteSpace(line)) break;
+                        var time = RTimeCodeLine.Match(line);
+                        if (time.Success)
+                        {
+                            timeCodeLine = line;
+                            state = LineState.LName;
+                            break;
+                        }
+                        state = LineState.LError;
+                        break;
+                    case LineState.LName:
+                        if (string.IsNullOrWhiteSpace(line)) break;
+                        var name = RNameLine.Match(line);
+                        if (name.Success)
+                        {
+                            info.Chapters.Add(ToChapterInfo(timeCodeLine, line, ++index, initalTime));
+                            state = LineState.LTimeCode;
+                            break;
+                        }
+                        state = LineState.LError;
+                        break;
+                    case LineState.LError:
+                        if (info.Chapters.Count == 0)
+                        {
+                            throw new Exception("Unable to Prase this ogm file");
+                        }
+                        Log($"+Interrupt: 于[{timeCodeLine}]处未获得对应的章节名");
+                        state = LineState.LFin;
+                        break;
+                    case LineState.LFin:
+                        goto EXIT_1;
+                    default:
+                        state = LineState.LError;
+                        break;
                 }
-                if (RLineOne.IsMatch(buffer1) && RLineTwo.IsMatch(buffer2))
-                {
-                    info.Chapters.Add(WriteToChapterInfo(buffer1, buffer2, ++index, iniTime, autoGenName));
-                    continue;
-                }
-                throw new FormatException($"invalid format: \n'{buffer1}' \n'{buffer2}' ");
-            } while (ogmData.MoveNext());
-            if (info.Chapters.Count > 1)
-            {
-                info.Duration = info.Chapters.Last().Time;
             }
-            ogmData.Dispose();
+            EXIT_1:
+            info.Duration = info.Chapters.Last().Time;
             return info;
         }
 
         private static TimeSpan OffsetCal(string line)
         {
-            var timeMatch = RLineOne.Match(line);
+            var timeMatch = RTimeCodeLine.Match(line);
             if (timeMatch.Success)
             {
                 return RTimeFormat.Match(line).Value.ToTimeSpan();
@@ -72,14 +102,14 @@ namespace ChapterTool.Util
             throw new Exception($"ERROR: {line} <-该行与时间行格式不匹配");
         }
 
-        private static Chapter WriteToChapterInfo(string line, string line2, int order, TimeSpan iniTime, bool notUseName)
+        private static Chapter ToChapterInfo(string line, string line2, int index, TimeSpan initalTime)
         {
-            Chapter temp = new Chapter { Number = order, Time = TimeSpan.Zero };
-            if (!RLineOne.IsMatch(line) || !RLineTwo.IsMatch(line2)) return temp;
-            temp.Name = notUseName ? $"Chapter {order:D2}"
-                : RLineTwo.Match(line2).Groups["chapterName"].Value.Trim('\r');
-            temp.Time = RTimeFormat.Match(line).Value.ToTimeSpan() - iniTime;
-            return temp;
+            return new Chapter
+            {
+                Number = index,
+                Time = RTimeFormat.Match(line).Value.ToTimeSpan() - initalTime,
+                Name = RNameLine.Match(line2).Groups["chapterName"].Value.Trim('\r')
+            };
         }
     }
 }
