@@ -34,13 +34,6 @@ namespace ChapterTool.Util
     public static class ConvertMethod
     {
         /// <summary>
-        /// 将一个 pts 值转换为 hh:mm:ss.sss 形式的字符串
-        /// </summary>
-        /// <param name="pts"></param>
-        /// <returns></returns>
-        public static string Time2String(int pts) => Time2String(pts / 45000M);
-
-        /// <summary>
         /// 将秒数转换为 hh:mm:ss.sss 形式的字符串
         /// </summary>
         /// <param name="second"></param>
@@ -48,7 +41,7 @@ namespace ChapterTool.Util
         private static string Time2String(decimal second)
         {
             decimal secondPart = Math.Floor(second);
-            decimal millisecondPart = Math.Round((second - secondPart) * 1000M);
+            decimal millisecondPart = Math.Round((second - secondPart) * 1000M, MidpointRounding.AwayFromZero);
             return Time2String(new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart));
         }
 
