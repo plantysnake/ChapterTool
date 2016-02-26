@@ -40,10 +40,10 @@ namespace ChapterTool.Util
             {
                 try
                 {
-                    mkvToolnixPath = MatroskaData.GetMkvToolnixPathViaRegistry();
+                    mkvToolnixPath = GetMkvToolnixPathViaRegistry();
                     RegistryStorage.Save(mkvToolnixPath, @"Software\ChapterTool", "mkvToolnixPath");
                 }
-                catch (Exception exception)
+                catch (Exception exception) //no valid path found in Registry
                 {
                     CTLogger.Log($"Warning: {exception.Message}");
                 }

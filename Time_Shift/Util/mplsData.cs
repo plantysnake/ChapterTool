@@ -87,7 +87,7 @@ namespace ChapterTool.Util
             int isMultiAngle           = (bytes[0x0c] >> 4) & 0x01;
             StringBuilder nameBuilder  = new StringBuilder(Encoding.ASCII.GetString(bytes, 0x02, 0x05));
 
-            if (isMultiAngle == 1)
+            if (isMultiAngle == 1)  //skip multi-angle
             {
                 int numberOfAngles = bytes[0x22];
                 for (int i = 1; i < numberOfAngles; i++)

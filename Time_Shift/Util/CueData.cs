@@ -29,6 +29,11 @@ namespace ChapterTool.Util
     public class CueData
     {
         public ChapterInfo Chapter { get; private set; }
+
+        /// <summary>
+        /// 从文件中获取cue播放列表并转换为ChapterInfo
+        /// </summary>
+        /// <param name="path"></param>
         public CueData(string path)
         {
             string cueData;
@@ -67,6 +72,11 @@ namespace ChapterTool.Util
             NsFin
         }
 
+        /// <summary>
+        /// 解析 cue 播放列表
+        /// </summary>
+        /// <param name="context">未分行的cue字符串</param>
+        /// <returns></returns>
         public static ChapterInfo PraseCue(string context)
         {
             var lines         = context.Split('\n');
@@ -92,19 +102,19 @@ namespace ChapterTool.Util
                             nxState   = NextState.NsNewTrack;
                             break;
                         }
-                        if (fileMatch.Success)
+                        if (fileMatch.Success)          //存在无Title的可能，故当读取到File行时也跳出
                         {
                             nxState = NextState.NsNewTrack;
                         }
                         break;
                     case NextState.NsNewTrack:
-                        if (string.IsNullOrWhiteSpace(line))
+                        if (string.IsNullOrWhiteSpace(line))    //读到空行，解析终止
                         {
                             nxState = NextState.NsFin;
                             break;
                         }
                         var trackMatch = rTrack.Match(line);
-                        if (trackMatch.Success)
+                        if (trackMatch.Success)         //读取到Track，获取其编号，跳至下一步
                         {
                             chapter = new Chapter { Number = int.Parse(trackMatch.Groups[1].Value) };
                             nxState = NextState.NsTrack;
@@ -115,33 +125,33 @@ namespace ChapterTool.Util
                         var performerMatch  = rPerformer.Match(line);
                         var timeMatch       = rTime.Match(line);
 
-                        if (trackTitleMatch.Success)
+                        if (trackTitleMatch.Success)    //获取章节名
                         {
                             Debug.Assert(chapter != null);
-                            chapter.Name = trackTitleMatch.Groups[1].Value;
+                            chapter.Name = trackTitleMatch.Groups[1].Value.Trim('\r');
                             break;
                         }
-                        if (performerMatch.Success)
+                        if (performerMatch.Success)     //获取艺术家名
                         {
                             Debug.Assert(chapter != null);
-                            chapter.Name += $" [{performerMatch.Groups[1].Value}]";
+                            chapter.Name += $" [{performerMatch.Groups[1].Value.Trim('\r')}]";
                             break;
                         }
-                        if (timeMatch.Success)
+                        if (timeMatch.Success)          //获取章节时间
                         {
                             var trackIndex = int.Parse(timeMatch.Groups["index"].Value);
                             switch (trackIndex)
                             {
-                                case 0: //pre-gap of a track
+                                case 0: //pre-gap of a track, just ignore it.
                                     break;
                                 case 1: //beginning of a new track.
                                     Debug.Assert(chapter != null);
                                     var minute      = int.Parse(timeMatch.Groups["M"].Value);
                                     var second      = int.Parse(timeMatch.Groups["S"].Value);
-                                    var millisecond = (int)Math.Round(int.Parse(timeMatch.Groups["F"].Value)*(1000F/75));
+                                    var millisecond = (int)Math.Round(int.Parse(timeMatch.Groups["F"].Value)*(1000F/75));//最后一项以帧(1s/75)而非以10毫秒为单位
                                     chapter.Time    = new TimeSpan(0, 0, minute, second, millisecond);
                                     cue.Chapters.Add(chapter);
-                                    nxState         = NextState.NsNewTrack;
+                                    nxState         = NextState.NsNewTrack;//当前章节点的必要信息已获得，继续寻找下一章节
                                     break;
                                 default:
                                     nxState = NextState.NsError;
@@ -163,7 +173,7 @@ namespace ChapterTool.Util
             {
                 throw new Exception("Empty cue file");
             }
-            cue.Chapters.Sort((c1, c2) => c1.Number.CompareTo(c2.Number));
+            cue.Chapters.Sort((c1, c2) => c1.Number.CompareTo(c2.Number));//确保无乱序
             cue.Duration = cue.Chapters.Last().Time;
             return cue;
         }

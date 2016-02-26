@@ -59,8 +59,8 @@ namespace ChapterTool.Util
         {
             var row = new DataGridViewRow
             {
-                Tag = Chapters[index],
-                DefaultCellStyle =
+                Tag = Chapters[index],  //绑定对象，以便修改信息时可以得知对于的 Chapter
+                DefaultCellStyle =      //设定背景色交替
                 {
                     BackColor = (Chapters[index].Number + 1)%2 == 0
                         ? Color.FromArgb(0x92, 0xAA, 0xF3)
@@ -74,6 +74,11 @@ namespace ChapterTool.Util
             return row;
         }
 
+        /// <summary>
+        /// 将分开多段的 ifo 章节合并为一个章节
+        /// </summary>
+        /// <param name="source">解析获得的分段章节</param>
+        /// <returns></returns>
         public static ChapterInfo CombineChapter(List<ChapterInfo> source)
         {
             var fullChapter = new ChapterInfo
@@ -93,7 +98,7 @@ namespace ChapterTool.Util
                         Number = ++index,
                         Name = $"Chapter {index:D2}"
                     }));
-                duration += chapterClip.Duration;
+                duration += chapterClip.Duration;//每次加上当前段的总时长作为下一段位移的基准
             });
             fullChapter.Duration = duration;
             return fullChapter;
@@ -114,42 +119,45 @@ namespace ChapterTool.Util
 
         #region updataInfo
 
+        /// <summary>
+        /// 以新的时间基准更新剩余章节
+        /// </summary>
+        /// <param name="shift">剩余章节的首个章节点的时间</param>
         public void UpdataInfo(TimeSpan shift)
         {
             Chapters.ForEach(item => item.Time -= shift);
         }
 
+        /// <summary>
+        /// 根据输入的数值向后位移章节序号
+        /// </summary>
+        /// <param name="shift">位移量</param>
         public void UpdataInfo(int shift)
         {
             int index = 0;
             Chapters.ForEach(item => item.Number = ++index + shift);
         }
 
+        /// <summary>
+        /// 根据给定的章节名模板更新章节
+        /// </summary>
+        /// <param name="chapterNameTemplate"></param>
         public void UpdataInfo(string chapterNameTemplate)
         {
             if (string.IsNullOrWhiteSpace(chapterNameTemplate)) return;
-            var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();
-            Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name);
+            var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();//移除首尾多余空行
+            Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name.Trim('\r'));//确保无多余换行符
             cn.Dispose();
         }
 
         #endregion
 
-        public string GetText(bool donotuseName)
-        {
-            StringBuilder lines = new StringBuilder();
-            int i = 1;
-            Chapters.ForEach(item =>
-            {
-                lines.Append($"CHAPTER{item.Number:D2}={item.Time.Time2String()}{Environment.NewLine}");
-                lines.Append($"CHAPTER{item.Number:D2}NAME=");
-                lines.Append(donotuseName ? $"Chapter {i++:D2}" : item.Name);
-                lines.Append(Environment.NewLine);
-            });
-            return lines.ToString();
-        }
-
-        public void SaveText(string filename, bool notUseName)
+        /// <summary>
+        /// 生成 OGM 样式章节
+        /// </summary>
+        /// <param name="notUseName">不使用章节名</param>
+        /// <returns></returns>
+        public string GetText(bool notUseName)
         {
             StringBuilder lines = new StringBuilder();
             int i = 1;
@@ -160,7 +168,12 @@ namespace ChapterTool.Util
                 lines.Append(notUseName ? $"Chapter {i++:D2}" : item.Name);
                 lines.Append(Environment.NewLine);
             });
-            File.WriteAllText(filename, lines.ToString(), Encoding.UTF8);
+            return lines.ToString();
+        }
+
+        public void SaveText(string filename, bool notUseName)
+        {
+            File.WriteAllText(filename, GetText(notUseName), Encoding.UTF8);
         }
 
         public void SaveQpfile(string filename) => File.WriteAllLines(filename, Chapters.Select(c => c.FramsInfo.ToString().Replace("*", "I -1").Replace("K", "I -1")).ToArray());

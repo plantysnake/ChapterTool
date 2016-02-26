@@ -54,6 +54,7 @@ namespace ChapterTool.Util
                     buff.Chapters.AddRange(PraseChapterAtom(editionEntryChildNode, ++index));
                 }
 
+                //remove redundancy chapter node.
                 for (int i = 0; i < buff.Chapters.Count - 1; i++)
                 {
                     if (buff.Chapters[i].Time == buff.Chapters[i + 1].Time)
@@ -97,6 +98,7 @@ namespace ChapterTool.Util
                         break;
                 }
             }
+            //make sure the sub chapters outputed in corrent orrder.
             yield return startChapter;
 
             foreach (var chapter in innerChapterAtom)
