@@ -26,6 +26,8 @@ namespace ChapterTool.Util
     {
         public int Index { get; private set; }
 
+        private const string ChapterFormat = "Chapter";
+
         public ChapterName(int index)
         {
             Index = index;
@@ -43,7 +45,12 @@ namespace ChapterTool.Util
 
         public string Get()
         {
-            return $"Chapter {Index++:D2}";
+            return $"{ChapterFormat} {Index++:D2}";
+        }
+
+        public static string Get(int index)
+        {
+            return $"{ChapterFormat} {index:D2}";
         }
 
         /// <summary>
@@ -62,7 +69,7 @@ namespace ChapterTool.Util
 
         private static IEnumerable<string> RangeIterator(int start, int count)
         {
-            for (int i = 0; i < count; i++) yield return $"Chapter {start + i:D2}";
+            for (int i = 0; i < count; i++) yield return $"{ChapterFormat} {start + i:D2}";
         }
     }
 }

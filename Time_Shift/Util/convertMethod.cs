@@ -127,7 +127,7 @@ namespace ChapterTool.Util
                 : Color.FromArgb(0xF3, 0xF7, 0xF7);
             row.Cells[0].Value = $"{item.Number:D2}";
             row.Cells[1].Value = item.Time2String(info);
-            row.Cells[2].Value = autoGenName ? $"Chapter {row.Index + 1:D2}" : item.Name;
+            row.Cells[2].Value = autoGenName ? ChapterName.Get(row.Index + 1) : item.Name;
             row.Cells[3].Value = item.FramsInfo;
         }
 

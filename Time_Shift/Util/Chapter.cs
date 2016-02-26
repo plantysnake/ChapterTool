@@ -57,7 +57,7 @@ namespace ChapterTool.Util
             };
             row.Cells.Add(new DataGridViewTextBoxCell { Value = $"{Number:D2}" });
             row.Cells.Add(new DataGridViewTextBoxCell { Value = this.Time2String(info) });
-            row.Cells.Add(new DataGridViewTextBoxCell { Value = autoGenName ? $"Chapter {row.Index + 1:D2}" : Name });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = autoGenName ? ChapterName.Get(row.Index + 1) : Name });
             row.Cells.Add(new DataGridViewTextBoxCell { Value = FramsInfo });
             return row;
         }
