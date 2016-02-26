@@ -89,6 +89,7 @@
     </Compile>
     <Compile Include="Util\Chapter.cs" />
     <Compile Include="Util\ChapterInfo.cs" />
+    <Compile Include="Util\ChapterName.cs" />
     <Compile Include="Util\Clip.cs" />
     <Compile Include="Util\ConvertMethod.cs" />
     <Compile Include="Controls\cTextBox.cs">

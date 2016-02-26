@@ -30,6 +30,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using ChapterTool.Properties;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using static ChapterTool.Util.CTLogger;
 using static ChapterTool.Util.ConvertMethod;
@@ -588,21 +589,23 @@ namespace ChapterTool.Forms
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            Log($"+更名: {_info.Chapters[e.RowIndex].Name} -> {dataGridView1.Rows[e.RowIndex].Cells[2].Value}");
-            _info.Chapters[e.RowIndex].Name = dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
+            var chapter = dataGridView1.Rows[e.RowIndex].Tag as Chapter;
+            Debug.Assert(chapter != null);
+            Log($"+更名: {chapter.Name} -> {dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}");
+            chapter.Name = dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
         }
 
         private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
-            _info.Chapters.Remove((Chapter)e.Row.Tag);
+            _info.Chapters.Remove(e.Row.Tag as Chapter);
             _info.UpdataInfo((int)numericUpDown1.Value);
             if (_info.Chapters.Count < 1 || e.Row.Index != 0) return;
             TimeSpan newInitialTime = _info.Chapters.First().Time;
             _info.UpdataInfo(newInitialTime);
             if ((_rawMpls != null || _rawIfo != null) && string.IsNullOrWhiteSpace(_chapterNameTemplate))
             {
-                int index = 0;
-                _info.Chapters.ForEach(item => item.Name = $"Chapter {++index:D2}");
+                var name = new ChapterName();
+                _info.Chapters.ForEach(item => item.Name = name.Get());
             }
             Application.DoEvents();
         }
@@ -659,10 +662,9 @@ namespace ChapterTool.Forms
         private int GetAutofps(decimal accuracy)
         {
             Log($"|+自动帧率识别开始，允许误差为：{accuracy}");
-            var settingAccuracy = CostumeAccuracy;
             var result = _frameRate.Select(fps  =>
                         _info.Chapters.Sum(item =>
-                        item.GetAccuracy(fps, settingAccuracy, cbRound.Checked))).ToList();
+                        item.GetAccuracy(fps, accuracy))).ToList();
             result[0] = 0;
             result.ForEach(count => Log($" | {count:D2} 个精确点"));
             int autofpsCode = result.IndexOf(result.Max());

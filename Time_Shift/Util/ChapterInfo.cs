@@ -88,15 +88,15 @@ namespace ChapterTool.Util
                 FramesPerSecond = source.First().FramesPerSecond
             };
             TimeSpan duration = TimeSpan.Zero;
-            int index = 0;
+            var name = new ChapterName();
             source.ForEach(chapterClip =>
             {
                 chapterClip.Chapters.ForEach(item =>
                     fullChapter.Chapters.Add(new Chapter
                     {
                         Time = duration + item.Time,
-                        Number = ++index,
-                        Name = $"Chapter {index:D2}"
+                        Number = name.Index,
+                        Name = name.Get()
                     }));
                 duration += chapterClip.Duration;//每次加上当前段的总时长作为下一段位移的基准
             });
@@ -165,12 +165,12 @@ namespace ChapterTool.Util
         public string GetText(bool notUseName)
         {
             StringBuilder lines = new StringBuilder();
-            int i = 1;
+            var name = new ChapterName();
             Chapters.ForEach(item =>
             {
                 lines.Append($"CHAPTER{item.Number:D2}={Time2String(item)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{item.Number:D2}NAME=");
-                lines.Append(notUseName ? $"Chapter {i++:D2}" : item.Name);
+                lines.Append(notUseName ? name.Get(): item.Name);
                 lines.Append(Environment.NewLine);
             });
             return lines.ToString();
@@ -204,12 +204,12 @@ namespace ChapterTool.Util
                 xmlchap.WriteElementString("EditionFlagHidden", "0");
                 xmlchap.WriteElementString("EditionFlagDefault", "0");
                 xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                int i = 1;
+                var name = new ChapterName();
                 Chapters.ForEach(item =>
                 {
                     xmlchap.WriteStartElement("ChapterAtom");
                       xmlchap.WriteStartElement("ChapterDisplay");
-                        xmlchap.WriteElementString("ChapterString", notUseName ? $"Chapter {i++:D2}" : item.Name);
+                        xmlchap.WriteElementString("ChapterString", notUseName ? name.Get() : item.Name);
                         xmlchap.WriteElementString("ChapterLanguage", lang);
                       xmlchap.WriteEndElement();
                     xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));

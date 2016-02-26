@@ -63,11 +63,11 @@ namespace ChapterTool.Util
         }
 
 
-        public int GetAccuracy(decimal fps, decimal accuracy, bool round)
+        public int GetAccuracy(decimal fps, decimal accuracy)
         {
-            var frams = (decimal)Time.TotalMilliseconds * fps / 1000M;
-            var answer = round ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
-            return Math.Abs(frams - answer) < accuracy ? 1 : 0;
+            var frams   = (decimal)Time.TotalMilliseconds * fps / 1000M;
+            var rounded = Math.Round(frams, MidpointRounding.AwayFromZero);
+            return Math.Abs(frams - rounded) < accuracy ? 1 : 0;
         }
     }
 }

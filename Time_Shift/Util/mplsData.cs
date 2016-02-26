@@ -170,12 +170,12 @@ namespace ChapterTool.Util
             var current = combineChapter ? EntireTimeStamp : ChapterClips[index].TimeStamp;
             if (current.Count < 2) return info;
             int offset  = current.First();
-            int defaultOrder = 1;
+            var name = new ChapterName();
             info.Chapters = current.Select(item => new Chapter
             {
                 Time   = ConvertMethod.Pts2Time(item - offset),
-                Name   = $"Chapter {defaultOrder:D2}",
-                Number = defaultOrder++
+                Number = name.Index,
+                Name   = name.Get()
             }).ToList();
             return info;
         }
