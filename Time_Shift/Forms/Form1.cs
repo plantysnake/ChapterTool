@@ -793,7 +793,11 @@ namespace ChapterTool.Forms
             toolTip1.Show($"本片段时长为: {Pts2Time(totalTime).Time2String()}, {(ptsDelta <= 5*45000 ? _fakeChapter : _trueChapter)}", (IWin32Window) sender);
         }
 
-        private void comboBox2_MouseEnter(object sender, EventArgs e)     => toolTip1.Show(comboBox2.Items.Count > 20 ? "不用看了，这是播放菜单的mpls" :$"共 {comboBox2.Items.Count} 个片段", (IWin32Window)sender);
+        private void comboBox2_MouseEnter(object sender, EventArgs e)
+        {
+            var menuMpls = _rawMpls != null && _rawMpls.EntireTimeStamp.Count < 5 && comboBox2.Items.Count > 20;
+            toolTip1.Show(menuMpls ? "不用看了，这是播放菜单的mpls" : $"共 {comboBox2.Items.Count} 个片段", (IWin32Window)sender);
+        }
 
         private void cbMul1k1_MouseEnter(object sender, EventArgs e)      => toolTip1.Show("用于DVD Decrypter提取的Chapter", (IWin32Window)sender);
 
