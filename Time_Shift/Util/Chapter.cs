@@ -35,6 +35,15 @@ namespace ChapterTool.Util
         public string FramsInfo { get; set; } = string.Empty;
         public override string ToString() => $"{Name} - {Time.Time2String()}";
 
+        public Chapter() { }
+
+        public Chapter(string name, TimeSpan time, int number)
+        {
+            Number = number;
+            Time   = time;
+            Name   = name;
+        }
+
         public DataGridViewRow ToRow(ChapterInfo info, bool autoGenName)
         {
             var row = new DataGridViewRow

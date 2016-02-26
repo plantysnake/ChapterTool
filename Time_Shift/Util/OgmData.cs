@@ -44,40 +44,36 @@ namespace ChapterTool.Util
             var info  = new ChapterInfo { SourceType = "OGM", Tag = text, TagType = text.GetType() };
             var lines = text.Trim(' ', '\t', '\r', '\n').Split('\n');
             LineState state     = LineState.LTimeCode;
-            string timeCodeLine = string.Empty;
+            TimeSpan timeCode   = TimeSpan.Zero;
             TimeSpan initalTime = OffsetCal(lines.First());
             foreach (var line in lines)
             {
                 switch (state)
                 {
                     case LineState.LTimeCode:
-                        if (string.IsNullOrWhiteSpace(line)) break;
-                        var time = RTimeCodeLine.Match(line);
-                        if (time.Success)
+                        if (string.IsNullOrWhiteSpace(line)) break; //跳过空行
+                        if (RTimeCodeLine.Match(line).Success)
                         {
-                            timeCodeLine = line;
-                            state = LineState.LName;
+                            timeCode = RTimeFormat.Match(line).Value.ToTimeSpan() - initalTime;
+                            state    = LineState.LName;
                             break;
                         }
-                        state = LineState.LError;
+                        state = LineState.LError;   //未获得预期的时间信息，中断解析
                         break;
                     case LineState.LName:
-                        if (string.IsNullOrWhiteSpace(line)) break;
+                        if (string.IsNullOrWhiteSpace(line)) break; //跳过空行
                         var name = RNameLine.Match(line);
                         if (name.Success)
                         {
-                            info.Chapters.Add(ToChapterInfo(timeCodeLine, line, ++index, initalTime));
+                            info.Chapters.Add(new Chapter(name.Groups["chapterName"].Value.Trim('\r'), timeCode, ++index));
                             state = LineState.LTimeCode;
                             break;
                         }
-                        state = LineState.LError;
+                        state = LineState.LError;   //未获得预期的名称信息，中断解析
                         break;
                     case LineState.LError:
-                        if (info.Chapters.Count == 0)
-                        {
-                            throw new Exception("Unable to Prase this ogm file");
-                        }
-                        Log($"+Interrupt: 于[{timeCodeLine}]处未获得对应的章节名");
+                        if (info.Chapters.Count == 0) throw new Exception("Unable to Prase this ogm file");
+                        Log($"+Interrupt: 发生于[{line}]处");    //将已解析的部分返回
                         state = LineState.LFin;
                         break;
                     case LineState.LFin:
@@ -100,16 +96,6 @@ namespace ChapterTool.Util
                 return RTimeFormat.Match(line).Value.ToTimeSpan();
             }
             throw new Exception($"ERROR: {line} <-该行与时间行格式不匹配");
-        }
-
-        private static Chapter ToChapterInfo(string line, string line2, int index, TimeSpan initalTime)
-        {
-            return new Chapter
-            {
-                Number = index,
-                Time = RTimeFormat.Match(line).Value.ToTimeSpan() - initalTime,
-                Name = RNameLine.Match(line2).Groups["chapterName"].Value.Trim('\r')
-            };
         }
     }
 }
