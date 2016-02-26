@@ -34,18 +34,6 @@ namespace ChapterTool.Util
     public static class ConvertMethod
     {
         /// <summary>
-        /// 将秒数转换为 hh:mm:ss.sss 形式的字符串
-        /// </summary>
-        /// <param name="second"></param>
-        /// <returns></returns>
-        private static string Time2String(decimal second)
-        {
-            decimal secondPart = Math.Floor(second);
-            decimal millisecondPart = Math.Round((second - secondPart) * 1000M, MidpointRounding.AwayFromZero);
-            return Time2String(new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart));
-        }
-
-        /// <summary>
         /// 将TimeSpan对象转换为 hh:mm:ss.sss 形式的字符串
         /// </summary>
         /// <param name="time"></param>
@@ -56,12 +44,11 @@ namespace ChapterTool.Util
         /// 将给定的章节点时间以平移、修正信息修正后转换为 hh:mm:ss.sss 形式的字符串
         /// </summary>
         /// <param name="item">章节点</param>
-        /// <param name="offset">向后平移的时间</param>
-        /// <param name="mul1K1">是否进行x1.001修正</param>
+        /// <param name="info">章节信息</param>
         /// <returns></returns>
-        public static string Time2String(this Chapter item, TimeSpan offset, bool mul1K1)
+        public static string Time2String(this Chapter item, ChapterInfo info)
         {
-            return mul1K1 ? Time2String((decimal) (item.Time + offset).TotalSeconds*1.001M) : Time2String(item.Time + offset);
+            return info.Mul1K1 ? new TimeSpan( (long) Math.Round((decimal) (item.Time + info.Offset).TotalSeconds*1.001M*TimeSpan.TicksPerSecond)).Time2String() : Time2String(item.Time + info.Offset);
         }
 
         public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+)\s*:\s*(?<Minute>\d+)\s*:\s*(?<Second>\d+)\s*[\.,]\s*(?<Millisecond>\d{3})");
@@ -139,7 +126,7 @@ namespace ChapterTool.Util
                 ? Color.FromArgb(0x92, 0xAA, 0xF3)
                 : Color.FromArgb(0xF3, 0xF7, 0xF7);
             row.Cells[0].Value = $"{item.Number:D2}";
-            row.Cells[1].Value = item.Time2String(info.Offset, info.Mul1K1);
+            row.Cells[1].Value = item.Time2String(info);
             row.Cells[2].Value = autoGenName ? $"Chapter {row.Index + 1:D2}" : item.Name;
             row.Cells[3].Value = item.FramsInfo;
         }

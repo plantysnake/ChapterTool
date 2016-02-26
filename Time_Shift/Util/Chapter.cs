@@ -56,11 +56,12 @@ namespace ChapterTool.Util
                 }
             };
             row.Cells.Add(new DataGridViewTextBoxCell { Value = $"{Number:D2}" });
-            row.Cells.Add(new DataGridViewTextBoxCell { Value = this.Time2String(info.Offset, info.Mul1K1) });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = this.Time2String(info) });
             row.Cells.Add(new DataGridViewTextBoxCell { Value = autoGenName ? $"Chapter {row.Index + 1:D2}" : Name });
             row.Cells.Add(new DataGridViewTextBoxCell { Value = FramsInfo });
             return row;
         }
+
 
         public int GetAccuracy(decimal fps, decimal accuracy, bool round)
         {
