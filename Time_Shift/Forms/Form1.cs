@@ -627,16 +627,33 @@ namespace ChapterTool.Forms
         private void GetFramInfo(int index = 0)
         {
             var settingAccuracy = CostumeAccuracy;
-            var coefficient = _info.Mul1K1 ? 1.001M : 1M;
-            index = index == 0 && _rawMpls == null ? GetAutofps(settingAccuracy) : index;
-            comboBox1.SelectedIndex = index - 1;
-            _info.Chapters.ForEach(item =>
+
+            if (cbRound.Checked)
             {
-                var frams      = (decimal) (item.Time + _info.Offset).TotalMilliseconds * coefficient * _frameRate[index]/1000M;
-                var rounded    = cbRound.Checked ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
-                bool accuracy  = Math.Abs(frams - rounded) < settingAccuracy;
-                item.FramsInfo = $"{rounded}{(accuracy ? " K" : " *")}";
-            });
+                //当未手动提供帧率并且不是mpls或ifo这种已知帧率的，才进行蒙帧率操作
+                index = index == 0 && _rawMpls == null && _rawIfo == null ? GetAutofps(settingAccuracy) : index;
+                comboBox1.SelectedIndex = index - 1;
+            }
+            else
+            {
+                index = comboBox1.SelectedIndex + 1;    //未勾选舍入时将帧率直接设置为下拉框当前帧率
+            }
+
+            var coefficient = _info.Mul1K1 ? 1.001M : 1M;
+            foreach (var chapter in _info.Chapters)
+            {
+                var frams = (decimal)(chapter.Time + _info.Offset).TotalMilliseconds * coefficient * _frameRate[index] / 1000M;
+                if (cbRound.Checked)
+                {
+                    var rounded       = cbRound.Checked ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
+                    bool accuracy     = Math.Abs(frams - rounded) < settingAccuracy;
+                    chapter.FramsInfo = $"{rounded}{(accuracy ? " K" : " *")}";
+                }
+                else
+                {
+                    chapter.FramsInfo = $"{frams}";
+                }
+            }
         }
 
         private int GetAutofps(decimal accuracy)
