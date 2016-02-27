@@ -63,6 +63,7 @@ namespace ChapterTool.Util
         {
             string arg = $"chapters \"{path}\"";
             string xmlresult = RunMkvextract(arg, _mkvextractPath);
+            if (string.IsNullOrEmpty(xmlresult)) throw new Exception("No Chapter Found");
             Result.LoadXml(xmlresult);
             return Result;
         }

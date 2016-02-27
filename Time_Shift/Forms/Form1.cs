@@ -341,6 +341,7 @@ namespace ChapterTool.Forms
             {
                 MessageBox.Show(caption: Resources.ChapterTool_Error, text: exception.Message,
                                 buttons: MessageBoxButtons.OK,icon: MessageBoxIcon.Hand);
+                Log($"ERROR: {exception.Message}");
                 progressBar1.SetState(3);
             }
         }
@@ -358,6 +359,7 @@ namespace ChapterTool.Forms
             {
                 MessageBox.Show(caption: Resources.ChapterTool_Error, text: exception.Message,
                                 buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
+                Log($"ERROR: {exception.Message}");
                 FilePath = string.Empty;
             }
         }
@@ -552,9 +554,11 @@ namespace ChapterTool.Forms
         #endregion
 
         #region Grid View
-        private void UpdataGridView(int fpsIndex = 0)
+        private void UpdataGridView(int fpsIndex = 0, bool updateFrameInfo = true)
         {
             if (!IsPathValid || _info == null) return;
+            if (!updateFrameInfo) goto SKIP;
+
             switch (_info.SourceType)
             {
                 case "DVD":
@@ -572,6 +576,7 @@ namespace ChapterTool.Forms
                     break;
             }
 
+            SKIP:
             bool clearRows = _info.Chapters.Count != dataGridView1.Rows.Count;
             if (clearRows) dataGridView1.Rows.Clear();
             for (var i = 0; i < _info.Chapters.Count; i++)
@@ -954,7 +959,7 @@ namespace ChapterTool.Forms
             _chapterNameTemplate = cbChapterName.Checked ? LoadChapterName() : string.Empty;
             if (!IsPathValid) return;
             _info.UpdataInfo(_chapterNameTemplate);
-            UpdataGridView();
+            UpdataGridView(0, false);
         }
 
         #endregion
@@ -966,7 +971,7 @@ namespace ChapterTool.Forms
             UpdataGridView();
         }
 
-        private void cbAutoGenName_CheckedChanged(object sender, EventArgs e) => UpdataGridView();
+        private void cbAutoGenName_CheckedChanged(object sender, EventArgs e) => UpdataGridView(0, false);
 
         private void cbShift_CheckedChanged(object sender, EventArgs e)
         {
@@ -994,7 +999,7 @@ namespace ChapterTool.Forms
         {
             if (!IsPathValid) return;
             _info.UpdataInfo((int)numericUpDown1.Value);
-            UpdataGridView();
+            UpdataGridView(0, false);
         }
 
         private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e) => Tips.Text = @"位移时间不科学的样子";
