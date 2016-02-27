@@ -113,7 +113,7 @@ namespace ChapterTool.Forms
             comboBox1.SelectedIndex = -1;
 
             _rawMpls                = null;
-            _rawIfo                 = null;
+            _ifoGroup                 = null;
             _xmlGroup               = null;
             _info                   = null;
             _fullIfoChapter         = null;
@@ -182,7 +182,7 @@ namespace ChapterTool.Forms
                 }
                 if (_rFileType.IsMatch(FilePath)) return true;
                 Tips.Text = Resources.InValid_Type;
-                Log(Resources.InValid_Type_Log);
+                Log(Resources.InValid_Type_Log + $"[{Path.GetFileName(FilePath)}]");
                 FilePath = string.Empty;
                 label1.Text = Resources.File_Unloaded;
                 return false;
@@ -216,7 +216,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        private List<ChapterInfo> _rawIfo;
+        private List<ChapterInfo> _ifoGroup;
         private MplsData          _rawMpls;
         private ChapterInfo       _info;
         private ChapterInfo       _fullIfoChapter;
@@ -279,8 +279,8 @@ namespace ChapterTool.Forms
                 comboBox2.Items.Clear();
                 _rawMpls.ChapterClips.ForEach(item =>
                 {
-                    comboBox2.Items.Add($"{item.Name.Replace("M2TS", ".m2ts")}__{item.TimeStamp.Count}");
-                    Log($" |+{item.Name}");
+                    comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
+                    Log($" |+{item.Name} Duration[{Pts2Time(item.Length).Time2String()}]");
                     Log($"  |+包含 {item.TimeStamp.Count} 个时间戳");
                 });
             }
@@ -290,26 +290,26 @@ namespace ChapterTool.Forms
 
         private void LoadIfo()
         {
-            _rawIfo = new IfoData().GetStreams(FilePath).Where(item => item != null).ToList();
-            if (_rawIfo.Count == 0)
+            _ifoGroup = new IfoData().GetStreams(FilePath).Where(item => item != null).ToList();
+            if (_ifoGroup.Count == 0)
             {
                 throw new Exception("No Chapter detected in ifo file");
             }
 
-            _fullIfoChapter = ChapterInfo.CombineChapter(_rawIfo);
+            _fullIfoChapter = ChapterInfo.CombineChapter(_ifoGroup);
 
             comboBox2.Items.Clear();
-            comboBox2.Enabled = comboBox2.Visible = _rawIfo.Count >= 1;
-            Log($"|+IFO中共有 {_rawIfo.Count} 个片段");
-            _rawIfo.ForEach(item =>
+            comboBox2.Enabled = comboBox2.Visible = _ifoGroup.Count >= 1;
+            Log($"|+IFO中共有 {_ifoGroup.Count} 个VOB片段");
+            foreach (var item in _ifoGroup)
             {
                 comboBox2.Items.Add($"{item.Title}_{item.SourceName}__{item.Chapters.Count}");
                 int index = 0;
                 item.Chapters.ForEach(chapter => chapter.Number = ++index);
-                Log($" |+{item.SourceName}");
+                Log($" |+{item.SourceName} Duration[{item.Duration.Time2String()}]");
                 Log($"  |+包含 {item.Chapters.Count} 个时间戳");
-            });
-            _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _rawIfo.First();
+            }
+            _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _ifoGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
             Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.IFO_WARNING;
         }
@@ -487,22 +487,23 @@ namespace ChapterTool.Forms
             {
                 _info = _xmlGroup[ClipSeletIndex];
             }
-            else if (_rawIfo != null)
+            else if (_ifoGroup != null)
             {
                 GetChapterInfoFromIFO(ClipSeletIndex);
             }
+            _info.Mul1K1 = cbMul1k1.Checked;
             UpdataGridView();
         }
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_rawMpls == null && _rawIfo == null) return;
+            if (_rawMpls == null && _ifoGroup == null) return;
             combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
             if (_rawMpls != null)
             {
                 GetChapterInfoFromMpls(ClipSeletIndex);
             }
-            if (_rawIfo != null)
+            if (_ifoGroup != null)
             {
                 GetChapterInfoFromIFO(ClipSeletIndex);
             }
@@ -522,7 +523,7 @@ namespace ChapterTool.Forms
 
         private void GetChapterInfoFromIFO(int index)
         {
-            _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _rawIfo[index];
+            _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _ifoGroup[index];
         }
 
         private List<ChapterInfo> _xmlGroup;
@@ -602,7 +603,7 @@ namespace ChapterTool.Forms
             if (_info.Chapters.Count < 1 || e.Row.Index != 0) return;
             TimeSpan newInitialTime = _info.Chapters.First().Time;
             _info.UpdataInfo(newInitialTime);
-            if ((_rawMpls != null || _rawIfo != null) && string.IsNullOrWhiteSpace(_chapterNameTemplate))
+            if ((_rawMpls != null || _ifoGroup != null) && string.IsNullOrWhiteSpace(_chapterNameTemplate))
             {
                 var name = new ChapterName();
                 _info.Chapters.ForEach(item => item.Name = name.Get());
@@ -634,7 +635,7 @@ namespace ChapterTool.Forms
             if (cbRound.Checked)
             {
                 //当未手动提供帧率并且不是mpls或ifo这种已知帧率的，才进行蒙帧率操作
-                index = index == 0 && _rawMpls == null && _rawIfo == null ? GetAutofps(settingAccuracy) : index;
+                index = index == 0 && _rawMpls == null && _ifoGroup == null ? GetAutofps(settingAccuracy) : index;
                 comboBox1.SelectedIndex = index - 1;
             }
             else
