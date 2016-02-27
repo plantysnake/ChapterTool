@@ -503,10 +503,11 @@ namespace ChapterTool.Forms
             {
                 GetChapterInfoFromMpls(ClipSeletIndex);
             }
-            if (_ifoGroup != null)
+            else if (_ifoGroup != null)
             {
                 GetChapterInfoFromIFO(ClipSeletIndex);
             }
+            _info.Mul1K1 = cbMul1k1.Checked;
             UpdataGridView();
         }
 
