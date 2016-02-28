@@ -23,9 +23,9 @@ using System.Collections.Generic;
 
 namespace ChapterTool.Util
 {
-    public class IfoData
+    public static class IfoData
     {
-        public IEnumerable<ChapterInfo> GetStreams(string ifoFile)
+        public static IEnumerable<ChapterInfo> GetStreams(string ifoFile)
         {
             int pgcCount = (int)IfoParser.GetPGCnb(ifoFile);
             for (int i = 1; i <= pgcCount; i++)
@@ -34,7 +34,7 @@ namespace ChapterTool.Util
             }
         }
 
-        private ChapterInfo GetChapterInfo(string location, int titleSetNum)
+        private static ChapterInfo GetChapterInfo(string location, int titleSetNum)
         {
             if (location.StartsWith("VTS_"))
             {

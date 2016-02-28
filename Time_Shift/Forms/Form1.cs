@@ -27,10 +27,10 @@ using Microsoft.Win32;
 using ChapterTool.Util;
 using System.Threading;
 using System.Reflection;
+using System.Diagnostics;
 using System.Windows.Forms;
 using ChapterTool.Properties;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using static ChapterTool.Util.CTLogger;
 using static ChapterTool.Util.ConvertMethod;
@@ -290,7 +290,7 @@ namespace ChapterTool.Forms
 
         private void LoadIfo()
         {
-            _ifoGroup = new IfoData().GetStreams(FilePath).Where(item => item != null).ToList();
+            _ifoGroup = IfoData.GetStreams(FilePath).Where(item => item != null).ToList();
             if (_ifoGroup.Count == 0)
             {
                 throw new Exception("No Chapter detected in ifo file");
