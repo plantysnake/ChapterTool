@@ -28,7 +28,6 @@ using ChapterTool.Util;
 using System.Threading;
 using System.Reflection;
 using System.Diagnostics;
-using System.Globalization;
 using System.Windows.Forms;
 using ChapterTool.Properties;
 using System.Collections.Generic;
@@ -77,7 +76,7 @@ namespace ChapterTool.Forms
             savingType.SelectedIndex          = 0;
             btnTrans.Text                     = Environment.TickCount % 2 == 0 ? "↺" : "↻";
             folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
-            CheckUpdate();
+            Log(Updater.CheckUpdateWeekly("ChapterTool") ? "已检查更新" : "跳过更新检查");
 
             if (string.IsNullOrEmpty(FilePath)) return;
             if (Loadfile()) UpdataGridView();
@@ -143,25 +142,6 @@ namespace ChapterTool.Forms
             // Let it know all messages so it can handle WM_SYSCOMMAND
             // (This method is inlined)
             _systemMenu.HandleMessage(ref msg);
-        }
-
-        private static void CheckUpdate()
-        {
-            var reg = RegistryStorage.Load(@"Software\ChapterTool", "LastCheck");
-            if (string.IsNullOrEmpty(reg))
-            {
-                RegistryStorage.Save(DateTime.Now.ToString(CultureInfo.InvariantCulture), @"Software\ChapterTool", "LastCheck");
-                Log("首次运行新版本");
-                return;
-            }
-            var lastCheckTime = DateTime.Parse(reg);
-            if (DateTime.Now - lastCheckTime > new TimeSpan(7,0,0,0))
-            {
-                Updater.CheckUpdate();
-                RegistryStorage.Save(DateTime.Now.ToString(CultureInfo.InvariantCulture), @"Software\ChapterTool", "LastCheck");
-                return;
-            }
-            Log($"上次检查更新时间为{lastCheckTime}, 想必还没有新的更新");
         }
 
         #endregion
