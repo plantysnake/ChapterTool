@@ -44,6 +44,7 @@ namespace ChapterTool.Forms
         public Form1()
         {
             InitializeComponent();
+            AddCommand();
         }
 
         public Form1(string args)
@@ -51,6 +52,7 @@ namespace ChapterTool.Forms
             InitializeComponent();
             FilePath = args;
             Log($"+从运行参数中载入文件:{args}");
+            AddCommand();
         }
         #endregion
 
@@ -142,7 +144,7 @@ namespace ChapterTool.Forms
             var bulid = int.Parse(result.Groups[3].Value);
             var reversion = int.Parse(result.Groups[4].Value);
             Version remoteVersion = new Version(major, minor, bulid, reversion);
-            if (currentVersion > remoteVersion)
+            if (currentVersion >= remoteVersion)
             {
                 MessageBox.Show($"v{currentVersion} 已是最新版");
                 return;
@@ -162,6 +164,34 @@ namespace ChapterTool.Forms
             webRequest.Credentials = CredentialCache.DefaultCredentials;
             webRequest.BeginGetResponse(OnResponse, webRequest);
         }
+
+        private SystemMenu _systemMenu;
+
+        private void AddCommand()
+        {
+            _systemMenu = new SystemMenu(this);
+            _systemMenu.AddCommand("检查更新(&U)", OnSysMenuAbout, true);
+        }
+
+        protected override void WndProc(ref Message msg)
+        {
+            if (msg == null)
+            {
+                return;
+            }
+            base.WndProc(ref msg);
+
+            // Let it know all messages so it can handle WM_SYSCOMMAND
+            // (This method is inlined)
+            _systemMenu.HandleMessage(ref msg);
+        }
+
+        // Handle menu command click
+        private void OnSysMenuAbout()
+        {
+            CheckUpdate();
+        }
+
         #endregion
 
         #region About Form
