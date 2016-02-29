@@ -237,13 +237,5 @@ namespace ChapterTool.Util
         //將視窗移動到最上層
         [DllImport("user32.dll")]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        public static bool IsConnectInternet()
-        {
-            return InternetGetConnectedState(0, 0);
-        }
-
-        [DllImport("wininet.dll")]
-        private static extern bool InternetGetConnectedState(int description, int reservedValue);
     }
 }

@@ -142,6 +142,7 @@
     <Compile Include="Util\OgmData.cs" />
     <Compile Include="Util\RegistryStorage.cs" />
     <Compile Include="Util\SystemMenu.cs" />
+    <Compile Include="Util\Updater.cs" />
     <Compile Include="Util\XmlData.cs" />
     <EmbeddedResource Include="Controls\cTextBox.resx">
       <DependentUpon>cTextBox.cs</DependentUpon>
