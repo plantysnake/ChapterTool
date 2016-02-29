@@ -31,7 +31,7 @@ namespace ChapterTool.Util
             Version remoteVersion = new Version(major, minor, bulid, reversion);
             if (currentVersion >= remoteVersion)
             {
-                MessageBox.Show($"v{currentVersion} 已是最新版");
+                MessageBox.Show($"v{currentVersion} 已是最新版", @"As Expected");
                 return;
             }
             var dialogResult = MessageBox.Show(caption: @"Wow! Such Impressive", text: $"新车已发车 v{remoteVersion}，上车!",
