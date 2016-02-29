@@ -20,6 +20,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Net;
 using System.Text;
 using System.Linq;
 using System.Drawing;
@@ -119,6 +120,47 @@ namespace ChapterTool.Forms
             _fullIfoChapter         = null;
 
             dataGridView1.Rows.Clear();
+        }
+        #endregion
+
+        #region Update
+        private void OnResponse(IAsyncResult ar)
+        {
+            Regex versionRegex = new Regex(@"ChapterTool (\d+)\.(\d+)\.(\d+)\.(\d+)");
+            WebRequest webRequest = (WebRequest)ar.AsyncState;
+            Stream responseStream = webRequest.EndGetResponse(ar).GetResponseStream();
+            if (responseStream == null) return;
+
+            StreamReader streamReader = new StreamReader(responseStream);
+            string context = streamReader.ReadToEnd();
+            var result = versionRegex.Match(context);
+            if (!result.Success) return;
+
+            var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            var major = int.Parse(result.Groups[1].Value);
+            var minor = int.Parse(result.Groups[2].Value);
+            var bulid = int.Parse(result.Groups[3].Value);
+            var reversion = int.Parse(result.Groups[4].Value);
+            Version remoteVersion = new Version(major, minor, bulid, reversion);
+            if (currentVersion > remoteVersion)
+            {
+                MessageBox.Show($"v{currentVersion} 已是最新版");
+                return;
+            }
+            var dialogResult = MessageBox.Show(caption: @"Wow! Such Impressive", text: $"新车已发车 v{remoteVersion}，上车!",
+                                               buttons: MessageBoxButtons.YesNo, icon: MessageBoxIcon.Asterisk);
+            if (dialogResult != DialogResult.Yes) return;
+            FormUpdater formUpdater = new FormUpdater(Application.ExecutablePath, remoteVersion);
+            formUpdater.ShowDialog(this);
+        }
+
+        private void CheckUpdate()
+        {
+            bool connected = IsConnectInternet();
+            if (!connected) return;
+            WebRequest webRequest = WebRequest.Create("http://tcupdate.applinzi.com/index.php");
+            webRequest.Credentials = CredentialCache.DefaultCredentials;
+            webRequest.BeginGetResponse(OnResponse, webRequest);
         }
         #endregion
 
