@@ -4,7 +4,7 @@
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
+// the Free Software Foundation; either version 3 of the License, or
 // (at your option) any later version.
 //
 // This program is distributed in the hope that it will be useful,
@@ -17,24 +17,55 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
-
 using System;
 using System.IO;
 using System.Xml;
 using System.Linq;
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
     internal class MatroskaData
     {
         public readonly XmlDocument Result = new XmlDocument();
-        public MatroskaData(string path, string program)
+
+        private readonly string _mkvextractPath;
+
+        public MatroskaData()
+        {
+            var mkvToolnixPath = RegistryStorage.Load(@"Software\ChapterTool", "mkvToolnixPath");
+            if (string.IsNullOrEmpty(mkvToolnixPath)) //saved path not found.
+            {
+                try
+                {
+                    mkvToolnixPath = GetMkvToolnixPathViaRegistry();
+                    RegistryStorage.Save(mkvToolnixPath, @"Software\ChapterTool", "mkvToolnixPath");
+                }
+                catch (Exception exception) //no valid path found in Registry
+                {
+                    CTLogger.Log($"Warning: {exception.Message}");
+                }
+                if (string.IsNullOrEmpty(mkvToolnixPath)) //Installed path not found.
+                {
+                    mkvToolnixPath = Path.GetDirectoryName(Application.ExecutablePath);
+                }
+            }
+            _mkvextractPath = mkvToolnixPath + "\\mkvextract.exe";
+            if (!File.Exists(_mkvextractPath))
+            {
+                throw new Exception("无可用 MkvExtract, 安装个呗~");
+            }
+        }
+
+        public XmlDocument GetXml(string path)
         {
             string arg = $"chapters \"{path}\"";
-            string xmlresult = RunMkvextract(arg, program);
+            string xmlresult = RunMkvextract(arg, _mkvextractPath);
+            if (string.IsNullOrEmpty(xmlresult)) throw new Exception("No Chapter Found");
             Result.LoadXml(xmlresult);
+            return Result;
         }
 
         private static string RunMkvextract(string arguments, string program)
@@ -55,7 +86,7 @@ namespace ChapterTool.Util
         /// If it doesn't find it, it throws an exception.
         /// </summary>
         /// <returns></returns>
-        public static string GetMkvToolnixPathViaRegistry()
+        private static string GetMkvToolnixPathViaRegistry()
         {
             RegistryKey regMkvToolnix = null;
             string valuePath          = string.Empty;

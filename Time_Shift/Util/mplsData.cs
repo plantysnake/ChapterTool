@@ -1,10 +1,10 @@
 ﻿// ****************************************************************************
 //
-// Copyright (C) 2014-2015 TautCony (TautCony@vcb-s.com)
+// Copyright (C) 2009-2015 Kurtnoise (kurtnoise@free.fr)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
+// the Free Software Foundation; either version 3 of the License, or
 // (at your option) any later version.
 //
 // This program is distributed in the hope that it will be useful,
@@ -50,7 +50,6 @@ namespace ChapterTool.Util
                 {
                     ParseStream(itemStartAdress, streamOrder, playItemOrder);
                 }
-                //Enumerable.Range(0, streamCount).ToList().ForEach(streamOrder => ParseStream(itemStartAdress, streamOrder, playItemOrder));
                 playItemEntries += lengthOfPlayItem + 2;//for that not counting the two length bytes themselves.
             }
             ParsePlaylistMark(playlistMarkSectionStartAddress);
@@ -88,7 +87,7 @@ namespace ChapterTool.Util
             int isMultiAngle           = (bytes[0x0c] >> 4) & 0x01;
             StringBuilder nameBuilder  = new StringBuilder(Encoding.ASCII.GetString(bytes, 0x02, 0x05));
 
-            if (isMultiAngle == 1)
+            if (isMultiAngle == 1)  //skip multi-angle
             {
                 int numberOfAngles = bytes[0x22];
                 for (int i = 1; i < numberOfAngles; i++)
@@ -171,12 +170,12 @@ namespace ChapterTool.Util
             var current = combineChapter ? EntireTimeStamp : ChapterClips[index].TimeStamp;
             if (current.Count < 2) return info;
             int offset  = current.First();
-            int defaultOrder = 1;
+            var name = new ChapterName();
             info.Chapters = current.Select(item => new Chapter
             {
                 Time   = ConvertMethod.Pts2Time(item - offset),
-                Name   = $"Chapter {defaultOrder:D2}",
-                Number = defaultOrder++
+                Number = name.Index,
+                Name   = name.Get()
             }).ToList();
             return info;
         }

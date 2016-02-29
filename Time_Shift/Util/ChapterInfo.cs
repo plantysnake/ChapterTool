@@ -1,11 +1,30 @@
-﻿using System;
+﻿// ****************************************************************************
+//
+// Copyright (C) 2014-2015 TautCony (TautCony@vcb-s.com)
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// ****************************************************************************
+using System;
 using System.IO;
 using System.Xml;
 using System.Text;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using System.Drawing;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace ChapterTool.Util
 {
@@ -40,8 +59,8 @@ namespace ChapterTool.Util
         {
             var row = new DataGridViewRow
             {
-                Tag = Chapters[index],
-                DefaultCellStyle =
+                Tag = Chapters[index],  //绑定对象，以便修改信息时可以得知对于的 Chapter
+                DefaultCellStyle =      //设定背景色交替
                 {
                     BackColor = (Chapters[index].Number + 1)%2 == 0
                         ? Color.FromArgb(0x92, 0xAA, 0xF3)
@@ -49,12 +68,17 @@ namespace ChapterTool.Util
                 }
             };
             row.Cells.Add(new DataGridViewTextBoxCell {Value = $"{Chapters[index].Number:D2}"});
-            row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].Time2String(Offset, Mul1K1)});
-            row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? $"Chapter {row.Index + 1:D2}" : Chapters[index].Name});
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = Time2String(Chapters[index]) });
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? ChapterName.Get(row.Index + 1) : Chapters[index].Name});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].FramsInfo});
             return row;
         }
 
+        /// <summary>
+        /// 将分开多段的 ifo 章节合并为一个章节
+        /// </summary>
+        /// <param name="source">解析获得的分段章节</param>
+        /// <returns></returns>
         public static ChapterInfo CombineChapter(List<ChapterInfo> source)
         {
             var fullChapter = new ChapterInfo
@@ -64,20 +88,25 @@ namespace ChapterTool.Util
                 FramesPerSecond = source.First().FramesPerSecond
             };
             TimeSpan duration = TimeSpan.Zero;
-            int index = 0;
+            var name = new ChapterName();
             source.ForEach(chapterClip =>
             {
                 chapterClip.Chapters.ForEach(item =>
                     fullChapter.Chapters.Add(new Chapter
                     {
                         Time = duration + item.Time,
-                        Number = ++index,
-                        Name = $"Chapter {index:D2}"
+                        Number = name.Index,
+                        Name = name.Get()
                     }));
-                duration += chapterClip.Duration;
+                duration += chapterClip.Duration;//每次加上当前段的总时长作为下一段位移的基准
             });
             fullChapter.Duration = duration;
             return fullChapter;
+        }
+
+        private string Time2String(Chapter item)
+        {
+            return item.Time2String(this);
         }
 
         public void ChangeFps(double fps)
@@ -95,54 +124,59 @@ namespace ChapterTool.Util
 
         #region updataInfo
 
+        /// <summary>
+        /// 以新的时间基准更新剩余章节
+        /// </summary>
+        /// <param name="shift">剩余章节的首个章节点的时间</param>
         public void UpdataInfo(TimeSpan shift)
         {
             Chapters.ForEach(item => item.Time -= shift);
         }
 
+        /// <summary>
+        /// 根据输入的数值向后位移章节序号
+        /// </summary>
+        /// <param name="shift">位移量</param>
         public void UpdataInfo(int shift)
         {
             int index = 0;
             Chapters.ForEach(item => item.Number = ++index + shift);
         }
 
+        /// <summary>
+        /// 根据给定的章节名模板更新章节
+        /// </summary>
+        /// <param name="chapterNameTemplate"></param>
         public void UpdataInfo(string chapterNameTemplate)
         {
             if (string.IsNullOrWhiteSpace(chapterNameTemplate)) return;
-            var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();
-            Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name);
+            var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();//移除首尾多余空行
+            Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name.Trim('\r'));//确保无多余换行符
             cn.Dispose();
         }
 
         #endregion
 
-        public string GetText(bool donotuseName)
+        /// <summary>
+        /// 生成 OGM 样式章节
+        /// </summary>
+        /// <param name="notUseName">不使用章节名</param>
+        /// <returns></returns>
+        public string GetText(bool notUseName)
         {
             StringBuilder lines = new StringBuilder();
-            int i = 1;
+            var name = new ChapterName();
             Chapters.ForEach(item =>
             {
-                lines.Append($"CHAPTER{item.Number:D2}={item.Time.Time2String()}{Environment.NewLine}");
+                lines.Append($"CHAPTER{item.Number:D2}={Time2String(item)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{item.Number:D2}NAME=");
-                lines.Append(donotuseName ? $"Chapter {i++:D2}" : item.Name);
+                lines.Append(notUseName ? name.Get(): item.Name);
                 lines.Append(Environment.NewLine);
             });
             return lines.ToString();
         }
 
-        public void SaveText(string filename, bool notUseName)
-        {
-            StringBuilder lines = new StringBuilder();
-            int i = 1;
-            Chapters.ForEach(item =>
-            {
-                lines.Append($"CHAPTER{item.Number:D2}={item.Time2String(Offset, Mul1K1)}{Environment.NewLine}");
-                lines.Append($"CHAPTER{item.Number:D2}NAME=");
-                lines.Append(notUseName ? $"Chapter {i++:D2}" : item.Name);
-                lines.Append(Environment.NewLine);
-            });
-            File.WriteAllText(filename, lines.ToString(), Encoding.UTF8);
-        }
+        public void SaveText(string filename, bool notUseName) => File.WriteAllText(filename, GetText(notUseName), Encoding.UTF8);
 
         public void SaveQpfile(string filename) => File.WriteAllLines(filename, Chapters.Select(c => c.FramsInfo.ToString().Replace("*", "I -1").Replace("K", "I -1")).ToArray());
 
@@ -151,12 +185,12 @@ namespace ChapterTool.Util
         public void SaveTsmuxerMeta(string filename)
         {
             string text = $"--custom-{Environment.NewLine}chapters=";
-            text = Chapters.Aggregate(text, (current, chapter) => current + chapter.Time2String(Offset, Mul1K1) + ";");
+            text = Chapters.Aggregate(text, (current, chapter) => current + Time2String(chapter) + ";");
             text = text.Substring(0, text.Length - 1);
             File.WriteAllText(filename, text);
         }
 
-        public void SaveTimecodes(string filename) => File.WriteAllLines(filename, Chapters.Select(item => item.Time2String(Offset, Mul1K1)).ToArray());
+        public void SaveTimecodes(string filename) => File.WriteAllLines(filename, Chapters.Select(Time2String).ToArray());
 
         public void SaveXml(string filename,string lang, bool notUseName)
         {
@@ -170,16 +204,16 @@ namespace ChapterTool.Util
                 xmlchap.WriteElementString("EditionFlagHidden", "0");
                 xmlchap.WriteElementString("EditionFlagDefault", "0");
                 xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                int i = 1;
+                var name = new ChapterName();
                 Chapters.ForEach(item =>
                 {
                     xmlchap.WriteStartElement("ChapterAtom");
                       xmlchap.WriteStartElement("ChapterDisplay");
-                        xmlchap.WriteElementString("ChapterString", notUseName ? $"Chapter {i++:D2}" : item.Name);
+                        xmlchap.WriteElementString("ChapterString", notUseName ? name.Get() : item.Name);
                         xmlchap.WriteElementString("ChapterLanguage", lang);
                       xmlchap.WriteEndElement();
                     xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                    xmlchap.WriteElementString("ChapterTimeStart", item.Time2String(Offset, Mul1K1) + "0000");
+                    xmlchap.WriteElementString("ChapterTimeStart", Time2String(item) + "0000");
                     xmlchap.WriteElementString("ChapterFlagHidden", "0");
                     xmlchap.WriteElementString("ChapterFlagEnabled", "1");
                     xmlchap.WriteEndElement();
