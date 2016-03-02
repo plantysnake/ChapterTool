@@ -20,6 +20,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace ChapterTool.Util
 {
@@ -36,18 +37,17 @@ namespace ChapterTool.Util
 
         private static ChapterInfo GetChapterInfo(string location, int titleSetNum)
         {
-            if (location.StartsWith("VTS_"))
+            Regex titleRegex = new Regex(@"^VTS_(\d+)_0.IFO", RegexOptions.IgnoreCase);
+            var result       = titleRegex.Match(location);
+            if (result.Success)
             {
-                titleSetNum = int.Parse(Path.GetFileNameWithoutExtension(location)
-                .ToUpper(System.Globalization.CultureInfo.InvariantCulture)
-                .Replace("VTS_", string.Empty)
-                .Replace("_0.IFO", string.Empty));
+                titleSetNum = int.Parse(result.Groups[1].Value);
             }
 
             ChapterInfo pgc = new ChapterInfo
             {
                 SourceType  = "DVD",
-                SourceName  = $"{titleSetNum:D2}",
+                SourceName  = titleSetNum.ToString(),
                 TitleNumber = titleSetNum,
                 Title       = Path.GetFileNameWithoutExtension(location)
             };

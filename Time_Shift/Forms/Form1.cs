@@ -116,7 +116,7 @@ namespace ChapterTool.Forms
             comboBox1.SelectedIndex = -1;
 
             _rawMpls                = null;
-            _ifoGroup                 = null;
+            _ifoGroup               = null;
             _xmlGroup               = null;
             _info                   = null;
             _fullIfoChapter         = null;
@@ -330,7 +330,7 @@ namespace ChapterTool.Forms
                 comboBox2.Items.Add($"{item.Title}_{item.SourceName}__{item.Chapters.Count}");
                 int index = 0;
                 item.Chapters.ForEach(chapter => chapter.Number = ++index);
-                Log($" |+{item.SourceName} Duration[{item.Duration.Time2String()}]");
+                Log($" |+{item.Title}_{item.SourceName} Duration[{item.Duration.Time2String()}]");
                 Log($"  |+包含 {item.Chapters.Count} 个时间戳");
             }
             _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _ifoGroup.First();
@@ -1077,9 +1077,8 @@ namespace ChapterTool.Forms
         }
         #endregion
 
-        private void contextMenuStrip2_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void InsertMpls()
         {
-            if (_rawMpls == null) return;
             var targetPath = Path.GetDirectoryName(FilePath) + "\\..\\STREAM";
             Debug.Assert(targetPath != null);
             if (!Directory.Exists(targetPath)) return;
@@ -1105,7 +1104,40 @@ namespace ChapterTool.Forms
             }
         }
 
-        private void contextMenuStrip2_Closing(object sender, ToolStripDropDownClosingEventArgs e)
+        private void InsertIfo()
+        {
+            contextMenuStrip2.Items.Add(new ToolStripSeparator());
+            var fileLine = comboBox2.Text;
+            var file = fileLine.Substring(0, fileLine.LastIndexOf('_') - 1) + ".VOB";
+            ToolStripMenuItem fMenuItem = new ToolStripMenuItem($"打开 {file}");
+            fMenuItem.Click += (sender, args) =>
+            {
+                var targetFile = Path.GetDirectoryName(FilePath) + $"\\{file}";
+                try
+                {
+                    Process.Start(targetFile);
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show($"{exception.Message}\n目标文件: {Path.GetFullPath(targetFile)}", Resources.ChapterTool_Error);
+                }
+            };
+            contextMenuStrip2.Items.Add(fMenuItem);
+        }
+
+        private void contextMenuStrip2_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_rawMpls != null)
+            {
+                InsertMpls();
+            }
+            else if (_ifoGroup != null)
+            {
+                InsertIfo();
+            }
+        }
+
+        private void contextMenuStrip2_Closed(object sender, ToolStripDropDownClosedEventArgs e)
         {
             while (contextMenuStrip2.Items.Count > 1)
             {
