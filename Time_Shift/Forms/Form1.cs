@@ -1082,17 +1082,15 @@ namespace ChapterTool.Forms
             if (_rawMpls == null) return;
             string fileLine = comboBox2.Text;
             var fileList = fileLine.Substring(0, fileLine.LastIndexOf('_') - 1).Split('&');
-            string targetPath = Path.GetDirectoryName(fileList.First());
+            var targetPath = Path.GetDirectoryName(FilePath) + "\\..\\STREAM";
             Debug.Assert(targetPath != null);
-            targetPath = targetPath.Substring(0, targetPath.LastIndexOf('\\') + 1) + "STREAM";
             if (!Directory.Exists(targetPath)) return;
-
             contextMenuStrip2.Items.Add(new ToolStripSeparator());
             foreach (var file in fileList)
             {
                 ToolStripMenuItem fMenuItem = new ToolStripMenuItem($"打开 {file}.m2ts", null, (o, args) =>
                 {
-                    string targetFile = targetPath + "\\" + file + ".m2ts";
+                    var targetFile = Path.GetDirectoryName(FilePath) + $"\\..\\STREAM\\{file}.m2ts";
                     if (!File.Exists(targetFile)) return;
                     Process.Start(targetFile);
                 });
