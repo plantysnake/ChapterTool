@@ -1080,20 +1080,27 @@ namespace ChapterTool.Forms
         private void contextMenuStrip2_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (_rawMpls == null) return;
-            string fileLine = comboBox2.Text;
-            var fileList = fileLine.Substring(0, fileLine.LastIndexOf('_') - 1).Split('&');
             var targetPath = Path.GetDirectoryName(FilePath) + "\\..\\STREAM";
             Debug.Assert(targetPath != null);
             if (!Directory.Exists(targetPath)) return;
+
             contextMenuStrip2.Items.Add(new ToolStripSeparator());
-            foreach (var file in fileList)
+            var fileLine = comboBox2.Text;
+            foreach (var file in fileLine.Substring(0, fileLine.LastIndexOf('_') - 1).Split('&'))
             {
-                ToolStripMenuItem fMenuItem = new ToolStripMenuItem($"打开 {file}.m2ts", null, (o, args) =>
+                ToolStripMenuItem fMenuItem = new ToolStripMenuItem($"打开 {file}.m2ts");
+                fMenuItem.Click += (o, args) =>
                 {
                     var targetFile = Path.GetDirectoryName(FilePath) + $"\\..\\STREAM\\{file}.m2ts";
-                    if (!File.Exists(targetFile)) return;
-                    Process.Start(targetFile);
-                });
+                    try
+                    {
+                        Process.Start(targetFile);
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show($"{exception.Message}\n目标文件: {Path.GetFullPath(targetFile)}", Resources.ChapterTool_Error);
+                    }
+                };
                 contextMenuStrip2.Items.Add(fMenuItem);
             }
         }
