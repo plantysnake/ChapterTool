@@ -120,6 +120,7 @@ namespace ChapterTool.Forms
             _xmlGroup               = null;
             _info                   = null;
             _fullIfoChapter         = null;
+            _xplGroup               = null;
 
             dataGridView1.Rows.Clear();
         }
@@ -213,12 +214,12 @@ namespace ChapterTool.Forms
             }
         }
 
-        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac)$", RegexOptions.IgnoreCase);
+        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl)$", RegexOptions.IgnoreCase);
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.cue,*tak,*flac,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.cue;*.tak;*.flac;*.mkv;*.mka|" +
-                                     @"章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|" +
+            openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.xpl,*.cue,*tak,*flac,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.xpl;*.cue;*.tak;*.flac;*.mkv;*.mka|" +
+                                     @"章节文件(*.txt,*.xml,*.mpls,*.ifo,*.xpl)|*.txt;*.xml;*.mpls;*.ifo;*.xpl|" +
                                      @"Cue文件[包括内嵌](*.cue,*.tak,*.flac)|*.cue;*.tak;*.flac|" +
                                      @"Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
             try
@@ -241,6 +242,7 @@ namespace ChapterTool.Forms
         }
 
         private List<ChapterInfo> _ifoGroup;
+        private List<ChapterInfo> _xplGroup;
         private MplsData          _rawMpls;
         private ChapterInfo       _info;
         private ChapterInfo       _fullIfoChapter;
@@ -265,6 +267,7 @@ namespace ChapterTool.Forms
                     case ".tak":
                     case ".flac":
                     case ".cue":  LoadCue();       break;
+                    case ".xpl":  LoadXpl();       break;
                     default:
                         throw new Exception("Invalid File Format");
                 }
@@ -336,6 +339,28 @@ namespace ChapterTool.Forms
             _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _ifoGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
             Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.IFO_WARNING;
+        }
+
+        private void LoadXpl()
+        {
+            _xplGroup = XplData.GetStreams(FilePath);
+            if (_xplGroup.Count == 0)
+            {
+                throw new Exception("No Chapter detected in xpl file");
+            }
+
+            comboBox2.Items.Clear();
+            comboBox2.Enabled = comboBox2.Visible = _xplGroup.Count >= 1;
+            Log($"|+XPL中共有 {_xplGroup.Count} 个片段");
+            foreach (var item in _xplGroup)
+            {
+                comboBox2.Items.Add($"{item.Title}__{item.Chapters.Count}");
+                int index = 0;
+                item.Chapters.ForEach(chapter => chapter.Number = ++index);
+            }
+            _info = _xplGroup.First();
+            comboBox2.SelectedIndex = ClipSeletIndex;
+            Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.Load_Success;
         }
 
         private void LoadOgm()
@@ -516,6 +541,10 @@ namespace ChapterTool.Forms
             else if (_ifoGroup != null)
             {
                 GetChapterInfoFromIFO(ClipSeletIndex);
+            }
+            else if (_xplGroup != null)
+            {
+                _info = _xplGroup[ClipSeletIndex];
             }
             _info.Mul1K1 = cbMul1k1.Checked;
             UpdataGridView();
