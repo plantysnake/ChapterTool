@@ -1076,5 +1076,36 @@ namespace ChapterTool.Forms
             }
         }
         #endregion
+
+        private void contextMenuStrip2_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_rawMpls == null) return;
+            string fileLine = comboBox2.Text;
+            var fileList = fileLine.Substring(0, fileLine.LastIndexOf('_') - 1).Split('&');
+            string targetPath = Path.GetDirectoryName(fileList.First());
+            Debug.Assert(targetPath != null);
+            targetPath = targetPath.Substring(0, targetPath.LastIndexOf('\\') + 1) + "STREAM";
+            if (!Directory.Exists(targetPath)) return;
+
+            contextMenuStrip2.Items.Add(new ToolStripSeparator());
+            foreach (var file in fileList)
+            {
+                ToolStripMenuItem fMenuItem = new ToolStripMenuItem($"打开 {file}.m2ts", null, (o, args) =>
+                {
+                    string targetFile = targetPath + "\\" + file + ".m2ts";
+                    if (!File.Exists(targetFile)) return;
+                    Process.Start(targetFile);
+                });
+                contextMenuStrip2.Items.Add(fMenuItem);
+            }
+        }
+
+        private void contextMenuStrip2_Closing(object sender, ToolStripDropDownClosingEventArgs e)
+        {
+            while (contextMenuStrip2.Items.Count > 1)
+            {
+                contextMenuStrip2.Items.Remove(contextMenuStrip2.Items[1]);
+            }
+        }
     }
 }
