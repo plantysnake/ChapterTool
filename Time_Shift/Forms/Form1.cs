@@ -343,7 +343,7 @@ namespace ChapterTool.Forms
 
         private void LoadXpl()
         {
-            _xplGroup = XplData.GetStreams(FilePath);
+            _xplGroup = XplData.GetStreams(FilePath).ToList();
             if (_xplGroup.Count == 0)
             {
                 throw new Exception("No Chapter detected in xpl file");

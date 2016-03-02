@@ -8,29 +8,28 @@ namespace ChapterTool.Util
 {
     public static class XplData
     {
-        public static List<ChapterInfo> GetStreams(string location)
+        public static IEnumerable<ChapterInfo> GetStreams(string location)
         {
-            List<ChapterInfo> pgcs = new List<ChapterInfo>();
             XDocument doc = XDocument.Load(location);
             XNamespace ns = "http://www.dvdforum.org/2005/HDDVDVideo/Playlist";
             foreach (XElement ts in doc.Element(ns + "Playlist").Elements(ns + "TitleSet"))
             {
-                float timeBase = GetFps((string)ts.Attribute("timeBase"));
-                float tickBase = GetFps((string)ts.Attribute("tickBase"));
+                float timeBase = GetFps((string)ts.Attribute("timeBase")) ?? 60;
+                float tickBase = GetFps((string)ts.Attribute("tickBase")) ?? 60;
                 foreach (XElement title in ts.Elements(ns + "Title").Where(t => t.Element(ns + "ChapterList") != null))
                 {
                     ChapterInfo pgc = new ChapterInfo
                     {
-                        SourceName = location,
-                        SourceType = "HD-DVD",
+                        SourceName      = location,
+                        SourceType      = "HD-DVD",
                         FramesPerSecond = 24D,
-                        Chapters = new List<Chapter>()
+                        Chapters        = new List<Chapter>()
                     };
 
                     int tickBaseDivisor = (int?)title.Attribute("tickBaseDivisor") ?? 1;
-                    pgc.Duration = GetTimeSpan((string)title.Attribute("titleDuration"), timeBase, tickBase, tickBaseDivisor);
-                    string titleName = Path.GetFileNameWithoutExtension(location);
-                    if (title.Attribute("id") != null) titleName = (string)title.Attribute("id");
+                    pgc.Duration        = GetTimeSpan((string)title.Attribute("titleDuration"), timeBase, tickBase, tickBaseDivisor);
+                    string titleName    = Path.GetFileNameWithoutExtension(location);
+                    if (title.Attribute("id") != null)          titleName = (string)title.Attribute("id");
                     if (title.Attribute("displayName") != null) titleName = (string)title.Attribute("displayName");
                     pgc.Title = titleName;
                     foreach (XElement chapter in title.Element(ns + "ChapterList").Elements(ns + "Chapter"))
@@ -42,19 +41,14 @@ namespace ChapterTool.Util
                         });
                     }
                     //pgc.ChangeFps(24D / 1.001D);
-                    pgcs.Add(pgc);
+                    yield return pgc;
                 }
             }
-            pgcs = pgcs.OrderByDescending(p => p.Duration).ToList();
-            return pgcs;
         }
 
-        private static float GetFps(string fps)
+        private static float? GetFps(string fps)
         {
-            if (string.IsNullOrEmpty(fps))
-            {
-                return 60.0f;
-            }
+            if (string.IsNullOrEmpty(fps)) return null;
             fps = fps.Replace("fps", string.Empty);
             return float.Parse(fps);
         }
