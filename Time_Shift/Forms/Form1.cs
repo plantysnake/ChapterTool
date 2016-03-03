@@ -499,27 +499,37 @@ namespace ChapterTool.Forms
 
             SaveInfoLog(savePath);
 
-            switch (saveType)
+            try
             {
-                case 0://TXT
-                    _info.SaveText(savePath, cbAutoGenName.Checked);
-                    break;
-                case 1://XML
-                    string key = _rLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
-                    _info.SaveXml(savePath, string.IsNullOrWhiteSpace(key)? "": LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
-                    break;
-                case 2://QPF
-                    _info.SaveQpfile(savePath);
-                    break;
-                case 3://Time Codes
-                    _info.SaveTimecodes(savePath);
-                    break;
-                case 4://Tsmuxer
-                    _info.SaveTsmuxerMeta(savePath);
-                    break;
+                switch (saveType)
+                {
+                    case 0: //TXT
+                        _info.SaveText(savePath, cbAutoGenName.Checked);
+                        break;
+                    case 1: //XML
+                        string key = _rLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
+                        _info.SaveXml(savePath, string.IsNullOrWhiteSpace(key) ? "" : LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
+                        break;
+                    case 2: //QPF
+                        _info.SaveQpfile(savePath);
+                        break;
+                    case 3: //Time Codes
+                        _info.SaveTimecodes(savePath);
+                        break;
+                    case 4: //Tsmuxer
+                        _info.SaveTsmuxerMeta(savePath);
+                        break;
+                }
+                progressBar1.Value = 100;
+                Tips.Text = @"保存成功";
             }
-            progressBar1.Value = 100;
-            Tips.Text = @"保存成功";
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message, Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Log(exception.Message);
+                progressBar1.Value = 60;
+                Tips.Text = @"保存失败";
+            }
         }
         #endregion
 
