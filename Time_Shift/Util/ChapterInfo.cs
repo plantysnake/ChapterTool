@@ -221,7 +221,7 @@ namespace ChapterTool.Util
                     xmlchap.WriteElementString("ChapterFlagHidden", "0");
                     xmlchap.WriteElementString("ChapterFlagEnabled", "1");
                     xmlchap.WriteEndElement();
-                };
+                }
               xmlchap.WriteEndElement();
             xmlchap.WriteEndElement();
             xmlchap.Flush();

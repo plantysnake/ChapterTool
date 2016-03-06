@@ -1128,7 +1128,7 @@ namespace ChapterTool.Forms
                 ToolStripMenuItem fMenuItem = new ToolStripMenuItem($"打开 {file}.m2ts");
                 fMenuItem.Click += (o, args) =>
                 {
-                    var targetFile = Path.GetDirectoryName(FilePath) + $"{targetPath}\\{file}.m2ts";
+                    var targetFile = $"{targetPath}\\{file}.m2ts";
                     try
                     {
                         Process.Start(targetFile);
