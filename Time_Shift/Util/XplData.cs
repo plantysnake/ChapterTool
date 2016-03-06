@@ -15,17 +15,16 @@ namespace ChapterTool.Util
             foreach (XElement ts in doc.Element(ns + "Playlist").Elements(ns + "TitleSet"))
             {
                 var timeBase = GetFps((string)ts.Attribute("timeBase")) ?? 60; //required
-                var tickBase = GetFps((string)ts.Attribute("tickBase")) ?? 60; //optional
+                var tickBase = GetFps((string)ts.Attribute("tickBase")) ?? 24; //optional
                 foreach (XElement title in ts.Elements(ns + "Title").Where(t => t.Element(ns + "ChapterList") != null))
                 {
                     ChapterInfo pgc = new ChapterInfo
                     {
-                        SourceName      = location,
+                        SourceName = title.Element(ns + "PrimaryAudioVideoClip")?.Attribute("src").Value,
                         SourceType      = "HD-DVD",
                         FramesPerSecond = 24D,
                         Chapters        = new List<Chapter>()
                     };
-
                     int tickBaseDivisor = (int?)title.Attribute("tickBaseDivisor") ?? 1; //optional
                     pgc.Duration        = GetTimeSpan((string)title.Attribute("titleDuration"), timeBase, tickBase, tickBaseDivisor);
                     var titleName       = Path.GetFileNameWithoutExtension(location);

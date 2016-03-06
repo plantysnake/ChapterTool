@@ -19,6 +19,8 @@
 // ****************************************************************************
 using System;
 using System.IO;
+using System.Linq;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using static ChapterTool.Util.IfoParser;
@@ -40,20 +42,19 @@ namespace ChapterTool.Util
         {
             Regex titleRegex = new Regex(@"^VTS_(\d+)_0.IFO", RegexOptions.IgnoreCase);
             var result       = titleRegex.Match(location);
-            if (result.Success)
-            {
-                titleSetNum = int.Parse(result.Groups[1].Value);
-            }
+            if (result.Success) titleSetNum = int.Parse(result.Groups[1].Value);
 
             ChapterInfo pgc = new ChapterInfo
             {
                 SourceType  = "DVD",
-                SourceName  = titleSetNum.ToString(),
-                TitleNumber = titleSetNum,
-                Title       = Path.GetFileNameWithoutExtension(location)
             };
-            if (pgc.Title.Split('_').Length == 3)
-                pgc.Title = $"{pgc.Title.Split('_')[0]}_{pgc.Title.Split('_')[1]}";
+            var fileName = Path.GetFileNameWithoutExtension(location);
+            Debug.Assert(fileName != null);
+            if (fileName.Count(ch => ch == '_') == 2)
+            {
+                int barIndex = fileName.LastIndexOf('_');
+                pgc.Title = pgc.SourceName = $"{fileName.Substring(0, barIndex)}_{titleSetNum}";
+            }
 
             TimeSpan duration;
             double fps;

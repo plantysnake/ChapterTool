@@ -35,7 +35,7 @@ namespace ChapterTool.Util
 
         private static byte? GetFrames(byte value)
         {
-            if (((value >> 6) & 0x01) == 1) //make sure the second bit of value is 1
+            if (((value >> 6) & 0x01) == 1) //check weather the second bit of value is 1
             {
                 return (byte) (((value >> 4) & 0x03)*10 + (value & 0x0F)); //only last 6 bits is in use, show as BCD code
             }
@@ -104,14 +104,8 @@ namespace ChapterTool.Util
 
         internal static short ToInt16(byte[] bytes) => (short)((bytes[0] << 8) + bytes[1]);
         private static uint ToInt32(byte[] bytes) => (uint)((bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3]);
+        private static int BcdToInt(byte value) => (0xFF & (value >> 4)) * 10 + (value & 0x0F);
 
         private static long ToFilePosition(byte[] bytes) => ToInt32(bytes) * 0x800L;
-
-        private static int BcdToInt(byte value)
-        {
-            return (0xFF & (value >> 4)) * 10 + (value & 0x0F);
-        }
-
-
     }
 }

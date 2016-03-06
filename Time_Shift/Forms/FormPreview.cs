@@ -30,7 +30,7 @@ namespace ChapterTool.Forms
         private Point _mainPos;
         private Form1 _mainWindow;
 
-        public FormPreview(string text,Form1 mainWindow)
+        public FormPreview(string text, Form1 mainWindow)
         {
             InitializeComponent();
             cTextBox1.Text = text;
@@ -42,8 +42,7 @@ namespace ChapterTool.Forms
 
         private void ScrollBarSet()
         {
-
-            if (cTextBox1.Lines.Length > 20 && cTextBox1.Lines.Select(item => item.Length).Max() > 40)
+            if (cTextBox1.Lines.Length > 20 && cTextBox1.Lines.Max(item => item.Length) > 40)
             {
                 cTextBox1.ScrollBars = ScrollBars.Both;
             }
