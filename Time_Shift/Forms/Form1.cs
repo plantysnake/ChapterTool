@@ -1116,6 +1116,7 @@ namespace ChapterTool.Forms
         }
         #endregion
 
+        #region Open Video
         private void InsertMpls()
         {
             var targetPath = Path.GetDirectoryName(FilePath) + "\\..\\STREAM";
@@ -1211,5 +1212,6 @@ namespace ChapterTool.Forms
                 contextMenuStrip2.Items.Remove(contextMenuStrip2.Items[1]);
             }
         }
+        #endregion
     }
 }
