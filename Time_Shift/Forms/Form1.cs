@@ -116,10 +116,11 @@ namespace ChapterTool.Forms
             comboBox1.SelectedIndex = -1;
 
             _rawMpls                = null;
-            _ifoGroup                 = null;
+            _ifoGroup               = null;
             _xmlGroup               = null;
             _info                   = null;
             _fullIfoChapter         = null;
+            _xplGroup               = null;
 
             dataGridView1.Rows.Clear();
         }
@@ -213,12 +214,12 @@ namespace ChapterTool.Forms
             }
         }
 
-        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac)$", RegexOptions.IgnoreCase);
+        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl)$", RegexOptions.IgnoreCase);
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.cue,*tak,*flac,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.cue;*.tak;*.flac;*.mkv;*.mka|" +
-                                     @"章节文件(*.txt,*.xml,*.mpls,*.ifo)|*.txt;*.xml;*.mpls;*.ifo|" +
+            openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.xpl,*.cue,*tak,*flac,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.xpl;*.cue;*.tak;*.flac;*.mkv;*.mka|" +
+                                     @"章节文件(*.txt,*.xml,*.mpls,*.ifo,*.xpl)|*.txt;*.xml;*.mpls;*.ifo;*.xpl|" +
                                      @"Cue文件[包括内嵌](*.cue,*.tak,*.flac)|*.cue;*.tak;*.flac|" +
                                      @"Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
             try
@@ -235,12 +236,13 @@ namespace ChapterTool.Forms
                 progressBar1.SetState(2);
                 MessageBox.Show(caption: Resources.ChapterTool_Error,
                     text: $"Error opening file {FilePath}:{Environment.NewLine} {exception.Message}",
-                    buttons: MessageBoxButtons.OK,icon: MessageBoxIcon.Hand);
+                    buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
                 Log($"Error opening file {FilePath}: {exception.Message}");
             }
         }
 
         private List<ChapterInfo> _ifoGroup;
+        private List<ChapterInfo> _xplGroup;
         private MplsData          _rawMpls;
         private ChapterInfo       _info;
         private ChapterInfo       _fullIfoChapter;
@@ -265,6 +267,7 @@ namespace ChapterTool.Forms
                     case ".tak":
                     case ".flac":
                     case ".cue":  LoadCue();       break;
+                    case ".xpl":  LoadXpl();       break;
                     default:
                         throw new Exception("Invalid File Format");
                 }
@@ -327,7 +330,7 @@ namespace ChapterTool.Forms
             Log($"|+IFO中共有 {_ifoGroup.Count} 个VOB片段");
             foreach (var item in _ifoGroup)
             {
-                comboBox2.Items.Add($"{item.Title}_{item.SourceName}__{item.Chapters.Count}");
+                comboBox2.Items.Add($"{item.SourceName}__{item.Chapters.Count}");
                 int index = 0;
                 item.Chapters.ForEach(chapter => chapter.Number = ++index);
                 Log($" |+{item.SourceName} Duration[{item.Duration.Time2String()}]");
@@ -336,6 +339,28 @@ namespace ChapterTool.Forms
             _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _ifoGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
             Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.IFO_WARNING;
+        }
+
+        private void LoadXpl()
+        {
+            _xplGroup = XplData.GetStreams(FilePath).ToList();
+            if (_xplGroup.Count == 0)
+            {
+                throw new Exception("No Chapter detected in xpl file");
+            }
+
+            comboBox2.Items.Clear();
+            comboBox2.Enabled = comboBox2.Visible = _xplGroup.Count >= 1;
+            Log($"|+XPL中共有 {_xplGroup.Count} 个片段");
+            foreach (var item in _xplGroup)
+            {
+                comboBox2.Items.Add($"{item.Title}__{item.Chapters.Count}");
+                int index = 0;
+                item.Chapters.ForEach(chapter => chapter.Number = ++index);
+            }
+            _info = _xplGroup.First();
+            comboBox2.SelectedIndex = ClipSeletIndex;
+            Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.Load_Success;
         }
 
         private void LoadOgm()
@@ -364,7 +389,7 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 MessageBox.Show(caption: Resources.ChapterTool_Error, text: exception.Message,
-                                buttons: MessageBoxButtons.OK,icon: MessageBoxIcon.Hand);
+                                buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
                 Log($"ERROR: {exception.Message}");
                 progressBar1.SetState(3);
             }
@@ -409,7 +434,7 @@ namespace ChapterTool.Forms
                 progressBar1.SetState(2);
                 MessageBox.Show(caption: Resources.ChapterTool_Error,
                     text: $"Error opening path {_customSavingPath}:{Environment.NewLine} {exception.Message}",
-                    buttons: MessageBoxButtons.OK,icon: MessageBoxIcon.Hand);
+                    buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
                 Log($"Error opening path {_customSavingPath}: {exception.Message}");
             }
         }
@@ -420,10 +445,10 @@ namespace ChapterTool.Forms
             switch (_info.SourceType)
             {
                 case "MPLS":
-                    Log($"|+对应视频文件: {_info.Title}");
+                    Log($"|+对应视频文件: {_info.SourceName}");
                     break;
                 case "DVD":
-                    Log($"|+对应视频文件: {_info.Title}_{_info.SourceName}");
+                    Log($"|+对应视频文件: {_info.SourceName}");
                     break;
                 case "OGM":
                     break;
@@ -453,9 +478,9 @@ namespace ChapterTool.Forms
 
             var ext = Path.GetExtension(FilePath)?.ToLowerInvariant();
             if (ext == ".mpls")
-                savePath.Append($"__{_info.Title}");
+                savePath.Append($"__{_info.SourceName}");
             if (ext == ".ifo")
-                savePath.Append($"__{_info.Title}_{_info.SourceName}");
+                savePath.Append($"__{_info.SourceName}");
 
             string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf", ".TimeCodes.txt", ".TsMuxeR_Meta.txt" };
             while (File.Exists($"{savePath}{saveingTypeSuffix[saveType]}")) savePath.Append("_");
@@ -474,27 +499,37 @@ namespace ChapterTool.Forms
 
             SaveInfoLog(savePath);
 
-            switch (saveType)
+            try
             {
-                case 0://TXT
-                    _info.SaveText(savePath, cbAutoGenName.Checked);
-                    break;
-                case 1://XML
-                    string key = _rLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
-                    _info.SaveXml(savePath, string.IsNullOrWhiteSpace(key)? "": LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
-                    break;
-                case 2://QPF
-                    _info.SaveQpfile(savePath);
-                    break;
-                case 3://Time Codes
-                    _info.SaveTimecodes(savePath);
-                    break;
-                case 4://Tsmuxer
-                    _info.SaveTsmuxerMeta(savePath);
-                    break;
+                switch (saveType)
+                {
+                    case 0: //TXT
+                        _info.SaveText(savePath, cbAutoGenName.Checked);
+                        break;
+                    case 1: //XML
+                        string key = _rLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
+                        _info.SaveXml(savePath, string.IsNullOrWhiteSpace(key) ? "" : LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
+                        break;
+                    case 2: //QPF
+                        _info.SaveQpfile(savePath);
+                        break;
+                    case 3: //Time Codes
+                        _info.SaveTimecodes(savePath);
+                        break;
+                    case 4: //Tsmuxer
+                        _info.SaveTsmuxerMeta(savePath);
+                        break;
+                }
+                progressBar1.Value = 100;
+                Tips.Text = @"保存成功";
             }
-            progressBar1.Value = 100;
-            Tips.Text = @"保存成功";
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message, Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Log(exception.Message);
+                progressBar1.Value = 60;
+                Tips.Text = @"保存失败";
+            }
         }
         #endregion
 
@@ -516,6 +551,10 @@ namespace ChapterTool.Forms
             else if (_ifoGroup != null)
             {
                 GetChapterInfoFromIFO(ClipSeletIndex);
+            }
+            else if (_xplGroup != null)
+            {
+                _info = _xplGroup[ClipSeletIndex];
             }
             _info.Mul1K1 = cbMul1k1.Checked;
             UpdataGridView();
@@ -844,7 +883,7 @@ namespace ChapterTool.Forms
         #endregion
 
         #region Close Form
-        private static void FormMove(int forward,ref Point p)
+        private static void FormMove(int forward, ref Point p)
         {
             switch (forward)
             {
@@ -970,7 +1009,7 @@ namespace ChapterTool.Forms
                 progressBar1.SetState(2);
                 MessageBox.Show(caption: Resources.ChapterTool_Error,
                     text: $"Error opening file {FilePath}:{Environment.NewLine} {exception.Message}",
-                    buttons: MessageBoxButtons.OK,icon: MessageBoxIcon.Hand);
+                    buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
                 Log($"Error opening file {FilePath}: {exception.Message}");
                 return string.Empty;
             }
@@ -1073,6 +1112,104 @@ namespace ChapterTool.Forms
             if (MessageBox.Show(Resources.Open_With_CT, Resources.ChapterTool_Info, MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 RegistryStorage.SetOpenMethod();
+            }
+        }
+        #endregion
+
+        #region Open Video
+        private void InsertMpls()
+        {
+            var targetPath = Path.GetDirectoryName(FilePath) + "\\..\\STREAM";
+            Debug.Assert(targetPath != null);
+
+            contextMenuStrip2.Items.Add(new ToolStripSeparator());
+            var fileLine = comboBox2.Text;
+            foreach (var file in fileLine.Substring(0, fileLine.LastIndexOf('_') - 1).Split('&'))
+            {
+                ToolStripMenuItem fMenuItem = new ToolStripMenuItem($"打开 {file}.m2ts");
+                fMenuItem.Click += (o, args) =>
+                {
+                    var targetFile = $"{targetPath}\\{file}.m2ts";
+                    try
+                    {
+                        Process.Start(targetFile);
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show($"{exception.Message}\n目标文件: {Path.GetFullPath(targetFile)}",
+                            Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                };
+                contextMenuStrip2.Items.Add(fMenuItem);
+            }
+        }
+
+        private void InsertIfo()
+        {
+            contextMenuStrip2.Items.Add(new ToolStripSeparator());
+            var fileLine = comboBox2.Text;
+            var file = fileLine.Substring(0, fileLine.LastIndexOf('_') - 1) + ".VOB";
+            ToolStripMenuItem fMenuItem = new ToolStripMenuItem($"打开 {file}");
+            fMenuItem.Click += (sender, args) =>
+            {
+                var targetFile = Path.GetDirectoryName(FilePath) + $"\\{file}";
+                try
+                {
+                    Process.Start(targetFile);
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show($"{exception.Message}\n目标文件: {Path.GetFullPath(targetFile)}",
+                            Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            };
+            contextMenuStrip2.Items.Add(fMenuItem);
+        }
+
+        private void InsertXpl()
+        {
+            var targetPath = Path.GetDirectoryName(FilePath) + "\\..\\HVDVD_TS";
+            Debug.Assert(targetPath != null);
+            contextMenuStrip2.Items.Add(new ToolStripSeparator());
+            var file = Path.GetFileName(_info.SourceName);
+            ToolStripMenuItem fMenuItem = new ToolStripMenuItem($"打开 {file}");
+            fMenuItem.Click += (sender, args) =>
+            {
+                var targetFile = Path.GetDirectoryName(FilePath) + $"{targetPath}\\{file}";
+                try
+                {
+                    Process.Start(targetFile);
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show($"{exception.Message}\n目标文件: {Path.GetFullPath(targetFile)}",
+                            Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            };
+            contextMenuStrip2.Items.Add(fMenuItem);
+        }
+
+        private void contextMenuStrip2_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_rawMpls != null)
+            {
+                InsertMpls();
+            }
+            else if (_ifoGroup != null)
+            {
+                InsertIfo();
+            }
+            else if (_xplGroup != null)
+            {
+                InsertXpl();
+            }
+        }
+
+        private void contextMenuStrip2_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            while (contextMenuStrip2.Items.Count > 1)
+            {
+                contextMenuStrip2.Items.Remove(contextMenuStrip2.Items[1]);
             }
         }
         #endregion

@@ -144,6 +144,7 @@
     <Compile Include="Util\SystemMenu.cs" />
     <Compile Include="Util\Updater.cs" />
     <Compile Include="Util\XmlData.cs" />
+    <Compile Include="Util\XplData.cs" />
     <EmbeddedResource Include="Controls\cTextBox.resx">
       <DependentUpon>cTextBox.cs</DependentUpon>
     </EmbeddedResource>
@@ -170,11 +171,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ChangeLog.txt" />

@@ -44,8 +44,15 @@ namespace ChapterTool.Util
             var info  = new ChapterInfo { SourceType = "OGM", Tag = text, TagType = text.GetType() };
             var lines = text.Trim(' ', '\t', '\r', '\n').Split('\n');
             LineState state     = LineState.LTimeCode;
-            TimeSpan timeCode   = TimeSpan.Zero;
-            TimeSpan initalTime = OffsetCal(lines.First());
+            TimeSpan timeCode   = TimeSpan.Zero, initalTime;
+            if (RTimeCodeLine.Match(lines.First()).Success)
+            {
+                initalTime = RTimeFormat.Match(lines.First()).Value.ToTimeSpan();
+            }
+            else
+            {
+                throw new Exception($"ERROR: {lines.First()} <-该行与时间行格式不匹配");
+            }
             foreach (var line in lines)
             {
                 switch (state)
@@ -86,16 +93,6 @@ namespace ChapterTool.Util
             EXIT_1:
             info.Duration = info.Chapters.Last().Time;
             return info;
-        }
-
-        private static TimeSpan OffsetCal(string line)
-        {
-            var timeMatch = RTimeCodeLine.Match(line);
-            if (timeMatch.Success)
-            {
-                return RTimeFormat.Match(line).Value.ToTimeSpan();
-            }
-            throw new Exception($"ERROR: {line} <-该行与时间行格式不匹配");
         }
     }
 }

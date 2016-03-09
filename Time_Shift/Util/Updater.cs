@@ -46,7 +46,8 @@ namespace ChapterTool.Util
         {
             bool connected = IsConnectInternet();
             if (!connected) return;
-            WebRequest webRequest = WebRequest.Create("http://tcupdate.applinzi.com/index.php");
+            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://tcupdate.applinzi.com/index.php");
+            webRequest.UserAgent = $"{Environment.UserName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().Version}";
             webRequest.Credentials = CredentialCache.DefaultCredentials;
             webRequest.BeginGetResponse(OnResponse, webRequest);
         }

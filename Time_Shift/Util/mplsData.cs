@@ -55,7 +55,7 @@ namespace ChapterTool.Util
             ParsePlaylistMark(playlistMarkSectionStartAddress);
         }
 
-        private void ParseHeader(out int playlistMarkSectionStartAddress,out int playItemNumber, out int playItemEntries)
+        private void ParseHeader(out int playlistMarkSectionStartAddress, out int playItemNumber, out int playItemEntries)
         {
             string fileType = Encoding.ASCII.GetString(_data, 0, 8);
             if ((fileType != "MPLS0100" && fileType != "MPLS0200") /*|| _data[45] != 1*/)

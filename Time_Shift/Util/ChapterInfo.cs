@@ -30,10 +30,14 @@ namespace ChapterTool.Util
 {
     public class ChapterInfo
     {
+        /// <summary>
+        /// The title of Chapter
+        /// </summary>
         public string Title           { get; set; }
-        public string LangCode        { get; set; }
+        /// <summary>
+        /// Corresponding Video file
+        /// </summary>
         public string SourceName      { get; set; }
-        public int TitleNumber        { get; set; }
         public string SourceType      { get; set; }
         public double FramesPerSecond { get; set; }
         public TimeSpan Duration      { get; set; }
@@ -192,7 +196,7 @@ namespace ChapterTool.Util
 
         public void SaveTimecodes(string filename) => File.WriteAllLines(filename, Chapters.Select(Time2String).ToArray());
 
-        public void SaveXml(string filename,string lang, bool notUseName)
+        public void SaveXml(string filename ,string lang, bool notUseName)
         {
             if (string.IsNullOrWhiteSpace(lang)) lang = "und";
             Random rndb           = new Random();
@@ -205,7 +209,7 @@ namespace ChapterTool.Util
                 xmlchap.WriteElementString("EditionFlagDefault", "0");
                 xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
                 var name = new ChapterName();
-                Chapters.ForEach(item =>
+                foreach (var item in Chapters)
                 {
                     xmlchap.WriteStartElement("ChapterAtom");
                       xmlchap.WriteStartElement("ChapterDisplay");
@@ -213,11 +217,11 @@ namespace ChapterTool.Util
                         xmlchap.WriteElementString("ChapterLanguage", lang);
                       xmlchap.WriteEndElement();
                     xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                    xmlchap.WriteElementString("ChapterTimeStart", Time2String(item) + "0000");
+                    xmlchap.WriteElementString("ChapterTimeStart", Time2String(item) + "000");
                     xmlchap.WriteElementString("ChapterFlagHidden", "0");
                     xmlchap.WriteElementString("ChapterFlagEnabled", "1");
                     xmlchap.WriteEndElement();
-                });
+                }
               xmlchap.WriteEndElement();
             xmlchap.WriteEndElement();
             xmlchap.Flush();

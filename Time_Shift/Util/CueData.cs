@@ -98,12 +98,13 @@ namespace ChapterTool.Util
                         var fileMatch         = rFile.Match(line);
                         if (chapterTitleMatch.Success)
                         {
-                            cue.Title = chapterTitleMatch.Groups[0].Value;
-                            nxState   = NextState.NsNewTrack;
+                            cue.Title = chapterTitleMatch.Groups[1].Value;
+                            //nxState   = NextState.NsNewTrack;
                             break;
                         }
-                        if (fileMatch.Success)          //存在无Title的可能，故当读取到File行时也跳出
+                        if (fileMatch.Success)          //Title 为非必需项，故当读取到File行时跳出
                         {
+                            cue.SourceName = fileMatch.Groups[1].Value;
                             nxState = NextState.NsNewTrack;
                         }
                         break;
