@@ -1,5 +1,5 @@
 ﻿// ****************************************************************************
-//Public Domain
+// Public Domain
 // code from http://sourceforge.net/projects/gmkvextractgui/
 // ****************************************************************************
 using System;
