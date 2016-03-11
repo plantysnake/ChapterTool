@@ -14,7 +14,7 @@ namespace ChapterTool.Util
     {
         private static void OnResponse(IAsyncResult ar)
         {
-            Regex versionRegex = new Regex(@"ChapterTool (\d+)\.(\d+)\.(\d+)\.(\d+)");
+            Regex versionRegex = new Regex(@"ChapterTool (\d+\.\d+\.\d+\.\d+)");
             WebRequest webRequest = (WebRequest)ar.AsyncState;
             Stream responseStream = webRequest.EndGetResponse(ar).GetResponseStream();
             if (responseStream == null) return;
@@ -25,11 +25,7 @@ namespace ChapterTool.Util
             if (!result.Success) return;
 
             var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            var major = int.Parse(result.Groups[1].Value);
-            var minor = int.Parse(result.Groups[2].Value);
-            var bulid = int.Parse(result.Groups[3].Value);
-            var reversion = int.Parse(result.Groups[4].Value);
-            Version remoteVersion = new Version(major, minor, bulid, reversion);
+            Version remoteVersion = Version.Parse(result.Groups[1].Value);
             if (currentVersion >= remoteVersion)
             {
                 MessageBox.Show($"v{currentVersion} 已是最新版", @"As Expected");
