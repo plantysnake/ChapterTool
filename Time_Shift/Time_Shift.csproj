@@ -139,6 +139,7 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="Util\NativeMethods.cs" />
     <Compile Include="Util\OgmData.cs" />
     <Compile Include="Util\RegistryStorage.cs" />
     <Compile Include="Util\SystemMenu.cs" />

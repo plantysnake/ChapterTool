@@ -86,8 +86,7 @@ namespace ChapterTool.Forms
         private static void InitialLog()
         {
             Log(Environment.UserName.ToLowerInvariant().IndexOf("yzy", StringComparison.Ordinal) > 0
-                ? Resources.Ye_Zong
-                : $"{Environment.UserName}{Resources.Helloo}");
+                ? Resources.Ye_Zong : $"{Environment.UserName}{Resources.Helloo}");
             Log($"{Environment.OSVersion}");
 
             Log(IsAdministrator() ? "噫，有权限( •̀ ω •́ )y，可以瞎搞了" : "哎，木有权限，好伤心");
@@ -258,18 +257,17 @@ namespace ChapterTool.Forms
             {
                 switch (Path.GetExtension(FilePath)?.ToLowerInvariant())
                 {
-                    case ".mpls": LoadMpls();      break;
-                    case ".xml":  LoadXml();       break;
-                    case ".txt":  LoadOgm();       break;
-                    case ".ifo":  LoadIfo();       break;
-                    case ".mkv":
-                    case ".mka":  LoadMatroska();  break;
-                    case ".tak":
+                    case ".mpls": LoadMpls();       break;
+                    case ".xml" : LoadXml();        break;
+                    case ".txt" : LoadOgm();        break;
+                    case ".ifo" : LoadIfo();        break;
+                    case ".mkv" :
+                    case ".mka" : LoadMatroska();   break;
+                    case ".tak" :
                     case ".flac":
-                    case ".cue":  LoadCue();       break;
-                    case ".xpl":  LoadXpl();       break;
-                    default:
-                        throw new Exception("Invalid File Format");
+                    case ".cue" : LoadCue();        break;
+                    case ".xpl" : LoadXpl();        break;
+                    default     : throw new Exception("Invalid File Format");
                 }
                 if (_info == null) return false;
                 _info.UpdataInfo(_chapterNameTemplate);
@@ -693,7 +691,10 @@ namespace ChapterTool.Forms
 
         private void Accuracy_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>().ToList().ForEach(item => item.Checked = false);
+            foreach (var menuItem in toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>())
+            {
+                menuItem.Checked = false;
+            }
             ((ToolStripMenuItem)e.ClickedItem).Checked = true;
         }
 
@@ -715,7 +716,8 @@ namespace ChapterTool.Forms
             var coefficient = _info.Mul1K1 ? 1.001M : 1M;
             foreach (var chapter in _info.Chapters)
             {
-                var frams = (decimal)(chapter.Time + _info.Offset).TotalMilliseconds * coefficient * _frameRate[index] / 1000M;
+                var frams = (decimal) (chapter.Time.TotalMilliseconds + _info.Offset.TotalMilliseconds)
+                                      *coefficient*_frameRate[index]/1000M;
                 if (cbRound.Checked)
                 {
                     var rounded       = cbRound.Checked ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;

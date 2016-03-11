@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Net;
+using ChapterTool.Forms;
 using System.Reflection;
+using System.Windows.Forms;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using ChapterTool.Forms;
 
 namespace ChapterTool.Util
 {
