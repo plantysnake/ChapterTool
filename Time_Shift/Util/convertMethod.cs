@@ -71,24 +71,6 @@ namespace ChapterTool.Util
         }
 
         /// <summary>
-        /// 将 pts 值转换为TimeSpan对象
-        /// </summary>
-        /// <param name="pts"></param>
-        /// <returns></returns>
-        /// <exception cref="T:System.ArgumentException"><paramref name="pts"/> 值小于 0。</exception>
-        public static TimeSpan Pts2Time(int pts)
-        {
-            if (pts < 0)
-            {
-                throw new ArgumentOutOfRangeException($"InvalidArgument=\"{pts}\"的值对于{nameof(pts)}无效");
-            }
-            decimal total = pts / 45000M;
-            decimal secondPart = Math.Floor(total);
-            decimal millisecondPart = Math.Round((total - secondPart) * 1000M, MidpointRounding.AwayFromZero);
-            return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
-        }
-
-        /// <summary>
         /// 将{X=x_1,Y=y_1}格式的字符串转换为Point对象
         /// </summary>
         /// <param name="input"></param>

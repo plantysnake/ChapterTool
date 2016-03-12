@@ -196,6 +196,15 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 第二个章节点离视频结尾太近了呢，应该没有用处吧 (-｡-;) 的本地化字符串。
+        /// </summary>
+        internal static string Useless_Chapter {
+            get {
+                return ResourceManager.GetString("Useless_Chapter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 武总好~ 的本地化字符串。
         /// </summary>
         internal static string Ye_Zong {

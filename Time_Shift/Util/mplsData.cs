@@ -149,6 +149,24 @@ namespace ChapterTool.Util
                                (bytes[index + 3] << 24) | (bytes[index + 2] << 16) | (bytes[index + 1] << 8) | bytes[index];
         }
 
+        /// <summary>
+        /// 将 pts 值转换为TimeSpan对象
+        /// </summary>
+        /// <param name="pts"></param>
+        /// <returns></returns>
+        /// <exception cref="T:System.ArgumentException"><paramref name="pts"/> 值小于 0。</exception>
+        public static TimeSpan Pts2Time(int pts)
+        {
+            if (pts < 0)
+            {
+                throw new ArgumentOutOfRangeException($"InvalidArgument=\"{pts}\"的值对于{nameof(pts)}无效");
+            }
+            decimal total = pts / 45000M;
+            decimal secondPart = Math.Floor(total);
+            decimal millisecondPart = Math.Round((total - secondPart) * 1000M, MidpointRounding.AwayFromZero);
+            return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
+        }
+
         private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
 
         public ChapterInfo ToChapterInfo(int index, bool combineChapter)
@@ -161,7 +179,7 @@ namespace ChapterTool.Util
             {
                 SourceType = "MPLS",
                 Title      = combineChapter ? "FULL Chapter" : ChapterClips[index].Name,
-                Duration   = ConvertMethod.Pts2Time(combineChapter
+                Duration   = Pts2Time(combineChapter
                     ? EntireTimeStamp.Last() - EntireTimeStamp.First()
                     : ChapterClips[index].TimeOut - ChapterClips[index].TimeIn),
                 FramesPerSecond = (double) _frameRate[ChapterClips.First().Fps]
@@ -173,7 +191,7 @@ namespace ChapterTool.Util
             var name = new ChapterName();
             info.Chapters = current.Select(item => new Chapter
             {
-                Time   = ConvertMethod.Pts2Time(item - offset),
+                Time   = Pts2Time(item - offset),
                 Number = name.Index,
                 Name   = name.Get()
             }).ToList();

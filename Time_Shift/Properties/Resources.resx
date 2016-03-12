@@ -165,4 +165,7 @@
   <data name="Open_With_CT" xml:space="preserve">
     <value>使用 Chapter Tool 打开 .mpls 文件？</value>
   </data>
+  <data name="Useless_Chapter" xml:space="preserve">
+    <value>第二个章节点离视频结尾太近了呢，应该没有用处吧 (-｡-;)</value>
+  </data>
 </root>

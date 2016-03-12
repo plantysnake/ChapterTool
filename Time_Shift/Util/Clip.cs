@@ -31,6 +31,6 @@ namespace ChapterTool.Util
         public int RelativeTimeOut { get; set; }
         public int TimeIn          { get; set; }
         public int TimeOut         { get; set; }
-        public override string ToString() => $"{Name} - {ConvertMethod.Pts2Time(Length)}";
+        public override string ToString() => $"{Name} - {MplsData.Pts2Time(Length)}";
     }
 }

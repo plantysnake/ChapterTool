@@ -305,7 +305,7 @@ namespace ChapterTool.Forms
                 _rawMpls.ChapterClips.ForEach(item =>
                 {
                     comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
-                    Log($" |+{item.Name} Duration[{Pts2Time(item.Length).Time2String()}]");
+                    Log($" |+{item.Name} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]");
                     Log($"  |+包含 {item.TimeStamp.Count} 个时间戳");
                 });
             }
@@ -854,17 +854,14 @@ namespace ChapterTool.Forms
         #region Tips
         private void label1_MouseEnter(object sender, EventArgs e)        => toolTip1.Show(FilePath ?? "", (IWin32Window)sender);
 
-        private readonly string _fakeChapter = $"但是这第二个章节点{Environment.NewLine}离视频结尾太近了呢，应该没有用处吧 (-｡-;)";
-        private readonly string _trueChapter = $"虽然只有两个章节点{Environment.NewLine}应该还是能安心的呢 (～￣▽￣)→))*￣▽￣*)o";
-
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
-            if (_rawMpls == null || !IsPathValid || !FilePath.ToLowerInvariant().EndsWith(".mpls")) return;
-            var streamClip    = _rawMpls.ChapterClips[ClipSeletIndex];
+            if (_rawMpls == null || !IsPathValid || !FilePath.ToLower().EndsWith(".mpls")) return;
+            var streamClip = _rawMpls.ChapterClips[ClipSeletIndex];
             if (streamClip.TimeStamp.Count != 2) return;
-            int totalTime     = streamClip.TimeOut - streamClip.TimeIn;
-            int ptsDelta      = totalTime - streamClip.TimeStamp.Last();
-            toolTip1.Show($"本片段时长为: {Pts2Time(totalTime).Time2String()}, {(ptsDelta <= 5*45000 ? _fakeChapter : _trueChapter)}", (IWin32Window) sender);
+            var deltaTime  = streamClip.TimeOut - streamClip.TimeIn - streamClip.TimeStamp.Last();
+            if (deltaTime > 45000*5) return;
+            toolTip1.Show($"{Resources.Useless_Chapter}", (IWin32Window) sender);
         }
 
         private void comboBox2_MouseEnter(object sender, EventArgs e)
