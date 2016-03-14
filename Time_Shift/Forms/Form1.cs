@@ -648,7 +648,7 @@ namespace ChapterTool.Forms
                 }
                 else
                 {
-                    dataGridView1.Rows[i].EditRow(i, _info, cbAutoGenName.Checked);
+                    dataGridView1.Rows[i].EditRow(_info, cbAutoGenName.Checked);
                 }
                 Application.DoEvents();
             }

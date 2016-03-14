@@ -99,13 +99,12 @@ namespace ChapterTool.Util
         /// 提高刷新效率
         /// </summary>
         /// <param name="row">要更改的行</param>
-        /// <param name="index">对应的时间戳</param>
         /// <param name="info">章节信息</param>
         /// <param name="autoGenName">是否使用自动生成的章节名</param>
-        public static void EditRow(this DataGridViewRow row, int index, ChapterInfo info, bool autoGenName)
+        public static void EditRow(this DataGridViewRow row, ChapterInfo info, bool autoGenName)
         {
-            var item = info.Chapters[index];
-            row.Tag  = item;
+            var item = info.Chapters[row.Index];
+            //row.Tag  = item;
             row.DefaultCellStyle.BackColor = row.Index % 2 == 0
                 ? Color.FromArgb(0x92, 0xAA, 0xF3)
                 : Color.FromArgb(0xF3, 0xF7, 0xF7);
