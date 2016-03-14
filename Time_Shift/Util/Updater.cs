@@ -16,7 +16,17 @@ namespace ChapterTool.Util
         {
             Regex versionRegex = new Regex(@"ChapterTool (\d+\.\d+\.\d+\.\d+)");
             WebRequest webRequest = (WebRequest)ar.AsyncState;
-            Stream responseStream = webRequest.EndGetResponse(ar).GetResponseStream();
+            Stream responseStream;
+            try
+            {
+                responseStream = webRequest.EndGetResponse(ar).GetResponseStream();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(string.Format("检查更新失败, 错误信息:{0}{1}{0}请联系TC以了解详情",
+                    Environment.NewLine, exception.Message), @"Update Check Fail");
+                responseStream = null;
+            }
             if (responseStream == null) return;
 
             StreamReader streamReader = new StreamReader(responseStream);
@@ -42,7 +52,7 @@ namespace ChapterTool.Util
         {
             bool connected = IsConnectInternet();
             if (!connected) return;
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://tcupdate.applinzi.com/index.php");
+            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://cupdate.applinzi.com/index.php");
             webRequest.UserAgent = $"{Environment.UserName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().Version}";
             webRequest.Credentials = CredentialCache.DefaultCredentials;
             webRequest.BeginGetResponse(OnResponse, webRequest);
@@ -59,14 +69,7 @@ namespace ChapterTool.Util
             var lastCheckTime = DateTime.Parse(reg);
             if (DateTime.Now - lastCheckTime > new TimeSpan(7, 0, 0, 0))
             {
-                try
-                {
-                    CheckUpdate();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"检查更新失败, 错误信息:{Environment.NewLine}{ex.Message}");
-                }
+                CheckUpdate();
                 RegistryStorage.Save(DateTime.Now.ToString(CultureInfo.InvariantCulture), @"Software\" + program, "LastCheck");
                 return true;
             }
