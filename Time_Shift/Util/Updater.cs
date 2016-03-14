@@ -59,7 +59,14 @@ namespace ChapterTool.Util
             var lastCheckTime = DateTime.Parse(reg);
             if (DateTime.Now - lastCheckTime > new TimeSpan(7, 0, 0, 0))
             {
-                CheckUpdate();
+                try
+                {
+                    CheckUpdate();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"检查更新失败, 错误信息:{Environment.NewLine}{ex.Message}");
+                }
                 RegistryStorage.Save(DateTime.Now.ToString(CultureInfo.InvariantCulture), @"Software\" + program, "LastCheck");
                 return true;
             }
