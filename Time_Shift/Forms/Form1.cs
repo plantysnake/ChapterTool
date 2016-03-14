@@ -867,7 +867,7 @@ namespace ChapterTool.Forms
         private void comboBox2_MouseEnter(object sender, EventArgs e)
         {
             var menuMpls = _rawMpls != null && _rawMpls.EntireTimeStamp.Count < 5 && comboBox2.Items.Count > 20;
-            toolTip1.Show(menuMpls ? "不用看了，这是播放菜单的mpls" : $"共 {comboBox2.Items.Count} 个片段", (IWin32Window)sender);
+            toolTip1.Show(menuMpls ? "这应该是播放菜单的mpls" : $"共 {comboBox2.Items.Count} 个片段", (IWin32Window)sender);
         }
 
         private void cbMul1k1_MouseEnter(object sender, EventArgs e)      => toolTip1.Show("用于DVD Decrypter提取的Chapter", (IWin32Window)sender);
@@ -1206,6 +1206,7 @@ namespace ChapterTool.Forms
 
         private void contextMenuStrip2_Closed(object sender, ToolStripDropDownClosedEventArgs e)
         {
+            Debug.WriteLine(e.CloseReason);
             while (contextMenuStrip2.Items.Count > 1)
             {
                 contextMenuStrip2.Items.Remove(contextMenuStrip2.Items[1]);

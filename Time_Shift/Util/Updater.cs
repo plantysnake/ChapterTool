@@ -50,11 +50,10 @@ namespace ChapterTool.Util
 
         public static void CheckUpdate()
         {
-            bool connected = IsConnectInternet();
-            if (!connected) return;
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://cupdate.applinzi.com/index.php");
-            webRequest.UserAgent = $"{Environment.UserName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().Version}";
-            webRequest.Credentials = CredentialCache.DefaultCredentials;
+            if (!IsConnectInternet()) return;
+            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://tcupdate.applinzi.com/index.php");
+            webRequest.UserAgent      = $"{Environment.UserName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().Version}";
+            webRequest.Credentials    = CredentialCache.DefaultCredentials;
             webRequest.BeginGetResponse(OnResponse, webRequest);
         }
 
