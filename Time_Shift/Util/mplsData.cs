@@ -178,7 +178,7 @@ namespace ChapterTool.Util
             ChapterInfo info = new ChapterInfo
             {
                 SourceType = "MPLS",
-                Title      = combineChapter ? "FULL Chapter" : ChapterClips[index].Name,
+                SourceName = combineChapter ? "FULL Chapter" : ChapterClips[index].Name,
                 Duration   = Pts2Time(combineChapter
                     ? EntireTimeStamp.Last() - EntireTimeStamp.First()
                     : ChapterClips[index].TimeOut - ChapterClips[index].TimeIn),
