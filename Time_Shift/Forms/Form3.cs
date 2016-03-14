@@ -36,6 +36,24 @@ namespace ChapterTool.Forms
             _mainWindow     = mainWindow;
             _currentSetting = mainWindow.CurrentColor;
             SetDefault();
+            AddToolTip();
+        }
+
+        private void AddToolTip()
+        {
+            back.MouseEnter      += (sender, args) => toolTip1.Show(@"窗体背景色", (IWin32Window)sender);
+            textBack.MouseEnter  += (sender, args) => toolTip1.Show(@"文字背景色", (IWin32Window)sender);
+            overBack.MouseEnter  += (sender, args) => toolTip1.Show(@"按键默认色", (IWin32Window)sender);
+            downBack.MouseEnter  += (sender, args) => toolTip1.Show(@"按键激活色", (IWin32Window)sender);
+            textFront.MouseEnter += (sender, args) => toolTip1.Show(@"文字前景色", (IWin32Window)sender);
+            bordBack.MouseEnter  += (sender, args) => toolTip1.Show(@"按键边框色", (IWin32Window)sender);
+
+            back.MouseLeave      += (sender, args) => toolTip1.RemoveAll();
+            textBack.MouseLeave  += (sender, args) => toolTip1.RemoveAll();
+            overBack.MouseLeave  += (sender, args) => toolTip1.RemoveAll();
+            downBack.MouseLeave  += (sender, args) => toolTip1.RemoveAll();
+            textFront.MouseLeave += (sender, args) => toolTip1.RemoveAll();
+            bordBack.MouseLeave  += (sender, args) => toolTip1.RemoveAll();
         }
 
         private void SetDefault()
