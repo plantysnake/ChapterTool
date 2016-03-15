@@ -1,4 +1,4 @@
-# ChapterTool #
+# ChapterTool [![Build status](https://ci.appveyor.com/api/projects/status/rtc76h5ulveafj5f?svg=true)](https://ci.appveyor.com/project/tautcony/chaptertool)
 
 - ChapterTool is made for extracting chapter from DVD, HDDVD, BluRay discs, matroska file and many other type of files and edit it.
 - It's only in Chinese currently
