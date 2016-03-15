@@ -71,35 +71,18 @@ namespace ChapterTool.Util
         }
 
         /// <summary>
-        /// 将 pts 值转换为TimeSpan对象
-        /// </summary>
-        /// <param name="pts"></param>
-        /// <returns></returns>
-        /// <exception cref="T:System.ArgumentException"><paramref name="pts"/> 值小于 0。</exception>
-        public static TimeSpan Pts2Time(int pts)
-        {
-            if (pts < 0)
-            {
-                throw new ArgumentOutOfRangeException($"InvalidArgument=\"{pts}\"的值对于{nameof(pts)}无效");
-            }
-            decimal total = pts / 45000M;
-            decimal secondPart = Math.Floor(total);
-            decimal millisecondPart = Math.Round((total - secondPart) * 1000M, MidpointRounding.AwayFromZero);
-            return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
-        }
-
-        /// <summary>
         /// 将{X=x_1,Y=y_1}格式的字符串转换为Point对象
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
         public static Point String2Point(string input)
         {
+            if (string.IsNullOrWhiteSpace(input)) return new Point(-32000, -32000);
             var rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");
-            var temp = rpos.Match(input);
-            if (string.IsNullOrWhiteSpace(input) || !temp.Success) return new Point(-32000, -32000);
-            int x = int.Parse(temp.Groups["x"].Value);
-            int y = int.Parse(temp.Groups["y"].Value);
+            var result = rpos.Match(input);
+            if (!result.Success) return new Point(-32000, -32000);
+            int x = int.Parse(result.Groups["x"].Value);
+            int y = int.Parse(result.Groups["y"].Value);
             return new Point(x, y);
         }
 
@@ -121,7 +104,8 @@ namespace ChapterTool.Util
         /// <param name="autoGenName">是否使用自动生成的章节名</param>
         public static void EditRow(this DataGridViewRow row, ChapterInfo info, bool autoGenName)
         {
-            var item = (Chapter)row.Tag;
+            var item = info.Chapters[row.Index];
+            //row.Tag  = item;
             row.DefaultCellStyle.BackColor = row.Index % 2 == 0
                 ? Color.FromArgb(0x92, 0xAA, 0xF3)
                 : Color.FromArgb(0xF3, 0xF7, 0xF7);
@@ -215,27 +199,5 @@ namespace ChapterTool.Util
             }
             return false;
         }
-
-
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
-        //1 = normal (green);
-        //2 = error (red);
-        //3 = warning (yellow);
-        //
-        public static void SetState(this ProgressBar pBar, int state)
-        {
-            SendMessage(pBar.Handle, 1040, (IntPtr)state, IntPtr.Zero);
-        }
-
-        //from http://www.sukitech.com/?p=1080
-        //尋找視窗
-        [DllImport("user32.dll")]
-        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-        //將視窗移動到最上層
-        [DllImport("user32.dll")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
     }
 }

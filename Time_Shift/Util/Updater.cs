@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Net;
+using ChapterTool.Forms;
 using System.Reflection;
+using System.Windows.Forms;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using ChapterTool.Forms;
 
 namespace ChapterTool.Util
 {
@@ -14,9 +14,19 @@ namespace ChapterTool.Util
     {
         private static void OnResponse(IAsyncResult ar)
         {
-            Regex versionRegex = new Regex(@"ChapterTool (\d+)\.(\d+)\.(\d+)\.(\d+)");
+            Regex versionRegex = new Regex(@"ChapterTool (\d+\.\d+\.\d+\.\d+)");
             WebRequest webRequest = (WebRequest)ar.AsyncState;
-            Stream responseStream = webRequest.EndGetResponse(ar).GetResponseStream();
+            Stream responseStream;
+            try
+            {
+                responseStream = webRequest.EndGetResponse(ar).GetResponseStream();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(string.Format("检查更新失败, 错误信息:{0}{1}{0}请联系TC以了解详情",
+                    Environment.NewLine, exception.Message), @"Update Check Fail");
+                responseStream = null;
+            }
             if (responseStream == null) return;
 
             StreamReader streamReader = new StreamReader(responseStream);
@@ -25,11 +35,7 @@ namespace ChapterTool.Util
             if (!result.Success) return;
 
             var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            var major = int.Parse(result.Groups[1].Value);
-            var minor = int.Parse(result.Groups[2].Value);
-            var bulid = int.Parse(result.Groups[3].Value);
-            var reversion = int.Parse(result.Groups[4].Value);
-            Version remoteVersion = new Version(major, minor, bulid, reversion);
+            Version remoteVersion = Version.Parse(result.Groups[1].Value);
             if (currentVersion >= remoteVersion)
             {
                 MessageBox.Show($"v{currentVersion} 已是最新版", @"As Expected");
@@ -44,11 +50,10 @@ namespace ChapterTool.Util
 
         public static void CheckUpdate()
         {
-            bool connected = IsConnectInternet();
-            if (!connected) return;
+            if (!IsConnectInternet()) return;
             HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://tcupdate.applinzi.com/index.php");
-            webRequest.UserAgent = $"{Environment.UserName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().Version}";
-            webRequest.Credentials = CredentialCache.DefaultCredentials;
+            webRequest.UserAgent      = $"{Environment.UserName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().Version}";
+            webRequest.Credentials    = CredentialCache.DefaultCredentials;
             webRequest.BeginGetResponse(OnResponse, webRequest);
         }
 

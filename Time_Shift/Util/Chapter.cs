@@ -48,7 +48,7 @@ namespace ChapterTool.Util
         {
             var row = new DataGridViewRow
             {
-                Tag = this,
+                //Tag = this,
                 DefaultCellStyle =
                 {
                     BackColor = (Number + 1)%2 == 0 ? Color.FromArgb(0x92, 0xAA, 0xF3)

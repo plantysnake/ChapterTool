@@ -86,8 +86,7 @@ namespace ChapterTool.Forms
         private static void InitialLog()
         {
             Log(Environment.UserName.ToLowerInvariant().IndexOf("yzy", StringComparison.Ordinal) > 0
-                ? Resources.Ye_Zong
-                : $"{Environment.UserName}{Resources.Helloo}");
+                ? Resources.Ye_Zong : $"{Environment.UserName}{Resources.Helloo}");
             Log($"{Environment.OSVersion}");
 
             Log(IsAdministrator() ? "噫，有权限( •̀ ω •́ )y，可以瞎搞了" : "哎，木有权限，好伤心");
@@ -234,10 +233,9 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show(caption: Resources.ChapterTool_Error,
-                    text: $"Error opening file {FilePath}:{Environment.NewLine} {exception.Message}",
-                    buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
-                Log($"Error opening file {FilePath}: {exception.Message}");
+                Notification.ShowError($"Exception catched in loading file: {FilePath}", exception);
+                Log($"ERROR(btnLoad_Click) {FilePath} {exception.Message}");
+                FilePath = string.Empty;
             }
         }
 
@@ -258,18 +256,17 @@ namespace ChapterTool.Forms
             {
                 switch (Path.GetExtension(FilePath)?.ToLowerInvariant())
                 {
-                    case ".mpls": LoadMpls();      break;
-                    case ".xml":  LoadXml();       break;
-                    case ".txt":  LoadOgm();       break;
-                    case ".ifo":  LoadIfo();       break;
-                    case ".mkv":
-                    case ".mka":  LoadMatroska();  break;
-                    case ".tak":
+                    case ".mpls": LoadMpls();       break;
+                    case ".xml" : LoadXml();        break;
+                    case ".txt" : LoadOgm();        break;
+                    case ".ifo" : LoadIfo();        break;
+                    case ".mkv" :
+                    case ".mka" : LoadMatroska();   break;
+                    case ".tak" :
                     case ".flac":
-                    case ".cue":  LoadCue();       break;
-                    case ".xpl":  LoadXpl();       break;
-                    default:
-                        throw new Exception("Invalid File Format");
+                    case ".cue" : LoadCue();        break;
+                    case ".xpl" : LoadXpl();        break;
+                    default     : throw new Exception("Invalid File Format");
                 }
                 if (_info == null) return false;
                 _info.UpdataInfo(_chapterNameTemplate);
@@ -278,11 +275,10 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show(caption: Resources.ChapterTool_Error, text: exception.Message,
-                    buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
-                progressBar1.Value = 0;
+                Notification.ShowError(@"Exception catched in Function LoadFile", exception);
+                Log($"ERROR(LoadFile) {exception.Message}");
                 FilePath = string.Empty;
-                Log($"ERROR: {exception.Message}");
+                progressBar1.Value = 0;
                 label1.Text = Resources.File_Unloaded;
                 Cursor = Cursors.Default;
                 return false;
@@ -307,7 +303,7 @@ namespace ChapterTool.Forms
                 _rawMpls.ChapterClips.ForEach(item =>
                 {
                     comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
-                    Log($" |+{item.Name} Duration[{Pts2Time(item.Length).Time2String()}]");
+                    Log($" |+{item.Name} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]");
                     Log($"  |+包含 {item.TimeStamp.Count} 个时间戳");
                 });
             }
@@ -388,10 +384,10 @@ namespace ChapterTool.Forms
             }
             catch (Exception exception)
             {
-                MessageBox.Show(caption: Resources.ChapterTool_Error, text: exception.Message,
-                                buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
-                Log($"ERROR: {exception.Message}");
                 progressBar1.SetState(3);
+                Notification.ShowError(@"Exception catched in fuction LoadMatroska", exception);
+                Log($"ERROR(LoadMatroska) {exception.Message}");
+                FilePath = string.Empty;
             }
         }
 
@@ -399,16 +395,16 @@ namespace ChapterTool.Forms
         {
             try
             {
-                var cue = new CueData(FilePath);
-                _info = cue.Chapter;
+                _info = new CueData(FilePath).Chapter;
                 progressBar1.Value = 33;
+                progressBar1.SetState(1);
                 Tips.Text = Resources.Load_Success;
             }
             catch (Exception exception)
             {
-                MessageBox.Show(caption: Resources.ChapterTool_Error, text: exception.Message,
-                                buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
-                Log($"ERROR: {exception.Message}");
+                progressBar1.SetState(3);
+                Notification.ShowError(@"Exception catched in fuction LoadCue", exception);
+                Log($"ERROR(LoadCue) {exception.Message}");
                 FilePath = string.Empty;
             }
         }
@@ -432,10 +428,9 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show(caption: Resources.ChapterTool_Error,
-                    text: $"Error opening path {_customSavingPath}:{Environment.NewLine} {exception.Message}",
-                    buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
-                Log($"Error opening path {_customSavingPath}: {exception.Message}");
+                Notification.ShowError($"Exception catched while saving Path: {_customSavingPath}", exception);
+                Log($"ERROR(btnSave_MouseUp) {_customSavingPath}: {exception.Message}");
+                _customSavingPath = string.Empty;
             }
         }
 
@@ -525,8 +520,8 @@ namespace ChapterTool.Forms
             }
             catch (Exception exception)
             {
-                MessageBox.Show(exception.Message, Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Log(exception.Message);
+                Notification.ShowError(@"Exception catched while saving file", exception);
+                Log($"ERROR(SaveFile) {exception.Message}");
                 progressBar1.Value = 60;
                 Tips.Text = @"保存失败";
             }
@@ -693,7 +688,10 @@ namespace ChapterTool.Forms
 
         private void Accuracy_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>().ToList().ForEach(item => item.Checked = false);
+            foreach (var menuItem in toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>())
+            {
+                menuItem.Checked = false;
+            }
             ((ToolStripMenuItem)e.ClickedItem).Checked = true;
         }
 
@@ -715,7 +713,8 @@ namespace ChapterTool.Forms
             var coefficient = _info.Mul1K1 ? 1.001M : 1M;
             foreach (var chapter in _info.Chapters)
             {
-                var frams = (decimal)(chapter.Time + _info.Offset).TotalMilliseconds * coefficient * _frameRate[index] / 1000M;
+                var frams = (decimal) (chapter.Time.TotalMilliseconds + _info.Offset.TotalMilliseconds)
+                                      *coefficient*_frameRate[index]/1000M;
                 if (cbRound.Checked)
                 {
                     var rounded       = cbRound.Checked ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
@@ -758,6 +757,7 @@ namespace ChapterTool.Forms
             _fcolor.Focus();
             _fcolor.Select();
         }
+
         public List<Color> CurrentColor => new List<Color>
         {
             BackChange,
@@ -773,7 +773,7 @@ namespace ChapterTool.Forms
             set
             {
                 BackColor                                    = value;
-                btnExpand.BackColor                          = value;
+                //btnExpand.BackColor                          = value;
             }
             private get { return BackColor; }
         }
@@ -852,23 +852,20 @@ namespace ChapterTool.Forms
         #region Tips
         private void label1_MouseEnter(object sender, EventArgs e)        => toolTip1.Show(FilePath ?? "", (IWin32Window)sender);
 
-        private readonly string _fakeChapter = $"但是这第二个章节点{Environment.NewLine}离视频结尾太近了呢，应该没有用处吧 (-｡-;)";
-        private readonly string _trueChapter = $"虽然只有两个章节点{Environment.NewLine}应该还是能安心的呢 (～￣▽￣)→))*￣▽￣*)o";
-
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
-            if (_rawMpls == null || !IsPathValid || !FilePath.ToLowerInvariant().EndsWith(".mpls")) return;
-            var streamClip    = _rawMpls.ChapterClips[ClipSeletIndex];
+            if (_rawMpls == null || !IsPathValid || !FilePath.ToLower().EndsWith(".mpls")) return;
+            var streamClip = _rawMpls.ChapterClips[ClipSeletIndex];
             if (streamClip.TimeStamp.Count != 2) return;
-            int totalTime     = streamClip.TimeOut - streamClip.TimeIn;
-            int ptsDelta      = totalTime - streamClip.TimeStamp.Last();
-            toolTip1.Show($"本片段时长为: {Pts2Time(totalTime).Time2String()}, {(ptsDelta <= 5*45000 ? _fakeChapter : _trueChapter)}", (IWin32Window) sender);
+            var deltaTime  = streamClip.TimeOut - streamClip.TimeIn - streamClip.TimeStamp.Last();
+            if (deltaTime > 45000*5) return;
+            toolTip1.Show($"{Resources.Useless_Chapter}", (IWin32Window) sender);
         }
 
         private void comboBox2_MouseEnter(object sender, EventArgs e)
         {
             var menuMpls = _rawMpls != null && _rawMpls.EntireTimeStamp.Count < 5 && comboBox2.Items.Count > 20;
-            toolTip1.Show(menuMpls ? "不用看了，这是播放菜单的mpls" : $"共 {comboBox2.Items.Count} 个片段", (IWin32Window)sender);
+            toolTip1.Show(menuMpls ? "这应该是播放菜单的mpls" : $"共 {comboBox2.Items.Count} 个片段", (IWin32Window)sender);
         }
 
         private void cbMul1k1_MouseEnter(object sender, EventArgs e)      => toolTip1.Show("用于DVD Decrypter提取的Chapter", (IWin32Window)sender);
@@ -1007,10 +1004,8 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show(caption: Resources.ChapterTool_Error,
-                    text: $"Error opening file {FilePath}:{Environment.NewLine} {exception.Message}",
-                    buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
-                Log($"Error opening file {FilePath}: {exception.Message}");
+                Notification.ShowError($"Exception catched while opening file {FilePath}", exception);
+                Log($"ERROR(LoadChapterName) {exception.Message}");
                 return string.Empty;
             }
         }
@@ -1109,7 +1104,7 @@ namespace ChapterTool.Forms
         private void btnPreview_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right || !RunAsAdministrator()) return;
-            if (MessageBox.Show(Resources.Open_With_CT, Resources.ChapterTool_Info, MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (Notification.ShowInfo(Resources.Open_With_CT) == DialogResult.Yes)
             {
                 RegistryStorage.SetOpenMethod();
             }
@@ -1136,8 +1131,7 @@ namespace ChapterTool.Forms
                     }
                     catch (Exception exception)
                     {
-                        MessageBox.Show($"{exception.Message}\n目标文件: {Path.GetFullPath(targetFile)}",
-                            Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Notification.ShowError($"Exception catched while trying to open {Path.GetFullPath(targetFile)}", exception);
                     }
                 };
                 contextMenuStrip2.Items.Add(fMenuItem);
@@ -1159,8 +1153,7 @@ namespace ChapterTool.Forms
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show($"{exception.Message}\n目标文件: {Path.GetFullPath(targetFile)}",
-                            Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Notification.ShowError($"Exception catched while trying to open {Path.GetFullPath(targetFile)}", exception);
                 }
             };
             contextMenuStrip2.Items.Add(fMenuItem);
@@ -1175,15 +1168,14 @@ namespace ChapterTool.Forms
             ToolStripMenuItem fMenuItem = new ToolStripMenuItem($"打开 {file}");
             fMenuItem.Click += (sender, args) =>
             {
-                var targetFile = Path.GetDirectoryName(FilePath) + $"{targetPath}\\{file}";
+                var targetFile = $"{targetPath}\\{file}";
                 try
                 {
                     Process.Start(targetFile);
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show($"{exception.Message}\n目标文件: {Path.GetFullPath(targetFile)}",
-                            Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Notification.ShowError($"Exception catched while trying to open {Path.GetFullPath(targetFile)}", exception);
                 }
             };
             contextMenuStrip2.Items.Add(fMenuItem);
@@ -1207,6 +1199,7 @@ namespace ChapterTool.Forms
 
         private void contextMenuStrip2_Closed(object sender, ToolStripDropDownClosedEventArgs e)
         {
+            Debug.WriteLine(e.CloseReason);
             while (contextMenuStrip2.Items.Count > 1)
             {
                 contextMenuStrip2.Items.Remove(contextMenuStrip2.Items[1]);
