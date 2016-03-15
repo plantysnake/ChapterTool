@@ -233,10 +233,8 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show(caption: Resources.ChapterTool_Error,
-                    text: $"Error opening file {FilePath}:{Environment.NewLine} {exception.Message}",
-                    buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
-                Log($"Error opening file {FilePath}: {exception.Message}");
+                Notification.ShowError($"Exception catched in loading file: {FilePath}", exception);
+                Log($"ERROR(btnLoad_Click) {FilePath} {exception.Message}");
             }
         }
 
@@ -276,11 +274,10 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show(caption: Resources.ChapterTool_Error, text: exception.Message,
-                    buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
+                Notification.ShowError(@"Exception catched in Function LoadFile", exception);
+                Log($"ERROR(LoadFile) {exception.Message}");
                 progressBar1.Value = 0;
                 FilePath = string.Empty;
-                Log($"ERROR: {exception.Message}");
                 label1.Text = Resources.File_Unloaded;
                 Cursor = Cursors.Default;
                 return false;
@@ -386,9 +383,8 @@ namespace ChapterTool.Forms
             }
             catch (Exception exception)
             {
-                MessageBox.Show(caption: Resources.ChapterTool_Error, text: exception.Message,
-                                buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
-                Log($"ERROR: {exception.Message}");
+                Notification.ShowError(@"Exception catched in fuction LoadMatroska", exception);
+                Log($"ERROR(LoadMatroska) {exception.Message}");
                 progressBar1.SetState(3);
             }
         }
@@ -404,9 +400,8 @@ namespace ChapterTool.Forms
             }
             catch (Exception exception)
             {
-                MessageBox.Show(caption: Resources.ChapterTool_Error, text: exception.Message,
-                                buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
-                Log($"ERROR: {exception.Message}");
+                Notification.ShowError(@"Exception catched in fuction LoadCue", exception);
+                Log($"ERROR(LoadCue) {exception.Message}");
                 FilePath = string.Empty;
             }
         }
@@ -430,10 +425,8 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show(caption: Resources.ChapterTool_Error,
-                    text: $"Error opening path {_customSavingPath}:{Environment.NewLine} {exception.Message}",
-                    buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
-                Log($"Error opening path {_customSavingPath}: {exception.Message}");
+                Notification.ShowError($"Exception catched while saving Path: {_customSavingPath}", exception);
+                Log($"ERROR(btnSave_MouseUp) {_customSavingPath}: {exception.Message}");
             }
         }
 
@@ -523,8 +516,8 @@ namespace ChapterTool.Forms
             }
             catch (Exception exception)
             {
-                MessageBox.Show(exception.Message, Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Log(exception.Message);
+                Notification.ShowError(@"Exception catched while saving file", exception);
+                Log($"ERROR(SaveFile) {exception.Message}");
                 progressBar1.Value = 60;
                 Tips.Text = @"保存失败";
             }
@@ -1006,10 +999,8 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 progressBar1.SetState(2);
-                MessageBox.Show(caption: Resources.ChapterTool_Error,
-                    text: $"Error opening file {FilePath}:{Environment.NewLine} {exception.Message}",
-                    buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
-                Log($"Error opening file {FilePath}: {exception.Message}");
+                Notification.ShowError($"Exception catched while opening file {FilePath}", exception);
+                Log($"ERROR(LoadChapterName) {exception.Message}");
                 return string.Empty;
             }
         }
@@ -1108,7 +1099,7 @@ namespace ChapterTool.Forms
         private void btnPreview_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right || !RunAsAdministrator()) return;
-            if (MessageBox.Show(Resources.Open_With_CT, Resources.ChapterTool_Info, MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (Notification.ShowInfo(Resources.Open_With_CT) == DialogResult.Yes)
             {
                 RegistryStorage.SetOpenMethod();
             }
@@ -1135,8 +1126,7 @@ namespace ChapterTool.Forms
                     }
                     catch (Exception exception)
                     {
-                        MessageBox.Show($"{exception.Message}\n目标文件: {Path.GetFullPath(targetFile)}",
-                            Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Notification.ShowError($"Exception catched while trying to open {Path.GetFullPath(targetFile)}", exception);
                     }
                 };
                 contextMenuStrip2.Items.Add(fMenuItem);
@@ -1158,8 +1148,7 @@ namespace ChapterTool.Forms
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show($"{exception.Message}\n目标文件: {Path.GetFullPath(targetFile)}",
-                            Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Notification.ShowError($"Exception catched while trying to open {Path.GetFullPath(targetFile)}", exception);
                 }
             };
             contextMenuStrip2.Items.Add(fMenuItem);
@@ -1174,15 +1163,14 @@ namespace ChapterTool.Forms
             ToolStripMenuItem fMenuItem = new ToolStripMenuItem($"打开 {file}");
             fMenuItem.Click += (sender, args) =>
             {
-                var targetFile = Path.GetDirectoryName(FilePath) + $"{targetPath}\\{file}";
+                var targetFile = $"{targetPath}\\{file}";
                 try
                 {
                     Process.Start(targetFile);
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show($"{exception.Message}\n目标文件: {Path.GetFullPath(targetFile)}",
-                            Resources.ChapterTool_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Notification.ShowError($"Exception catched while trying to open {Path.GetFullPath(targetFile)}", exception);
                 }
             };
             contextMenuStrip2.Items.Add(fMenuItem);
