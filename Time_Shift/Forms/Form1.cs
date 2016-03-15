@@ -235,6 +235,7 @@ namespace ChapterTool.Forms
                 progressBar1.SetState(2);
                 Notification.ShowError($"Exception catched in loading file: {FilePath}", exception);
                 Log($"ERROR(btnLoad_Click) {FilePath} {exception.Message}");
+                FilePath = string.Empty;
             }
         }
 
@@ -276,8 +277,8 @@ namespace ChapterTool.Forms
                 progressBar1.SetState(2);
                 Notification.ShowError(@"Exception catched in Function LoadFile", exception);
                 Log($"ERROR(LoadFile) {exception.Message}");
-                progressBar1.Value = 0;
                 FilePath = string.Empty;
+                progressBar1.Value = 0;
                 label1.Text = Resources.File_Unloaded;
                 Cursor = Cursors.Default;
                 return false;
@@ -383,9 +384,10 @@ namespace ChapterTool.Forms
             }
             catch (Exception exception)
             {
+                progressBar1.SetState(3);
                 Notification.ShowError(@"Exception catched in fuction LoadMatroska", exception);
                 Log($"ERROR(LoadMatroska) {exception.Message}");
-                progressBar1.SetState(3);
+                FilePath = string.Empty;
             }
         }
 
@@ -393,13 +395,14 @@ namespace ChapterTool.Forms
         {
             try
             {
-                var cue = new CueData(FilePath);
-                _info = cue.Chapter;
+                _info = new CueData(FilePath).Chapter;
                 progressBar1.Value = 33;
+                progressBar1.SetState(1);
                 Tips.Text = Resources.Load_Success;
             }
             catch (Exception exception)
             {
+                progressBar1.SetState(3);
                 Notification.ShowError(@"Exception catched in fuction LoadCue", exception);
                 Log($"ERROR(LoadCue) {exception.Message}");
                 FilePath = string.Empty;
@@ -427,6 +430,7 @@ namespace ChapterTool.Forms
                 progressBar1.SetState(2);
                 Notification.ShowError($"Exception catched while saving Path: {_customSavingPath}", exception);
                 Log($"ERROR(btnSave_MouseUp) {_customSavingPath}: {exception.Message}");
+                _customSavingPath = string.Empty;
             }
         }
 
@@ -753,6 +757,7 @@ namespace ChapterTool.Forms
             _fcolor.Focus();
             _fcolor.Select();
         }
+
         public List<Color> CurrentColor => new List<Color>
         {
             BackChange,
