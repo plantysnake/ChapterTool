@@ -20,7 +20,6 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static ChapterTool.Util.CTLogger;
 using static ChapterTool.Util.ConvertMethod;
 
 namespace ChapterTool.Util
@@ -29,6 +28,10 @@ namespace ChapterTool.Util
     {
         private static readonly Regex RTimeCodeLine = new Regex(@"^\s*CHAPTER\d+\s*=(.*)");
         private static readonly Regex RNameLine = new Regex(@"^\s*CHAPTER\d+NAME\s*=(?<chapterName>.*)");
+
+        public delegate void LogEventHandler(string message);
+
+        public static event LogEventHandler OnLog;
 
         private enum LineState
         {
@@ -80,7 +83,7 @@ namespace ChapterTool.Util
                         break;
                     case LineState.LError:
                         if (info.Chapters.Count == 0) throw new Exception("Unable to Prase this ogm file");
-                        Log($"+Interrupt: 发生于[{line}]处");    //将已解析的部分返回
+                        OnLog?.Invoke($"+Interrupt: 发生于[{line}]处");    //将已解析的部分返回
                         state = LineState.LFin;
                         break;
                     case LineState.LFin:

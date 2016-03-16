@@ -36,10 +36,18 @@ namespace ChapterTool.Util
 
         private readonly byte[] _data;
 
+        public delegate void LogEventHandler(string message);
+
+        public static event LogEventHandler OnLog;
 
         public MplsData(string path)
         {
             _data = File.ReadAllBytes(path);
+            ParseMpls();
+        }
+
+        private void ParseMpls()
+        {
             int playlistMarkSectionStartAddress, playItemNumber, playItemEntries;
             ParseHeader(out playlistMarkSectionStartAddress, out playItemNumber, out playItemEntries);
             for (var playItemOrder = 0; playItemOrder < playItemNumber; playItemOrder++)
@@ -54,6 +62,7 @@ namespace ChapterTool.Util
             }
             ParsePlaylistMark(playlistMarkSectionStartAddress);
         }
+
 
         private void ParseHeader(out int playlistMarkSectionStartAddress, out int playItemNumber, out int playItemEntries)
         {
@@ -95,7 +104,7 @@ namespace ChapterTool.Util
                     nameBuilder.Append("&" + Encoding.ASCII.GetString(bytes, 0x24 + (i - 1) * 0x0a, 0x05));
                 }
                 itemStartAdress = playItemEntries + 0x02 + (numberOfAngles - 1) * 0x0a;
-                CTLogger.Log($"Chapter with {numberOfAngles} Angle, file name: {nameBuilder}");
+                OnLog?.Invoke($"Chapter with {numberOfAngles} Angle, file name: {nameBuilder}");
             }
             streamClip.Name = nameBuilder.ToString();
             ChapterClips.Add(streamClip);
@@ -196,6 +205,7 @@ namespace ChapterTool.Util
             if (!combineChapter && ChapterClips[index].TimeIn != offset)
             {
                 offset = ChapterClips[index].TimeIn;
+                OnLog?.Invoke($"first time stamp: {current.First()}, Time in: {offset}");
             }
             var name = new ChapterName();
             info.Chapters = current.Select(item => new Chapter

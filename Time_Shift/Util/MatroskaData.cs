@@ -33,6 +33,10 @@ namespace ChapterTool.Util
 
         private readonly string _mkvextractPath;
 
+        public delegate void LogEventHandler(string message);
+
+        public static event LogEventHandler OnLog;
+
         public MatroskaData()
         {
             var mkvToolnixPath = RegistryStorage.Load(@"Software\ChapterTool", "mkvToolnixPath");
@@ -45,7 +49,7 @@ namespace ChapterTool.Util
                 }
                 catch (Exception exception) //no valid path found in Registry
                 {
-                    CTLogger.Log($"Warning: {exception.Message}");
+                    OnLog?.Invoke($"Warning: {exception.Message}");
                 }
                 if (string.IsNullOrEmpty(mkvToolnixPath)) //Installed path not found.
                 {

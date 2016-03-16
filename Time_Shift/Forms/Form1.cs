@@ -292,7 +292,9 @@ namespace ChapterTool.Forms
 
         private void LoadMpls()
         {
+            MplsData.OnLog += Log;
             _rawMpls = new MplsData(FilePath);
+            MplsData.OnLog -= Log;
             Log("+成功载入MPLS格式章节文件");
             Log($"|+MPLS中共有 {_rawMpls.ChapterClips.Count} 个m2ts片段");
 
@@ -361,7 +363,9 @@ namespace ChapterTool.Forms
 
         private void LoadOgm()
         {
+            OgmData.OnLog += Log;
             _info = OgmData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTF8String());
+            OgmData.OnLog -= Log;
             _info.UpdataInfo((int)numericUpDown1.Value);
             progressBar1.Value = 33;
             Tips.Text = Resources.Load_Success;
@@ -376,7 +380,9 @@ namespace ChapterTool.Forms
 
         private void LoadMatroska()
         {
+            MatroskaData.OnLog += Log;
             var matroska = new MatroskaData();
+            MatroskaData.OnLog -= Log;
             try
             {
                 GetChapterInfoFromXml(matroska.GetXml(FilePath));
@@ -577,7 +583,9 @@ namespace ChapterTool.Forms
         #region GeneRate Chapter Info
         private void GetChapterInfoFromMpls(int index)
         {
+            MplsData.OnLog += Log;
             _info = _rawMpls.ToChapterInfo(index, combineToolStripMenuItem.Checked);
+            MplsData.OnLog -= Log;
             Tips.Text = _info.Chapters.Count < 2 ? Resources.Chapter_Not_find : Resources.Load_Success;
             _info.UpdataInfo(_chapterNameTemplate);
         }
