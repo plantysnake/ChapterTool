@@ -29,7 +29,7 @@ namespace ChapterTool.Util
 {
     internal class MatroskaData
     {
-        public readonly XmlDocument Result = new XmlDocument();
+        private readonly XmlDocument _result = new XmlDocument();
 
         private readonly string _mkvextractPath;
 
@@ -59,6 +59,7 @@ namespace ChapterTool.Util
             _mkvextractPath = mkvToolnixPath + "\\mkvextract.exe";
             if (!File.Exists(_mkvextractPath))
             {
+                OnLog?.Invoke($"Mkvextract Path: {_mkvextractPath}");
                 throw new Exception("无可用 MkvExtract, 安装个呗~");
             }
         }
@@ -68,8 +69,8 @@ namespace ChapterTool.Util
             string arg = $"chapters \"{path}\"";
             string xmlresult = RunMkvextract(arg, _mkvextractPath);
             if (string.IsNullOrEmpty(xmlresult)) throw new Exception("No Chapter Found");
-            Result.LoadXml(xmlresult);
-            return Result;
+            _result.LoadXml(xmlresult);
+            return _result;
         }
 
         private static string RunMkvextract(string arguments, string program)

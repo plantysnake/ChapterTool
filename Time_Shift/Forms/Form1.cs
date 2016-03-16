@@ -245,6 +245,12 @@ namespace ChapterTool.Forms
         private ChapterInfo       _info;
         private ChapterInfo       _fullIfoChapter;
 
+        private bool CombineChapter
+        {
+            get { return combineToolStripMenuItem.Checked; }
+            set { combineToolStripMenuItem.Checked = value; }
+        }
+
         private bool Loadfile()
         {
             if (!IsPathValid) return false;
@@ -334,7 +340,7 @@ namespace ChapterTool.Forms
                 Log($" |+{item.SourceName} Duration[{item.Duration.Time2String()}]");
                 Log($"  |+包含 {item.Chapters.Count} 个时间戳");
             }
-            _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _ifoGroup.First();
+            _info = CombineChapter ? _fullIfoChapter : _ifoGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
             Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.IFO_WARNING;
         }
@@ -564,7 +570,7 @@ namespace ChapterTool.Forms
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_rawMpls == null && _ifoGroup == null) return;
-            combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
+            CombineChapter = !CombineChapter;
             if (_rawMpls != null)
             {
                 GetChapterInfoFromMpls(ClipSeletIndex);
@@ -584,7 +590,7 @@ namespace ChapterTool.Forms
         private void GetChapterInfoFromMpls(int index)
         {
             MplsData.OnLog += Log;
-            _info = _rawMpls.ToChapterInfo(index, combineToolStripMenuItem.Checked);
+            _info = _rawMpls.ToChapterInfo(index, CombineChapter);
             MplsData.OnLog -= Log;
             Tips.Text = _info.Chapters.Count < 2 ? Resources.Chapter_Not_find : Resources.Load_Success;
             _info.UpdataInfo(_chapterNameTemplate);
@@ -592,7 +598,7 @@ namespace ChapterTool.Forms
 
         private void GetChapterInfoFromIFO(int index)
         {
-            _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _ifoGroup[index];
+            _info = CombineChapter ? _fullIfoChapter : _ifoGroup[index];
         }
 
         private List<ChapterInfo> _xmlGroup;
@@ -605,13 +611,13 @@ namespace ChapterTool.Forms
             {
                 comboBox2.Items.Clear();
                 int i = 1;
-                _xmlGroup.ForEach(item =>
+                foreach (var item in _xmlGroup)
                 {
                     var name = $"Edition {i++:D2}";
                     comboBox2.Items.Add(name);
                     Log($" |+{name}");
                     Log($"  |+包含 {item.Chapters.Count} 个时间戳");
-                });
+                }
             }
             _info = _xmlGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
