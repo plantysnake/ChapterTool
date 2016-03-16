@@ -27,7 +27,6 @@ using System.Windows.Forms;
 using System.Security.Principal;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Runtime.InteropServices;
 
 namespace ChapterTool.Util
 {
@@ -86,7 +85,7 @@ namespace ChapterTool.Util
             return new Point(x, y);
         }
 
-        private static readonly decimal[] FrameRate = { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
+        private static readonly decimal[] FrameRate = { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 0M, 50M, 60000M / 1001 };
 
         /// <summary>
         /// 根据给定的帧率返回它在FrameRate表中的序号
