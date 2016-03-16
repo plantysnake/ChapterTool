@@ -120,14 +120,9 @@ namespace ChapterTool.Util
             if (0x01 != stream[01]) return; //make sure this stream is Play Item
             var streamCodingType = stream[0x0b];
             var chapterClip      = ChapterClips[playItemOrder];
-            OnLog?.Invoke($"Stream[{chapterClip.Name}] Type: {_streamCoding[streamCodingType]}");
-            if (0x1b != streamCodingType && 0x02 != streamCodingType && 0xea != streamCodingType)
-            {
-                int offset = 0x90 == streamCodingType || 0x91 == streamCodingType || 0x92 == streamCodingType ? 0x0c : 0x0d;
-                OnLog?.Invoke($"Stream[{chapterClip.Name}] Language: {Encoding.ASCII.GetString(stream, offset, 3)}");
-                return;
-            }
-            OnLog?.Invoke($"Stream[{chapterClip.Name}] Resolution: {_resolution[stream[0x0c] >> 4]}");
+            LogStreamAttributes(stream, chapterClip.Name);
+            if (0x1b != streamCodingType && 0x02 != streamCodingType &&
+                0xea != streamCodingType && 0x06 != streamCodingType) return;
             chapterClip.Fps = stream[0x0c] & 0xf;//last 4 bits is the fps
         }
 
@@ -155,9 +150,40 @@ namespace ChapterTool.Util
             }
         }
 
+        private void LogStreamAttributes(byte[] stream, string clipName)
+        {
+            var streamCodingType = stream[0x0b];
+            string streamCoding;
+            var result = _streamCoding.TryGetValue(streamCodingType, out streamCoding);
+            if (!result) streamCoding = "und";
+            OnLog?.Invoke($"Stream[{clipName}] Type: {streamCoding}");
+            if (0x1b != streamCodingType && 0x02 != streamCodingType && 0xea != streamCodingType)
+            {
+                int offset = 0x90 == streamCodingType || 0x91 == streamCodingType ? 0x0c : 0x0d;
+                if (0x92 == streamCodingType)
+                {
+                    OnLog?.Invoke($"Stream[{clipName}] CharacterCode: {_characterCode[stream[0x0c]]}");
+                }
+                var language = Encoding.ASCII.GetString(stream, offset, 3);
+                if (language[0] == '\0') language = "und";
+                OnLog?.Invoke($"Stream[{clipName}] Language: {language}");
+                if (offset == 0x0d)
+                {
+                    int channel = stream[0x0c] >> 4;
+                    int sampleRate = stream[0x0c] & 0x0f;
+                    OnLog?.Invoke($"Stream[{clipName}] Channel: {_channel[channel]}");
+                    OnLog?.Invoke($"Stream[{clipName}] SampleRate: {_sampleRate[sampleRate]}");
+                }
+                return;
+            }
+            OnLog?.Invoke($"Stream[{clipName}] Resolution: {_resolution[stream[0x0c] >> 4]}");
+            OnLog?.Invoke($"Stream[{clipName}] FrameRate: {_frameRate[stream[0x0c] & 0xf]:F4}");
+        }
+
         private readonly Dictionary<int, string> _streamCoding = new Dictionary<int, string>
         {
             [0x02] = "MPEG-2 Video Stream",
+            [0x06] = "HEVC Video Stream",
             [0x1b] = "MPEG-4 AVC Video Stream",
             [0xea] = "SMPTE VC-1 Video Stream",
             [0x80] = "HDMV LPCM audio stream for Primary audio",
@@ -176,14 +202,32 @@ namespace ChapterTool.Util
 
         private readonly Dictionary<int, string> _resolution = new Dictionary<int, string>
         {
-            [0] = "-",
-            [1] = "720*480i",
-            [2] = "720*576i",
-            [3] = "720*480p",
-            [4] = "1920*1080i",
-            [5] = "1280*720p",
-            [6] = "1920*1080p",
-            [7] = "720*576p"
+            [0x00] = "-"         , [0x01] = "720*480i",
+            [0x02] = "720*576i"  , [0x03] = "720*480p",
+            [0x04] = "1920*1080i", [0x05] = "1280*720p",
+            [0x06] = "1920*1080p", [0x07] = "720*576p"
+        };
+
+        private readonly Dictionary<int, string> _channel = new Dictionary<int, string>
+        {
+            [0x00] = "-",
+            [0x01] = "mono"        , [0x03] = "stereo",
+            [0x06] = "multichannel", [0x0C] = "stereo and multichannel"
+        };
+
+        private readonly Dictionary<int, string> _sampleRate = new Dictionary<int, string>
+        {
+            [0x00] = "-"           , [0x01] = "48 KHz",
+            [0x04] = "96 KHz"      , [0x05] = "192 KHz",
+            [0x0C] = "48 & 192 KHz", [0x0E] = "48 & 96 KHz"
+        };
+
+        private readonly Dictionary<int, string> _characterCode = new Dictionary<int, string>
+        {
+            [0x00] = "-"       , [0x01] = "UTF-8",
+            [0x02] = "UTF-16BE", [0x03] = "Shift-JIS",
+            [0x04] = "EUC KR"  , [0x05] = "GB18030-2000",
+            [0x06] = "GB2312"  , [0x07] = "BIG5"
         };
 
         private static short Byte2Int16(IReadOnlyList<byte> bytes, int index, bool bigEndian = true)
