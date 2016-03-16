@@ -118,12 +118,17 @@ namespace ChapterTool.Util
             var stream = new byte[16];
             Array.Copy(_data, itemStartAdress + streamOrder * 16, stream, 0, 16);
             if (0x01 != stream[01]) return; //make sure this stream is Play Item
-            int streamCodingType = stream[0x0b];
-            if (0x1b != streamCodingType && // AVC
-                0x02 != streamCodingType && // MPEG-I/II
-                0xea != streamCodingType)   // VC-1
+            var streamCodingType = stream[0x0b];
+            var chapterClip      = ChapterClips[playItemOrder];
+            OnLog?.Invoke($"Stream[{chapterClip.Name}] Type: {_streamCoding[streamCodingType]}");
+            if (0x1b != streamCodingType && 0x02 != streamCodingType && 0xea != streamCodingType)
+            {
+                int offset = 0x90 == streamCodingType || 0x91 == streamCodingType || 0x92 == streamCodingType ? 0x0c : 0x0d;
+                OnLog?.Invoke($"Stream[{chapterClip.Name}] Language: {Encoding.ASCII.GetString(stream, offset, 3)}");
                 return;
-            ChapterClips[playItemOrder].Fps = stream[0x0c] & 0xf;//last 4 bits is the fps
+            }
+            OnLog?.Invoke($"Stream[{chapterClip.Name}] Resolution: {_resolution[stream[0x0c] >> 4]}");
+            chapterClip.Fps = stream[0x0c] & 0xf;//last 4 bits is the fps
         }
 
         private void ParsePlaylistMark(int playlistMarkSectionStartAddress)
@@ -140,7 +145,7 @@ namespace ChapterTool.Util
             for (var mark = 0; mark < playlistMarkNumber; ++mark)
             {
                 Array.Copy(_data, playlistMarkEntries + mark * 14, bytelist, 0, 14);
-                if (0x01 != bytelist[1]) continue;//make sure the playlist mark type is an entry mark
+                if (0x01 != bytelist[1]) continue;// make sure the playlist mark type is an entry mark
                 int streamFileIndex = Byte2Int16(bytelist, 0x02);
                 Clip streamClip     = ChapterClips[streamFileIndex];
                 int timeStamp       = Byte2Int32(bytelist, 0x04);
@@ -149,6 +154,37 @@ namespace ChapterTool.Util
                 EntireClip.TimeStamp.Add(relativeSeconds);
             }
         }
+
+        private readonly Dictionary<int, string> _streamCoding = new Dictionary<int, string>
+        {
+            [0x02] = "MPEG-2 Video Stream",
+            [0x1b] = "MPEG-4 AVC Video Stream",
+            [0xea] = "SMPTE VC-1 Video Stream",
+            [0x80] = "HDMV LPCM audio stream for Primary audio",
+            [0x81] = "Dolby Digital (AC-3) audio stream for Primary audio",
+            [0x82] = "DTS audio stream for Primary audio",
+            [0x83] = "Dolby Lossless audio stream for Primary audio",
+            [0x84] = "Dolby Digital Plus audio stream for Primary audio",
+            [0x85] = "DTS-HD audio stream except XLL for Primary audio",
+            [0x86] = "DTS-HD audio stream XLL for Primary audio",
+            [0xA1] = "Dolby digital Plus audio stream for secondary audio",
+            [0xA2] = "DTS-HD audio stream for secondary audio",
+            [0x90] = "Presentation Graphics Stream",
+            [0x91] = "Interactive Graphics Stream",
+            [0x92] = "Text Subtitle stream"
+        };
+
+        private readonly Dictionary<int, string> _resolution = new Dictionary<int, string>
+        {
+            [0] = "-",
+            [1] = "720*480i",
+            [2] = "720*576i",
+            [3] = "720*480p",
+            [4] = "1920*1080i",
+            [5] = "1280*720p",
+            [6] = "1920*1080p",
+            [7] = "720*576p"
+        };
 
         private static short Byte2Int16(IReadOnlyList<byte> bytes, int index, bool bigEndian = true)
         {

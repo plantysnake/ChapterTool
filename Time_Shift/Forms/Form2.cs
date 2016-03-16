@@ -116,7 +116,18 @@ namespace ChapterTool.Forms
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://bitbucket.org/TautCony/chaptertool");
+            switch (e.Button)
+            {
+                case MouseButtons.Left:
+                    System.Diagnostics.Process.Start("https://github.com/TautCony/ChapterTool");
+                    break;
+                case MouseButtons.Right:
+                    System.Diagnostics.Process.Start("https://bitbucket.org/TautCony/chaptertool");
+                    break;
+                case MouseButtons.Middle:
+                    System.Diagnostics.Process.Start("http://vcb-s.com/");
+                    break;
+            }
         }
     }
 }
