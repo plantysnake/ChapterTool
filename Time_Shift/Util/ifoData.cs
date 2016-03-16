@@ -40,7 +40,7 @@ namespace ChapterTool.Util
 
         private static ChapterInfo GetChapterInfo(string location, int titleSetNum)
         {
-            Regex titleRegex = new Regex(@"^VTS_(\d+)_0.IFO", RegexOptions.IgnoreCase);
+            Regex titleRegex = new Regex(@"^VTS_(\d+)_0\.IFO", RegexOptions.IgnoreCase);
             var result       = titleRegex.Match(location);
             if (result.Success) titleSetNum = int.Parse(result.Groups[1].Value);
 
@@ -76,54 +76,54 @@ namespace ChapterTool.Util
 
             FileStream stream = new FileStream(ifoFile, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            long pcgItPosition       = GetPCGIP_Position(stream);
+            long pcgItPosition = stream.GetPCGIP_Position();
             int programChainPrograms = -1;
             TimeSpan programTime     = TimeSpan.Zero;
             double fpsLocal;
             if (programChain >= 0)
             {
-                uint chainOffset     = GetChainOffset(stream, pcgItPosition, programChain);
-                programTime          = ReadTimeSpan(stream, pcgItPosition, chainOffset, out fpsLocal) ?? TimeSpan.Zero;
-                programChainPrograms = GetNumberOfPrograms(stream, pcgItPosition, chainOffset);
+                uint chainOffset     = stream.GetChainOffset(pcgItPosition, programChain);
+                programTime          = stream.ReadTimeSpan(pcgItPosition, chainOffset, out fpsLocal) ?? TimeSpan.Zero;
+                programChainPrograms = stream.GetNumberOfPrograms(pcgItPosition, chainOffset);
             }
             else
             {
-                int programChains = GetProgramChains(stream, pcgItPosition);
+                int programChains = stream.GetProgramChains(pcgItPosition);
                 for (int curChain = 1; curChain <= programChains; curChain++)
                 {
-                    uint chainOffset = GetChainOffset(stream, pcgItPosition, curChain);
-                    TimeSpan? time   = ReadTimeSpan(stream, pcgItPosition, chainOffset, out fpsLocal);
+                    uint chainOffset = stream.GetChainOffset(pcgItPosition, curChain);
+                    TimeSpan? time   = stream.ReadTimeSpan(pcgItPosition, chainOffset, out fpsLocal);
                     if (time == null) break;
 
                     if (time.Value <= programTime) continue;
                     programChain         = curChain;
-                    programChainPrograms = GetNumberOfPrograms(stream, pcgItPosition, chainOffset);
+                    programChainPrograms = stream.GetNumberOfPrograms(pcgItPosition, chainOffset);
                     programTime          = time.Value;
                 }
             }
             if (programChain < 0) return null;
 
-            chapters.Add(new Chapter() { Name = "Chapter 01" });
+            chapters.Add(new Chapter { Name = "Chapter 01" ,Time = TimeSpan.Zero});
 
-            uint longestChainOffset = GetChainOffset(stream, pcgItPosition, programChain);
-            int programMapOffset      = ToInt16(GetFileBlock(stream, (pcgItPosition + longestChainOffset) + 230, 2));
-            int cellTableOffset       = ToInt16(GetFileBlock(stream, (pcgItPosition + longestChainOffset) + 0xE8, 2));
+            uint longestChainOffset   = stream.GetChainOffset(pcgItPosition, programChain);
+            int programMapOffset      = ToInt16(stream.GetFileBlock((pcgItPosition + longestChainOffset) + 230, 2));
+            int cellTableOffset       = ToInt16(stream.GetFileBlock((pcgItPosition + longestChainOffset) + 0xE8, 2));
             for (int currentProgram   = 0; currentProgram < programChainPrograms; ++currentProgram)
             {
-                int entryCell = GetFileBlock(stream, ((pcgItPosition + longestChainOffset) + programMapOffset) + currentProgram, 1)[0];
+                int entryCell         = stream.GetFileBlock(((pcgItPosition + longestChainOffset) + programMapOffset) + currentProgram, 1)[0];
                 int exitCell          = entryCell;
                 if (currentProgram < (programChainPrograms - 1))
-                    exitCell          = GetFileBlock(stream, ((pcgItPosition + longestChainOffset) + programMapOffset) + (currentProgram + 1), 1)[0] - 1;
+                    exitCell          = stream.GetFileBlock(((pcgItPosition + longestChainOffset) + programMapOffset) + (currentProgram + 1), 1)[0] - 1;
 
                 TimeSpan totalTime    = TimeSpan.Zero;
                 for (int currentCell  = entryCell; currentCell <= exitCell; currentCell++)
                 {
                     int cellStart     = cellTableOffset + ((currentCell - 1) * 0x18);
-                    byte[] bytes      = GetFileBlock(stream, (pcgItPosition + longestChainOffset) + cellStart, 4);
+                    byte[] bytes      = stream.GetFileBlock((pcgItPosition + longestChainOffset) + cellStart, 4);
                     int cellType      = bytes[0] >> 6;
                     if (cellType == 0x00 || cellType == 0x01)
                     {
-                        bytes = GetFileBlock(stream, ((pcgItPosition + longestChainOffset) + cellStart) + 4, 4);
+                        bytes = stream.GetFileBlock(((pcgItPosition + longestChainOffset) + cellStart) + 4, 4);
                         TimeSpan time = ReadTimeSpan(bytes, out fps) ?? TimeSpan.Zero;
                         totalTime    += time;
                     }
