@@ -279,8 +279,8 @@ namespace ChapterTool.Util
 
         private static string GetCueFromTak(string takPath)
         {
-            var fs = File.Open(takPath, FileMode.Open);
-            if (fs.Length < 1048576)// 小于1M，文档太小了
+            var fs = File.Open(takPath, FileMode.Open, FileAccess.Read);
+            if (fs.Length < 1<<20)// 小于1M，文档太小了
             {
                 fs.Close();
                 return string.Empty;
@@ -301,8 +301,8 @@ namespace ChapterTool.Util
 
         private static string GetCueFromFlac(string flacPath)
         {
-            var fs = File.Open(flacPath, FileMode.Open);
-            if (fs.Length < 1048576)// 小于1M，文档太小了
+            var fs = File.Open(flacPath, FileMode.Open, FileAccess.Read);
+            if (fs.Length < 1<<20)// 小于1M，文档太小了
             {
                 fs.Close();
                 return string.Empty;

@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\CueDataTests.cs" />
+    <Compile Include="Util\IfoParserTests.cs" />
     <Compile Include="Util\MplsDataTests.cs" />
   </ItemGroup>
   <ItemGroup>
