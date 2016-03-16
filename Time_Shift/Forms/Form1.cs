@@ -872,7 +872,7 @@ namespace ChapterTool.Forms
 
         private void comboBox2_MouseEnter(object sender, EventArgs e)
         {
-            var menuMpls = _rawMpls != null && _rawMpls.EntireTimeStamp.Count < 5 && comboBox2.Items.Count > 20;
+            var menuMpls = _rawMpls != null && _rawMpls.EntireClip.TimeStamp.Count < 5 && comboBox2.Items.Count > 20;
             toolTip1.Show(menuMpls ? "这应该是播放菜单的mpls" : $"共 {comboBox2.Items.Count} 个片段", (IWin32Window)sender);
         }
 

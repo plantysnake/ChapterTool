@@ -29,8 +29,9 @@ namespace ChapterTool.Util
     {
         /// <summary>include all chapters in mpls divisionally</summary>
         public List<Clip> ChapterClips   { get; } = new List<Clip>();
+
         /// <summary>include all time code in mpls</summary>
-        public List<int> EntireTimeStamp { get; } = new List<int>();
+        public Clip EntireClip { get; } = new Clip {Name = "FULL Chapter"};
 
         public override string ToString() => $"MPLS: {ChapterClips.Count} Viedo Clips, {ChapterClips.Sum(item=>item.TimeStamp.Count)} Time Stamps";
 
@@ -61,8 +62,10 @@ namespace ChapterTool.Util
                 playItemEntries += lengthOfPlayItem + 2;//for that not counting the two length bytes themselves.
             }
             ParsePlaylistMark(playlistMarkSectionStartAddress);
+            EntireClip.TimeIn  = 0;
+            EntireClip.TimeOut = ChapterClips.Sum(item => item.Length);
+            EntireClip.Length  = EntireClip.TimeOut;
         }
-
 
         private void ParseHeader(out int playlistMarkSectionStartAddress, out int playItemNumber, out int playItemEntries)
         {
@@ -89,7 +92,7 @@ namespace ChapterTool.Util
             };
             streamClip.Length          = streamClip.TimeOut - streamClip.TimeIn;
             streamClip.RelativeTimeIn  = ChapterClips.Sum(clip => clip.Length);
-            //streamClip.RelativeTimeOut = streamClip.RelativeTimeIn + streamClip.Length;
+            streamClip.RelativeTimeOut = streamClip.RelativeTimeIn + streamClip.Length;
 
             itemStartAdress            = playItemEntries + 0x32;
             streamCount                = bytes[0x23] >> 4;
@@ -122,6 +125,7 @@ namespace ChapterTool.Util
                 return;
             ChapterClips[playItemOrder].Fps = stream[0x0c] & 0xf;//last 4 bits is the fps
         }
+
         private void ParsePlaylistMark(int playlistMarkSectionStartAddress)
         {
             int playlistMarkNumber  = Byte2Int16(_data, playlistMarkSectionStartAddress + 0x04);
@@ -142,7 +146,7 @@ namespace ChapterTool.Util
                 int timeStamp       = Byte2Int32(bytelist, 0x04);
                 int relativeSeconds = timeStamp - streamClip.TimeIn + streamClip.RelativeTimeIn;
                 streamClip.TimeStamp.Add(timeStamp);
-                EntireTimeStamp.Add(relativeSeconds);
+                EntireClip.TimeStamp.Add(relativeSeconds);
             }
         }
 
@@ -184,31 +188,29 @@ namespace ChapterTool.Util
             {
                 throw new IndexOutOfRangeException("Index of Video Clip out of range");
             }
+            Clip selectedClip = combineChapter ? EntireClip : ChapterClips[index];
             ChapterInfo info = new ChapterInfo
             {
                 SourceType = "MPLS",
-                SourceName = combineChapter ? "FULL Chapter" : ChapterClips[index].Name,
-                Duration   = Pts2Time(combineChapter
-                    ? EntireTimeStamp.Last() - EntireTimeStamp.First()
-                    : ChapterClips[index].TimeOut - ChapterClips[index].TimeIn),
+                SourceName = selectedClip.Name,
+                Duration   = Pts2Time(selectedClip.Length),
                 FramesPerSecond = (double) _frameRate[ChapterClips.First().Fps]
             };
-
-            var current = combineChapter ? EntireTimeStamp : ChapterClips[index].TimeStamp;
-            if (current.Count < 2) return info;
-            int offset  = current.First();
+            var selectedTimeStamp = selectedClip.TimeStamp;
+            if (selectedTimeStamp.Count < 2) return info;
+            int offset  = selectedTimeStamp.First();
             /**
-             *the begin time stamp of the chapter isn't the begin of the video
-             *eg: Hidan no Aria AA, There are 24 black frames at the begining of each even episode
-             *    Which results that the first time stamp should be the 00:00:01.001
+             * the begin time stamp of the chapter isn't the begin of the video
+             * eg: Hidan no Aria AA, There are 24 black frames at the begining of each even episode
+             *     Which results that the first time stamp should be the 00:00:01.001
              */
-            if (!combineChapter && ChapterClips[index].TimeIn != offset)
+            if (selectedClip.TimeIn < offset)
             {
                 offset = ChapterClips[index].TimeIn;
-                OnLog?.Invoke($"first time stamp: {current.First()}, Time in: {offset}");
+                OnLog?.Invoke($"first time stamp: {selectedTimeStamp.First()}, Time in: {offset}");
             }
             var name = new ChapterName();
-            info.Chapters = current.Select(item => new Chapter
+            info.Chapters = selectedTimeStamp.Select(item => new Chapter
             {
                 Time   = Pts2Time(item - offset),
                 Number = name.Index,

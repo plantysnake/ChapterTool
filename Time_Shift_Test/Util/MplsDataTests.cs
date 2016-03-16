@@ -28,7 +28,7 @@ namespace ChapterTool.Util.Tests
             Assert.IsTrue(mplsRaw.ChapterClips.First().TimeIn  == 188460000);
             Assert.IsTrue(mplsRaw.ChapterClips.First().TimeOut == 474480000);
             Assert.IsTrue(mplsRaw.ChapterClips.First().Length  == 286020000);
-            Assert.IsTrue(mplsRaw.EntireTimeStamp.SequenceEqual(expectedTimeStamps));
+            Assert.IsTrue(mplsRaw.EntireClip.TimeStamp.SequenceEqual(expectedTimeStamps));
         }
 
         [TestMethod()]
@@ -46,7 +46,7 @@ namespace ChapterTool.Util.Tests
             Assert.IsTrue(mplsRaw.ChapterClips.First().TimeIn  == 90000);
             Assert.IsTrue(mplsRaw.ChapterClips.First().TimeOut == 163027149);
             Assert.IsTrue(mplsRaw.ChapterClips.First().Length  == 162937149);
-            Assert.IsTrue(mplsRaw.EntireTimeStamp.SequenceEqual(expectedTimeStamps));
+            Assert.IsTrue(mplsRaw.EntireClip.TimeStamp.SequenceEqual(expectedTimeStamps));
         }
 
         [TestMethod()]
@@ -85,7 +85,7 @@ namespace ChapterTool.Util.Tests
             }
             Assert.IsTrue(mplsRaw.ChapterClips.First().Fps == 1);
             var expectedTimeStamps = new List<int> { 0, 6661029, 27270993, 48845671, 54085906, 63676737, 63948884, 68134315, 72182734, 87212749, 121981859, 126863610, 127619990, 127890260, 136529515, 140581688, 155746838, 187516701, 191566998, 191792223 };
-            Assert.IsTrue(mplsRaw.EntireTimeStamp.SequenceEqual(expectedTimeStamps));
+            Assert.IsTrue(mplsRaw.EntireClip.TimeStamp.SequenceEqual(expectedTimeStamps));
         }
 
         [TestMethod()]
