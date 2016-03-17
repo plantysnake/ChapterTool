@@ -85,14 +85,13 @@ namespace ChapterTool.Util
             return new Point(x, y);
         }
 
-        private static readonly decimal[] FrameRate = { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 0M, 50M, 60000M / 1001 };
-
         /// <summary>
         /// 根据给定的帧率返回它在FrameRate表中的序号
         /// </summary>
         /// <param name="frame"></param>
         /// <returns></returns>
-        public static int ConvertFr2Index(double frame) => Enumerable.Range(0, 7).First(index => Math.Abs(frame - (double)FrameRate[index]) < 1e-5);
+        public static int ConvertFr2Index(double frame)
+            => Enumerable.Range(0, 7).First(index => Math.Abs(frame - (double)MplsData.FrameRate[index]) < 1e-5);
 
         /// <summary>
         /// 在无行数变动时直接修改各行的数据

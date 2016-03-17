@@ -33,9 +33,11 @@ namespace ChapterTool.Util
         /// <summary>include all time code in mpls</summary>
         public Clip EntireClip { get; } = new Clip {Name = "FULL Chapter"};
 
-        public override string ToString() => $"MPLS: {ChapterClips.Count} Viedo Clips, {ChapterClips.Sum(item=>item.TimeStamp.Count)} Time Stamps";
+        public override string ToString() => $"MPLS: {ChapterClips.Count} Viedo Clips, {EntireClip.TimeStamp.Count} Time Stamps";
 
         private readonly byte[] _data;
+
+        public static readonly decimal[] FrameRate = { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 0M, 50M, 60000M / 1001 };
 
         public delegate void LogEventHandler(string message);
 
@@ -187,8 +189,6 @@ namespace ChapterTool.Util
             return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
         }
 
-        private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 0M, 50M, 60000M / 1001 };
-
         public ChapterInfo ToChapterInfo(int index, bool combineChapter)
         {
             if (index > ChapterClips.Count && !combineChapter)
@@ -201,7 +201,7 @@ namespace ChapterTool.Util
                 SourceType = "MPLS",
                 SourceName = selectedClip.Name,
                 Duration   = Pts2Time(selectedClip.Length),
-                FramesPerSecond = (double) _frameRate[ChapterClips.First().Fps]
+                FramesPerSecond = (double) FrameRate[ChapterClips.First().Fps]
             };
             var selectedTimeStamp = selectedClip.TimeStamp;
             if (selectedTimeStamp.Count < 2) return info;

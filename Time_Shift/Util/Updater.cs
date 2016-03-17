@@ -52,7 +52,7 @@ namespace ChapterTool.Util
         {
             if (!IsConnectInternet()) return;
             HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://tcupdate.applinzi.com/index.php");
-            webRequest.UserAgent      = $"{Environment.UserName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().Version}";
+            webRequest.UserAgent      = $"{Environment.UserName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().FullName}";
             webRequest.Credentials    = CredentialCache.DefaultCredentials;
             webRequest.BeginGetResponse(OnResponse, webRequest);
         }

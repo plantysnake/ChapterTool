@@ -643,7 +643,7 @@ namespace ChapterTool.Forms
                     break;
                 default:
                     GetFramInfo(fpsIndex);
-                    _info.FramesPerSecond = (double)_frameRate[comboBox1.SelectedIndex];
+                    _info.FramesPerSecond = (double)MplsData.FrameRate[comboBox1.SelectedIndex];
                     comboBox1.Enabled     = true;
                     break;
             }
@@ -696,7 +696,6 @@ namespace ChapterTool.Forms
         #endregion
 
         #region Frame Info
-        private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 0M, 50M, 60000M / 1001 };
 
         private decimal CostumeAccuracy => decimal.Parse(toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>().First(item => item.Checked).Tag.ToString());
 
@@ -728,7 +727,7 @@ namespace ChapterTool.Forms
             foreach (var chapter in _info.Chapters)
             {
                 var frams = (decimal) (chapter.Time.TotalMilliseconds + _info.Offset.TotalMilliseconds)
-                                      *coefficient*_frameRate[index]/1000M;
+                                      *coefficient*MplsData.FrameRate[index]/1000M;
                 if (cbRound.Checked)
                 {
                     var rounded       = cbRound.Checked ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
@@ -745,13 +744,13 @@ namespace ChapterTool.Forms
         private int GetAutofps(decimal accuracy)
         {
             Log($"|+自动帧率识别开始，允许误差为：{accuracy}");
-            var result = _frameRate.Select(fps  =>
+            var result = MplsData.FrameRate.Select(fps  =>
                         _info.Chapters.Sum(item =>
                         item.GetAccuracy(fps, accuracy))).ToList();
             result[0] = 0;
             result.ForEach(count => Log($" | {count:D2} 个精确点"));
             int autofpsCode = result.IndexOf(result.Max());
-            Log($" |自动帧率识别结果为 {_frameRate[autofpsCode]:F4} fps");
+            Log($" |自动帧率识别结果为 {MplsData.FrameRate[autofpsCode]:F4} fps");
             return autofpsCode == 0 ? 1 : autofpsCode;
         }
         #endregion
