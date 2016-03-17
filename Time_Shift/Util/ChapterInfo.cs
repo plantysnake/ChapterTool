@@ -63,7 +63,7 @@ namespace ChapterTool.Util
         {
             var row = new DataGridViewRow
             {
-                //Tag = Chapters[index],  //绑定对象，以便修改信息时可以得知对于的 Chapter
+                Tag = Chapters[index],  //绑定对象，以便删除行时可以得知对于的 Chapter
                 DefaultCellStyle =      //设定背景色交替
                 {
                     BackColor = (Chapters[index].Number + 1)%2 == 0

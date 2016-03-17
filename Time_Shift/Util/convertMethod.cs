@@ -104,7 +104,7 @@ namespace ChapterTool.Util
         public static void EditRow(this DataGridViewRow row, ChapterInfo info, bool autoGenName)
         {
             var item = info.Chapters[row.Index];
-            //row.Tag  = item;
+            row.Tag  = item;
             row.DefaultCellStyle.BackColor = row.Index % 2 == 0
                 ? Color.FromArgb(0x92, 0xAA, 0xF3)
                 : Color.FromArgb(0xF3, 0xF7, 0xF7);
