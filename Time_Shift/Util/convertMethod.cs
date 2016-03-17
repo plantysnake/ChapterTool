@@ -94,26 +94,6 @@ namespace ChapterTool.Util
             => Enumerable.Range(0, 7).First(index => Math.Abs(frame - (double)MplsData.FrameRate[index]) < 1e-5);
 
         /// <summary>
-        /// 在无行数变动时直接修改各行的数据
-        /// 提高刷新效率
-        /// </summary>
-        /// <param name="row">要更改的行</param>
-        /// <param name="info">章节信息</param>
-        /// <param name="autoGenName">是否使用自动生成的章节名</param>
-        public static void EditRow(this DataGridViewRow row, ChapterInfo info, bool autoGenName)
-        {
-            var item = info.Chapters[row.Index];
-            row.Tag  = item;
-            row.DefaultCellStyle.BackColor = row.Index % 2 == 0
-                ? Color.FromArgb(0x92, 0xAA, 0xF3)
-                : Color.FromArgb(0xF3, 0xF7, 0xF7);
-            row.Cells[0].Value = $"{item.Number:D2}";
-            row.Cells[1].Value = item.Time2String(info);
-            row.Cells[2].Value = autoGenName ? ChapterName.Get(row.Index + 1) : item.Name;
-            row.Cells[3].Value = item.FramsInfo;
-        }
-
-        /// <summary>
         /// 读取带或不带BOM头的UTF-8文本
         /// </summary>
         /// <param name="buffer">UTF-8文本的字节串</param>

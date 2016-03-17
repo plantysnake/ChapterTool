@@ -250,7 +250,7 @@ namespace ChapterTool.Util
                 var language = Encoding.ASCII.GetString(stream, offset, 3);
                 if (language[0] == '\0') language = "und";
                 OnLog?.Invoke($"Stream[{clipName}] Language: {language}");
-                if (offset == 0x0d)
+                if (0x0d == offset)
                 {
                     int channel = stream[0x0c] >> 4;
                     int sampleRate = stream[0x0c] & 0x0f;

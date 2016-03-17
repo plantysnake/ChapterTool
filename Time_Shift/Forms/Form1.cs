@@ -659,7 +659,7 @@ namespace ChapterTool.Forms
                 }
                 else
                 {
-                    dataGridView1.Rows[i].EditRow(_info, cbAutoGenName.Checked);
+                    _info.EditRow(dataGridView1.Rows[i], cbAutoGenName.Checked);
                 }
                 Application.DoEvents();
             }
