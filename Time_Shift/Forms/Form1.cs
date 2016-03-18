@@ -457,8 +457,6 @@ namespace ChapterTool.Forms
                 case "DVD":
                     Log($"|+对应视频文件: {_info.SourceName}");
                     break;
-                case "OGM":
-                    break;
             }
             Log($"|+保存文件名: {savePath}");
             Log($" |+保存格式: {savingType.SelectedItem}");
@@ -747,9 +745,10 @@ namespace ChapterTool.Forms
             var result = MplsData.FrameRate.Select(fps  =>
                         _info.Chapters.Sum(item =>
                         item.GetAccuracy(fps, accuracy))).ToList();
-            result[0] = 0;
+            result[0] = 0; result[5] = 0; //skip two invalid frame rate.
             result.ForEach(count => Log($" | {count:D2} 个精确点"));
             int autofpsCode = result.IndexOf(result.Max());
+            _info.FramesPerSecond = (double) MplsData.FrameRate[autofpsCode];
             Log($" |自动帧率识别结果为 {MplsData.FrameRate[autofpsCode]:F4} fps");
             return autofpsCode == 0 ? 1 : autofpsCode;
         }
@@ -863,7 +862,7 @@ namespace ChapterTool.Forms
         #endregion
 
         #region Tips
-        private void label1_MouseEnter(object sender, EventArgs e)        => toolTip1.Show(FilePath ?? "", (IWin32Window)sender);
+        private void label1_MouseEnter(object sender, EventArgs e) => toolTip1.Show(FilePath ?? "", (IWin32Window)sender);
 
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
@@ -881,15 +880,7 @@ namespace ChapterTool.Forms
             toolTip1.Show(menuMpls ? "这应该是播放菜单的mpls" : $"共 {comboBox2.Items.Count} 个片段", (IWin32Window)sender);
         }
 
-        private void cbMul1k1_MouseEnter(object sender, EventArgs e)      => toolTip1.Show("用于DVD Decrypter提取的Chapter", (IWin32Window)sender);
-
-        private void cbChapterName_MouseEnter(object sender, EventArgs e) => toolTip1.Show("不取消勾选时将持续生效", (IWin32Window)sender);
-
-        private void cbAutoGenName_MouseEnter(object sender, EventArgs e) => toolTip1.Show("将章节名重新从Chapter 01开始标记", (IWin32Window)sender);
-
-        private void cbRound_MouseEnter(object sender, EventArgs e)       => toolTip1.Show("右键菜单可设置误差范围", (IWin32Window)sender);
-
-        private void ToolTipRemoveAll(object sender, EventArgs e)         => toolTip1.Hide((IWin32Window)sender);
+        private void ToolTipRemoveAll(object sender, EventArgs e)  => toolTip1.Hide((IWin32Window)sender);
         #endregion
 
         #region Close Form

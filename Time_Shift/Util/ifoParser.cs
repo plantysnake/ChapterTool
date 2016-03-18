@@ -104,7 +104,7 @@ namespace ChapterTool.Util
 
         internal static short ToInt16(byte[] bytes) => (short)((bytes[0] << 8) + bytes[1]);
         private static uint ToInt32(byte[] bytes)   => (uint)((bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3]);
-        public static int BcdToInt(byte value)     => (0xFF & (value >> 4)) * 10 + (value & 0x0F);
+        public static int BcdToInt(byte value)      => (0xFF & (value >> 4)) * 10 + (value & 0x0F);
 
         private static long ToFilePosition(byte[] bytes) => ToInt32(bytes) * 0x800L;
     }

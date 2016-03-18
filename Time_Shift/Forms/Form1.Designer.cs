@@ -150,10 +150,9 @@
             this.cbAutoGenName.TabIndex = 3;
             this.cbAutoGenName.TabStop = false;
             this.cbAutoGenName.Text = "不使用章节名";
+            this.toolTip1.SetToolTip(this.cbAutoGenName, "将章节名重新从Chapter 01开始标记");
             this.cbAutoGenName.UseVisualStyleBackColor = true;
             this.cbAutoGenName.CheckedChanged += new System.EventHandler(this.cbAutoGenName_CheckedChanged);
-            this.cbAutoGenName.MouseEnter += new System.EventHandler(this.cbAutoGenName_MouseEnter);
-            this.cbAutoGenName.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // Tips
             // 
@@ -208,10 +207,9 @@
             this.cbRound.TabIndex = 12;
             this.cbRound.TabStop = false;
             this.cbRound.Text = "帧数取整 ";
+            this.toolTip1.SetToolTip(this.cbRound, "右键菜单可设置误差范围");
             this.cbRound.UseVisualStyleBackColor = true;
             this.cbRound.CheckedChanged += new System.EventHandler(this.refresh_Click);
-            this.cbRound.MouseEnter += new System.EventHandler(this.cbRound_MouseEnter);
-            this.cbRound.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // contextMenuStrip1
             // 
@@ -306,8 +304,6 @@
             this.toolTip1.SetToolTip(this.cbMul1k1, "用于DVD Decrypter提取的Chapter");
             this.cbMul1k1.UseVisualStyleBackColor = true;
             this.cbMul1k1.CheckedChanged += new System.EventHandler(this.cbMul1k1_CheckedChanged);
-            this.cbMul1k1.MouseEnter += new System.EventHandler(this.cbMul1k1_MouseEnter);
-            this.cbMul1k1.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // numericUpDown1
             // 
@@ -359,10 +355,9 @@
             this.cbChapterName.TabIndex = 21;
             this.cbChapterName.TabStop = false;
             this.cbChapterName.Text = "使用章节名模板";
+            this.toolTip1.SetToolTip(this.cbChapterName, "不取消勾选时将持续生效");
             this.cbChapterName.UseVisualStyleBackColor = true;
             this.cbChapterName.CheckedChanged += new System.EventHandler(this.cbChapterName_CheckedChanged);
-            this.cbChapterName.MouseEnter += new System.EventHandler(this.cbChapterName_MouseEnter);
-            this.cbChapterName.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // maskedTextBox1
             // 
@@ -404,14 +399,14 @@
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.combineToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(153, 48);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(125, 26);
             this.contextMenuStrip2.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenuStrip2_Closed);
             this.contextMenuStrip2.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip2_Opening);
             // 
             // combineToolStripMenuItem
             // 
             this.combineToolStripMenuItem.Name = "combineToolStripMenuItem";
-            this.combineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.combineToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.combineToolStripMenuItem.Text = "合并章节";
             this.combineToolStripMenuItem.Click += new System.EventHandler(this.combineToolStripMenuItem_Click);
             // 
