@@ -59,8 +59,8 @@ namespace ChapterTool.Util
 
         public override string ToString() => $"{Title} - {SourceType} - {Duration.Time2String()} - [{Chapters.Count} Chapters]";
 
-        private readonly Color EVEN_COLOR = Color.FromArgb(0x92, 0xAA, 0xF3);
-        private readonly Color ODD_COLOR  = Color.FromArgb(0xF3, 0xF7, 0xF7);
+        private readonly Color EVEN_COLOR = Color.FromArgb(0xFF, 0x92, 0xAA, 0xF3);
+        private readonly Color ODD_COLOR  = Color.FromArgb(0xFF, 0xF3, 0xF7, 0xF7);
 
         public DataGridViewRow GetRow(int index, bool autoGenName)
         {

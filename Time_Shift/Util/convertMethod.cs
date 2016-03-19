@@ -23,7 +23,7 @@ using System.Text;
 using System.Linq;
 using System.Drawing;
 using ChapterTool.Forms;
-using System.Windows.Forms;
+using System.Diagnostics;
 using System.Security.Principal;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -120,7 +120,7 @@ namespace ChapterTool.Util
             var json = new StringBuilder("[");
             colorList.ForEach(item => json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\","));
             json[json.Length - 1] = ']';
-            var path = $"{Path.GetDirectoryName(Application.ExecutablePath)}\\{ColorProfile}";
+            var path = $"{Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)}\\{ColorProfile}";
             File.WriteAllText(path, json.ToString());
         }
 
@@ -154,21 +154,21 @@ namespace ChapterTool.Util
         public static bool RunAsAdministrator()
         {
             if (IsAdministrator()) return true;
-            if (!RunElevated(Application.ExecutablePath)) return false;
+            if (!RunElevated(System.Reflection.Assembly.GetExecutingAssembly().Location)) return false;
             Environment.Exit(0);
             return true;
         }
 
         private static bool RunElevated(string fileName)
         {
-            System.Diagnostics.ProcessStartInfo processInfo = new System.Diagnostics.ProcessStartInfo
+            ProcessStartInfo processInfo = new System.Diagnostics.ProcessStartInfo
             {
                 Verb = "runas",
                 FileName = fileName
             };
             try
             {
-                System.Diagnostics.Process.Start(processInfo);
+                Process.Start(processInfo);
                 return true;
             }
             catch (System.ComponentModel.Win32Exception)

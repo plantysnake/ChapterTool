@@ -44,7 +44,7 @@ namespace ChapterTool.Util
             var dialogResult = MessageBox.Show(caption: @"Wow! Such Impressive", text: $"新车已发车 v{remoteVersion}，上车!",
                                                buttons: MessageBoxButtons.YesNo, icon: MessageBoxIcon.Asterisk);
             if (dialogResult != DialogResult.Yes) return;
-            FormUpdater formUpdater = new FormUpdater(Application.ExecutablePath, remoteVersion);
+            FormUpdater formUpdater = new FormUpdater(Assembly.GetExecutingAssembly().Location, remoteVersion);
             formUpdater.ShowDialog();
         }
 

@@ -23,7 +23,6 @@ using System.Xml;
 using System.Linq;
 using Microsoft.Win32;
 using System.Diagnostics;
-using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
@@ -53,7 +52,7 @@ namespace ChapterTool.Util
                 }
                 if (string.IsNullOrEmpty(mkvToolnixPath)) //Installed path not found.
                 {
-                    mkvToolnixPath = Path.GetDirectoryName(Application.ExecutablePath);
+                    mkvToolnixPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 }
             }
             _mkvextractPath = mkvToolnixPath + "\\mkvextract.exe";

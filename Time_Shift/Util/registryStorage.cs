@@ -18,7 +18,6 @@
 //
 // ****************************************************************************
 using Microsoft.Win32;
-using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
@@ -50,7 +49,7 @@ namespace ChapterTool.Util
             Registry.ClassesRoot.CreateSubKey(".mpls")?.SetValue("ChapterTool.MPLS", strProject, RegistryValueKind.String);
             using (RegistryKey key = Registry.ClassesRoot.CreateSubKey(strProject))
             {
-                key?.CreateSubKey(@"Shell\Open\Command")?.SetValue("", Application.ExecutablePath + " \"%1\"", RegistryValueKind.ExpandString);
+                key?.CreateSubKey(@"Shell\Open\Command")?.SetValue("", System.Reflection.Assembly.GetExecutingAssembly().Location + " \"%1\"", RegistryValueKind.ExpandString);
             }
         }
 
