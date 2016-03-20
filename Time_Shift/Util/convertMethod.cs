@@ -153,7 +153,7 @@ namespace ChapterTool.Util
 
         public static bool RunAsAdministrator()
         {
-            if (IsAdministrator()) return true;
+            if (NativeMethods.IsUserAnAdmin()) return true;
             if (!RunElevated(System.Reflection.Assembly.GetExecutingAssembly().Location)) return false;
             Environment.Exit(0);
             return true;
@@ -161,7 +161,7 @@ namespace ChapterTool.Util
 
         private static bool RunElevated(string fileName)
         {
-            ProcessStartInfo processInfo = new System.Diagnostics.ProcessStartInfo
+            ProcessStartInfo processInfo = new ProcessStartInfo
             {
                 Verb = "runas",
                 FileName = fileName

@@ -89,7 +89,7 @@ namespace ChapterTool.Forms
                 ? Resources.Ye_Zong : $"{Environment.UserName}{Resources.Helloo}");
             Log($"{Environment.OSVersion}");
 
-            Log(IsAdministrator() ? "噫，有权限( •̀ ω •́ )y，可以瞎搞了" : "哎，木有权限，好伤心");
+            Log(NativeMethods.IsUserAnAdmin() ? "噫，有权限( •̀ ω •́ )y，可以瞎搞了" : "哎，木有权限，好伤心");
 
             if (Environment.GetLogicalDrives().Length > 10) Log(Resources.Hard_Drive_Plz);
 
@@ -1110,7 +1110,7 @@ namespace ChapterTool.Forms
             if (e.Button != MouseButtons.Right || !RunAsAdministrator()) return;
             if (Notification.ShowInfo(Resources.Open_With_CT) == DialogResult.Yes)
             {
-                RegistryStorage.SetOpenMethod();
+                RegistryStorage.SetOpenMethod(Assembly.GetExecutingAssembly().Location, ".mpls", "ChapterTool.Mpls", "ChapterTool");
             }
         }
         #endregion
