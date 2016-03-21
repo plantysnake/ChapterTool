@@ -189,12 +189,12 @@ namespace ChapterTool.Util
         public string GetText(bool notUseName)
         {
             var lines = new StringBuilder();
-            var name  = new ChapterName();
+            var name  = ChapterName.GetChapterName("Chapter");
             foreach (var item in Chapters)
             {
                 lines.Append($"CHAPTER{item.Number:D2}={Time2String(item)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{item.Number:D2}NAME=");
-                lines.Append(notUseName ? name.Get() : item.Name);
+                lines.Append(notUseName ? name() : item.Name);
                 lines.Append(Environment.NewLine);
             }
             return lines.ToString();
@@ -228,12 +228,12 @@ namespace ChapterTool.Util
                 xmlchap.WriteElementString("EditionFlagHidden", "0");
                 xmlchap.WriteElementString("EditionFlagDefault", "0");
                 xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                var name = new ChapterName();
+                var name = ChapterName.GetChapterName("Chapter");
                 foreach (var item in Chapters)
                 {
                     xmlchap.WriteStartElement("ChapterAtom");
                       xmlchap.WriteStartElement("ChapterDisplay");
-                        xmlchap.WriteElementString("ChapterString", notUseName ? name.Get() : item.Name);
+                        xmlchap.WriteElementString("ChapterString", notUseName ? name() : item.Name);
                         xmlchap.WriteElementString("ChapterLanguage", lang);
                       xmlchap.WriteEndElement();
                     xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));

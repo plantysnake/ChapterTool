@@ -28,6 +28,12 @@ namespace ChapterTool.Util
 
         private const string ChapterFormat = "Chapter";
 
+        public static readonly Func<string, Func<string>> GetChapterName = chapterFormat =>
+        {
+            var index = 1;
+            return () => $"{chapterFormat} {index++:D2}";
+        };
+
         public ChapterName(int index)
         {
             Index = index;
