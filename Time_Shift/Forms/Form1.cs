@@ -69,6 +69,7 @@ namespace ChapterTool.Forms
                 Log($"{Resources.Load_Position_Successful}{saved}");
             }
             LanguageSelectionContainer.LoadLang(xmlLang);
+            InsertAccuracyItems();
             SetDefault();
             this.LoadColor();
             Size                              = new Size(Size.Width, TargetHeight[0]);
@@ -77,10 +78,18 @@ namespace ChapterTool.Forms
             btnTrans.Text                     = Environment.TickCount % 2 == 0 ? "↺" : "↻";
             folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
             Log(Updater.CheckUpdateWeekly("ChapterTool") ? "已检查更新" : "跳过更新检查");
-
             if (string.IsNullOrEmpty(FilePath)) return;
             if (Loadfile()) UpdataGridView();
             RegistryStorage.Save(Resources.How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
+        }
+
+        private void InsertAccuracyItems()
+        {
+            tsmAccuracy.DropDownItems.Add(new ToolStripMenuItem("0.01") { Tag = 0.01 });
+            tsmAccuracy.DropDownItems.Add(new ToolStripSeparator());
+            var items = new List<double> { 0.05, 0.10, 0.15, 0.20, 0.25, 0.30};
+            items.ForEach(item => tsmAccuracy.DropDownItems.Add(new ToolStripMenuItem($"{item:F2}")
+                         { Tag = item, Checked = Math.Abs(item - 0.15) < 1e-5 }));
         }
 
         private static void InitialLog()
@@ -208,7 +217,7 @@ namespace ChapterTool.Forms
                 Tips.Text = Resources.InValid_Type;
                 Log(Resources.InValid_Type_Log + $"[{Path.GetFileName(FilePath)}]");
                 FilePath = string.Empty;
-                label1.Text = Resources.File_Unloaded;
+                lbPath.Text = Resources.File_Unloaded;
                 return false;
             }
         }
@@ -255,7 +264,7 @@ namespace ChapterTool.Forms
         {
             if (!IsPathValid) return false;
             var fileName = Path.GetFileName(FilePath);
-            label1.Text = fileName?.Length > 55 ? $"{fileName.Substring(0, 40)}…{fileName.Substring(fileName.Length - 15, 15)}" : fileName;
+            lbPath.Text = fileName?.Length > 55 ? $"{fileName.Substring(0, 40)}…{fileName.Substring(fileName.Length - 15, 15)}" : fileName;
             SetDefault();
             Cursor = Cursors.AppStarting;
             try
@@ -285,7 +294,7 @@ namespace ChapterTool.Forms
                 Log($"ERROR(LoadFile) {exception.Message}");
                 FilePath = string.Empty;
                 progressBar1.Value = 0;
-                label1.Text = Resources.File_Unloaded;
+                lbPath.Text = Resources.File_Unloaded;
                 Cursor = Cursors.Default;
                 return false;
             }
@@ -695,11 +704,11 @@ namespace ChapterTool.Forms
 
         #region Frame Info
 
-        private decimal CostumeAccuracy => decimal.Parse(toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>().First(item => item.Checked).Tag.ToString());
+        private decimal CostumeAccuracy => decimal.Parse(tsmAccuracy.DropDownItems.OfType<ToolStripMenuItem>().First(item => item.Checked).Tag.ToString());
 
         private void Accuracy_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            foreach (var menuItem in toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>())
+            foreach (var menuItem in tsmAccuracy.DropDownItems.OfType<ToolStripMenuItem>())
             {
                 menuItem.Checked = false;
             }
@@ -862,7 +871,7 @@ namespace ChapterTool.Forms
         #endregion
 
         #region Tips
-        private void label1_MouseEnter(object sender, EventArgs e) => toolTip1.Show(FilePath ?? "", (IWin32Window)sender);
+        private void lbPath_MouseEnter(object sender, EventArgs e) => toolTip1.Show(FilePath ?? "", (IWin32Window)sender);
 
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
@@ -930,18 +939,18 @@ namespace ChapterTool.Forms
         {
             set
             {
-                label2.Visible = value;
-                savingType.Visible = value;
-                cbAutoGenName.Visible = value;
-                label3.Visible = value;
+                lbFormat.Visible       = value;
+                savingType.Visible     = value;
+                cbAutoGenName.Visible  = value;
+                lbShift.Visible        = value;
                 numericUpDown1.Visible = value;
-                cbMul1k1.Visible = value;
-                cbChapterName.Visible = value;
-                cbShift.Visible = value;
+                cbMul1k1.Visible       = value;
+                cbChapterName.Visible  = value;
+                cbShift.Visible        = value;
                 maskedTextBox1.Visible = value;
-                btnLog.Visible = value;
-                label4.Visible = value;
-                xmlLang.Visible = value;
+                btnLog.Visible         = value;
+                lbXmlLang.Visible      = value;
+                xmlLang.Visible        = value;
             }
         }
 
