@@ -87,7 +87,7 @@ namespace ChapterTool.Forms
         {
             tsmAccuracy.DropDownItems.Add(new ToolStripMenuItem("0.01") { Tag = 0.01 });
             tsmAccuracy.DropDownItems.Add(new ToolStripSeparator());
-            var items = new List<double> { 0.05, 0.10, 0.15, 0.20, 0.25, 0.30};
+            var items = new List<double> { 0.05, 0.10, 0.15, 0.20, 0.25, 0.30 };
             items.ForEach(item => tsmAccuracy.DropDownItems.Add(new ToolStripMenuItem($"{item:F2}")
                          { Tag = item, Checked = Math.Abs(item - 0.15) < 1e-5 }));
         }
