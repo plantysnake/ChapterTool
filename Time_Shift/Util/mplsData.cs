@@ -29,17 +29,28 @@ namespace ChapterTool.Util
     {
         /// <summary>include all chapters in mpls divisionally</summary>
         public List<Clip> ChapterClips   { get; } = new List<Clip>();
-        /// <summary>include all time code in mpls</summary>
-        public List<int> EntireTimeStamp { get; } = new List<int>();
 
-        public override string ToString() => $"MPLS: {ChapterClips.Count} Viedo Clips, {ChapterClips.Sum(item=>item.TimeStamp.Count)} Time Stamps";
+        /// <summary>include all time code in mpls</summary>
+        public Clip EntireClip { get; } = new Clip {Name = "FULL Chapter"};
+
+        public override string ToString() => $"MPLS: {ChapterClips.Count} Viedo Clips, {EntireClip.TimeStamp.Count} Time Stamps";
 
         private readonly byte[] _data;
 
+        public static readonly decimal[] FrameRate = { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 0M, 50M, 60000M / 1001 };
+
+        public delegate void LogEventHandler(string message);
+
+        public static event LogEventHandler OnLog;
 
         public MplsData(string path)
         {
             _data = File.ReadAllBytes(path);
+            ParseMpls();
+        }
+
+        private void ParseMpls()
+        {
             int playlistMarkSectionStartAddress, playItemNumber, playItemEntries;
             ParseHeader(out playlistMarkSectionStartAddress, out playItemNumber, out playItemEntries);
             for (var playItemOrder = 0; playItemOrder < playItemNumber; playItemOrder++)
@@ -53,6 +64,9 @@ namespace ChapterTool.Util
                 playItemEntries += lengthOfPlayItem + 2;//for that not counting the two length bytes themselves.
             }
             ParsePlaylistMark(playlistMarkSectionStartAddress);
+            EntireClip.TimeIn  = 0;
+            EntireClip.TimeOut = ChapterClips.Sum(item => item.Length);
+            EntireClip.Length  = EntireClip.TimeOut;
         }
 
         private void ParseHeader(out int playlistMarkSectionStartAddress, out int playItemNumber, out int playItemEntries)
@@ -80,7 +94,7 @@ namespace ChapterTool.Util
             };
             streamClip.Length          = streamClip.TimeOut - streamClip.TimeIn;
             streamClip.RelativeTimeIn  = ChapterClips.Sum(clip => clip.Length);
-            //streamClip.RelativeTimeOut = streamClip.RelativeTimeIn + streamClip.Length;
+            streamClip.RelativeTimeOut = streamClip.RelativeTimeIn + streamClip.Length;
 
             itemStartAdress            = playItemEntries + 0x32;
             streamCount                = bytes[0x23] >> 4;
@@ -95,10 +109,15 @@ namespace ChapterTool.Util
                     nameBuilder.Append("&" + Encoding.ASCII.GetString(bytes, 0x24 + (i - 1) * 0x0a, 0x05));
                 }
                 itemStartAdress = playItemEntries + 0x02 + (numberOfAngles - 1) * 0x0a;
-                CTLogger.Log($"Chapter with {numberOfAngles} Angle, file name: {nameBuilder}");
+                OnLog?.Invoke($"Chapter with {numberOfAngles} Angle, file name: {nameBuilder}");
             }
             streamClip.Name = nameBuilder.ToString();
             ChapterClips.Add(streamClip);
+        }
+
+        private static void StreamAttributeLog(string message)
+        {
+            OnLog?.Invoke(message);
         }
 
         private void ParseStream(int itemStartAdress, int streamOrder, int playItemOrder)
@@ -106,13 +125,16 @@ namespace ChapterTool.Util
             var stream = new byte[16];
             Array.Copy(_data, itemStartAdress + streamOrder * 16, stream, 0, 16);
             if (0x01 != stream[01]) return; //make sure this stream is Play Item
-            int streamCodingType = stream[0x0b];
-            if (0x1b != streamCodingType && // AVC
-                0x02 != streamCodingType && // MPEG-I/II
-                0xea != streamCodingType)   // VC-1
-                return;
-            ChapterClips[playItemOrder].Fps = stream[0x0c] & 0xf;//last 4 bits is the fps
+            var streamCodingType = stream[0x0b];
+            var chapterClip      = ChapterClips[playItemOrder];
+            StreamAttribute.OnLog += StreamAttributeLog;
+            new StreamAttribute().LogStreamAttributes(stream, chapterClip.Name);
+            StreamAttribute.OnLog -= StreamAttributeLog;
+            if (0x1b != streamCodingType && 0x02 != streamCodingType &&
+                0xea != streamCodingType && 0x06 != streamCodingType) return;
+            chapterClip.Fps = stream[0x0c] & 0xf;//last 4 bits is the fps
         }
+
         private void ParsePlaylistMark(int playlistMarkSectionStartAddress)
         {
             int playlistMarkNumber  = Byte2Int16(_data, playlistMarkSectionStartAddress + 0x04);
@@ -127,13 +149,13 @@ namespace ChapterTool.Util
             for (var mark = 0; mark < playlistMarkNumber; ++mark)
             {
                 Array.Copy(_data, playlistMarkEntries + mark * 14, bytelist, 0, 14);
-                if (0x01 != bytelist[1]) continue;//make sure the playlist mark type is an entry mark
+                if (0x01 != bytelist[1]) continue;// make sure the playlist mark type is an entry mark
                 int streamFileIndex = Byte2Int16(bytelist, 0x02);
                 Clip streamClip     = ChapterClips[streamFileIndex];
                 int timeStamp       = Byte2Int32(bytelist, 0x04);
                 int relativeSeconds = timeStamp - streamClip.TimeIn + streamClip.RelativeTimeIn;
                 streamClip.TimeStamp.Add(timeStamp);
-                EntireTimeStamp.Add(relativeSeconds);
+                EntireClip.TimeStamp.Add(relativeSeconds);
             }
         }
 
@@ -167,38 +189,35 @@ namespace ChapterTool.Util
             return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
         }
 
-        private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
-
         public ChapterInfo ToChapterInfo(int index, bool combineChapter)
         {
             if (index > ChapterClips.Count && !combineChapter)
             {
                 throw new IndexOutOfRangeException("Index of Video Clip out of range");
             }
+            Clip selectedClip = combineChapter ? EntireClip : ChapterClips[index];
             ChapterInfo info = new ChapterInfo
             {
                 SourceType = "MPLS",
-                SourceName = combineChapter ? "FULL Chapter" : ChapterClips[index].Name,
-                Duration   = Pts2Time(combineChapter
-                    ? EntireTimeStamp.Last() - EntireTimeStamp.First()
-                    : ChapterClips[index].TimeOut - ChapterClips[index].TimeIn),
-                FramesPerSecond = (double) _frameRate[ChapterClips.First().Fps]
+                SourceName = selectedClip.Name,
+                Duration   = Pts2Time(selectedClip.Length),
+                FramesPerSecond = (double) FrameRate[ChapterClips.First().Fps]
             };
-
-            var current = combineChapter ? EntireTimeStamp : ChapterClips[index].TimeStamp;
-            if (current.Count < 2) return info;
-            int offset  = current.First();
+            var selectedTimeStamp = selectedClip.TimeStamp;
+            if (selectedTimeStamp.Count < 2) return info;
+            int offset  = selectedTimeStamp.First();
             /**
-             *the begin time stamp of the chapter isn't the begin of the video
-             *eg: Hidan no Aria AA, There are 24 black frames at the begining of each even episode
-             *    Which results that the first time stamp should be the 00:00:01.001
+             * the begin time stamp of the chapter isn't the begin of the video
+             * eg: Hidan no Aria AA, There are 24 black frames at the begining of each even episode
+             *     Which results that the first time stamp should be the 00:00:01.001
              */
-            if (!combineChapter && ChapterClips[index].TimeIn != offset)
+            if (selectedClip.TimeIn < offset)
             {
                 offset = ChapterClips[index].TimeIn;
+                OnLog?.Invoke($"first time stamp: {selectedTimeStamp.First()}, Time in: {offset}");
             }
             var name = new ChapterName();
-            info.Chapters = current.Select(item => new Chapter
+            info.Chapters = selectedTimeStamp.Select(item => new Chapter
             {
                 Time   = Pts2Time(item - offset),
                 Number = name.Index,
@@ -206,5 +225,100 @@ namespace ChapterTool.Util
             }).ToList();
             return info;
         }
+    }
+
+    internal class StreamAttribute
+    {
+        public delegate void LogEventHandler(string message);
+
+        public static event LogEventHandler OnLog;
+
+        public void LogStreamAttributes(byte[] stream, string clipName)
+        {
+            var streamCodingType = stream[0x0b];
+            string streamCoding;
+            var result = _streamCoding.TryGetValue(streamCodingType, out streamCoding);
+            if (!result) streamCoding = "und";
+            OnLog?.Invoke($"Stream[{clipName}] Type: {streamCoding}");
+            if (0x1b != streamCodingType && 0x02 != streamCodingType && 0xea != streamCodingType)
+            {
+                int offset = 0x90 == streamCodingType || 0x91 == streamCodingType ? 0x0c : 0x0d;
+                if (0x92 == streamCodingType)
+                {
+                    OnLog?.Invoke($"Stream[{clipName}] CharacterCode: {_characterCode[stream[0x0c]]}");
+                }
+                var language = Encoding.ASCII.GetString(stream, offset, 3);
+                if (language[0] == '\0') language = "und";
+                OnLog?.Invoke($"Stream[{clipName}] Language: {language}");
+                if (0x0d == offset)
+                {
+                    int channel = stream[0x0c] >> 4;
+                    int sampleRate = stream[0x0c] & 0x0f;
+                    OnLog?.Invoke($"Stream[{clipName}] Channel: {_channel[channel]}");
+                    OnLog?.Invoke($"Stream[{clipName}] SampleRate: {_sampleRate[sampleRate]}");
+                }
+                return;
+            }
+            OnLog?.Invoke($"Stream[{clipName}] Resolution: {_resolution[stream[0x0c] >> 4]}");
+            OnLog?.Invoke($"Stream[{clipName}] FrameRate: {_frameRate[stream[0x0c] & 0xf]}");
+        }
+
+        private readonly Dictionary<int, string> _streamCoding = new Dictionary<int, string>
+        {
+            [0x02] = "MPEG-2 Video Stream",
+            [0x06] = "HEVC Video Stream",
+            [0x1b] = "MPEG-4 AVC Video Stream",
+            [0xea] = "SMPTE VC-1 Video Stream",
+            [0x80] = "HDMV LPCM audio stream for Primary audio",
+            [0x81] = "Dolby Digital (AC-3) audio stream for Primary audio",
+            [0x82] = "DTS audio stream for Primary audio",
+            [0x83] = "Dolby Lossless audio stream for Primary audio",
+            [0x84] = "Dolby Digital Plus audio stream for Primary audio",
+            [0x85] = "DTS-HD audio stream except XLL for Primary audio",
+            [0x86] = "DTS-HD audio stream XLL for Primary audio",
+            [0xA1] = "Dolby digital Plus audio stream for secondary audio",
+            [0xA2] = "DTS-HD audio stream for secondary audio",
+            [0x90] = "Presentation Graphics Stream",
+            [0x91] = "Interactive Graphics Stream",
+            [0x92] = "Text Subtitle stream"
+        };
+
+        private readonly Dictionary<int, string> _resolution = new Dictionary<int, string>
+        {
+            [0x00] = "-"               , [0x01] = "720*480i",
+            [0x02] = "720*576i"        , [0x03] = "720*480p",
+            [0x04] = "1920*1080i"      , [0x05] = "1280*720p",
+            [0x06] = "1920*1080p"      , [0x07] = "720*576p"
+        };
+
+        private readonly Dictionary<int, string> _frameRate = new Dictionary<int, string>
+        {
+            [0x00] = "-"               , [0x01] = "24000/1001 FPS",
+            [0x02] = "24 FPS"          , [0x03] = "25 FPS",
+            [0x04] = "30000/1001 FPS"  , [0x05] = "res.",
+            [0x06] = "50 FPS"          , [0x07] = "60000/1001 FPS"
+        };
+
+        private readonly Dictionary<int, string> _channel = new Dictionary<int, string>
+        {
+            [0x00] = "-"               , [0x01] = "mono",
+            [0x03] = "stereo"          , [0x06] = "multichannel",
+            [0x0C] = "stereo and multichannel"
+        };
+
+        private readonly Dictionary<int, string> _sampleRate = new Dictionary<int, string>
+        {
+            [0x00] = "-"               , [0x01] = "48 KHz",
+            [0x04] = "96 KHz"          , [0x05] = "192 KHz",
+            [0x0C] = "48 & 192 KHz"    , [0x0E] = "48 & 96 KHz"
+        };
+
+        private readonly Dictionary<int, string> _characterCode = new Dictionary<int, string>
+        {
+            [0x00] = "-"               , [0x01] = "UTF-8",
+            [0x02] = "UTF-16BE"        , [0x03] = "Shift-JIS",
+            [0x04] = "EUC KR"          , [0x05] = "GB18030-2000",
+            [0x06] = "GB2312"          , [0x07] = "BIG5"
+        };
     }
 }

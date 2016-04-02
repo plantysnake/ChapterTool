@@ -23,15 +23,18 @@ using System.Xml;
 using System.Linq;
 using Microsoft.Win32;
 using System.Diagnostics;
-using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
     internal class MatroskaData
     {
-        public readonly XmlDocument Result = new XmlDocument();
+        private readonly XmlDocument _result = new XmlDocument();
 
         private readonly string _mkvextractPath;
+
+        public delegate void LogEventHandler(string message);
+
+        public static event LogEventHandler OnLog;
 
         public MatroskaData()
         {
@@ -45,16 +48,17 @@ namespace ChapterTool.Util
                 }
                 catch (Exception exception) //no valid path found in Registry
                 {
-                    CTLogger.Log($"Warning: {exception.Message}");
+                    OnLog?.Invoke($"Warning: {exception.Message}");
                 }
                 if (string.IsNullOrEmpty(mkvToolnixPath)) //Installed path not found.
                 {
-                    mkvToolnixPath = Path.GetDirectoryName(Application.ExecutablePath);
+                    mkvToolnixPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 }
             }
             _mkvextractPath = mkvToolnixPath + "\\mkvextract.exe";
             if (!File.Exists(_mkvextractPath))
             {
+                OnLog?.Invoke($"Mkvextract Path: {_mkvextractPath}");
                 throw new Exception("无可用 MkvExtract, 安装个呗~");
             }
         }
@@ -64,8 +68,8 @@ namespace ChapterTool.Util
             string arg = $"chapters \"{path}\"";
             string xmlresult = RunMkvextract(arg, _mkvextractPath);
             if (string.IsNullOrEmpty(xmlresult)) throw new Exception("No Chapter Found");
-            Result.LoadXml(xmlresult);
-            return Result;
+            _result.LoadXml(xmlresult);
+            return _result;
         }
 
         private static string RunMkvextract(string arguments, string program)

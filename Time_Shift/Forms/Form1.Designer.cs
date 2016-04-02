@@ -32,7 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.btnLoad = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lbPath = new System.Windows.Forms.Label();
             this.btnTrans = new System.Windows.Forms.Button();
             this.cbAutoGenName = new System.Windows.Forms.CheckBox();
             this.Tips = new System.Windows.Forms.Label();
@@ -40,18 +40,10 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.cbRound = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.TSD_0unit = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.TSD_1unit = new System.Windows.Forms.ToolStripMenuItem();
-            this.TSD_2unit = new System.Windows.Forms.ToolStripMenuItem();
-            this.TSD_3unit = new System.Windows.Forms.ToolStripMenuItem();
-            this.TSD_4unit = new System.Windows.Forms.ToolStripMenuItem();
-            this.TSD_5unit = new System.Windows.Forms.ToolStripMenuItem();
-            this.TSD_6unit = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmAccuracy = new System.Windows.Forms.ToolStripMenuItem();
             this.cbMul1k1 = new System.Windows.Forms.CheckBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lbShift = new System.Windows.Forms.Label();
             this.cbShift = new System.Windows.Forms.CheckBox();
             this.cbChapterName = new System.Windows.Forms.CheckBox();
             this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
@@ -68,10 +60,10 @@
             this.cChapterName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cFrams = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.savingType = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lbFormat = new System.Windows.Forms.Label();
             this.btnPreview = new System.Windows.Forms.Button();
             this.xmlLang = new System.Windows.Forms.ComboBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.lbXmlLang = new System.Windows.Forms.Label();
             this.btnExpand = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -114,14 +106,14 @@
             this.btnSave.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             this.btnSave.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnSave_MouseUp);
             // 
-            // label1
+            // lbPath
             // 
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(374, 23);
-            this.label1.TabIndex = 5;
-            this.label1.MouseEnter += new System.EventHandler(this.label1_MouseEnter);
-            this.label1.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
+            this.lbPath.Location = new System.Drawing.Point(12, 9);
+            this.lbPath.Name = "lbPath";
+            this.lbPath.Size = new System.Drawing.Size(374, 23);
+            this.lbPath.TabIndex = 5;
+            this.lbPath.MouseEnter += new System.EventHandler(this.lbPath_MouseEnter);
+            this.lbPath.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // btnTrans
             // 
@@ -150,10 +142,9 @@
             this.cbAutoGenName.TabIndex = 3;
             this.cbAutoGenName.TabStop = false;
             this.cbAutoGenName.Text = "不使用章节名";
+            this.toolTip1.SetToolTip(this.cbAutoGenName, "将章节名重新从Chapter 01开始标记");
             this.cbAutoGenName.UseVisualStyleBackColor = true;
             this.cbAutoGenName.CheckedChanged += new System.EventHandler(this.cbAutoGenName_CheckedChanged);
-            this.cbAutoGenName.MouseEnter += new System.EventHandler(this.cbAutoGenName_MouseEnter);
-            this.cbAutoGenName.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // Tips
             // 
@@ -208,89 +199,23 @@
             this.cbRound.TabIndex = 12;
             this.cbRound.TabStop = false;
             this.cbRound.Text = "帧数取整 ";
+            this.toolTip1.SetToolTip(this.cbRound, "右键菜单可设置误差范围");
             this.cbRound.UseVisualStyleBackColor = true;
             this.cbRound.CheckedChanged += new System.EventHandler(this.refresh_Click);
-            this.cbRound.MouseEnter += new System.EventHandler(this.cbRound_MouseEnter);
-            this.cbRound.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1});
+            this.tsmAccuracy});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(125, 26);
             // 
-            // toolStripMenuItem1
+            // tsmAccuracy
             // 
-            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.TSD_0unit,
-            this.toolStripSeparator1,
-            this.TSD_1unit,
-            this.TSD_2unit,
-            this.TSD_3unit,
-            this.TSD_4unit,
-            this.TSD_5unit,
-            this.TSD_6unit});
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(124, 22);
-            this.toolStripMenuItem1.Text = "误差范围";
-            this.toolStripMenuItem1.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.Accuracy_DropDownItemClicked);
-            // 
-            // TSD_0unit
-            // 
-            this.TSD_0unit.Name = "TSD_0unit";
-            this.TSD_0unit.Size = new System.Drawing.Size(100, 22);
-            this.TSD_0unit.Tag = "0.01";
-            this.TSD_0unit.Text = "0.01";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(97, 6);
-            // 
-            // TSD_1unit
-            // 
-            this.TSD_1unit.Name = "TSD_1unit";
-            this.TSD_1unit.Size = new System.Drawing.Size(100, 22);
-            this.TSD_1unit.Tag = "0.05";
-            this.TSD_1unit.Text = "0.05";
-            // 
-            // TSD_2unit
-            // 
-            this.TSD_2unit.Name = "TSD_2unit";
-            this.TSD_2unit.Size = new System.Drawing.Size(100, 22);
-            this.TSD_2unit.Tag = "0.10";
-            this.TSD_2unit.Text = "0.10";
-            // 
-            // TSD_3unit
-            // 
-            this.TSD_3unit.Checked = true;
-            this.TSD_3unit.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.TSD_3unit.Name = "TSD_3unit";
-            this.TSD_3unit.Size = new System.Drawing.Size(100, 22);
-            this.TSD_3unit.Tag = "0.15";
-            this.TSD_3unit.Text = "0.15";
-            // 
-            // TSD_4unit
-            // 
-            this.TSD_4unit.Name = "TSD_4unit";
-            this.TSD_4unit.Size = new System.Drawing.Size(100, 22);
-            this.TSD_4unit.Tag = "0.20";
-            this.TSD_4unit.Text = "0.20";
-            // 
-            // TSD_5unit
-            // 
-            this.TSD_5unit.Name = "TSD_5unit";
-            this.TSD_5unit.Size = new System.Drawing.Size(100, 22);
-            this.TSD_5unit.Tag = "0.25";
-            this.TSD_5unit.Text = "0.25";
-            // 
-            // TSD_6unit
-            // 
-            this.TSD_6unit.Name = "TSD_6unit";
-            this.TSD_6unit.Size = new System.Drawing.Size(100, 22);
-            this.TSD_6unit.Tag = "0.30";
-            this.TSD_6unit.Text = "0.30";
+            this.tsmAccuracy.Name = "tsmAccuracy";
+            this.tsmAccuracy.Size = new System.Drawing.Size(124, 22);
+            this.tsmAccuracy.Text = "误差范围";
+            this.tsmAccuracy.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.Accuracy_DropDownItemClicked);
             // 
             // cbMul1k1
             // 
@@ -306,8 +231,6 @@
             this.toolTip1.SetToolTip(this.cbMul1k1, "用于DVD Decrypter提取的Chapter");
             this.cbMul1k1.UseVisualStyleBackColor = true;
             this.cbMul1k1.CheckedChanged += new System.EventHandler(this.cbMul1k1_CheckedChanged);
-            this.cbMul1k1.MouseEnter += new System.EventHandler(this.cbMul1k1_MouseEnter);
-            this.cbMul1k1.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // numericUpDown1
             // 
@@ -326,14 +249,14 @@
             this.numericUpDown1.TabStop = false;
             this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
             // 
-            // label3
+            // lbShift
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(430, 491);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(68, 17);
-            this.label3.TabIndex = 17;
-            this.label3.Text = "平移章节号";
+            this.lbShift.AutoSize = true;
+            this.lbShift.Location = new System.Drawing.Point(430, 491);
+            this.lbShift.Name = "lbShift";
+            this.lbShift.Size = new System.Drawing.Size(68, 17);
+            this.lbShift.TabIndex = 17;
+            this.lbShift.Text = "平移章节号";
             // 
             // cbShift
             // 
@@ -359,10 +282,9 @@
             this.cbChapterName.TabIndex = 21;
             this.cbChapterName.TabStop = false;
             this.cbChapterName.Text = "使用章节名模板";
+            this.toolTip1.SetToolTip(this.cbChapterName, "不取消勾选时将持续生效");
             this.cbChapterName.UseVisualStyleBackColor = true;
             this.cbChapterName.CheckedChanged += new System.EventHandler(this.cbChapterName_CheckedChanged);
-            this.cbChapterName.MouseEnter += new System.EventHandler(this.cbChapterName_MouseEnter);
-            this.cbChapterName.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // maskedTextBox1
             // 
@@ -404,14 +326,14 @@
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.combineToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(153, 48);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(125, 26);
             this.contextMenuStrip2.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenuStrip2_Closed);
             this.contextMenuStrip2.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip2_Opening);
             // 
             // combineToolStripMenuItem
             // 
             this.combineToolStripMenuItem.Name = "combineToolStripMenuItem";
-            this.combineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.combineToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.combineToolStripMenuItem.Text = "合并章节";
             this.combineToolStripMenuItem.Click += new System.EventHandler(this.combineToolStripMenuItem_Click);
             // 
@@ -519,14 +441,14 @@
             this.savingType.TabStop = false;
             this.savingType.SelectedIndexChanged += new System.EventHandler(this.savingType_SelectedIndexChanged);
             // 
-            // label2
+            // lbFormat
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 491);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(56, 17);
-            this.label2.TabIndex = 27;
-            this.label2.Text = "保存格式";
+            this.lbFormat.AutoSize = true;
+            this.lbFormat.Location = new System.Drawing.Point(12, 491);
+            this.lbFormat.Name = "lbFormat";
+            this.lbFormat.Size = new System.Drawing.Size(56, 17);
+            this.lbFormat.TabIndex = 27;
+            this.lbFormat.Text = "保存格式";
             // 
             // btnPreview
             // 
@@ -558,14 +480,14 @@
             this.xmlLang.TabStop = false;
             this.xmlLang.SelectionChangeCommitted += new System.EventHandler(this.xmlLang_SelectionChangeCommitted);
             // 
-            // label4
+            // lbXmlLang
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 520);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(58, 17);
-            this.label4.TabIndex = 30;
-            this.label4.Text = "XML语言";
+            this.lbXmlLang.AutoSize = true;
+            this.lbXmlLang.Location = new System.Drawing.Point(12, 520);
+            this.lbXmlLang.Name = "lbXmlLang";
+            this.lbXmlLang.Size = new System.Drawing.Size(58, 17);
+            this.lbXmlLang.TabIndex = 30;
+            this.lbXmlLang.Text = "XML语言";
             // 
             // btnExpand
             // 
@@ -590,10 +512,10 @@
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(580, 551);
             this.Controls.Add(this.btnExpand);
-            this.Controls.Add(this.label4);
+            this.Controls.Add(this.lbXmlLang);
             this.Controls.Add(this.xmlLang);
             this.Controls.Add(this.btnPreview);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.lbFormat);
             this.Controls.Add(this.savingType);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.comboBox2);
@@ -601,7 +523,7 @@
             this.Controls.Add(this.maskedTextBox1);
             this.Controls.Add(this.cbChapterName);
             this.Controls.Add(this.cbShift);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.lbShift);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.cbMul1k1);
             this.Controls.Add(this.cbRound);
@@ -610,7 +532,7 @@
             this.Controls.Add(this.Tips);
             this.Controls.Add(this.cbAutoGenName);
             this.Controls.Add(this.btnTrans);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lbPath);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnLoad);
             this.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -639,7 +561,7 @@
         #endregion
 
         private System.Windows.Forms.Button btnLoad;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lbPath;
         private System.Windows.Forms.Button btnTrans;
         private System.Windows.Forms.CheckBox cbAutoGenName;
         private System.Windows.Forms.Button btnSave;
@@ -649,21 +571,13 @@
         private System.Windows.Forms.CheckBox cbRound;
         private System.Windows.Forms.CheckBox cbMul1k1;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lbShift;
         private System.Windows.Forms.CheckBox cbShift;
         private System.Windows.Forms.CheckBox cbChapterName;
         private System.Windows.Forms.MaskedTextBox maskedTextBox1;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem TSD_1unit;
-        private System.Windows.Forms.ToolStripMenuItem TSD_2unit;
-        private System.Windows.Forms.ToolStripMenuItem TSD_3unit;
-        private System.Windows.Forms.ToolStripMenuItem TSD_4unit;
-        private System.Windows.Forms.ToolStripMenuItem TSD_5unit;
-        private System.Windows.Forms.ToolStripMenuItem TSD_6unit;
-        private System.Windows.Forms.ToolStripMenuItem TSD_0unit;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem tsmAccuracy;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolTip toolTip1;
@@ -672,10 +586,10 @@
         private System.Windows.Forms.ToolStripMenuItem combineToolStripMenuItem;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.ComboBox savingType;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lbFormat;
         private System.Windows.Forms.Button btnPreview;
         private System.Windows.Forms.ComboBox xmlLang;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lbXmlLang;
         private System.Windows.Forms.Button btnExpand;
         private System.Windows.Forms.DataGridViewTextBoxColumn cFrams;
         private System.Windows.Forms.DataGridViewTextBoxColumn cChapterName;

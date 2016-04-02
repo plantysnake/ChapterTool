@@ -23,11 +23,10 @@ using System.Text;
 using System.Linq;
 using System.Drawing;
 using ChapterTool.Forms;
-using System.Windows.Forms;
+using System.Diagnostics;
 using System.Security.Principal;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Runtime.InteropServices;
 
 namespace ChapterTool.Util
 {
@@ -86,34 +85,13 @@ namespace ChapterTool.Util
             return new Point(x, y);
         }
 
-        private static readonly decimal[] FrameRate = { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
-
         /// <summary>
         /// 根据给定的帧率返回它在FrameRate表中的序号
         /// </summary>
         /// <param name="frame"></param>
         /// <returns></returns>
-        public static int ConvertFr2Index(double frame) => Enumerable.Range(0, 7).First(index => Math.Abs(frame - (double)FrameRate[index]) < 1e-5);
-
-        /// <summary>
-        /// 在无行数变动时直接修改各行的数据
-        /// 提高刷新效率
-        /// </summary>
-        /// <param name="row">要更改的行</param>
-        /// <param name="info">章节信息</param>
-        /// <param name="autoGenName">是否使用自动生成的章节名</param>
-        public static void EditRow(this DataGridViewRow row, ChapterInfo info, bool autoGenName)
-        {
-            var item = info.Chapters[row.Index];
-            //row.Tag  = item;
-            row.DefaultCellStyle.BackColor = row.Index % 2 == 0
-                ? Color.FromArgb(0x92, 0xAA, 0xF3)
-                : Color.FromArgb(0xF3, 0xF7, 0xF7);
-            row.Cells[0].Value = $"{item.Number:D2}";
-            row.Cells[1].Value = item.Time2String(info);
-            row.Cells[2].Value = autoGenName ? ChapterName.Get(row.Index + 1) : item.Name;
-            row.Cells[3].Value = item.FramsInfo;
-        }
+        public static int ConvertFr2Index(double frame)
+            => Enumerable.Range(0, 7).First(index => Math.Abs(frame - (double)MplsData.FrameRate[index]) < 1e-5);
 
         /// <summary>
         /// 读取带或不带BOM头的UTF-8文本
@@ -142,7 +120,7 @@ namespace ChapterTool.Util
             var json = new StringBuilder("[");
             colorList.ForEach(item => json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\","));
             json[json.Length - 1] = ']';
-            var path = $"{Path.GetDirectoryName(Application.ExecutablePath)}\\{ColorProfile}";
+            var path = $"{Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)}\\{ColorProfile}";
             File.WriteAllText(path, json.ToString());
         }
 
@@ -175,22 +153,22 @@ namespace ChapterTool.Util
 
         public static bool RunAsAdministrator()
         {
-            if (IsAdministrator()) return true;
-            if (!RunElevated(Application.ExecutablePath)) return false;
+            if (NativeMethods.IsUserAnAdmin()) return true;
+            if (!RunElevated(System.Reflection.Assembly.GetExecutingAssembly().Location)) return false;
             Environment.Exit(0);
             return true;
         }
 
         private static bool RunElevated(string fileName)
         {
-            System.Diagnostics.ProcessStartInfo processInfo = new System.Diagnostics.ProcessStartInfo
+            ProcessStartInfo processInfo = new ProcessStartInfo
             {
                 Verb = "runas",
                 FileName = fileName
             };
             try
             {
-                System.Diagnostics.Process.Start(processInfo);
+                Process.Start(processInfo);
                 return true;
             }
             catch (System.ComponentModel.Win32Exception)

@@ -59,16 +59,17 @@ namespace ChapterTool.Util
 
         public override string ToString() => $"{Title} - {SourceType} - {Duration.Time2String()} - [{Chapters.Count} Chapters]";
 
+        private readonly Color EVEN_COLOR = Color.FromArgb(0xFF, 0x92, 0xAA, 0xF3);
+        private readonly Color ODD_COLOR  = Color.FromArgb(0xFF, 0xF3, 0xF7, 0xF7);
+
         public DataGridViewRow GetRow(int index, bool autoGenName)
         {
             var row = new DataGridViewRow
             {
-                //Tag = Chapters[index],  //绑定对象，以便修改信息时可以得知对于的 Chapter
+                Tag = Chapters[index],  //绑定对象，以便删除行时可以得知对于的 Chapter
                 DefaultCellStyle =      //设定背景色交替
                 {
-                    BackColor = (Chapters[index].Number + 1)%2 == 0
-                        ? Color.FromArgb(0x92, 0xAA, 0xF3)
-                        : Color.FromArgb(0xF3, 0xF7, 0xF7)
+                    BackColor = (Chapters[index].Number-1)%2 == 0 ? EVEN_COLOR : ODD_COLOR
                 }
             };
             row.Cells.Add(new DataGridViewTextBoxCell {Value = $"{Chapters[index].Number:D2}"});
@@ -76,6 +77,23 @@ namespace ChapterTool.Util
             row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? ChapterName.Get(row.Index + 1) : Chapters[index].Name});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].FramsInfo});
             return row;
+        }
+
+        /// <summary>
+        /// 在无行数变动时直接修改各行的数据
+        /// 提高刷新效率
+        /// </summary>
+        /// <param name="row">要更改的行</param>
+        /// <param name="autoGenName">是否使用自动生成的章节名</param>
+        public void EditRow(DataGridViewRow row, bool autoGenName)
+        {
+            var item = Chapters[row.Index];
+            row.Tag  = item;
+            row.DefaultCellStyle.BackColor = row.Index%2 == 0 ? EVEN_COLOR : ODD_COLOR;
+            row.Cells[0].Value = $"{item.Number:D2}";
+            row.Cells[1].Value = item.Time2String(this);
+            row.Cells[2].Value = autoGenName ? ChapterName.Get(row.Index + 1) : item.Name;
+            row.Cells[3].Value = item.FramsInfo;
         }
 
         /// <summary>
@@ -87,23 +105,25 @@ namespace ChapterTool.Util
         {
             var fullChapter = new ChapterInfo
             {
-                Title = "FULL Chapter",
-                SourceType = "DVD",
+                Title           = "FULL Chapter",
+                SourceType      = "DVD",
                 FramesPerSecond = source.First().FramesPerSecond
             };
-            TimeSpan duration = TimeSpan.Zero;
-            var name = new ChapterName();
-            source.ForEach(chapterClip =>
+            var duration = TimeSpan.Zero;
+            var name     = new ChapterName();
+            foreach (var chapterClip in source)
             {
-                chapterClip.Chapters.ForEach(item =>
+                foreach (var item in chapterClip.Chapters)
+                {
                     fullChapter.Chapters.Add(new Chapter
                     {
-                        Time = duration + item.Time,
+                        Time   = duration + item.Time,
                         Number = name.Index,
-                        Name = name.Get()
-                    }));
+                        Name   = name.Get()
+                    });
+                }
                 duration += chapterClip.Duration;//每次加上当前段的总时长作为下一段位移的基准
-            });
+            }
             fullChapter.Duration = duration;
             return fullChapter;
         }
@@ -168,15 +188,15 @@ namespace ChapterTool.Util
         /// <returns></returns>
         public string GetText(bool notUseName)
         {
-            StringBuilder lines = new StringBuilder();
-            var name = new ChapterName();
-            Chapters.ForEach(item =>
+            var lines = new StringBuilder();
+            var name  = ChapterName.GetChapterName("Chapter");
+            foreach (var item in Chapters)
             {
                 lines.Append($"CHAPTER{item.Number:D2}={Time2String(item)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{item.Number:D2}NAME=");
-                lines.Append(notUseName ? name.Get(): item.Name);
+                lines.Append(notUseName ? name() : item.Name);
                 lines.Append(Environment.NewLine);
-            });
+            }
             return lines.ToString();
         }
 
@@ -208,12 +228,12 @@ namespace ChapterTool.Util
                 xmlchap.WriteElementString("EditionFlagHidden", "0");
                 xmlchap.WriteElementString("EditionFlagDefault", "0");
                 xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                var name = new ChapterName();
+                var name = ChapterName.GetChapterName("Chapter");
                 foreach (var item in Chapters)
                 {
                     xmlchap.WriteStartElement("ChapterAtom");
                       xmlchap.WriteStartElement("ChapterDisplay");
-                        xmlchap.WriteElementString("ChapterString", notUseName ? name.Get() : item.Name);
+                        xmlchap.WriteElementString("ChapterString", notUseName ? name() : item.Name);
                         xmlchap.WriteElementString("ChapterLanguage", lang);
                       xmlchap.WriteEndElement();
                     xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));

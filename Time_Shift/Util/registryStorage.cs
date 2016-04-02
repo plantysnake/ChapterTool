@@ -18,7 +18,6 @@
 //
 // ****************************************************************************
 using Microsoft.Win32;
-using System.Windows.Forms;
 
 namespace ChapterTool.Util
 {
@@ -43,17 +42,26 @@ namespace ChapterTool.Util
             registryKey?.Close();
         }
 
-
-        public static void SetOpenMethod()
+        /// <summary>
+        /// 创建文件关联
+        /// </summary>
+        /// <param name="programFile">应用程序文件的完整路径("C:\abc\def.exe")</param>
+        /// <param name="extension">文件扩展名（例如 ".txt"）</param>
+        /// <param name="typeName">文件类型名称</param>
+        /// <param name="project">指向的文件打开方式</param>
+        /// <param name="argument">附加参数（不包括"%1"）</param>
+        public static void SetOpenMethod(string programFile, string extension, string typeName, string project, string argument = "")
         {
-            const string strProject = "ChapterTool";
-            Registry.ClassesRoot.CreateSubKey(".mpls")?.SetValue("ChapterTool.MPLS", strProject, RegistryValueKind.String);
-            using (RegistryKey key = Registry.ClassesRoot.CreateSubKey(strProject))
-            {
-                key?.CreateSubKey(@"Shell\Open\Command")?.SetValue("", Application.ExecutablePath + " \"%1\"", RegistryValueKind.ExpandString);
-            }
-        }
+            Registry.ClassesRoot.CreateSubKey(extension)?.SetValue(typeName, project, RegistryValueKind.String);
 
+            RegistryKey subKey = Registry.ClassesRoot.CreateSubKey(project);
+            subKey = subKey?.CreateSubKey("shell");
+            subKey = subKey?.CreateSubKey("open");
+            subKey = subKey?.CreateSubKey("command");
+            subKey?.SetValue("", $@"""{programFile}"" ""%1"" {argument}", RegistryValueKind.ExpandString);
+            subKey?.Dispose();
+            NativeMethods.RefreshNotify();
+        }
 
         public static int RegistryAddCount(string subKey, string name, int delta = 1)
         {
@@ -63,6 +71,5 @@ namespace ChapterTool.Util
             Save(count.ToString(), subKey, name);
             return count - delta;
         }
-
     }
 }

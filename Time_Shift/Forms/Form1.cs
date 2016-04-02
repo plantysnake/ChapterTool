@@ -69,6 +69,7 @@ namespace ChapterTool.Forms
                 Log($"{Resources.Load_Position_Successful}{saved}");
             }
             LanguageSelectionContainer.LoadLang(xmlLang);
+            InsertAccuracyItems();
             SetDefault();
             this.LoadColor();
             Size                              = new Size(Size.Width, TargetHeight[0]);
@@ -77,10 +78,18 @@ namespace ChapterTool.Forms
             btnTrans.Text                     = Environment.TickCount % 2 == 0 ? "↺" : "↻";
             folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
             Log(Updater.CheckUpdateWeekly("ChapterTool") ? "已检查更新" : "跳过更新检查");
-
             if (string.IsNullOrEmpty(FilePath)) return;
             if (Loadfile()) UpdataGridView();
             RegistryStorage.Save(Resources.How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
+        }
+
+        private void InsertAccuracyItems()
+        {
+            tsmAccuracy.DropDownItems.Add(new ToolStripMenuItem("0.01") { Tag = 0.01 });
+            tsmAccuracy.DropDownItems.Add(new ToolStripSeparator());
+            var items = new List<double> { 0.05, 0.10, 0.15, 0.20, 0.25, 0.30 };
+            items.ForEach(item => tsmAccuracy.DropDownItems.Add(new ToolStripMenuItem($"{item:F2}")
+                         { Tag = item, Checked = Math.Abs(item - 0.15) < 1e-5 }));
         }
 
         private static void InitialLog()
@@ -89,7 +98,7 @@ namespace ChapterTool.Forms
                 ? Resources.Ye_Zong : $"{Environment.UserName}{Resources.Helloo}");
             Log($"{Environment.OSVersion}");
 
-            Log(IsAdministrator() ? "噫，有权限( •̀ ω •́ )y，可以瞎搞了" : "哎，木有权限，好伤心");
+            Log(NativeMethods.IsUserAnAdmin() ? "噫，有权限( •̀ ω •́ )y，可以瞎搞了" : "哎，木有权限，好伤心");
 
             if (Environment.GetLogicalDrives().Length > 10) Log(Resources.Hard_Drive_Plz);
 
@@ -208,7 +217,7 @@ namespace ChapterTool.Forms
                 Tips.Text = Resources.InValid_Type;
                 Log(Resources.InValid_Type_Log + $"[{Path.GetFileName(FilePath)}]");
                 FilePath = string.Empty;
-                label1.Text = Resources.File_Unloaded;
+                lbPath.Text = Resources.File_Unloaded;
                 return false;
             }
         }
@@ -245,11 +254,17 @@ namespace ChapterTool.Forms
         private ChapterInfo       _info;
         private ChapterInfo       _fullIfoChapter;
 
+        private bool CombineChapter
+        {
+            get { return combineToolStripMenuItem.Checked; }
+            set { combineToolStripMenuItem.Checked = value; }
+        }
+
         private bool Loadfile()
         {
             if (!IsPathValid) return false;
             var fileName = Path.GetFileName(FilePath);
-            label1.Text = fileName?.Length > 55 ? $"{fileName.Substring(0, 40)}…{fileName.Substring(fileName.Length - 15, 15)}" : fileName;
+            lbPath.Text = fileName?.Length > 55 ? $"{fileName.Substring(0, 40)}…{fileName.Substring(fileName.Length - 15, 15)}" : fileName;
             SetDefault();
             Cursor = Cursors.AppStarting;
             try
@@ -279,7 +294,7 @@ namespace ChapterTool.Forms
                 Log($"ERROR(LoadFile) {exception.Message}");
                 FilePath = string.Empty;
                 progressBar1.Value = 0;
-                label1.Text = Resources.File_Unloaded;
+                lbPath.Text = Resources.File_Unloaded;
                 Cursor = Cursors.Default;
                 return false;
             }
@@ -292,7 +307,9 @@ namespace ChapterTool.Forms
 
         private void LoadMpls()
         {
+            MplsData.OnLog += Log;
             _rawMpls = new MplsData(FilePath);
+            MplsData.OnLog -= Log;
             Log("+成功载入MPLS格式章节文件");
             Log($"|+MPLS中共有 {_rawMpls.ChapterClips.Count} 个m2ts片段");
 
@@ -332,7 +349,7 @@ namespace ChapterTool.Forms
                 Log($" |+{item.SourceName} Duration[{item.Duration.Time2String()}]");
                 Log($"  |+包含 {item.Chapters.Count} 个时间戳");
             }
-            _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _ifoGroup.First();
+            _info = CombineChapter ? _fullIfoChapter : _ifoGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
             Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.IFO_WARNING;
         }
@@ -361,7 +378,9 @@ namespace ChapterTool.Forms
 
         private void LoadOgm()
         {
+            OgmData.OnLog += Log;
             _info = OgmData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTF8String());
+            OgmData.OnLog -= Log;
             _info.UpdataInfo((int)numericUpDown1.Value);
             progressBar1.Value = 33;
             Tips.Text = Resources.Load_Success;
@@ -376,7 +395,9 @@ namespace ChapterTool.Forms
 
         private void LoadMatroska()
         {
+            MatroskaData.OnLog += Log;
             var matroska = new MatroskaData();
+            MatroskaData.OnLog -= Log;
             try
             {
                 GetChapterInfoFromXml(matroska.GetXml(FilePath));
@@ -444,8 +465,6 @@ namespace ChapterTool.Forms
                     break;
                 case "DVD":
                     Log($"|+对应视频文件: {_info.SourceName}");
-                    break;
-                case "OGM":
                     break;
             }
             Log($"|+保存文件名: {savePath}");
@@ -558,7 +577,7 @@ namespace ChapterTool.Forms
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_rawMpls == null && _ifoGroup == null) return;
-            combineToolStripMenuItem.Checked = !combineToolStripMenuItem.Checked;
+            CombineChapter = !CombineChapter;
             if (_rawMpls != null)
             {
                 GetChapterInfoFromMpls(ClipSeletIndex);
@@ -577,14 +596,16 @@ namespace ChapterTool.Forms
         #region GeneRate Chapter Info
         private void GetChapterInfoFromMpls(int index)
         {
-            _info = _rawMpls.ToChapterInfo(index, combineToolStripMenuItem.Checked);
+            MplsData.OnLog += Log;
+            _info = _rawMpls.ToChapterInfo(index, CombineChapter);
+            MplsData.OnLog -= Log;
             Tips.Text = _info.Chapters.Count < 2 ? Resources.Chapter_Not_find : Resources.Load_Success;
             _info.UpdataInfo(_chapterNameTemplate);
         }
 
         private void GetChapterInfoFromIFO(int index)
         {
-            _info = combineToolStripMenuItem.Checked ? _fullIfoChapter : _ifoGroup[index];
+            _info = CombineChapter ? _fullIfoChapter : _ifoGroup[index];
         }
 
         private List<ChapterInfo> _xmlGroup;
@@ -597,13 +618,13 @@ namespace ChapterTool.Forms
             {
                 comboBox2.Items.Clear();
                 int i = 1;
-                _xmlGroup.ForEach(item =>
+                foreach (var item in _xmlGroup)
                 {
                     var name = $"Edition {i++:D2}";
                     comboBox2.Items.Add(name);
                     Log($" |+{name}");
                     Log($"  |+包含 {item.Chapters.Count} 个时间戳");
-                });
+                }
             }
             _info = _xmlGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
@@ -629,7 +650,7 @@ namespace ChapterTool.Forms
                     break;
                 default:
                     GetFramInfo(fpsIndex);
-                    _info.FramesPerSecond = (double)_frameRate[comboBox1.SelectedIndex];
+                    _info.FramesPerSecond = (double)MplsData.FrameRate[comboBox1.SelectedIndex];
                     comboBox1.Enabled     = true;
                     break;
             }
@@ -645,7 +666,7 @@ namespace ChapterTool.Forms
                 }
                 else
                 {
-                    dataGridView1.Rows[i].EditRow(_info, cbAutoGenName.Checked);
+                    _info.EditRow(dataGridView1.Rows[i], cbAutoGenName.Checked);
                 }
                 Application.DoEvents();
             }
@@ -669,8 +690,8 @@ namespace ChapterTool.Forms
             _info.UpdataInfo(newInitialTime);
             if ((_rawMpls != null || _ifoGroup != null) && string.IsNullOrWhiteSpace(_chapterNameTemplate))
             {
-                var name = new ChapterName();
-                _info.Chapters.ForEach(item => item.Name = name.Get());
+                var name = ChapterName.GetChapterName("Chapter");
+                _info.Chapters.ForEach(item => item.Name = name());
             }
             Application.DoEvents();
         }
@@ -682,13 +703,12 @@ namespace ChapterTool.Forms
         #endregion
 
         #region Frame Info
-        private readonly List<decimal> _frameRate = new List<decimal> { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
 
-        private decimal CostumeAccuracy => decimal.Parse(toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>().First(item => item.Checked).Tag.ToString());
+        private decimal CostumeAccuracy => decimal.Parse(tsmAccuracy.DropDownItems.OfType<ToolStripMenuItem>().First(item => item.Checked).Tag.ToString());
 
         private void Accuracy_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            foreach (var menuItem in toolStripMenuItem1.DropDownItems.OfType<ToolStripMenuItem>())
+            foreach (var menuItem in tsmAccuracy.DropDownItems.OfType<ToolStripMenuItem>())
             {
                 menuItem.Checked = false;
             }
@@ -714,7 +734,7 @@ namespace ChapterTool.Forms
             foreach (var chapter in _info.Chapters)
             {
                 var frams = (decimal) (chapter.Time.TotalMilliseconds + _info.Offset.TotalMilliseconds)
-                                      *coefficient*_frameRate[index]/1000M;
+                                      *coefficient*MplsData.FrameRate[index]/1000M;
                 if (cbRound.Checked)
                 {
                     var rounded       = cbRound.Checked ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
@@ -731,13 +751,14 @@ namespace ChapterTool.Forms
         private int GetAutofps(decimal accuracy)
         {
             Log($"|+自动帧率识别开始，允许误差为：{accuracy}");
-            var result = _frameRate.Select(fps  =>
+            var result = MplsData.FrameRate.Select(fps  =>
                         _info.Chapters.Sum(item =>
                         item.GetAccuracy(fps, accuracy))).ToList();
-            result[0] = 0;
+            result[0] = 0; result[5] = 0; //skip two invalid frame rate.
             result.ForEach(count => Log($" | {count:D2} 个精确点"));
             int autofpsCode = result.IndexOf(result.Max());
-            Log($" |自动帧率识别结果为 {_frameRate[autofpsCode]:F4} fps");
+            _info.FramesPerSecond = (double) MplsData.FrameRate[autofpsCode];
+            Log($" |自动帧率识别结果为 {MplsData.FrameRate[autofpsCode]:F4} fps");
             return autofpsCode == 0 ? 1 : autofpsCode;
         }
         #endregion
@@ -850,7 +871,7 @@ namespace ChapterTool.Forms
         #endregion
 
         #region Tips
-        private void label1_MouseEnter(object sender, EventArgs e)        => toolTip1.Show(FilePath ?? "", (IWin32Window)sender);
+        private void lbPath_MouseEnter(object sender, EventArgs e) => toolTip1.Show(FilePath ?? "", (IWin32Window)sender);
 
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
@@ -864,19 +885,11 @@ namespace ChapterTool.Forms
 
         private void comboBox2_MouseEnter(object sender, EventArgs e)
         {
-            var menuMpls = _rawMpls != null && _rawMpls.EntireTimeStamp.Count < 5 && comboBox2.Items.Count > 20;
+            var menuMpls = _rawMpls != null && _rawMpls.EntireClip.TimeStamp.Count < 5 && comboBox2.Items.Count > 20;
             toolTip1.Show(menuMpls ? "这应该是播放菜单的mpls" : $"共 {comboBox2.Items.Count} 个片段", (IWin32Window)sender);
         }
 
-        private void cbMul1k1_MouseEnter(object sender, EventArgs e)      => toolTip1.Show("用于DVD Decrypter提取的Chapter", (IWin32Window)sender);
-
-        private void cbChapterName_MouseEnter(object sender, EventArgs e) => toolTip1.Show("不取消勾选时将持续生效", (IWin32Window)sender);
-
-        private void cbAutoGenName_MouseEnter(object sender, EventArgs e) => toolTip1.Show("将章节名重新从Chapter 01开始标记", (IWin32Window)sender);
-
-        private void cbRound_MouseEnter(object sender, EventArgs e)       => toolTip1.Show("右键菜单可设置误差范围", (IWin32Window)sender);
-
-        private void ToolTipRemoveAll(object sender, EventArgs e)         => toolTip1.Hide((IWin32Window)sender);
+        private void ToolTipRemoveAll(object sender, EventArgs e)  => toolTip1.Hide((IWin32Window)sender);
         #endregion
 
         #region Close Form
@@ -926,18 +939,18 @@ namespace ChapterTool.Forms
         {
             set
             {
-                label2.Visible = value;
-                savingType.Visible = value;
-                cbAutoGenName.Visible = value;
-                label3.Visible = value;
+                lbFormat.Visible       = value;
+                savingType.Visible     = value;
+                cbAutoGenName.Visible  = value;
+                lbShift.Visible        = value;
                 numericUpDown1.Visible = value;
-                cbMul1k1.Visible = value;
-                cbChapterName.Visible = value;
-                cbShift.Visible = value;
+                cbMul1k1.Visible       = value;
+                cbChapterName.Visible  = value;
+                cbShift.Visible        = value;
                 maskedTextBox1.Visible = value;
-                btnLog.Visible = value;
-                label4.Visible = value;
-                xmlLang.Visible = value;
+                btnLog.Visible         = value;
+                lbXmlLang.Visible      = value;
+                xmlLang.Visible        = value;
             }
         }
 
@@ -1106,7 +1119,7 @@ namespace ChapterTool.Forms
             if (e.Button != MouseButtons.Right || !RunAsAdministrator()) return;
             if (Notification.ShowInfo(Resources.Open_With_CT) == DialogResult.Yes)
             {
-                RegistryStorage.SetOpenMethod();
+                RegistryStorage.SetOpenMethod(Assembly.GetExecutingAssembly().Location, ".mpls", "ChapterTool.Mpls", "ChapterTool");
             }
         }
         #endregion

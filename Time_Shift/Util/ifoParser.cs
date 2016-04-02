@@ -24,7 +24,7 @@ namespace ChapterTool.Util
 {
     public static class IfoParser
     {
-        internal static byte[] GetFileBlock(FileStream ifoStream, long position, int count)
+        internal static byte[] GetFileBlock(this FileStream ifoStream, long position, int count)
         {
             if (position < 0) throw new Exception("Invalid Ifo file");
             var buf = new byte[count];
@@ -35,36 +35,36 @@ namespace ChapterTool.Util
 
         private static byte? GetFrames(byte value)
         {
-            if (((value >> 6) & 0x01) == 1) //check weather the second bit of value is 1
+            if (((value >> 6) & 0x01) == 1) //check whether the second bit of value is 1
             {
-                return (byte) (((value >> 4) & 0x03)*10 + (value & 0x0F)); //only last 6 bits is in use, show as BCD code
+                return (byte)BcdToInt((byte)(value & 0x3F)); //only last 6 bits is in use, show as BCD code
             }
             return null;
         }
 
-        internal static long GetPCGIP_Position(FileStream ifoStream)
+        internal static long GetPCGIP_Position(this FileStream ifoStream)
         {
-            return ToFilePosition(GetFileBlock(ifoStream, 0xCC, 4));
+            return ToFilePosition(ifoStream.GetFileBlock(0xCC, 4));
         }
 
-        internal static int GetProgramChains(FileStream ifoStream, long pcgitPosition)
+        internal static int GetProgramChains(this FileStream ifoStream, long pcgitPosition)
         {
-            return ToInt16(GetFileBlock(ifoStream, pcgitPosition, 2));
+            return ToInt16(ifoStream.GetFileBlock(pcgitPosition, 2));
         }
 
-        internal static uint GetChainOffset(FileStream ifoStream, long pcgitPosition, int programChain)
+        internal static uint GetChainOffset(this FileStream ifoStream, long pcgitPosition, int programChain)
         {
-            return ToInt32(GetFileBlock(ifoStream, (pcgitPosition + (8 * programChain)) + 4, 4));
+            return ToInt32(ifoStream.GetFileBlock((pcgitPosition + (8 * programChain)) + 4, 4));
         }
 
-        internal static int GetNumberOfPrograms(FileStream ifoStream, long pcgitPosition, uint chainOffset)
+        internal static int GetNumberOfPrograms(this FileStream ifoStream, long pcgitPosition, uint chainOffset)
         {
-            return GetFileBlock(ifoStream, (pcgitPosition + chainOffset) + 2, 1)[0];
+            return ifoStream.GetFileBlock((pcgitPosition + chainOffset) + 2, 1)[0];
         }
 
-        internal static TimeSpan? ReadTimeSpan(FileStream ifoStream, long pcgitPosition, uint chainOffset, out double fps)
+        internal static TimeSpan? ReadTimeSpan(this FileStream ifoStream, long pcgitPosition, uint chainOffset, out double fps)
         {
-            return ReadTimeSpan(GetFileBlock(ifoStream, (pcgitPosition + chainOffset) + 4, 4), out fps);
+            return ReadTimeSpan(ifoStream.GetFileBlock((pcgitPosition + chainOffset) + 4, 4), out fps);
         }
 
         internal static TimeSpan? ReadTimeSpan(byte[] playbackBytes, out double fps)
@@ -75,12 +75,12 @@ namespace ChapterTool.Util
             if (frames == null) return null;
             try
             {
-                int hours   = BcdToInt(playbackBytes[0]);
-                int minutes = BcdToInt(playbackBytes[1]);
-                int seconds = BcdToInt(playbackBytes[2]);
+                int hours    = BcdToInt(playbackBytes[0]);
+                int minutes  = BcdToInt(playbackBytes[1]);
+                int seconds  = BcdToInt(playbackBytes[2]);
                 TimeSpan ret = new TimeSpan(hours, minutes, seconds);
                 if (Math.Abs(fps) > 1e-5)
-                    ret = ret.Add(TimeSpan.FromSeconds((double)frames / fps));
+                    ret += TimeSpan.FromSeconds((double) frames/fps);
                 return ret;
             }
             catch { return null; }
@@ -94,8 +94,8 @@ namespace ChapterTool.Util
         public static int GetPGCnb(string fileName)
         {
             FileStream ifoStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            uint offset     = ToInt32(GetFileBlock(ifoStream, 0xCC, 4));    // Read PGC offset
-            ifoStream.Seek(2048 * offset + 0x1, SeekOrigin.Begin);          // Move to beginning of PGC
+            uint offset          = ToInt32(GetFileBlock(ifoStream, 0xCC, 4));    // Read PGC offset
+            ifoStream.Seek(2048 * offset + 0x1, SeekOrigin.Begin);               // Move to beginning of PGC
             //long VTS_PGCITI_start_position = ifoStream.Position - 1;
             int nPGCs = ifoStream.ReadByte();       // Number of PGCs
             ifoStream.Close();
@@ -103,8 +103,8 @@ namespace ChapterTool.Util
         }
 
         internal static short ToInt16(byte[] bytes) => (short)((bytes[0] << 8) + bytes[1]);
-        private static uint ToInt32(byte[] bytes) => (uint)((bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3]);
-        private static int BcdToInt(byte value) => (0xFF & (value >> 4)) * 10 + (value & 0x0F);
+        private static uint ToInt32(byte[] bytes)   => (uint)((bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3]);
+        public static int BcdToInt(byte value)      => (0xFF & (value >> 4)) * 10 + (value & 0x0F);
 
         private static long ToFilePosition(byte[] bytes) => ToInt32(bytes) * 0x800L;
     }
