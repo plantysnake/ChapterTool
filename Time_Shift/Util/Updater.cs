@@ -38,7 +38,7 @@ namespace ChapterTool.Util
 
             var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
             Version remoteVersion = Version.Parse(result.Groups[1].Value);
-            if (currentVersion > remoteVersion)
+            if (currentVersion >= remoteVersion)
             {
                 MessageBox.Show($"v{currentVersion} 已是最新版", @"As Expected");
                 return;
