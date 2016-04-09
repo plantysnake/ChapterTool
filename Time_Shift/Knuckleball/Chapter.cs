@@ -22,7 +22,10 @@ namespace Knuckleball
     /// </summary>
     public class Chapter
     {
-        private Guid id = Guid.NewGuid();
+        /// <summary>
+        /// Gets the internal ID of this Chapter.
+        /// </summary>
+        internal Guid Id { get; } = Guid.NewGuid();
         private string title = string.Empty;
         private TimeSpan duration = TimeSpan.FromSeconds(0);
 
@@ -72,14 +75,6 @@ namespace Knuckleball
         }
 
         /// <summary>
-        /// Gets the internal ID of this Chapter.
-        /// </summary>
-        internal Guid Id
-        {
-            get { return id; }
-        }
-
-        /// <summary>
         /// Returns the string representation of this chapter.
         /// </summary>
         /// <returns>The string representation of the chapter.</returns>
@@ -121,10 +116,7 @@ namespace Knuckleball
         /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected void OnChanged(EventArgs e)
         {
-            if (Changed != null)
-            {
-                Changed(this, e);
-            }
+            Changed?.Invoke(this, e);
         }
     }
 }

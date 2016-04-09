@@ -384,10 +384,10 @@ namespace ChapterTool.Forms
             if (!File.Exists("libmp4v2.dll"))
             {
                 FilePath = string.Empty;
-                var chose = Notification.ShowInfo("无可用的 libmp4v2.dll, 是否前往下载页面");
-                if (chose == DialogResult.Yes)
+                var choice = Notification.ShowInfo("无可用的 libmp4v2.dll, 是否前往下载页面");
+                if (choice == DialogResult.Yes)
                 {
-                    Process.Start("http://tautcony.github.io/tcupdate.html");
+                    Process.Start("http://tautcony.github.io/tcupdate.html#ChapterTool");
                 }
                 return;
             }

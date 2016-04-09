@@ -16,8 +16,8 @@ namespace Knuckleball.Tests
         [TestMethod()]
         public void OpenTest()
         {
-            const string path = @"E:\[VCB-Studio] Kiniro Mosaic S1+S2 [720p]\SPs\[VCB-Studio] Hello!! Kiniro Mosaic [NCED][720p][x264_aac].mp4";
-            Knuckleball.MP4File file = Knuckleball.MP4File.Open(path);
+            const string path = @"..\..\..\[Video_Sample]\Chapter.mp4";
+            Knuckleball.MP4File file = MP4File.Open(path);
             foreach (var chapter in file.Chapters)
             {
                 Debug.WriteLine(chapter);
