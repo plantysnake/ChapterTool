@@ -539,7 +539,7 @@ namespace ChapterTool.Forms
             if (ext == ".ifo")
                 savePath.Append($"__{_info.SourceName}");
 
-            string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf", ".TimeCodes.txt", ".TsMuxeR_Meta.txt" };
+            string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf", ".TimeCodes.txt", ".TsMuxeR_Meta.txt", ".cue" };
             while (File.Exists($"{savePath}{saveingTypeSuffix[saveType]}")) savePath.Append("_");
             savePath.Append(saveingTypeSuffix[saveType]);
 
@@ -575,6 +575,9 @@ namespace ChapterTool.Forms
                         break;
                     case 4: //Tsmuxer
                         _info.SaveTsmuxerMeta(savePath);
+                        break;
+                    case 5: //CUE
+                        _info.SaveCue(Path.GetFileName(FilePath), savePath, cbAutoGenName.Checked);
                         break;
                 }
                 progressBar1.Value = 100;
@@ -766,6 +769,7 @@ namespace ChapterTool.Forms
             {
                 //当未手动提供帧率并且不是mpls或ifo这种已知帧率的，才进行蒙帧率操作
                 index = index == 0 && _rawMpls == null && _ifoGroup == null ? GetAutofps(settingAccuracy) : index;
+                if (index > 5) { --index; }// 跳过在30与50中间的空项
                 comboBox1.SelectedIndex = index - 1;
             }
             else

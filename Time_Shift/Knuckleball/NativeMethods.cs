@@ -75,10 +75,6 @@ namespace Knuckleball
         internal static extern MP4ChapterType MP4GetChapters(IntPtr hFile, ref IntPtr chapterList, ref int chapterCount, MP4ChapterType chapterType);
 
         [DllImport("libMP4V2.dll", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.I4)]
-        internal static extern MP4ChapterType MP4SetChapters(IntPtr hFile, [In, Out]MP4Chapter[] chapterList, int chapterCount, MP4ChapterType chapterType);
-
-        [DllImport("libMP4V2.dll", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern long MP4GetDuration(IntPtr hFile);
 
         [DllImport("libMP4V2.dll", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]

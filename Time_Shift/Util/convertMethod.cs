@@ -69,6 +69,12 @@ namespace ChapterTool.Util
             return new TimeSpan(0, hour, minute, second, millisecond);
         }
 
+        public static string ToCueTimeStamp(this TimeSpan input)
+        {
+            int frames = (int) Math.Round(input.Milliseconds*75/1000F);
+            return $"{input.Hours*60 + input.Minutes:D2}:{input.Seconds:D2}:{frames:D2}";
+        }
+
         /// <summary>
         /// 将{X=x_1,Y=y_1}格式的字符串转换为Point对象
         /// </summary>
