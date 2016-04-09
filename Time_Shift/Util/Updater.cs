@@ -56,10 +56,10 @@ namespace ChapterTool.Util
 
             HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://tautcony.github.io/tcupdate.html");
             #if DEBUG
-            webRequest = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:4000/tcupdate");
+            webRequest                = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:4000/tcupdate.html");
             #endif
             webRequest.UserAgent      = $"{Environment.UserName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().FullName}";
-            webRequest.Method = "GET";
+            webRequest.Method         = "GET";
             webRequest.Credentials    = CredentialCache.DefaultCredentials;
             webRequest.BeginGetResponse(OnResponse, webRequest);
         }
