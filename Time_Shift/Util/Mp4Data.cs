@@ -27,8 +27,13 @@ namespace ChapterTool.Util
 
         public Mp4Data(string path)
         {
-            ChapterList chapterList = MP4File.Open(path).Chapters;
+            MP4File file = MP4File.Open(path);
             Chapter = new ChapterInfo();
+            if (file.Chapters == null)
+            {
+                return;
+            }
+            ChapterList chapterList = file.Chapters;
             int index = 0;
             foreach (var chapterClip in chapterList)
             {

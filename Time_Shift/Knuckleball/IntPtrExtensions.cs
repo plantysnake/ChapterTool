@@ -176,7 +176,7 @@ namespace Knuckleball
         {
             if (value == IntPtr.Zero)
             {
-                throw new ArgumentNullException("value", "Structures cannot be read from a null pointer (IntPtr.Zero)");
+                throw new ArgumentNullException(nameof(value), "Structures cannot be read from a null pointer (IntPtr.Zero)");
             }
 
             return (T)Marshal.PtrToStructure(value, typeof(T));

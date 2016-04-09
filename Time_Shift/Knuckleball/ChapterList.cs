@@ -31,6 +31,10 @@ namespace Knuckleball
         private List<Chapter> chapters = new List<Chapter>();
         private HashSet<Guid> hashedIndex = new HashSet<Guid>();
 
+        public delegate void LogEventHandler(string message);
+
+        public static event LogEventHandler OnLog;
+
         /// <summary>
         /// Prevents a default instance of the <see cref="ChapterList"/> class from being created.
         /// </summary>
@@ -260,7 +264,7 @@ namespace Knuckleball
             IntPtr chapterListPointer = IntPtr.Zero;
             int chapterCount = 0;
             NativeMethods.MP4ChapterType chapterType = NativeMethods.MP4GetChapters(fileHandle, ref chapterListPointer, ref chapterCount, NativeMethods.MP4ChapterType.Any);
-
+            OnLog?.Invoke($"Chapter type: {chapterType}");
             if (chapterType != NativeMethods.MP4ChapterType.None && chapterCount != 0)
             {
                 IntPtr currentChapterPointer = chapterListPointer;
@@ -276,6 +280,7 @@ namespace Knuckleball
                     }
 
                     title = title.Substring(0, title.IndexOf('\0'));
+                    OnLog?.Invoke($"{title} {duration}");
                     list.AddInternal(new Chapter { Duration = duration, Title = title });
                     currentChapterPointer = IntPtr.Add(currentChapterPointer, Marshal.SizeOf(currentChapter));
                 }

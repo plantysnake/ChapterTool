@@ -264,7 +264,7 @@ namespace ChapterTool.Forms
 
         private enum FileType
         {
-            Mpls, Xml, Txt, IFO, Mkv, Mka, Tak, Flac, Cue, Xpl, MP4
+            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4
         }
 
         private bool Loadfile()
@@ -279,11 +279,10 @@ namespace ChapterTool.Forms
                 FileType fileType;
                 try
                 {
-                    fileType = (FileType)
-                            Enum.Parse(typeof (FileType),
+                    fileType = (FileType) Enum.Parse(typeof (FileType),
                                 Path.GetExtension(FilePath)?.ToLowerInvariant().TrimStart('.') ?? "", true);
                 }
-                catch (Exception)
+                catch
                 {
                     throw new Exception("Invalid File Format");
                 }
@@ -292,15 +291,15 @@ namespace ChapterTool.Forms
                     case FileType.Mpls: LoadMpls();     break;
                     case FileType.Xml : LoadXml();      break;
                     case FileType.Txt : LoadOgm();      break;
-                    case FileType.IFO : LoadIfo();      break;
+                    case FileType.Ifo : LoadIfo();      break;
                     case FileType.Mkv :
                     case FileType.Mka : LoadMatroska(); break;
                     case FileType.Tak :
                     case FileType.Flac:
                     case FileType.Cue : LoadCue();      break;
                     case FileType.Xpl : LoadXpl();      break;
-                    case FileType.MP4 : LoadMp4();      break;
-                    default     : throw new Exception("Invalid File Format");
+                    case FileType.Mp4 : LoadMp4();      break;
+                    default : throw new Exception("Invalid File Format");
                 }
                 if (_info == null) return false;
                 _info.UpdataInfo(_chapterNameTemplate);
@@ -409,7 +408,9 @@ namespace ChapterTool.Forms
             }
             try
             {
+                Knuckleball.ChapterList.OnLog += Log;
                 var mp4 = new Mp4Data(FilePath);
+                Knuckleball.ChapterList.OnLog -= Log;
                 _info = mp4.Chapter;
             }
             catch (Exception exception)
