@@ -36,3 +36,6 @@
 
  - [BitBucket](https://bitbucket.org/TautCony/chaptertool)
  - [GitHub](https://github.com/tautcony/ChapterTool)
+
+ ![](https://img.shields.io/github/downloads/tautcony/chaptertool/total.svg)
+ ![](https://img.shields.io/github/license/tautcony/chaptertool.svg)

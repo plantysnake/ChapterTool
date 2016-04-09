@@ -67,6 +67,27 @@
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -93,6 +114,21 @@
     <Compile Include="Forms\FormUpdater.Designer.cs">
       <DependentUpon>FormUpdater.cs</DependentUpon>
     </Compile>
+    <Compile Include="Knuckleball\Atom.cs" />
+    <Compile Include="Knuckleball\Chapter.cs" />
+    <Compile Include="Knuckleball\ChapterList.cs" />
+    <Compile Include="Knuckleball\ContentRating.cs" />
+    <Compile Include="Knuckleball\Country.cs" />
+    <Compile Include="Knuckleball\IntPtrExtensions.cs" />
+    <Compile Include="Knuckleball\MediaKind.cs" />
+    <Compile Include="Knuckleball\MediaStoreAccountKind.cs" />
+    <Compile Include="Knuckleball\MetadataTags.cs" />
+    <Compile Include="Knuckleball\MovieInfo.cs" />
+    <Compile Include="Knuckleball\MP4File.cs" />
+    <Compile Include="Knuckleball\MP4TagsStructureExtensions.cs" />
+    <Compile Include="Knuckleball\NativeMethods.cs" />
+    <Compile Include="Knuckleball\RatingInfo.cs" />
+    <Compile Include="Knuckleball\TrackInfo.cs" />
     <Compile Include="Util\Chapter.cs" />
     <Compile Include="Util\ChapterInfo.cs" />
     <Compile Include="Util\ChapterName.cs" />
@@ -131,6 +167,7 @@
     <Compile Include="Util\IfoParser.cs" />
     <Compile Include="Util\LanguageSelectionContainer.cs" />
     <Compile Include="Util\MatroskaData.cs" />
+    <Compile Include="Util\Mp4Data.cs" />
     <Compile Include="Util\MplsData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -179,6 +216,9 @@
     <Content Include="Images\about.ico" />
     <Content Include="Images\Ct.ico" />
     <Content Include="Images\icon.ico" />
+    <Content Include="libmp4v2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

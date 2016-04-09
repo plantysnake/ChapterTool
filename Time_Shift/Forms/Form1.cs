@@ -35,6 +35,7 @@ using System.Text.RegularExpressions;
 using static ChapterTool.Util.CTLogger;
 using static ChapterTool.Util.ConvertMethod;
 
+
 namespace ChapterTool.Forms
 {
     public partial class Form1 : Form
@@ -222,14 +223,15 @@ namespace ChapterTool.Forms
             }
         }
 
-        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl)$", RegexOptions.IgnoreCase);
+        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl|mp4)$", RegexOptions.IgnoreCase);
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.xpl,*.cue,*tak,*flac,*.mkv,*.mka)|*.txt;*.xml;*.mpls;*.ifo;*.xpl;*.cue;*.tak;*.flac;*.mkv;*.mka|" +
+            openFileDialog1.Filter = @"所有支持的类型(*.txt,*.xml,*.mpls,*.ifo,*.xpl,*.cue,*tak,*flac,*.mkv,*.mka,*.mp4)|*.txt;*.xml;*.mpls;*.ifo;*.xpl;*.cue;*.tak;*.flac;*.mkv;*.mka;*.mp4|" +
                                      @"章节文件(*.txt,*.xml,*.mpls,*.ifo,*.xpl)|*.txt;*.xml;*.mpls;*.ifo;*.xpl|" +
                                      @"Cue文件[包括内嵌](*.cue,*.tak,*.flac)|*.cue;*.tak;*.flac|" +
-                                     @"Matroska文件(*.mkv,*.mka)|*.mkv;*.mka";
+                                     @"Matroska文件(*.mkv,*.mka)|*.mkv;*.mka|" +
+                                     @"Mp4文件(*.mp4)|*.mp4";
             try
             {
                 if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
@@ -281,6 +283,7 @@ namespace ChapterTool.Forms
                     case ".flac":
                     case ".cue" : LoadCue();        break;
                     case ".xpl" : LoadXpl();        break;
+                    case ".mp4" : LoadMp4();        break;
                     default     : throw new Exception("Invalid File Format");
                 }
                 if (_info == null) return false;
@@ -374,6 +377,24 @@ namespace ChapterTool.Forms
             _info = _xplGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
             Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Chapter_Not_find : Resources.Load_Success;
+        }
+
+        private void LoadMp4()
+        {
+            if (!File.Exists("libmp4v2.dll"))
+            {
+                Notification.ShowInfo("无可用的 libmp4v2.dll");
+                FilePath = string.Empty;
+            }
+            try
+            {
+                var mp4 = new Mp4Data(FilePath);
+                _info = mp4.Chapter;
+            }
+            catch (Exception exception)
+            {
+                Notification.ShowError("读取MP4文件信息异常", exception);
+            }
         }
 
         private void LoadOgm()
