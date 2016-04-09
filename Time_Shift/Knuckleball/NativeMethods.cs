@@ -61,32 +61,6 @@ namespace Knuckleball
             Nero = 4
         }
 
-        /// <summary>
-        /// Values representing the time scale for a track
-        /// </summary>
-        internal enum MP4TimeScale
-        {
-            /// <summary>
-            /// Track duration is measured in seconds.
-            /// </summary>
-            Seconds = 1,
-
-            /// <summary>
-            /// Track duration is measured in milliseconds.
-            /// </summary>
-            Milliseconds = 1000,
-
-            /// <summary>
-            /// Track duration is measured in microseconds.
-            /// </summary>
-            Microseconds = 1000000,
-
-            /// <summary>
-            /// Track duration is measured in nanoseconds.
-            /// </summary>
-            Nanoseconds = 100000000
-        }
-
         [DllImport("libMP4V2.dll", CharSet = CharSet.Ansi, ExactSpelling = true, BestFitMapping = false, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr MP4Read([MarshalAs(UnmanagedType.LPStr)]string fileName);
 

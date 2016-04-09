@@ -54,7 +54,7 @@ namespace ChapterTool.Util
         {
             if (!IsConnectInternet()) return;
 
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://tautcony.github.io/tcupdate");
+            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://tautcony.github.io/tcupdate.html");
             #if DEBUG
             webRequest = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:4000/tcupdate");
             #endif
