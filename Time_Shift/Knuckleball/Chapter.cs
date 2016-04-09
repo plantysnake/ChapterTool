@@ -38,15 +38,15 @@ namespace Knuckleball
         {
             get
             {
-                return this.title;
+                return title;
             }
 
             set
             {
-                if (this.title != value)
+                if (title != value)
                 {
-                    this.title = value;
-                    this.OnChanged(new EventArgs());
+                    title = value;
+                    OnChanged(new EventArgs());
                 }
             }
         }
@@ -58,15 +58,15 @@ namespace Knuckleball
         {
             get
             {
-                return this.duration;
+                return duration;
             }
 
             set
             {
-                if (this.duration != value)
+                if (duration != value)
                 {
-                    this.duration = value;
-                    this.OnChanged(new EventArgs());
+                    duration = value;
+                    OnChanged(new EventArgs());
                 }
             }
         }
@@ -76,7 +76,7 @@ namespace Knuckleball
         /// </summary>
         internal Guid Id
         {
-            get { return this.id; }
+            get { return id; }
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Knuckleball
         /// <returns>The string representation of the chapter.</returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "{0} ({1} milliseconds)", this.Title, this.Duration.TotalMilliseconds);
+            return string.Format(CultureInfo.InvariantCulture, "{0} ({1} milliseconds)", Title, Duration.TotalMilliseconds);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Knuckleball
         /// <returns>A 32-bit signed integer hash code.</returns>
         public override int GetHashCode()
         {
-            return this.ToString().GetHashCode();
+            return ToString().GetHashCode();
         }
 
         /// <summary>
@@ -106,18 +106,13 @@ namespace Knuckleball
         /// is the same as this instance; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object obj)
         {
-            if (obj == null)
-            {
-                return false;
-            }
-
             Chapter other = obj as Chapter;
             if (other == null)
             {
                 return false;
             }
 
-            return this.Title == other.Title && this.Duration == other.Duration;
+            return Title == other.Title && Duration == other.Duration;
         }
 
         /// <summary>
@@ -126,9 +121,9 @@ namespace Knuckleball
         /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected void OnChanged(EventArgs e)
         {
-            if (this.Changed != null)
+            if (Changed != null)
             {
-                this.Changed(this, e);
+                Changed(this, e);
             }
         }
     }

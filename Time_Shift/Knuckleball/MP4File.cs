@@ -23,7 +23,6 @@ namespace Knuckleball
     public class MP4File
     {
         private string fileName;
-        private MetadataTags metadataTags;
         private ChapterList chapters;
 
         /// <summary>
@@ -41,7 +40,7 @@ namespace Knuckleball
         {
             if (string.IsNullOrEmpty(fileName) || !File.Exists(fileName))
             {
-                throw new ArgumentException("Must specify a valid file name", "fileName");
+                throw new ArgumentException("Must specify a valid file name", nameof(fileName));
             }
 
             this.fileName = fileName;
@@ -50,18 +49,7 @@ namespace Knuckleball
         /// <summary>
         /// Gets the list of chapters for this file.
         /// </summary>
-        public ChapterList Chapters
-        {
-            get { return this.chapters; }
-        }
-
-        /// <summary>
-        /// Gets the metadata tags for this file.
-        /// </summary>
-        public MetadataTags Tags
-        {
-            get { return this.metadataTags; }
-        }
+        public ChapterList Chapters => chapters;
 
         /// <summary>
         /// Opens and reads the data for the specified file.
@@ -83,33 +71,12 @@ namespace Knuckleball
         /// </summary>
         public void Load()
         {
-            IntPtr fileHandle = NativeMethods.MP4Read(this.fileName);
+            IntPtr fileHandle = NativeMethods.MP4Read(fileName);
             if (fileHandle != IntPtr.Zero)
             {
                 try
                 {
-                    this.metadataTags = MetadataTags.ReadFromFile(fileHandle);
-                    this.chapters = ChapterList.ReadFromFile(fileHandle);
-                }
-                finally
-                {
-                    NativeMethods.MP4Close(fileHandle);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Saves the edits, if any, to the metadata for this file.
-        /// </summary>
-        public void Save()
-        {
-            IntPtr fileHandle = NativeMethods.MP4Modify(this.fileName, 0);
-            if (fileHandle != IntPtr.Zero)
-            {
-                try
-                {
-                    this.metadataTags.WriteToFile(fileHandle);
-                    this.chapters.WriteToFile(fileHandle);
+                    chapters = ChapterList.ReadFromFile(fileHandle);
                 }
                 finally
                 {

@@ -114,21 +114,11 @@
     <Compile Include="Forms\FormUpdater.Designer.cs">
       <DependentUpon>FormUpdater.cs</DependentUpon>
     </Compile>
-    <Compile Include="Knuckleball\Atom.cs" />
     <Compile Include="Knuckleball\Chapter.cs" />
     <Compile Include="Knuckleball\ChapterList.cs" />
-    <Compile Include="Knuckleball\ContentRating.cs" />
-    <Compile Include="Knuckleball\Country.cs" />
     <Compile Include="Knuckleball\IntPtrExtensions.cs" />
-    <Compile Include="Knuckleball\MediaKind.cs" />
-    <Compile Include="Knuckleball\MediaStoreAccountKind.cs" />
-    <Compile Include="Knuckleball\MetadataTags.cs" />
-    <Compile Include="Knuckleball\MovieInfo.cs" />
     <Compile Include="Knuckleball\MP4File.cs" />
-    <Compile Include="Knuckleball\MP4TagsStructureExtensions.cs" />
     <Compile Include="Knuckleball\NativeMethods.cs" />
-    <Compile Include="Knuckleball\RatingInfo.cs" />
-    <Compile Include="Knuckleball\TrackInfo.cs" />
     <Compile Include="Util\Chapter.cs" />
     <Compile Include="Util\ChapterInfo.cs" />
     <Compile Include="Util\ChapterName.cs" />

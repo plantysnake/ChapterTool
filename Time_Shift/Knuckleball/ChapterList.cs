@@ -41,7 +41,7 @@ namespace Knuckleball
         /// <summary>
         /// Gets the number of <see cref="Chapter">Chapters</see> contained in this <see cref="ChapterList"/>.
         /// </summary>
-        public int Count => this.chapters.Count;
+        public int Count => chapters.Count;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="ChapterList"/> is read-only.
@@ -64,7 +64,7 @@ namespace Knuckleball
         {
             get
             {
-                return this.chapters[index];
+                return chapters[index];
             }
 
             set
@@ -74,15 +74,15 @@ namespace Knuckleball
                     throw new ArgumentNullException(nameof(value));
                 }
 
-                if (this.hashedIndex.Contains(value.Id))
+                if (hashedIndex.Contains(value.Id))
                 {
                     throw new ArgumentException("Chapter is already in the chapter list", nameof(value));
                 }
 
-                this.chapters[index] = value;
-                value.Changed += this.OnChapterChanged;
-                this.hashedIndex.Add(value.Id);
-                this.IsDirty = true;
+                chapters[index] = value;
+                value.Changed += OnChapterChanged;
+                hashedIndex.Add(value.Id);
+                IsDirty = true;
             }
         }
 
@@ -99,15 +99,15 @@ namespace Knuckleball
                 throw new ArgumentNullException(nameof(item));
             }
 
-            if (this.hashedIndex.Contains(item.Id))
+            if (hashedIndex.Contains(item.Id))
             {
                 throw new ArgumentException("Chapter is already in the chapter list", nameof(item));
             }
 
-            this.chapters.Add(item);
-            item.Changed += this.OnChapterChanged;
-            this.hashedIndex.Add(item.Id);
-            this.IsDirty = true;
+            chapters.Add(item);
+            item.Changed += OnChapterChanged;
+            hashedIndex.Add(item.Id);
+            IsDirty = true;
         }
 
         /// <summary>
@@ -115,11 +115,11 @@ namespace Knuckleball
         /// </summary>
         public void Clear()
         {
-            if (this.Count > 0)
+            if (Count > 0)
             {
-                this.hashedIndex.Clear();
-                this.chapters.Clear();
-                this.IsDirty = true;
+                hashedIndex.Clear();
+                chapters.Clear();
+                IsDirty = true;
             }
         }
 
@@ -131,7 +131,7 @@ namespace Knuckleball
         /// otherwise, <see langword="false"/>.</returns>
         public bool Contains(Chapter item)
         {
-            return this.hashedIndex.Contains(item.Id);
+            return hashedIndex.Contains(item.Id);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Knuckleball
         /// than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.</exception>
         public void CopyTo(Chapter[] array, int arrayIndex)
         {
-            this.chapters.CopyTo(array, arrayIndex);
+            chapters.CopyTo(array, arrayIndex);
         }
 
        /// <summary>
@@ -158,12 +158,12 @@ namespace Knuckleball
         /// <returns>The index of <paramref name="item"/> if found in the list; otherwise, -1.</returns>
         public int IndexOf(Chapter item)
         {
-            if (!this.hashedIndex.Contains(item.Id))
+            if (!hashedIndex.Contains(item.Id))
             {
                 return -1;
             }
 
-            return this.chapters.IndexOf(item);
+            return chapters.IndexOf(item);
         }
 
         /// <summary>
@@ -182,15 +182,15 @@ namespace Knuckleball
                 throw new ArgumentNullException(nameof(item));
             }
 
-            if (this.hashedIndex.Contains(item.Id))
+            if (hashedIndex.Contains(item.Id))
             {
                 throw new ArgumentException("Chapter is already in the chapter list", nameof(item));
             }
 
-            this.chapters.Insert(index, item);
-            item.Changed += this.OnChapterChanged;
-            this.hashedIndex.Add(item.Id);
-            this.IsDirty = true;
+            chapters.Insert(index, item);
+            item.Changed += OnChapterChanged;
+            hashedIndex.Add(item.Id);
+            IsDirty = true;
         }
 
         /// <summary>
@@ -202,12 +202,12 @@ namespace Knuckleball
         /// <see langword="false"/> if <paramref name="item"/> is not found in the original<see cref="ChapterList"/>.</returns>
         public bool Remove(Chapter item)
         {
-            bool isRemoved = this.chapters.Remove(item);
-            this.IsDirty = this.IsDirty || isRemoved;
+            bool isRemoved = chapters.Remove(item);
+            IsDirty = IsDirty || isRemoved;
             if (isRemoved)
             {
-                item.Changed -= this.OnChapterChanged;
-                this.hashedIndex.Remove(item.Id);
+                item.Changed -= OnChapterChanged;
+                hashedIndex.Remove(item.Id);
             }
 
             return isRemoved;
@@ -222,10 +222,10 @@ namespace Knuckleball
         public void RemoveAt(int index)
         {
             Chapter toRemove = this[index];
-            this.hashedIndex.Remove(toRemove.Id);
-            toRemove.Changed -= this.OnChapterChanged;
-            this.chapters.RemoveAt(index);
-            this.IsDirty = true;
+            hashedIndex.Remove(toRemove.Id);
+            toRemove.Changed -= OnChapterChanged;
+            chapters.RemoveAt(index);
+            IsDirty = true;
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace Knuckleball
         /// through the <see cref="ChapterList"/>.</returns>
         public IEnumerator<Chapter> GetEnumerator()
         {
-            return this.chapters.GetEnumerator();
+            return chapters.GetEnumerator();
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace Knuckleball
         /// through the <see cref="ChapterList"/>.</returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return this.chapters.GetEnumerator();
+            return chapters.GetEnumerator();
         }
 
         /// <summary>
@@ -296,87 +296,19 @@ namespace Knuckleball
         }
 
         /// <summary>
-        /// Writes the chapter information to the file.
-        /// </summary>
-        /// <param name="fileHandle">The handle to the file to which to write the chapter information.</param>
-        internal void WriteToFile(IntPtr fileHandle)
-        {
-            // Only write to the file if there have been changes since the chapters were read.
-            // Note that a happy side effect of this is that if there were no chapters specified
-            // in the file at read time, and no manipulation was done before write, we will not
-            // write chapters into the file, even though our internal representation will contain
-            // a single chapter with the full duration of the file, and the title of "Chapter 1".
-            if (this.IsDirty)
-            {
-                // Find the first video track, so that we make sure the total duration
-                // of the chapters we add does not exceed the length of the file.
-                int referenceTrackId = -1;
-                for (short i = 0; i < NativeMethods.MP4GetNumberOfTracks(fileHandle, null, 0); i++)
-                {
-                    int currentTrackId = NativeMethods.MP4FindTrackId(fileHandle, i, null, 0);
-                    string trackType = NativeMethods.MP4GetTrackType(fileHandle, currentTrackId);
-                    if (trackType == NativeMethods.MP4VideoTrackType)
-                    {
-                        referenceTrackId = currentTrackId;
-                        break;
-                    }
-                }
-
-                // If we don't have a video track, then we have an audio file, which has
-                // only one track, and we can use it to find the duration.
-                referenceTrackId = referenceTrackId <= 0 ? 1 : referenceTrackId;
-                long referenceTrackDuration = NativeMethods.MP4ConvertFromTrackDuration(fileHandle, referenceTrackId, NativeMethods.MP4GetTrackDuration(fileHandle, referenceTrackId), NativeMethods.MP4TimeScale.Milliseconds);
-
-                long runningTotal = 0;
-                List<NativeMethods.MP4Chapter> nativeChapters = new List<NativeMethods.MP4Chapter>();
-                foreach (Chapter chapter in this.chapters)
-                {
-                    NativeMethods.MP4Chapter nativeChapter = new NativeMethods.MP4Chapter();
-
-                    // Set the title
-                    nativeChapter.title = new byte[1024];
-                    byte[] titleByteArray = Encoding.UTF8.GetBytes(chapter.Title);
-                    Array.Copy(titleByteArray, nativeChapter.title, titleByteArray.Length);
-
-                    // Set the duration, making sure that we only use durations up to
-                    // the length of the reference track.
-                    long chapterLength = (long)chapter.Duration.TotalMilliseconds;
-                    if (runningTotal + chapterLength > referenceTrackDuration)
-                    {
-                        nativeChapter.duration = referenceTrackDuration - runningTotal;
-                    }
-                    else
-                    {
-                        nativeChapter.duration = chapterLength;
-                    }
-
-                    runningTotal += chapterLength;
-                    nativeChapters.Add(nativeChapter);
-                    if (runningTotal > referenceTrackDuration)
-                    {
-                        break;
-                    }
-                }
-
-                NativeMethods.MP4Chapter[] chapterArray = nativeChapters.ToArray();
-                NativeMethods.MP4SetChapters(fileHandle, chapterArray, chapterArray.Length, NativeMethods.MP4ChapterType.Qt);
-            }
-        }
-
-        /// <summary>
         /// Adds a <see cref="Chapter"/> to the list without dirtying the list.
         /// </summary>
         /// <param name="toAdd">The <see cref="Chapter"/> to add to the list.</param>
         private void AddInternal(Chapter toAdd)
         {
-            this.chapters.Add(toAdd);
-            toAdd.Changed += this.OnChapterChanged;
-            this.hashedIndex.Add(toAdd.Id);
+            chapters.Add(toAdd);
+            toAdd.Changed += OnChapterChanged;
+            hashedIndex.Add(toAdd.Id);
         }
 
         private void OnChapterChanged(object sender, EventArgs e)
         {
-            this.IsDirty = true;
+            IsDirty = true;
         }
     }
 }
