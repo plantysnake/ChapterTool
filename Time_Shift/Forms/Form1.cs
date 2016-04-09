@@ -262,6 +262,11 @@ namespace ChapterTool.Forms
             set { combineToolStripMenuItem.Checked = value; }
         }
 
+        private enum FileType
+        {
+            Mpls, Xml, Txt, IFO, Mkv, Mka, Tak, Flac, Cue, Xpl, MP4
+        }
+
         private bool Loadfile()
         {
             if (!IsPathValid) return false;
@@ -271,19 +276,30 @@ namespace ChapterTool.Forms
             Cursor = Cursors.AppStarting;
             try
             {
-                switch (Path.GetExtension(FilePath)?.ToLowerInvariant())
+                FileType fileType;
+                try
                 {
-                    case ".mpls": LoadMpls();       break;
-                    case ".xml" : LoadXml();        break;
-                    case ".txt" : LoadOgm();        break;
-                    case ".ifo" : LoadIfo();        break;
-                    case ".mkv" :
-                    case ".mka" : LoadMatroska();   break;
-                    case ".tak" :
-                    case ".flac":
-                    case ".cue" : LoadCue();        break;
-                    case ".xpl" : LoadXpl();        break;
-                    case ".mp4" : LoadMp4();        break;
+                    fileType = (FileType)
+                            Enum.Parse(typeof (FileType),
+                                Path.GetExtension(FilePath)?.ToLowerInvariant().TrimStart('.') ?? "", true);
+                }
+                catch (Exception)
+                {
+                    throw new Exception("Invalid File Format");
+                }
+                switch (fileType)
+                {
+                    case FileType.Mpls: LoadMpls();     break;
+                    case FileType.Xml : LoadXml();      break;
+                    case FileType.Txt : LoadOgm();      break;
+                    case FileType.IFO : LoadIfo();      break;
+                    case FileType.Mkv :
+                    case FileType.Mka : LoadMatroska(); break;
+                    case FileType.Tak :
+                    case FileType.Flac:
+                    case FileType.Cue : LoadCue();      break;
+                    case FileType.Xpl : LoadXpl();      break;
+                    case FileType.MP4 : LoadMp4();      break;
                     default     : throw new Exception("Invalid File Format");
                 }
                 if (_info == null) return false;
