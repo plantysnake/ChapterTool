@@ -540,8 +540,9 @@ namespace ChapterTool.Forms
                 savePath.Append($"__{_info.SourceName}");
 
             string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf", ".TimeCodes.txt", ".TsMuxeR_Meta.txt", ".cue" };
-            while (File.Exists($"{savePath}{saveingTypeSuffix[saveType]}")) savePath.Append("_");
-            savePath.Append(saveingTypeSuffix[saveType]);
+            int index = 1;
+            while (File.Exists($"{savePath}_{index}{saveingTypeSuffix[saveType]}")) ++index;
+            savePath.Append($"_{index}{saveingTypeSuffix[saveType]}");
 
              return savePath.ToString();
         }
