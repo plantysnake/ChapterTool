@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Chapter Tool")]
-[assembly: AssemblyCopyright("Copyright 2014-2015 TautCony")]
+[assembly: AssemblyCopyright("Copyright 2015-2016 TautCony")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
