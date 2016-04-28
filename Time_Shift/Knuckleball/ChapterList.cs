@@ -213,7 +213,6 @@ namespace Knuckleball
                 item.Changed -= OnChapterChanged;
                 hashedIndex.Remove(item.Id);
             }
-
             return isRemoved;
         }
 
@@ -273,10 +272,13 @@ namespace Knuckleball
                     NativeMethods.MP4Chapter currentChapter = currentChapterPointer.ReadStructure<NativeMethods.MP4Chapter>();
                     TimeSpan duration = TimeSpan.FromMilliseconds(currentChapter.duration);
                     string title = Encoding.UTF8.GetString(currentChapter.title);
-                    if ((currentChapter.title[0] == 0xFE && currentChapter.title[1] == 0xFF) ||
-                        (currentChapter.title[0] == 0xFF && currentChapter.title[1] == 0xFE))
+                    if (currentChapter.title[0] == 0xFF && currentChapter.title[1] == 0xFE)
                     {
                         title = Encoding.Unicode.GetString(currentChapter.title);
+                    }
+                    else if (currentChapter.title[0] == 0xFE && currentChapter.title[1] == 0xFF)
+                    {
+                        title = Encoding.BigEndianUnicode.GetString(currentChapter.title);
                     }
 
                     title = title.Substring(0, title.IndexOf('\0'));
@@ -291,12 +293,10 @@ namespace Knuckleball
                 long duration = NativeMethods.MP4GetDuration(fileHandle);
                 list.AddInternal(new Chapter { Duration = TimeSpan.FromSeconds(duration / (double)timeScale), Title = "Chapter 1" });
             }
-
             if (chapterListPointer != IntPtr.Zero)
             {
                 NativeMethods.MP4Free(chapterListPointer);
             }
-
             return list;
         }
 
