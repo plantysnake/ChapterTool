@@ -223,7 +223,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl|mp4)$", RegexOptions.IgnoreCase);
+        private readonly Regex _rFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl|mp4|m4a)$", RegexOptions.IgnoreCase);
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
@@ -231,7 +231,7 @@ namespace ChapterTool.Forms
                                      @"章节文件(*.txt,*.xml,*.mpls,*.ifo,*.xpl)|*.txt;*.xml;*.mpls;*.ifo;*.xpl|" +
                                      @"Cue文件[包括内嵌](*.cue,*.tak,*.flac)|*.cue;*.tak;*.flac|" +
                                      @"Matroska文件(*.mkv,*.mka)|*.mkv;*.mka|" +
-                                     @"Mp4文件(*.mp4)|*.mp4";
+                                     @"Mp4文件(*.mp4,*.m4a)|*.mp4;*.m4a";
             try
             {
                 if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
@@ -264,7 +264,7 @@ namespace ChapterTool.Forms
 
         private enum FileType
         {
-            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4
+            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4, M4a
         }
 
         private bool Loadfile()
@@ -298,7 +298,8 @@ namespace ChapterTool.Forms
                     case FileType.Flac:
                     case FileType.Cue : LoadCue();      break;
                     case FileType.Xpl : LoadXpl();      break;
-                    case FileType.Mp4 : LoadMp4();      break;
+                    case FileType.Mp4 :
+                    case FileType.M4a : LoadMp4();      break;
                     default : throw new Exception("Invalid File Format");
                 }
                 if (_info == null) return false;
@@ -332,16 +333,14 @@ namespace ChapterTool.Forms
             Log($"|+MPLS中共有 {_rawMpls.ChapterClips.Count} 个m2ts片段");
 
             comboBox2.Enabled = comboBox2.Visible = _rawMpls.ChapterClips.Count >= 1;
-            if (comboBox2.Enabled)
+            if (!comboBox2.Enabled) return;
+            comboBox2.Items.Clear();
+            _rawMpls.ChapterClips.ForEach(item =>
             {
-                comboBox2.Items.Clear();
-                _rawMpls.ChapterClips.ForEach(item =>
-                {
-                    comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
-                    Log($" |+{item.Name} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]");
-                    Log($"  |+包含 {item.TimeStamp.Count} 个时间戳");
-                });
-            }
+                comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
+                Log($" |+{item.Name} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]");
+                Log($"  |+包含 {item.TimeStamp.Count} 个时间戳");
+            });
             comboBox2.SelectedIndex = ClipSeletIndex;
             GetChapterInfoFromMpls(ClipSeletIndex);
         }

@@ -28,14 +28,10 @@ namespace ChapterTool.Util
         public Mp4Data(string path)
         {
             MP4File file = MP4File.Open(path);
+            if (file.Chapters == null) return;
             Chapter = new ChapterInfo();
-            if (file.Chapters == null)
-            {
-                return;
-            }
-            ChapterList chapterList = file.Chapters;
             int index = 0;
-            foreach (var chapterClip in chapterList)
+            foreach (var chapterClip in file.Chapters)
             {
                 Chapter.Chapters.Add(new Chapter(chapterClip.Title, Chapter.Duration, ++index));
                 Chapter.Duration += chapterClip.Duration;

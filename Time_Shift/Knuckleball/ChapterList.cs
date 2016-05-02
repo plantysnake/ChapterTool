@@ -166,7 +166,6 @@ namespace Knuckleball
             {
                 return -1;
             }
-
             return chapters.IndexOf(item);
         }
 
@@ -267,21 +266,11 @@ namespace Knuckleball
             if (chapterType != NativeMethods.MP4ChapterType.None && chapterCount != 0)
             {
                 IntPtr currentChapterPointer = chapterListPointer;
-                for (int i = 0; i < chapterCount; i++)
+                for (int i = 0; i < chapterCount; ++i)
                 {
                     NativeMethods.MP4Chapter currentChapter = currentChapterPointer.ReadStructure<NativeMethods.MP4Chapter>();
                     TimeSpan duration = TimeSpan.FromMilliseconds(currentChapter.duration);
-                    string title = Encoding.UTF8.GetString(currentChapter.title);
-                    if (currentChapter.title[0] == 0xFF && currentChapter.title[1] == 0xFE)
-                    {
-                        title = Encoding.Unicode.GetString(currentChapter.title);
-                    }
-                    else if (currentChapter.title[0] == 0xFE && currentChapter.title[1] == 0xFF)
-                    {
-                        title = Encoding.BigEndianUnicode.GetString(currentChapter.title);
-                    }
-
-                    title = title.Substring(0, title.IndexOf('\0'));
+                    string title = GetString(currentChapter.title);
                     OnLog?.Invoke($"{title} {duration}");
                     list.AddInternal(new Chapter { Duration = duration, Title = title });
                     currentChapterPointer = IntPtr.Add(currentChapterPointer, Marshal.SizeOf(currentChapter));
@@ -289,15 +278,35 @@ namespace Knuckleball
             }
             else
             {
-                int timeScale = NativeMethods.MP4GetTimeScale(fileHandle);
+                /*int timeScale = NativeMethods.MP4GetTimeScale(fileHandle);
                 long duration = NativeMethods.MP4GetDuration(fileHandle);
-                list.AddInternal(new Chapter { Duration = TimeSpan.FromSeconds(duration / (double)timeScale), Title = "Chapter 1" });
+                list.AddInternal(new Chapter { Duration = TimeSpan.FromSeconds(duration / (double)timeScale), Title = "Chapter 1" });*/
+                list.AddInternal(new Chapter { Duration = TimeSpan.Zero, Title = "Chapter 1" });
             }
             if (chapterListPointer != IntPtr.Zero)
             {
                 NativeMethods.MP4Free(chapterListPointer);
             }
             return list;
+        }
+
+        /// <summary>
+        /// Decodes a C-Style string into a string, can handle UTF-8 or UTF-16 encoding.
+        /// </summary>
+        /// <param name="bytes">C-Style string</param>
+        /// <returns></returns>
+        private static string GetString(byte[] bytes)
+        {
+            string title = Encoding.UTF8.GetString(bytes);
+            if (bytes[0] == 0xFF && bytes[1] == 0xFE)
+            {
+                title = Encoding.Unicode.GetString(bytes);
+            }
+            else if (bytes[0] == 0xFE && bytes[1] == 0xFF)
+            {
+                title = Encoding.BigEndianUnicode.GetString(bytes);
+            }
+            return title.Substring(0, title.IndexOf('\0'));
         }
 
         /// <summary>
