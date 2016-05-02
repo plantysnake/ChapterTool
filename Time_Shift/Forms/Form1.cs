@@ -324,6 +324,13 @@ namespace ChapterTool.Forms
             return true;
         }
 
+        private void btnLoad_MouseUp(object sender, MouseEventArgs e)
+        {
+            //Reload File
+            if (e.Button != MouseButtons.Right || string.IsNullOrEmpty(FilePath)) return;
+            if (Loadfile()) UpdataGridView();
+        }
+
         private void LoadMpls()
         {
             MplsData.OnLog += Log;

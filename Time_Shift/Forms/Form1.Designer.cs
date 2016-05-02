@@ -86,6 +86,7 @@
             this.btnLoad.Text = "载入";
             this.btnLoad.UseVisualStyleBackColor = true;
             this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+            this.btnLoad.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnLoad_MouseUp);
             // 
             // btnSave
             // 
