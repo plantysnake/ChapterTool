@@ -124,12 +124,14 @@ namespace ChapterTool.Util
         {
             var stream = new byte[16];
             Array.Copy(_data, itemStartAdress + streamOrder * 16, stream, 0, 16);
-            if (0x01 != stream[01]) return; //make sure this stream is Play Item
             var streamCodingType = stream[0x0b];
             var chapterClip      = ChapterClips[playItemOrder];
+            var clipName         = 0x01 == stream[01] ? chapterClip.Name : chapterClip.Name + " Sub Path";
             StreamAttribute.OnLog += StreamAttributeLog;
-            new StreamAttribute().LogStreamAttributes(stream, chapterClip.Name);
+            StreamAttribute.LogStreamAttributes(stream, clipName);
             StreamAttribute.OnLog -= StreamAttributeLog;
+
+            if (0x01 != stream[01]) return; //make sure this stream is Play Item
             if (0x1b != streamCodingType && 0x02 != streamCodingType &&
                 0xea != streamCodingType && 0x06 != streamCodingType) return;
             chapterClip.Fps = stream[0x0c] & 0xf;//last 4 bits is the fps
@@ -227,25 +229,26 @@ namespace ChapterTool.Util
         }
     }
 
-    internal class StreamAttribute
+    internal static class StreamAttribute
     {
         public delegate void LogEventHandler(string message);
 
         public static event LogEventHandler OnLog;
 
-        public void LogStreamAttributes(byte[] stream, string clipName)
+        public static void LogStreamAttributes(byte[] stream, string clipName)
         {
             var streamCodingType = stream[0x0b];
             string streamCoding;
-            var result = _streamCoding.TryGetValue(streamCodingType, out streamCoding);
+            var result = StreamCoding.TryGetValue(streamCodingType, out streamCoding);
             if (!result) streamCoding = "und";
             OnLog?.Invoke($"Stream[{clipName}] Type: {streamCoding}");
-            if (0x1b != streamCodingType && 0x02 != streamCodingType && 0xea != streamCodingType)
+            if (0x01 != streamCodingType && 0x02 != streamCodingType &&
+                0x1b != streamCodingType && 0xea != streamCodingType)
             {
                 int offset = 0x90 == streamCodingType || 0x91 == streamCodingType ? 0x0c : 0x0d;
                 if (0x92 == streamCodingType)
                 {
-                    OnLog?.Invoke($"Stream[{clipName}] CharacterCode: {_characterCode[stream[0x0c]]}");
+                    OnLog?.Invoke($"Stream[{clipName}] CharacterCode: {CharacterCode[stream[0x0c]]}");
                 }
                 var language = Encoding.ASCII.GetString(stream, offset, 3);
                 if (language[0] == '\0') language = "und";
@@ -254,71 +257,74 @@ namespace ChapterTool.Util
                 {
                     int channel = stream[0x0c] >> 4;
                     int sampleRate = stream[0x0c] & 0x0f;
-                    OnLog?.Invoke($"Stream[{clipName}] Channel: {_channel[channel]}");
-                    OnLog?.Invoke($"Stream[{clipName}] SampleRate: {_sampleRate[sampleRate]}");
+                    OnLog?.Invoke($"Stream[{clipName}] Channel: {Channel[channel]}");
+                    OnLog?.Invoke($"Stream[{clipName}] SampleRate: {SampleRate[sampleRate]}");
                 }
                 return;
             }
-            OnLog?.Invoke($"Stream[{clipName}] Resolution: {_resolution[stream[0x0c] >> 4]}");
-            OnLog?.Invoke($"Stream[{clipName}] FrameRate: {_frameRate[stream[0x0c] & 0xf]}");
+            OnLog?.Invoke($"Stream[{clipName}] Resolution: {Resolution[stream[0x0c] >> 4]}");
+            OnLog?.Invoke($"Stream[{clipName}] FrameRate: {FrameRate[stream[0x0c] & 0xf]}");
         }
 
-        private readonly Dictionary<int, string> _streamCoding = new Dictionary<int, string>
+        private static readonly Dictionary<int, string> StreamCoding = new Dictionary<int, string>
         {
+            [0x01] = "MPEG-1 Video Stream",
             [0x02] = "MPEG-2 Video Stream",
+            [0x03] = "MPEG-1 Audio Stream",
+            [0x04] = "MPEG-2 Audio Stream",
             [0x06] = "HEVC Video Stream",
             [0x1b] = "MPEG-4 AVC Video Stream",
             [0xea] = "SMPTE VC-1 Video Stream",
-            [0x80] = "HDMV LPCM audio stream for Primary audio",
-            [0x81] = "Dolby Digital (AC-3) audio stream for Primary audio",
-            [0x82] = "DTS audio stream for Primary audio",
-            [0x83] = "Dolby Lossless audio stream for Primary audio",
-            [0x84] = "Dolby Digital Plus audio stream for Primary audio",
-            [0x85] = "DTS-HD audio stream except XLL for Primary audio",
+            [0x80] = "HDMV LPCM audio stream",
+            [0x81] = "Dolby Digital (AC-3) audio stream",
+            [0x82] = "DTS audio stream",
+            [0x83] = "Dolby Lossless audio stream",
+            [0x84] = "Dolby Digital Plus audio stream",
+            [0x85] = "DTS-HD audio stream except XLL",
             [0x86] = "DTS-HD audio stream XLL for Primary audio",
-            [0xA1] = "Dolby digital Plus audio stream for secondary audio",
-            [0xA2] = "DTS-HD audio stream for secondary audio",
+            [0xA1] = "Dolby digital Plus audio stream",
+            [0xA2] = "DTS-HD audio stream",
             [0x90] = "Presentation Graphics Stream",
             [0x91] = "Interactive Graphics Stream",
             [0x92] = "Text Subtitle stream"
         };
 
-        private readonly Dictionary<int, string> _resolution = new Dictionary<int, string>
+        private static readonly Dictionary<int, string> Resolution = new Dictionary<int, string>
         {
-            [0x00] = "-"               , [0x01] = "720*480i",
-            [0x02] = "720*576i"        , [0x03] = "720*480p",
-            [0x04] = "1920*1080i"      , [0x05] = "1280*720p",
-            [0x06] = "1920*1080p"      , [0x07] = "720*576p"
+            [0x00] = "res."           , [0x01] = "720*480i",
+            [0x02] = "720*576i"       , [0x03] = "720*480p",
+            [0x04] = "1920*1080i"     , [0x05] = "1280*720p",
+            [0x06] = "1920*1080p"     , [0x07] = "720*576p"
         };
 
-        private readonly Dictionary<int, string> _frameRate = new Dictionary<int, string>
+        private static readonly Dictionary<int, string> FrameRate = new Dictionary<int, string>
         {
-            [0x00] = "-"               , [0x01] = "24000/1001 FPS",
-            [0x02] = "24 FPS"          , [0x03] = "25 FPS",
-            [0x04] = "30000/1001 FPS"  , [0x05] = "res.",
-            [0x06] = "50 FPS"          , [0x07] = "60000/1001 FPS"
+            [0x00] = "res."           , [0x01] = "24000/1001 FPS",
+            [0x02] = "24 FPS"         , [0x03] = "25 FPS",
+            [0x04] = "30000/1001 FPS" , [0x05] = "res.",
+            [0x06] = "50 FPS"         , [0x07] = "60000/1001 FPS"
         };
 
-        private readonly Dictionary<int, string> _channel = new Dictionary<int, string>
+        private static readonly Dictionary<int, string> Channel = new Dictionary<int, string>
         {
-            [0x00] = "-"               , [0x01] = "mono",
-            [0x03] = "stereo"          , [0x06] = "multichannel",
+            [0x00] = "res."           , [0x01] = "mono",
+            [0x03] = "stereo"         , [0x06] = "multichannel",
             [0x0C] = "stereo and multichannel"
         };
 
-        private readonly Dictionary<int, string> _sampleRate = new Dictionary<int, string>
+        private static readonly Dictionary<int, string> SampleRate = new Dictionary<int, string>
         {
-            [0x00] = "-"               , [0x01] = "48 KHz",
-            [0x04] = "96 KHz"          , [0x05] = "192 KHz",
-            [0x0C] = "48 & 192 KHz"    , [0x0E] = "48 & 96 KHz"
+            [0x00] = "res."           , [0x01] = "48 KHz",
+            [0x04] = "96 KHz"         , [0x05] = "192 KHz",
+            [0x0C] = "48 & 192 KHz"   , [0x0E] = "48 & 96 KHz"
         };
 
-        private readonly Dictionary<int, string> _characterCode = new Dictionary<int, string>
+        private static readonly Dictionary<int, string> CharacterCode = new Dictionary<int, string>
         {
-            [0x00] = "-"               , [0x01] = "UTF-8",
-            [0x02] = "UTF-16BE"        , [0x03] = "Shift-JIS",
-            [0x04] = "EUC KR"          , [0x05] = "GB18030-2000",
-            [0x06] = "GB2312"          , [0x07] = "BIG5"
+            [0x00] = "res."           , [0x01] = "UTF-8",
+            [0x02] = "UTF-16BE"       , [0x03] = "Shift-JIS",
+            [0x04] = "EUC KR"         , [0x05] = "GB18030-2000",
+            [0x06] = "GB2312"         , [0x07] = "BIG5"
         };
     }
 }
