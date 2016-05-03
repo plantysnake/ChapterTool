@@ -86,7 +86,7 @@ namespace ChapterTool.Util
         {
             lengthOfPlayItem     = Byte2Int16(_data, playItemEntries);
             var bytes            = new byte[lengthOfPlayItem + 2];
-            Array.Copy(_data, playItemEntries, bytes, 0, lengthOfPlayItem);
+            Array.Copy(_data, playItemEntries, bytes, 0, lengthOfPlayItem + 2);
             Clip streamClip      = new Clip
             {
                 TimeIn  = Byte2Int32(bytes, 0x0e),

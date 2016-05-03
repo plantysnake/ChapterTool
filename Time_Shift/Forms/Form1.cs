@@ -553,7 +553,7 @@ namespace ChapterTool.Forms
              return savePath.ToString();
         }
 
-        private readonly Regex _rLang = new Regex(@"\((?<lang>.+)\)");
+        private static readonly Regex RLang = new Regex(@"\((?<lang>.+)\)");
 
         private void SaveFile(int saveType)
         {
@@ -571,7 +571,7 @@ namespace ChapterTool.Forms
                         _info.SaveText(savePath, cbAutoGenName.Checked);
                         break;
                     case 1: //XML
-                        string key = _rLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
+                        string key = RLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
                         _info.SaveXml(savePath, string.IsNullOrWhiteSpace(key) ? "" : LanguageSelectionContainer.Languages[key], cbAutoGenName.Checked);
                         break;
                     case 2: //QPF
