@@ -322,7 +322,7 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
-        ///   查找类似 分辨率： 的本地化字符串。
+        ///   查找类似 分辨率:  的本地化字符串。
         /// </summary>
         internal static string Log_Resolution {
             get {
@@ -421,7 +421,7 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
-        ///   查找类似  |+平移量 {0} 的本地化字符串。
+        ///   查找类似  |+平移量: {0} 的本地化字符串。
         /// </summary>
         internal static string Log_Save_Time_Shift_Amount {
             get {

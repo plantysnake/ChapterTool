@@ -337,7 +337,7 @@ namespace ChapterTool.Forms
             _rawMpls = new MplsData(FilePath);
             MplsData.OnLog -= Log;
             Log(Resources.Log_MPLS_Load_Success);
-            Log(String.Format(Resources.Log_MPLS_Clip_Count, _rawMpls.ChapterClips.Count));
+            Log(string.Format(Resources.Log_MPLS_Clip_Count, _rawMpls.ChapterClips.Count));
 
             comboBox2.Enabled = comboBox2.Visible = _rawMpls.ChapterClips.Count >= 1;
             if (!comboBox2.Enabled) return;

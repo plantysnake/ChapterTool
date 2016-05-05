@@ -238,7 +238,7 @@
     <value>+更名: {0} -&gt; {1}</value>
   </data>
   <data name="Log_Resolution" xml:space="preserve">
-    <value>分辨率：</value>
+    <value>分辨率: </value>
   </data>
   <data name="Log_Row_Delete" xml:space="preserve">
     <value>+ {0} 行(i = {1})被删除</value>
@@ -271,7 +271,7 @@
     <value>|+时间平移: {0}</value>
   </data>
   <data name="Log_Save_Time_Shift_Amount" xml:space="preserve">
-    <value> |+平移量 {0}</value>
+    <value> |+平移量: {0}</value>
   </data>
   <data name="Log_Save_Type" xml:space="preserve">
     <value> |+保存格式: {0}</value>
