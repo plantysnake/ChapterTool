@@ -227,7 +227,7 @@ namespace ChapterTool.Forms
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = Resources.File_Filter_All_Support + @"(*.txt,*.xml,*.mpls,*.ifo,*.xpl,*.cue,*tak,*flac,*.mkv,*.mka,*.mp4)|*.txt;*.xml;*.mpls;*.ifo;*.xpl;*.cue;*.tak;*.flac;*.mkv;*.mka;*.mp4|" +
+            openFileDialog1.Filter = Resources.File_Filter_All_Support + @"(*.txt,*.xml,*.mpls,*.ifo,*.xpl,*.cue,*tak,*flac,*.mkv,*.mka,*.mp4,*.m4a)|*.txt;*.xml;*.mpls;*.ifo;*.xpl;*.cue;*.tak;*.flac;*.mkv;*.mka;*.mp4;*.m4a|" +
                                      Resources.File_Filter_Chapter_File + @"(*.txt,*.xml,*.mpls,*.ifo,*.xpl)|*.txt;*.xml;*.mpls;*.ifo;*.xpl|" +
                                      Resources.File_Filter_Cue_File +  @"(*.cue,*.tak,*.flac)|*.cue;*.tak;*.flac|" +
                                      Resources.File_Filter_Matroska_File + @"(*.mkv,*.mka)|*.mkv;*.mka|" +
