@@ -86,6 +86,7 @@
             this.btnLoad.Text = "载入";
             this.btnLoad.UseVisualStyleBackColor = true;
             this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+            this.btnLoad.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnLoad_MouseUp);
             // 
             // btnSave
             // 
@@ -433,7 +434,8 @@
             "XML",
             "QPF",
             "Time Codes",
-            "TsMuxeR Meta"});
+            "TsMuxeR Meta",
+            "CUE"});
             this.savingType.Location = new System.Drawing.Point(74, 486);
             this.savingType.Name = "savingType";
             this.savingType.Size = new System.Drawing.Size(108, 25);

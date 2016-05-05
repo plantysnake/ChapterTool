@@ -26,8 +26,8 @@ namespace ChapterTool.Util
 {
     public static class OgmData
     {
-        private static readonly Regex RTimeCodeLine = new Regex(@"^\s*CHAPTER\d+\s*=(.*)");
-        private static readonly Regex RNameLine = new Regex(@"^\s*CHAPTER\d+NAME\s*=(?<chapterName>.*)");
+        private static readonly Regex RTimeCodeLine = new Regex(@"^\s*CHAPTER\d+\s*=\s*(.*)");
+        private static readonly Regex RNameLine = new Regex(@"^\s*CHAPTER\d+NAME\s*=\s*(?<chapterName>.*)");
 
         public delegate void LogEventHandler(string message);
 
@@ -54,7 +54,7 @@ namespace ChapterTool.Util
             }
             else
             {
-                throw new Exception($"ERROR: {lines.First()} <-该行与时间行格式不匹配");
+                throw new Exception($"ERROR: {lines.First()} <-Unmatched time format");
             }
             foreach (var line in lines)
             {
@@ -83,7 +83,7 @@ namespace ChapterTool.Util
                         break;
                     case LineState.LError:
                         if (info.Chapters.Count == 0) throw new Exception("Unable to Prase this ogm file");
-                        OnLog?.Invoke($"+Interrupt: 发生于[{line}]处");    //将已解析的部分返回
+                        OnLog?.Invoke($"+Interrupt: Happened at [{line}]");    //将已解析的部分返回
                         state = LineState.LFin;
                         break;
                     case LineState.LFin:

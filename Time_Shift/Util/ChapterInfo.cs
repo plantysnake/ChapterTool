@@ -247,5 +247,23 @@ namespace ChapterTool.Util
             xmlchap.Flush();
             xmlchap.Close();
         }
+
+        public void SaveCue(string sourceFileName, string fileName, bool notUseName)
+        {
+            StringBuilder cueBuilder = new StringBuilder();
+            cueBuilder.AppendLine("REM Generate By ChapterTool");
+            cueBuilder.AppendLine($"TITLE \"{Title}\"");
+
+            cueBuilder.AppendLine($"FILE \"{sourceFileName}\" WAVE");
+            int index = 0;
+            var name = ChapterName.GetChapterName("Chapter");
+            foreach (var chapter in Chapters)
+            {
+                cueBuilder.AppendLine($"  TRACK {++index:D2} AUDIO");
+                cueBuilder.AppendLine($"    TITLE \"{(notUseName ? name(): chapter.Name)}\"");
+                cueBuilder.AppendLine($"    INDEX 01 {chapter.Time.ToCueTimeStamp()}");
+            }
+            File.WriteAllText(fileName, cueBuilder.ToString());
+        }
     }
 }

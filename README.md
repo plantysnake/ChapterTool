@@ -30,9 +30,13 @@
  - [MKVToolNix](https://www.bunkus.org/videotools/mkvtoolnix/links.html)
  - [libbluray](http://www.videolan.org/developers/libbluray.html)
  - [BDedit](http://pel.hu/bdedit/)
+ - [Knuckleball](https://github.com/jimevans/knuckleball)
 
 
 ## Source Code
 
  - [BitBucket](https://bitbucket.org/TautCony/chaptertool)
  - [GitHub](https://github.com/tautcony/ChapterTool)
+
+ ![](https://img.shields.io/github/downloads/tautcony/chaptertool/total.svg)
+ ![](https://img.shields.io/github/license/tautcony/chaptertool.svg)

@@ -121,204 +121,204 @@
     <value>ChapterTool Error</value>
   </data>
   <data name="File_Unloaded" xml:space="preserve">
-    <value>文件还没载入呢</value>
+    <value>File unloaded</value>
   </data>
   <data name="Tips_Load_Success" xml:space="preserve">
-    <value>载入完成 (≧▽≦)</value>
+    <value>Load Success (≧▽≦)</value>
   </data>
   <data name="Tips_Chapter_Not_find" xml:space="preserve">
-    <value>当前片段并没有章节 (¬_¬)</value>
+    <value>No chapter in current clip (¬_¬)</value>
   </data>
   <data name="Log_Hard_Drive_Plz" xml:space="preserve">
-    <value>硬盘壕，给我块硬盘呗~</value>
+    <value>Such Hard Disks, Do you willing to give me one?</value>
   </data>
   <data name="Log_Hello" xml:space="preserve">
-    <value>, 你好呀</value>
+    <value>, Hello</value>
   </data>
   <data name="Message_How_Can_You_Find_Here" xml:space="preserve">
-    <value>你好呀，找到这里来干嘛呀</value>
+    <value>Hello, How Can You Find Here</value>
   </data>
   <data name="Tips_IFO_Waring" xml:space="preserve">
-    <value>IFO格式的章节，请注意是否需要修正时间</value>
+    <value>Please note wether the IFO need to fix time</value>
   </data>
   <data name="Tips_InValid_Type" xml:space="preserve">
-    <value>这个文件我不认识啊 _ (:3」∠)_</value>
+    <value>Unrecognizable file type _ (:3」∠)_</value>
   </data>
   <data name="Tips_InValid_Type_Log" xml:space="preserve">
-    <value>文件格式非法</value>
+    <value>Invalid file type</value>
   </data>
   <data name="Message_ChapterTool_Info" xml:space="preserve">
     <value>ChapterTool Information</value>
   </data>
   <data name="Message_Open_With_CT" xml:space="preserve">
-    <value>使用 Chapter Tool 打开 .mpls 文件？</value>
+    <value>Open .mpls file with ChapterTool？</value>
   </data>
   <data name="ToolTips_Useless_Chapter" xml:space="preserve">
-    <value>第二个章节点离视频结尾太近了呢，应该没有用处吧 (-｡-;)</value>
+    <value>The second time stamp is too close to the end of clip, may be useless(-｡-;)</value>
   </data>
   <data name="File_Filter_All" xml:space="preserve">
-    <value>所有文件</value>
+    <value>All Files</value>
   </data>
   <data name="File_Filter_All_Support" xml:space="preserve">
-    <value>所有支持的类型</value>
+    <value>All Support Types</value>
   </data>
   <data name="File_Filter_Chapter_File" xml:space="preserve">
-    <value>章节文件</value>
+    <value>Chapter File</value>
   </data>
   <data name="File_Filter_Cue_File" xml:space="preserve">
-    <value>Cue文件[包括内嵌]</value>
+    <value>Cue File[Include embedded]</value>
   </data>
   <data name="File_Filter_Matroska_File" xml:space="preserve">
-    <value>Matroska文件</value>
+    <value>Matroska File</value>
   </data>
   <data name="File_Filter_Mp4_File" xml:space="preserve">
-    <value>Mp4文件</value>
+    <value>Mp4 File</value>
   </data>
   <data name="File_Filter_Text" xml:space="preserve">
-    <value>文本文件</value>
+    <value>Text File</value>
   </data>
   <data name="Log_Load_File_Via_Dragging" xml:space="preserve">
-    <value>从窗口拖拽中载入文件: {0}</value>
+    <value>Load file via dragging: {0}</value>
   </data>
   <data name="Log_Load_Position_Successful" xml:space="preserve">
-    <value>+成功载入保存的窗体位置 {0}</value>
+    <value>+Load form position {0}</value>
   </data>
   <data name="Log_Wu_Zong" xml:space="preserve">
-    <value>武总好~</value>
+    <value>Hello, WuZong</value>
   </data>
   <data name="Log_About_Form_Click" xml:space="preserve">
-    <value>点击了 {0} 次进度条</value>
+    <value>Progress bar has been clicked {0} times</value>
   </data>
   <data name="Log_About_Form_Click_Reset" xml:space="preserve">
-    <value>进度条点击计数清零</value>
+    <value>Counter of progress bar reseted</value>
   </data>
   <data name="Log_About_Form_Opened" xml:space="preserve">
-    <value>打开了关于界面</value>
+    <value>About form opened</value>
   </data>
   <data name="Log_Boot_Count" xml:space="preserve">
-    <value>{0}次启动 Chapter Tool.</value>
+    <value>The {0}th open the Chapter Tool.</value>
   </data>
   <data name="Log_Chapter_Name_Template" xml:space="preserve">
-    <value>+载入自定义章节名模板: {0}</value>
+    <value>+Load Chapter name template: {0}</value>
   </data>
   <data name="Log_Color_Setting_Form_Open" xml:space="preserve">
-    <value>颜色设置窗口被打开</value>
+    <value>Color setting form opened</value>
   </data>
   <data name="Log_Convert_TimeStamp_Count" xml:space="preserve">
-    <value>  |+包含 {0} 个时间戳</value>
+    <value>  |+Include {0} time stamps</value>
   </data>
   <data name="Log_FPS_Detect_Begin" xml:space="preserve">
-    <value>|+自动帧率识别开始，允许误差为: {0}</value>
+    <value>|+Auto FPS detect begin，acceptable deviation: {0}</value>
   </data>
   <data name="Log_FPS_Detect_Count" xml:space="preserve">
-    <value> | {0:D2} 个精确点</value>
+    <value> | {0:D2} accuracy points</value>
   </data>
   <data name="Log_FPS_Detect_Result" xml:space="preserve">
-    <value>|自动帧率识别结果为 {0:F4} fps</value>
+    <value>|Auto FPS detect result {0:F4} fps</value>
   </data>
   <data name="Log_IFO_Clip_Count" xml:space="preserve">
-    <value>|+IFO中共有 {0} 个VOB片段</value>
+    <value>|+{0} clip in IFO</value>
   </data>
   <data name="Log_Load_File_Via_Args" xml:space="preserve">
-    <value>从运行参数中载入文件: {0}</value>
+    <value>Load file via argument: {0}</value>
   </data>
   <data name="Log_Load_File_Via_Button" xml:space="preserve">
-    <value>从载入键中载入文件: {0}</value>
+    <value>Load file via button: {0}</value>
   </data>
   <data name="Log_Mp4v2_Not_Find" xml:space="preserve">
-    <value>无可用的 libmp4v2.dll, 是否前往下载页面</value>
+    <value>No available libmp4v2.dll, Download it right now?</value>
   </data>
   <data name="Log_MPLS_Clip_Count" xml:space="preserve">
-    <value>|+MPLS中共有 {0} 个m2ts片段</value>
+    <value>|+{0} m2ts clips in MPLS</value>
   </data>
   <data name="Log_MPLS_Load_Success" xml:space="preserve">
-    <value>+成功载入MPLS格式章节文件</value>
+    <value>+Load MPLS chapter success</value>
   </data>
   <data name="Log_Rename" xml:space="preserve">
-    <value>+更名: {0} -&gt; {1}</value>
+    <value>+Rename: {0} -&gt; {1}</value>
   </data>
   <data name="Log_Resolution" xml:space="preserve">
-    <value>分辨率: </value>
+    <value>, Resolution: </value>
   </data>
   <data name="Log_Row_Delete" xml:space="preserve">
-    <value>+ {0} 行(i = {1})被删除</value>
+    <value>+ {0} rows(i = {1})been deleted</value>
   </data>
   <data name="Log_Save_Chapter_Order_Shift" xml:space="preserve">
-    <value>|+章节号平移: {0}</value>
+    <value>|+Chapter order shift: {0}</value>
   </data>
   <data name="Log_Save_Correspond_File" xml:space="preserve">
-    <value>|+对应视频文件: {0}</value>
+    <value>|+Corresponding file: {0}</value>
   </data>
   <data name="Log_Save_File_Name" xml:space="preserve">
-    <value>|+保存文件名: {0}</value>
+    <value>|+Save file name: {0}</value>
   </data>
   <data name="Log_Save_Info" xml:space="preserve">
-    <value>+保存信息</value>
+    <value>+Save info</value>
   </data>
   <data name="Log_Save_Is_Use_Chapter_Name" xml:space="preserve">
-    <value>|+使用章节名: {0}</value>
+    <value>|+Use chapter name: {0}</value>
   </data>
   <data name="Log_Save_Is_Use_Chapter_Name_Template" xml:space="preserve">
-    <value> |+使用章节名模板: {0}</value>
+    <value> |+Use chapter name template: {0}</value>
   </data>
   <data name="Log_Save_Language" xml:space="preserve">
-    <value>  |+语言选择: {0}</value>
+    <value>  |+Selected language: {0}</value>
   </data>
   <data name="Log_Save_Time_Factor" xml:space="preserve">
-    <value>|+章节开始时间 x 1.001: {0}</value>
+    <value>|+Starting time x 1.001: {0}</value>
   </data>
   <data name="Log_Save_Time_Shift" xml:space="preserve">
-    <value>|+时间平移: {0}</value>
+    <value>|+Use Time Shift: {0}</value>
   </data>
   <data name="Log_Save_Time_Shift_Amount" xml:space="preserve">
-    <value> |+平移量: {0}</value>
+    <value> |+Amount {0}</value>
   </data>
   <data name="Log_Save_Type" xml:space="preserve">
-    <value> |+保存格式: {0}</value>
+    <value> |+Saving type: {0}</value>
   </data>
   <data name="Log_Set_Saving_Path" xml:space="preserve">
-    <value>设置保存路径为: {0}</value>
+    <value>Set saving path as: {0}</value>
   </data>
   <data name="Log_TimeStamp_Count" xml:space="preserve">
-    <value>  |+包含 {0} 个时间戳</value>
+    <value>  |+Include {0} time stamps</value>
   </data>
   <data name="Log_Update_Checked" xml:space="preserve">
-    <value>已检查更新</value>
+    <value>Update checked</value>
   </data>
   <data name="Log_Update_Skiped" xml:space="preserve">
-    <value>跳过更新检查</value>
+    <value>Skip Update checking</value>
   </data>
   <data name="Log_Without_Admin" xml:space="preserve">
-    <value>哎，木有权限，好伤心</value>
+    <value>Oh~, I'm not the administrator</value>
   </data>
   <data name="Log_With_Admin" xml:space="preserve">
-    <value>噫，有权限( •̀ ω •́ )y，可以瞎搞了</value>
+    <value>Wow ( •̀ ω •́ )y, I can do some thing naive!</value>
   </data>
   <data name="Log_XPL_Clip_Count" xml:space="preserve">
-    <value>|+XPL中共有 {0} 个片段</value>
+    <value>|+{0} clips in XPL</value>
   </data>
   <data name="Menu_Open_File" xml:space="preserve">
-    <value>打开 {0}</value>
+    <value>Open {0}</value>
   </data>
   <data name="Tips_Clip_Count" xml:space="preserve">
-    <value>共 {0} 个片段</value>
+    <value> {0} Clips</value>
   </data>
   <data name="Tips_Invalid_Shift_Time" xml:space="preserve">
-    <value>位移时间不科学的样子</value>
+    <value>Invalid shift time</value>
   </data>
   <data name="Tips_Menu_Clip" xml:space="preserve">
-    <value>这应该是播放菜单的mpls</value>
+    <value>It should be a menu</value>
   </data>
   <data name="Tips_Save_Fail" xml:space="preserve">
-    <value>保存失败</value>
+    <value>Save failed</value>
   </data>
   <data name="Tips_Save_Success" xml:space="preserve">
-    <value>保存成功</value>
+    <value>Save success</value>
   </data>
   <data name="Message_Unable_To_Read_Mp4_File" xml:space="preserve">
-    <value>读取MP4文件信息异常</value>
+    <value>Unable to read mp4 info</value>
   </data>
   <data name="Update_Check" xml:space="preserve">
-    <value>检查更新(&amp;U)</value>
+    <value>Check &amp;Update</value>
   </data>
 </root>

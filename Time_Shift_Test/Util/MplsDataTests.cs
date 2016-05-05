@@ -1,10 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ChapterTool.Util;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 
 namespace ChapterTool.Util.Tests
 {
@@ -14,7 +11,7 @@ namespace ChapterTool.Util.Tests
         [TestMethod()]
         public void MplsDataTest1()
         {
-            const string mplsPath = @"..\..\[mpls_Sample]\00011_eva.mpls";
+            const string mplsPath = @"..\..\..\[mpls_Sample]\00011_eva.mpls";
             var mplsRaw = new MplsData(mplsPath);
             //mplsRaw.EntireTimeStamp.ForEach(item=>Console.Write($"{item}, "));
             Console.WriteLine(mplsRaw.ToString());
@@ -34,7 +31,7 @@ namespace ChapterTool.Util.Tests
         [TestMethod()]
         public void MplsDataTest2()
         {
-            const string mplsPath = @"..\..\[mpls_Sample]\00001_fch.mpls";
+            const string mplsPath = @"..\..\..\[mpls_Sample]\00001_fch.mpls";
             var mplsRaw = new MplsData(mplsPath);
             Console.WriteLine(mplsRaw.ToString());
             var expectedTimeStamps = new List<int> { 0, 41963170, 96516418, 96831733, 98138038, 102186457, 131841081, 158573411, 162621830 };
@@ -52,7 +49,7 @@ namespace ChapterTool.Util.Tests
         [TestMethod()]
         public void MplsDataTest3()
         {
-            const string mplsPath = @"..\..\[mpls_Sample]\00002_tanji.mpls";
+            const string mplsPath = @"..\..\..\[mpls_Sample]\00002_tanji.mpls";
             var mplsRaw = new MplsData(mplsPath);
 
             Console.WriteLine(mplsRaw.ToString());
@@ -91,7 +88,7 @@ namespace ChapterTool.Util.Tests
         [TestMethod()]
         public void ToChapterInfoTest()
         {
-            const string mplsPath = @"..\..\[mpls_Sample]\00011_eva.mpls";
+            const string mplsPath = @"..\..\..\[mpls_Sample]\00011_eva.mpls";
             var mplsRaw = new MplsData(mplsPath);
             var combinedCi = mplsRaw.ToChapterInfo(100, true);
             Console.WriteLine(combinedCi.ToString());
