@@ -18,7 +18,7 @@ namespace Knuckleball.Tests
                 new { Name = "Chapter 01", Time = "00:00:00.000" },
                 new { Name = "Chapter 02", Time = "00:00:10.000" },
                 new { Name = "Chapter 03", Time = "00:00:20.000" },
-                new { Name = "Chapter 04", Time = "00:00:30.000" },
+                new { Name = "Chapter 04", Time = "00:00:30.000" }
             };
 
             Mp4Data result = new Mp4Data(path);
@@ -29,8 +29,8 @@ namespace Knuckleball.Tests
             foreach (var chapter in result.Chapter.Chapters)
             {
                 Console.WriteLine(chapter);
-                Debug.Assert(expectResult[index].Name == chapter.Name);
-                Debug.Assert(expectResult[index].Time == chapter.Time.Time2String());
+                Assert.IsTrue(expectResult[index].Name == chapter.Name);
+                Assert.IsTrue(expectResult[index].Time == chapter.Time.Time2String());
                 ++index;
             }
         }

@@ -18,7 +18,7 @@ namespace ChapterTool.Util.Tests
                 new { Name = "オーディオドラマ・1stパート", Time = "00:00:00.000"},
                 new { Name = "初色bloomy [初春飾利(豊崎愛生)]", Time = "00:15:19.280"},
                 new { Name = "オーディオドラマ・2ndパート", Time = "00:19:15.093"},
-                new { Name = "ナミダ御免のGirls Beat [佐天涙子(伊藤かな恵)]", Time = "00:32:12.173"},
+                new { Name = "ナミダ御免のGirls Beat [佐天涙子(伊藤かな恵)]", Time = "00:32:12.173"}
             };
 
             var result = CueData.PraseCue(File.ReadAllText(path));
@@ -29,8 +29,8 @@ namespace ChapterTool.Util.Tests
             foreach (var chapter in result.Chapters)
             {
                 Console.WriteLine(chapter.ToString());
-                Debug.Assert(expectResult[index].Name == chapter.Name);
-                Debug.Assert(expectResult[index].Time == chapter.Time.Time2String());
+                Assert.IsTrue(expectResult[index].Name == chapter.Name);
+                Assert.IsTrue(expectResult[index].Time == chapter.Time.Time2String());
                 ++index;
             }
         }
