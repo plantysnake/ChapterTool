@@ -321,4 +321,10 @@
   <data name="Update_Check" xml:space="preserve">
     <value>检查更新(&amp;U)</value>
   </data>
+  <data name="Zones_Copy_To_Clip_Board" xml:space="preserve">
+    <value>是否将内容复制到剪贴板</value>
+  </data>
+  <data name="Zones_Set_Round_First" xml:space="preserve">
+    <value>请先将模式调至帧数取整</value>
+  </data>
 </root>

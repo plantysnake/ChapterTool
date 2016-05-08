@@ -20,7 +20,6 @@
 using System;
 using System.IO;
 using System.Xml;
-using System.Text;
 using System.Linq;
 using System.Drawing;
 using Microsoft.Win32;
@@ -1198,7 +1197,7 @@ namespace ChapterTool.Forms
             var targetPath = Path.GetDirectoryName(FilePath) + "\\..\\STREAM";
             Debug.Assert(targetPath != null);
 
-            contextMenuStrip2.Items.Add(new ToolStripSeparator());
+            combineMenuStrip.Items.Add(new ToolStripSeparator());
             var fileLine = comboBox2.Text;
             foreach (var file in fileLine.Substring(0, fileLine.LastIndexOf('_') - 1).Split('&'))
             {
@@ -1208,13 +1207,13 @@ namespace ChapterTool.Forms
                     var targetFile = $"{targetPath}\\{file}.m2ts";
                     OpenFile(targetFile);
                 };
-                contextMenuStrip2.Items.Add(fMenuItem);
+                combineMenuStrip.Items.Add(fMenuItem);
             }
         }
 
         private void InsertIfo()
         {
-            contextMenuStrip2.Items.Add(new ToolStripSeparator());
+            combineMenuStrip.Items.Add(new ToolStripSeparator());
             var fileLine = comboBox2.Text;
             var file = fileLine.Substring(0, fileLine.LastIndexOf('_') - 1) + ".VOB";
             ToolStripMenuItem fMenuItem = new ToolStripMenuItem(string.Format(Resources.Menu_Open_File, file));
@@ -1223,14 +1222,14 @@ namespace ChapterTool.Forms
                 var targetFile = Path.GetDirectoryName(FilePath) + $"\\{file}";
                 OpenFile(targetFile);
             };
-            contextMenuStrip2.Items.Add(fMenuItem);
+            combineMenuStrip.Items.Add(fMenuItem);
         }
 
         private void InsertXpl()
         {
             var targetPath = Path.GetDirectoryName(FilePath) + "\\..\\HVDVD_TS";
             Debug.Assert(targetPath != null);
-            contextMenuStrip2.Items.Add(new ToolStripSeparator());
+            combineMenuStrip.Items.Add(new ToolStripSeparator());
             var file = Path.GetFileName(_info.SourceName);
             ToolStripMenuItem fMenuItem = new ToolStripMenuItem(string.Format(Resources.Menu_Open_File, file));
             fMenuItem.Click += (sender, args) =>
@@ -1238,7 +1237,7 @@ namespace ChapterTool.Forms
                 var targetFile = $"{targetPath}\\{file}";
                 OpenFile(targetFile);
             };
-            contextMenuStrip2.Items.Add(fMenuItem);
+            combineMenuStrip.Items.Add(fMenuItem);
         }
 
         private void contextMenuStrip2_Opening(object sender, System.ComponentModel.CancelEventArgs e)
@@ -1260,11 +1259,52 @@ namespace ChapterTool.Forms
         private void contextMenuStrip2_Closed(object sender, ToolStripDropDownClosedEventArgs e)
         {
             Debug.WriteLine(e.CloseReason);
-            while (contextMenuStrip2.Items.Count > 1)
+            while (combineMenuStrip.Items.Count > 1)
             {
-                contextMenuStrip2.Items.Remove(contextMenuStrip2.Items[1]);
+                combineMenuStrip.Items.Remove(combineMenuStrip.Items[1]);
             }
         }
         #endregion
+
+        private void creatZonesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count < 1) return;
+
+            var zoneRange = new List<KeyValuePair<int, int>>();
+            cbRound.Checked = true;
+            foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+            {
+                var rowIndex = dataGridView1.Rows.IndexOf(row);
+                int nextRowIndex = rowIndex + 1;
+                //todo: make last time stamp use the length of clip info.
+                if (rowIndex >= dataGridView1.RowCount - 1)
+                {
+                    --nextRowIndex;
+                }
+                var currRow = _info.Chapters[rowIndex].FramsInfo;
+                var nextRow = _info.Chapters[nextRowIndex].FramsInfo;
+
+                var beginFrames = int.Parse(currRow.Substring(0, currRow.IndexOf(' ')));
+                var endFrames   = int.Parse(nextRow.Substring(0, nextRow.IndexOf(' ')));
+                zoneRange.Add(new KeyValuePair<int, int>(beginFrames, endFrames - 1));
+            }
+            string zones = zoneRange.OrderBy(item => item.Key).Aggregate(string.Empty, (current, zone) => current + $"/{zone.Key},{zone.Value},");
+            string ret = "--zones " + zones.TrimStart('/');
+            var result = MessageBox.Show($"{ret}\n{Resources.Zones_Copy_To_Clip_Board}",
+                Resources.Message_ChapterTool_Info, MessageBoxButtons.YesNo);
+            if (result == DialogResult.Yes)
+            {
+                Clipboard.SetText(ret);
+            }
+        }
+
+        private void dataGridView1_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            if (e.Button == MouseButtons.Right)
+            {
+                createZonestMenuStrip.Show(MousePosition);
+            }
+        }
     }
 }

@@ -671,5 +671,23 @@ namespace ChapterTool.Properties {
                 return ResourceManager.GetString("Update_Check", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   查找类似 是否将内容复制到剪贴板 的本地化字符串。
+        /// </summary>
+        internal static string Zones_Copy_To_Clip_Board {
+            get {
+                return ResourceManager.GetString("Zones_Copy_To_Clip_Board", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请先将模式调至帧数取整 的本地化字符串。
+        /// </summary>
+        internal static string Zones_Set_Round_First {
+            get {
+                return ResourceManager.GetString("Zones_Set_Round_First", resourceCulture);
+            }
+        }
     }
 }

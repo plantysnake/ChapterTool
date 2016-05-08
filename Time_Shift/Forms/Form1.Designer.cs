@@ -39,7 +39,7 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.cbRound = new System.Windows.Forms.CheckBox();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deviationMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmAccuracy = new System.Windows.Forms.ToolStripMenuItem();
             this.cbMul1k1 = new System.Windows.Forms.CheckBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
@@ -48,7 +48,7 @@
             this.cbChapterName = new System.Windows.Forms.CheckBox();
             this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.combineMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.combineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -65,10 +65,13 @@
             this.xmlLang = new System.Windows.Forms.ComboBox();
             this.lbXmlLang = new System.Windows.Forms.Label();
             this.btnExpand = new System.Windows.Forms.Button();
-            this.contextMenuStrip1.SuspendLayout();
+            this.createZonestMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.creatZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deviationMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-            this.contextMenuStrip2.SuspendLayout();
+            this.combineMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.createZonestMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnLoad
@@ -192,7 +195,7 @@
             this.cbRound.AutoSize = true;
             this.cbRound.Checked = true;
             this.cbRound.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbRound.ContextMenuStrip = this.contextMenuStrip1;
+            this.cbRound.ContextMenuStrip = this.deviationMenuStrip;
             this.cbRound.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cbRound.Location = new System.Drawing.Point(417, 14);
             this.cbRound.Name = "cbRound";
@@ -204,12 +207,12 @@
             this.cbRound.UseVisualStyleBackColor = true;
             this.cbRound.CheckedChanged += new System.EventHandler(this.refresh_Click);
             // 
-            // contextMenuStrip1
+            // deviationMenuStrip
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deviationMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmAccuracy});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(125, 26);
+            this.deviationMenuStrip.Name = "contextMenuStrip1";
+            this.deviationMenuStrip.Size = new System.Drawing.Size(125, 26);
             // 
             // tsmAccuracy
             // 
@@ -308,7 +311,7 @@
             // comboBox2
             // 
             this.comboBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.comboBox2.ContextMenuStrip = this.contextMenuStrip2;
+            this.comboBox2.ContextMenuStrip = this.combineMenuStrip;
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBox2.ForeColor = System.Drawing.SystemColors.WindowText;
@@ -322,14 +325,14 @@
             this.comboBox2.MouseEnter += new System.EventHandler(this.comboBox2_MouseEnter);
             this.comboBox2.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
-            // contextMenuStrip2
+            // combineMenuStrip
             // 
-            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.combineMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.combineToolStripMenuItem});
-            this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(125, 26);
-            this.contextMenuStrip2.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenuStrip2_Closed);
-            this.contextMenuStrip2.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip2_Opening);
+            this.combineMenuStrip.Name = "contextMenuStrip2";
+            this.combineMenuStrip.Size = new System.Drawing.Size(125, 26);
+            this.combineMenuStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenuStrip2_Closed);
+            this.combineMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip2_Opening);
             // 
             // combineToolStripMenuItem
             // 
@@ -384,6 +387,7 @@
             this.dataGridView1.TabIndex = 25;
             this.dataGridView1.TabStop = false;
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
+            this.dataGridView1.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseUp);
             this.dataGridView1.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView1_RowsRemoved);
             this.dataGridView1.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataGridView1_UserDeletingRow);
             // 
@@ -506,6 +510,20 @@
             this.btnExpand.UseVisualStyleBackColor = true;
             this.btnExpand.Click += new System.EventHandler(this.btnExpand_Click);
             // 
+            // createZonestMenuStrip
+            // 
+            this.createZonestMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.creatZonesToolStripMenuItem});
+            this.createZonestMenuStrip.Name = "createZonestMenuStrip";
+            this.createZonestMenuStrip.Size = new System.Drawing.Size(136, 26);
+            // 
+            // creatZonesToolStripMenuItem
+            // 
+            this.creatZonesToolStripMenuItem.Name = "creatZonesToolStripMenuItem";
+            this.creatZonesToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.creatZonesToolStripMenuItem.Text = "生成Zones";
+            this.creatZonesToolStripMenuItem.Click += new System.EventHandler(this.creatZonesToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -551,10 +569,11 @@
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
             this.Move += new System.EventHandler(this.Form1_Move);
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.deviationMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-            this.contextMenuStrip2.ResumeLayout(false);
+            this.combineMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.createZonestMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -578,13 +597,13 @@
         private System.Windows.Forms.CheckBox cbChapterName;
         private System.Windows.Forms.MaskedTextBox maskedTextBox1;
         private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ContextMenuStrip deviationMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem tsmAccuracy;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Button btnLog;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ContextMenuStrip combineMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem combineToolStripMenuItem;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.ComboBox savingType;
@@ -597,6 +616,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn cChapterName;
         private System.Windows.Forms.DataGridViewTextBoxColumn cTimeCode;
         private System.Windows.Forms.DataGridViewTextBoxColumn cOrder;
+        private System.Windows.Forms.ContextMenuStrip createZonestMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem creatZonesToolStripMenuItem;
     }
 }
 
