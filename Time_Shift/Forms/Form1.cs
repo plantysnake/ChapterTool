@@ -536,20 +536,19 @@ namespace ChapterTool.Forms
         {
             var rootPath = string.IsNullOrWhiteSpace(_customSavingPath) ? Path.GetDirectoryName(FilePath) : _customSavingPath;
             var fileName = Path.GetFileNameWithoutExtension(FilePath);
-            StringBuilder savePath = new StringBuilder($"{rootPath}\\{fileName}");
+            Debug.Assert(rootPath != null && fileName != null);
+            var savePath = Path.Combine(rootPath, fileName);
 
             var ext = Path.GetExtension(FilePath)?.ToLowerInvariant();
-            if (ext == ".mpls")
-                savePath.Append($"__{_info.SourceName}");
-            if (ext == ".ifo")
-                savePath.Append($"__{_info.SourceName}");
+            if (ext == ".mpls" || ext == ".ifo")
+                savePath += $"__{_info.SourceName}";
 
             string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf", ".TimeCodes.txt", ".TsMuxeR_Meta.txt", ".cue" };
             int index = 1;
             while (File.Exists($"{savePath}_{index}{saveingTypeSuffix[saveType]}")) ++index;
-            savePath.Append($"_{index}{saveingTypeSuffix[saveType]}");
+            savePath += $"_{index}{saveingTypeSuffix[saveType]}";
 
-             return savePath.ToString();
+             return savePath;
         }
 
         private static readonly Regex RLang = new Regex(@"\((?<lang>.+)\)");
