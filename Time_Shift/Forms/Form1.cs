@@ -988,21 +988,7 @@ namespace ChapterTool.Forms
         #region form resize
         private bool ExtensionPanelShow
         {
-            set
-            {
-                lbFormat.Visible       = value;
-                savingType.Visible     = value;
-                cbAutoGenName.Visible  = value;
-                lbShift.Visible        = value;
-                numericUpDown1.Visible = value;
-                cbMul1k1.Visible       = value;
-                cbChapterName.Visible  = value;
-                cbShift.Visible        = value;
-                maskedTextBox1.Visible = value;
-                btnLog.Visible         = value;
-                lbXmlLang.Visible      = value;
-                xmlLang.Visible        = value;
-            }
+            set { panel1.Visible = value; }
         }
 
         private void btnExpand_Click(object sender, EventArgs e) => Form1_Resize();
@@ -1266,10 +1252,9 @@ namespace ChapterTool.Forms
         private void contextMenuStrip2_Closed(object sender, ToolStripDropDownClosedEventArgs e)
         {
             Debug.WriteLine(e.CloseReason);
-            while (combineMenuStrip.Items.Count > 1)
-            {
-                combineMenuStrip.Items.Remove(combineMenuStrip.Items[1]);
-            }
+            var combine = combineMenuStrip.Items[0];
+            combineMenuStrip.Items.Clear();
+            combineMenuStrip.Items.Add(combine);
         }
         #endregion
 

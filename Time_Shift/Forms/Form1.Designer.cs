@@ -67,11 +67,13 @@
             this.btnExpand = new System.Windows.Forms.Button();
             this.createZonestMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.creatZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.deviationMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.combineMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.createZonestMenuStrip.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnLoad
@@ -139,7 +141,7 @@
             // cbAutoGenName
             // 
             this.cbAutoGenName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbAutoGenName.Location = new System.Drawing.Point(318, 488);
+            this.cbAutoGenName.Location = new System.Drawing.Point(303, 8);
             this.cbAutoGenName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cbAutoGenName.Name = "cbAutoGenName";
             this.cbAutoGenName.Size = new System.Drawing.Size(97, 21);
@@ -225,7 +227,7 @@
             // 
             this.cbMul1k1.AutoSize = true;
             this.cbMul1k1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbMul1k1.Location = new System.Drawing.Point(192, 518);
+            this.cbMul1k1.Location = new System.Drawing.Point(182, 40);
             this.cbMul1k1.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbMul1k1.Name = "cbMul1k1";
             this.cbMul1k1.Size = new System.Drawing.Size(117, 21);
@@ -241,7 +243,7 @@
             this.numericUpDown1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.numericUpDown1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.numericUpDown1.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.numericUpDown1.Location = new System.Drawing.Point(516, 488);
+            this.numericUpDown1.Location = new System.Drawing.Point(501, 7);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             50,
             0,
@@ -256,7 +258,7 @@
             // lbShift
             // 
             this.lbShift.AutoSize = true;
-            this.lbShift.Location = new System.Drawing.Point(430, 491);
+            this.lbShift.Location = new System.Drawing.Point(413, 9);
             this.lbShift.Name = "lbShift";
             this.lbShift.Size = new System.Drawing.Size(68, 17);
             this.lbShift.TabIndex = 17;
@@ -266,7 +268,7 @@
             // 
             this.cbShift.AutoSize = true;
             this.cbShift.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbShift.Location = new System.Drawing.Point(318, 518);
+            this.cbShift.Location = new System.Drawing.Point(303, 40);
             this.cbShift.Name = "cbShift";
             this.cbShift.Size = new System.Drawing.Size(96, 21);
             this.cbShift.TabIndex = 18;
@@ -279,7 +281,7 @@
             // 
             this.cbChapterName.AutoSize = true;
             this.cbChapterName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbChapterName.Location = new System.Drawing.Point(192, 488);
+            this.cbChapterName.Location = new System.Drawing.Point(182, 8);
             this.cbChapterName.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbChapterName.Name = "cbChapterName";
             this.cbChapterName.Size = new System.Drawing.Size(108, 21);
@@ -299,7 +301,7 @@
             this.maskedTextBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.maskedTextBox1.ForeColor = System.Drawing.SystemColors.WindowText;
             this.maskedTextBox1.InsertKeyMode = System.Windows.Forms.InsertKeyMode.Overwrite;
-            this.maskedTextBox1.Location = new System.Drawing.Point(423, 516);
+            this.maskedTextBox1.Location = new System.Drawing.Point(406, 37);
             this.maskedTextBox1.Mask = "00:00:00.000";
             this.maskedTextBox1.Name = "maskedTextBox1";
             this.maskedTextBox1.PromptChar = 'T';
@@ -356,7 +358,7 @@
             this.btnLog.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnLog.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
             this.btnLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnLog.Location = new System.Drawing.Point(516, 516);
+            this.btnLog.Location = new System.Drawing.Point(501, 37);
             this.btnLog.Name = "btnLog";
             this.btnLog.Size = new System.Drawing.Size(52, 23);
             this.btnLog.TabIndex = 24;
@@ -440,7 +442,7 @@
             "Time Codes",
             "TsMuxeR Meta",
             "CUE"});
-            this.savingType.Location = new System.Drawing.Point(74, 486);
+            this.savingType.Location = new System.Drawing.Point(62, 4);
             this.savingType.Name = "savingType";
             this.savingType.Size = new System.Drawing.Size(108, 25);
             this.savingType.TabIndex = 26;
@@ -450,7 +452,7 @@
             // lbFormat
             // 
             this.lbFormat.AutoSize = true;
-            this.lbFormat.Location = new System.Drawing.Point(12, 491);
+            this.lbFormat.Location = new System.Drawing.Point(3, 10);
             this.lbFormat.Name = "lbFormat";
             this.lbFormat.Size = new System.Drawing.Size(56, 17);
             this.lbFormat.TabIndex = 27;
@@ -479,7 +481,7 @@
             this.xmlLang.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.xmlLang.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.xmlLang.FormattingEnabled = true;
-            this.xmlLang.Location = new System.Drawing.Point(74, 516);
+            this.xmlLang.Location = new System.Drawing.Point(62, 37);
             this.xmlLang.Name = "xmlLang";
             this.xmlLang.Size = new System.Drawing.Size(108, 25);
             this.xmlLang.TabIndex = 29;
@@ -489,7 +491,7 @@
             // lbXmlLang
             // 
             this.lbXmlLang.AutoSize = true;
-            this.lbXmlLang.Location = new System.Drawing.Point(12, 520);
+            this.lbXmlLang.Location = new System.Drawing.Point(3, 42);
             this.lbXmlLang.Name = "lbXmlLang";
             this.lbXmlLang.Size = new System.Drawing.Size(58, 17);
             this.lbXmlLang.TabIndex = 30;
@@ -524,6 +526,25 @@
             this.creatZonesToolStripMenuItem.Text = "生成Zones";
             this.creatZonesToolStripMenuItem.Click += new System.EventHandler(this.creatZonesToolStripMenuItem_Click);
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.lbFormat);
+            this.panel1.Controls.Add(this.savingType);
+            this.panel1.Controls.Add(this.lbXmlLang);
+            this.panel1.Controls.Add(this.xmlLang);
+            this.panel1.Controls.Add(this.cbChapterName);
+            this.panel1.Controls.Add(this.cbMul1k1);
+            this.panel1.Controls.Add(this.cbAutoGenName);
+            this.panel1.Controls.Add(this.cbShift);
+            this.panel1.Controls.Add(this.btnLog);
+            this.panel1.Controls.Add(this.lbShift);
+            this.panel1.Controls.Add(this.numericUpDown1);
+            this.panel1.Controls.Add(this.maskedTextBox1);
+            this.panel1.Location = new System.Drawing.Point(12, 475);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(556, 64);
+            this.panel1.TabIndex = 32;
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -531,26 +552,15 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(580, 551);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnExpand);
-            this.Controls.Add(this.lbXmlLang);
-            this.Controls.Add(this.xmlLang);
             this.Controls.Add(this.btnPreview);
-            this.Controls.Add(this.lbFormat);
-            this.Controls.Add(this.savingType);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.comboBox2);
-            this.Controls.Add(this.btnLog);
-            this.Controls.Add(this.maskedTextBox1);
-            this.Controls.Add(this.cbChapterName);
-            this.Controls.Add(this.cbShift);
-            this.Controls.Add(this.lbShift);
-            this.Controls.Add(this.numericUpDown1);
-            this.Controls.Add(this.cbMul1k1);
             this.Controls.Add(this.cbRound);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.Tips);
-            this.Controls.Add(this.cbAutoGenName);
             this.Controls.Add(this.btnTrans);
             this.Controls.Add(this.lbPath);
             this.Controls.Add(this.btnSave);
@@ -574,6 +584,8 @@
             this.combineMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.createZonestMenuStrip.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -618,6 +630,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn cOrder;
         private System.Windows.Forms.ContextMenuStrip createZonestMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem creatZonesToolStripMenuItem;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 
