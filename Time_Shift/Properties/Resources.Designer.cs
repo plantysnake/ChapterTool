@@ -61,6 +61,26 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_drop_down {
+            get {
+                object obj = ResourceManager.GetObject("arrow_drop_down", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_drop_up {
+            get {
+                object obj = ResourceManager.GetObject("arrow_drop_up", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 所有文件 的本地化字符串。
         /// </summary>
         internal static string File_Filter_All {
@@ -660,6 +680,16 @@ namespace ChapterTool.Properties {
         internal static string ToolTips_Useless_Chapter {
             get {
                 return ResourceManager.GetString("ToolTips_Useless_Chapter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap unfold_more {
+            get {
+                object obj = ResourceManager.GetObject("unfold_more", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

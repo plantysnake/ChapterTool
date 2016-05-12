@@ -35,8 +35,6 @@
             this.lbPath = new System.Windows.Forms.Label();
             this.btnTrans = new System.Windows.Forms.Button();
             this.cbAutoGenName = new System.Windows.Forms.CheckBox();
-            this.Tips = new System.Windows.Forms.Label();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.cbRound = new System.Windows.Forms.CheckBox();
             this.deviationMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -64,16 +62,20 @@
             this.btnPreview = new System.Windows.Forms.Button();
             this.xmlLang = new System.Windows.Forms.ComboBox();
             this.lbXmlLang = new System.Windows.Forms.Label();
-            this.btnExpand = new System.Windows.Forms.Button();
             this.createZonestMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.creatZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.tsTips = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.tsBtnExpand = new System.Windows.Forms.ToolStripDropDownButton();
             this.deviationMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.combineMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.createZonestMenuStrip.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnLoad
@@ -151,25 +153,6 @@
             this.toolTip1.SetToolTip(this.cbAutoGenName, "将章节名重新从Chapter 01开始标记");
             this.cbAutoGenName.UseVisualStyleBackColor = true;
             this.cbAutoGenName.CheckedChanged += new System.EventHandler(this.cbAutoGenName_CheckedChanged);
-            // 
-            // Tips
-            // 
-            this.Tips.Location = new System.Drawing.Point(12, 444);
-            this.Tips.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.Tips.Name = "Tips";
-            this.Tips.Size = new System.Drawing.Size(253, 17);
-            this.Tips.TabIndex = 1;
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(318, 440);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(12, 5, 3, 4);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(220, 24);
-            this.progressBar1.Step = 1;
-            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.progressBar1.TabIndex = 0;
-            this.progressBar1.Click += new System.EventHandler(this.progressBar1_Click);
             // 
             // comboBox1
             // 
@@ -497,21 +480,6 @@
             this.lbXmlLang.TabIndex = 30;
             this.lbXmlLang.Text = "XML语言";
             // 
-            // btnExpand
-            // 
-            this.btnExpand.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.btnExpand.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
-            this.btnExpand.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
-            this.btnExpand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExpand.Location = new System.Drawing.Point(544, 440);
-            this.btnExpand.Name = "btnExpand";
-            this.btnExpand.Size = new System.Drawing.Size(24, 24);
-            this.btnExpand.TabIndex = 31;
-            this.btnExpand.TabStop = false;
-            this.btnExpand.Text = "∨";
-            this.btnExpand.UseVisualStyleBackColor = true;
-            this.btnExpand.Click += new System.EventHandler(this.btnExpand_Click);
-            // 
             // createZonestMenuStrip
             // 
             this.createZonestMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -540,10 +508,48 @@
             this.panel1.Controls.Add(this.lbShift);
             this.panel1.Controls.Add(this.numericUpDown1);
             this.panel1.Controls.Add(this.maskedTextBox1);
-            this.panel1.Location = new System.Drawing.Point(12, 475);
+            this.panel1.Location = new System.Drawing.Point(12, 440);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(556, 64);
             this.panel1.TabIndex = 32;
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsTips,
+            this.tsProgressBar1,
+            this.tsBtnExpand});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 511);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(580, 22);
+            this.statusStrip1.SizingGrip = false;
+            this.statusStrip1.TabIndex = 33;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // tsTips
+            // 
+            this.tsTips.Name = "tsTips";
+            this.tsTips.Size = new System.Drawing.Size(443, 17);
+            this.tsTips.Spring = true;
+            this.tsTips.Text = " ";
+            this.tsTips.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // tsProgressBar1
+            // 
+            this.tsProgressBar1.Name = "tsProgressBar1";
+            this.tsProgressBar1.Size = new System.Drawing.Size(100, 16);
+            this.tsProgressBar1.Click += new System.EventHandler(this.progressBar1_Click);
+            // 
+            // tsBtnExpand
+            // 
+            this.tsBtnExpand.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsBtnExpand.Image = global::ChapterTool.Properties.Resources.arrow_drop_down;
+            this.tsBtnExpand.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsBtnExpand.Name = "tsBtnExpand";
+            this.tsBtnExpand.ShowDropDownArrow = false;
+            this.tsBtnExpand.Size = new System.Drawing.Size(20, 20);
+            this.tsBtnExpand.Text = "toolStripDropDownButton1";
+            this.tsBtnExpand.Click += new System.EventHandler(this.btnExpand_Click);
             // 
             // Form1
             // 
@@ -551,16 +557,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.ClientSize = new System.Drawing.Size(580, 551);
+            this.ClientSize = new System.Drawing.Size(580, 533);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.btnExpand);
             this.Controls.Add(this.btnPreview);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.cbRound);
             this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.progressBar1);
-            this.Controls.Add(this.Tips);
             this.Controls.Add(this.btnTrans);
             this.Controls.Add(this.lbPath);
             this.Controls.Add(this.btnSave);
@@ -586,6 +590,8 @@
             this.createZonestMenuStrip.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -598,8 +604,6 @@
         private System.Windows.Forms.Button btnTrans;
         private System.Windows.Forms.CheckBox cbAutoGenName;
         private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Label Tips;
-        private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.CheckBox cbRound;
         private System.Windows.Forms.CheckBox cbMul1k1;
@@ -623,7 +627,6 @@
         private System.Windows.Forms.Button btnPreview;
         private System.Windows.Forms.ComboBox xmlLang;
         private System.Windows.Forms.Label lbXmlLang;
-        private System.Windows.Forms.Button btnExpand;
         private System.Windows.Forms.DataGridViewTextBoxColumn cFrams;
         private System.Windows.Forms.DataGridViewTextBoxColumn cChapterName;
         private System.Windows.Forms.DataGridViewTextBoxColumn cTimeCode;
@@ -631,6 +634,10 @@
         private System.Windows.Forms.ContextMenuStrip createZonestMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem creatZonesToolStripMenuItem;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel tsTips;
+        private System.Windows.Forms.ToolStripProgressBar tsProgressBar1;
+        private System.Windows.Forms.ToolStripDropDownButton tsBtnExpand;
     }
 }
 

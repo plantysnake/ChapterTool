@@ -59,7 +59,7 @@ namespace ChapterTool.Forms
         #region Inital
         private void Form1_Load(object sender, EventArgs e)
         {
-            TargetHeight[0] = Height - 80;
+            TargetHeight[0] = Height - 66;
             TargetHeight[1] = Height;
             Text = $"[VCB-Studio] ChapterTool v{Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
@@ -161,7 +161,7 @@ namespace ChapterTool.Forms
         private void progressBar1_Click(object sender, EventArgs e)
         {
             ++_poi[0];
-            progressBar1.SetState(_poi[0]%2 == 0?1:3);
+            //progressBar1.SetState(_poi[0]%2 == 0?1:3);
             Log(string.Format(Resources.Log_About_Form_Click, _poi[0]));
             if (_poi[0] >= _poi[1])
             {
@@ -210,11 +210,11 @@ namespace ChapterTool.Forms
             {
                 if (string.IsNullOrEmpty(FilePath))
                 {
-                    Tips.Text = Resources.File_Unloaded;
+                    tsTips.Text = Resources.File_Unloaded;
                     return false;
                 }
                 if (RFileType.IsMatch(FilePath)) return true;
-                Tips.Text = Resources.Tips_InValid_Type;
+                tsTips.Text = Resources.Tips_InValid_Type;
                 Log(Resources.Tips_InValid_Type_Log + $"[{Path.GetFileName(FilePath)}]");
                 FilePath = string.Empty;
                 lbPath.Text = Resources.File_Unloaded;
@@ -238,11 +238,11 @@ namespace ChapterTool.Forms
                 Log(string.Format(Resources.Log_Load_File_Via_Button, FilePath));
                 comboBox2.Items.Clear();
                 if (Loadfile()) UpdataGridView();
-                progressBar1.SetState(1);
+                //progressBar1.SetState(1);
             }
             catch (Exception exception)
             {
-                progressBar1.SetState(2);
+                //progressBar1.SetState(2);
                 Notification.ShowError($"Exception catched in loading file: {FilePath}", exception);
                 Log($"ERROR(btnLoad_Click) {FilePath} {exception.Message}");
                 FilePath = string.Empty;
@@ -303,15 +303,15 @@ namespace ChapterTool.Forms
                 }
                 if (_info == null) return false;
                 _info.UpdataInfo(_chapterNameTemplate);
-                progressBar1.SetState(1);
+                //progressBar1.SetState(1);
             }
             catch (Exception exception)
             {
-                progressBar1.SetState(2);
+                //progressBar1.SetState(2);
                 Notification.ShowError(@"Exception catched in Function LoadFile", exception);
                 Log($"ERROR(LoadFile) {exception.Message}");
                 FilePath = string.Empty;
-                progressBar1.Value = 0;
+                tsProgressBar1.Value = 0;
                 lbPath.Text = Resources.File_Unloaded;
                 Cursor = Cursors.Default;
                 return false;
@@ -374,7 +374,7 @@ namespace ChapterTool.Forms
             }
             _info = CombineChapter ? _fullIfoChapter : _ifoGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
-            Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Tips_Chapter_Not_find : Resources.Tips_IFO_Waring;
+            tsTips.Text = comboBox2.SelectedIndex == -1 ? Resources.Tips_Chapter_Not_find : Resources.Tips_IFO_Waring;
         }
 
         private void LoadXpl()
@@ -396,7 +396,7 @@ namespace ChapterTool.Forms
             }
             _info = _xplGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
-            Tips.Text = comboBox2.SelectedIndex == -1 ? Resources.Tips_Chapter_Not_find : Resources.Tips_Load_Success;
+            tsTips.Text = comboBox2.SelectedIndex == -1 ? Resources.Tips_Chapter_Not_find : Resources.Tips_Load_Success;
         }
 
         private void LoadMp4()
@@ -430,8 +430,8 @@ namespace ChapterTool.Forms
             _info = OgmData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTF8String());
             OgmData.OnLog -= Log;
             _info.UpdataInfo((int)numericUpDown1.Value);
-            progressBar1.Value = 33;
-            Tips.Text = Resources.Tips_Load_Success;
+            tsProgressBar1.Value = 33;
+            tsTips.Text = Resources.Tips_Load_Success;
         }
 
         private void LoadXml()
@@ -449,11 +449,11 @@ namespace ChapterTool.Forms
             try
             {
                 GetChapterInfoFromXml(matroska.GetXml(FilePath));
-                progressBar1.SetState(1);
+                //progressBar1.SetState(1);
             }
             catch (Exception exception)
             {
-                progressBar1.SetState(3);
+                //progressBar1.SetState(3);
                 Notification.ShowError(@"Exception catched in fuction LoadMatroska", exception);
                 Log($"ERROR(LoadMatroska) {exception.Message}");
                 FilePath = string.Empty;
@@ -465,13 +465,13 @@ namespace ChapterTool.Forms
             try
             {
                 _info = new CueData(FilePath).Chapter;
-                progressBar1.Value = 33;
-                progressBar1.SetState(1);
-                Tips.Text = Resources.Tips_Load_Success;
+                tsProgressBar1.Value = 33;
+                //progressBar1.SetState(1);
+                tsTips.Text = Resources.Tips_Load_Success;
             }
             catch (Exception exception)
             {
-                progressBar1.SetState(3);
+                //progressBar1.SetState(3);
                 Notification.ShowError(@"Exception catched in fuction LoadCue", exception);
                 Log($"ERROR(LoadCue) {exception.Message}");
                 FilePath = string.Empty;
@@ -492,11 +492,11 @@ namespace ChapterTool.Forms
                 _customSavingPath = folderBrowserDialog1.SelectedPath;
                 RegistryStorage.Save(_customSavingPath);
                 Log(string.Format(Resources.Log_Set_Saving_Path, _customSavingPath));
-                progressBar1.SetState(1);
+                //progressBar1.SetState(1);
             }
             catch (Exception exception)
             {
-                progressBar1.SetState(2);
+                //progressBar1.SetState(2);
                 Notification.ShowError($"Exception catched while saving Path: {_customSavingPath}", exception);
                 Log($"ERROR(btnSave_MouseUp) {_customSavingPath}: {exception.Message}");
                 _customSavingPath = string.Empty;
@@ -584,15 +584,15 @@ namespace ChapterTool.Forms
                         _info.SaveCue(Path.GetFileName(FilePath), savePath, cbAutoGenName.Checked);
                         break;
                 }
-                progressBar1.Value = 100;
-                Tips.Text = Resources.Tips_Save_Success;
+                tsProgressBar1.Value = 100;
+                tsTips.Text = Resources.Tips_Save_Success;
             }
             catch (Exception exception)
             {
                 Notification.ShowError(@"Exception catched while saving file", exception);
                 Log($"ERROR(SaveFile) {exception.Message}");
-                progressBar1.Value = 60;
-                Tips.Text = Resources.Tips_Save_Fail;
+                tsProgressBar1.Value = 60;
+                tsTips.Text = Resources.Tips_Save_Fail;
             }
         }
         #endregion
@@ -649,7 +649,7 @@ namespace ChapterTool.Forms
             MplsData.OnLog += Log;
             _info = _rawMpls.ToChapterInfo(index, CombineChapter);
             MplsData.OnLog -= Log;
-            Tips.Text = _info.Chapters.Count < 2 ? Resources.Tips_Chapter_Not_find : Resources.Tips_Load_Success;
+            tsTips.Text = _info.Chapters.Count < 2 ? Resources.Tips_Chapter_Not_find : Resources.Tips_Load_Success;
             _info.UpdataInfo(_chapterNameTemplate);
         }
 
@@ -678,7 +678,7 @@ namespace ChapterTool.Forms
             }
             _info = _xmlGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
-            Tips.Text = Resources.Tips_Load_Success;
+            tsTips.Text = Resources.Tips_Load_Success;
         }
         #endregion
 
@@ -720,7 +720,7 @@ namespace ChapterTool.Forms
                 }
                 Application.DoEvents();
             }
-            progressBar1.Value = dataGridView1.RowCount > 1 ? 66 : 33;
+            tsProgressBar1.Value = dataGridView1.RowCount > 1 ? 66 : 33;
         }
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -872,7 +872,7 @@ namespace ChapterTool.Forms
                 btnTrans.FlatAppearance.MouseOverBackColor   = value;
                 btnLog.FlatAppearance.MouseOverBackColor     = value;
                 btnPreview.FlatAppearance.MouseOverBackColor = value;
-                btnExpand.FlatAppearance.MouseOverBackColor  = value;
+                //btnExpand.FlatAppearance.MouseOverBackColor  = value;
             }
             private get { return btnLoad.FlatAppearance.MouseOverBackColor; }
         }
@@ -885,7 +885,7 @@ namespace ChapterTool.Forms
                 btnTrans.FlatAppearance.MouseDownBackColor   = value;
                 btnLog.FlatAppearance.MouseDownBackColor     = value;
                 btnPreview.FlatAppearance.MouseDownBackColor = value;
-                btnExpand.FlatAppearance.MouseDownBackColor  = value;
+                //btnExpand.FlatAppearance.MouseDownBackColor  = value;
             }
             private get { return btnLoad.FlatAppearance.MouseDownBackColor; }
         }
@@ -898,7 +898,7 @@ namespace ChapterTool.Forms
                 btnTrans.FlatAppearance.BorderColor          = value;
                 btnLog.FlatAppearance.BorderColor            = value;
                 btnPreview.FlatAppearance.BorderColor        = value;
-                btnExpand.FlatAppearance.BorderColor         = value;
+                //btnExpand.FlatAppearance.BorderColor         = value;
                 dataGridView1.GridColor                      = value;
             }
             private get { return btnLoad.FlatAppearance.BorderColor; }
@@ -910,7 +910,7 @@ namespace ChapterTool.Forms
                 ForeColor                                    = value;
                 numericUpDown1.ForeColor                     = value;
                 maskedTextBox1.ForeColor                     = value;
-                btnExpand.ForeColor                          = value;
+                //btnExpand.ForeColor                          = value;
                 comboBox1.ForeColor                          = value;
                 comboBox2.ForeColor                          = value;
                 xmlLang.ForeColor                            = value;
@@ -998,7 +998,8 @@ namespace ChapterTool.Forms
         private void Form1_Resize()
         {
             if (!TargetHeight.Any(item => item == Height)) return;
-            btnExpand.Text = @"#";
+            tsBtnExpand.Image = Resources.unfold_more;
+            //btnExpand.Text = @"#";
             if (Height == TargetHeight[0])
             {
                 while (Height < TargetHeight[1])
@@ -1016,7 +1017,7 @@ namespace ChapterTool.Forms
                 }
             }
             ExtensionPanelShow = Height == TargetHeight[1];
-            btnExpand.Text = Height == TargetHeight[0] ? "∨" : "∧";
+            tsBtnExpand.Image = Height == TargetHeight[0] ? Resources.arrow_drop_down : Resources.arrow_drop_up;
         }
         #endregion
 
@@ -1057,12 +1058,12 @@ namespace ChapterTool.Forms
                     return File.ReadAllBytes(chapterPath).GetUTF8String();
                 }
                 cbChapterName.CheckState = CheckState.Unchecked;
-                progressBar1.SetState(1);
+                //progressBar1.SetState(1);
                 return string.Empty;
             }
             catch (Exception exception)
             {
-                progressBar1.SetState(2);
+                //progressBar1.SetState(2);
                 Notification.ShowError($"Exception catched while opening file {FilePath}", exception);
                 Log($"ERROR(LoadChapterName) {exception.Message}");
                 return string.Empty;
@@ -1102,7 +1103,7 @@ namespace ChapterTool.Forms
                 catch (Exception)
                 {
                     _info.Offset = TimeSpan.Zero;
-                    Tips.Text = Resources.Tips_Invalid_Shift_Time;
+                    tsTips.Text = Resources.Tips_Invalid_Shift_Time;
                 }
             }
             else
@@ -1119,7 +1120,7 @@ namespace ChapterTool.Forms
             UpdataGridView(0, false);
         }
 
-        private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e) => Tips.Text = Resources.Tips_Invalid_Shift_Time;
+        private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e) => tsTips.Text = Resources.Tips_Invalid_Shift_Time;
         #endregion
 
         #region LogForm
