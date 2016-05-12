@@ -166,6 +166,7 @@
             "24000 / 1000",
             "25000 / 1000",
             "30000 / 1001",
+            "RESER / VED",
             "50000 / 1000",
             "60000 / 1001"});
             this.comboBox1.Location = new System.Drawing.Point(447, 52);
@@ -543,7 +544,7 @@
             // tsBtnExpand
             // 
             this.tsBtnExpand.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsBtnExpand.Image = global::ChapterTool.Properties.Resources.arrow_drop_down;
+            this.tsBtnExpand.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnExpand.Image")));
             this.tsBtnExpand.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsBtnExpand.Name = "tsBtnExpand";
             this.tsBtnExpand.ShowDropDownArrow = false;

@@ -619,7 +619,18 @@ namespace ChapterTool.Forms
         #region Contorl Panel
         private int ClipSeletIndex => comboBox2.SelectedIndex < 0 ? 0 : comboBox2.SelectedIndex;
 
-        private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e) => UpdataGridView(comboBox1.SelectedIndex + 1);
+        private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            if (comboBox1.SelectedIndex == 4)//reserved fps
+            {
+                UpdataGridView(comboBox1.SelectedIndex);
+            }
+            else
+            {
+                UpdataGridView(comboBox1.SelectedIndex + 1);
+            }
+        }
+
 
         private void comboBox2_SelectionChangeCommitted(object sender, EventArgs e)
         {
@@ -792,7 +803,7 @@ namespace ChapterTool.Forms
             {
                 //当未手动提供帧率并且不是mpls或ifo这种已知帧率的，才进行蒙帧率操作
                 index = index == 0 && _rawMpls == null && _ifoGroup == null ? GetAutofps(settingAccuracy) : index;
-                if (index > 5) { --index; }// 跳过在30与50中间的空项
+                //if (index > 5) { --index; }// 跳过在30与50中间的空项
                 comboBox1.SelectedIndex = index - 1;
             }
             else
