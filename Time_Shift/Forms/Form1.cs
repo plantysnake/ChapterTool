@@ -1034,7 +1034,14 @@ namespace ChapterTool.Forms
         }
         #endregion
 
-        private void savingType_SelectedIndexChanged(object sender, EventArgs e) => xmlLang.Enabled = savingType.SelectedIndex == 1;
+        private void savingType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            xmlLang.Enabled = savingType.SelectedIndex == 1;
+            if (xmlLang.Enabled && xmlLang.SelectedIndex == -1)
+            {
+                xmlLang.SelectedIndex = 2;
+            }
+        }
 
         private void xmlLang_SelectionChangeCommitted(object sender, EventArgs e)
         {
