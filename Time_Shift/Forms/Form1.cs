@@ -54,6 +54,25 @@ namespace ChapterTool.Forms
             Log(string.Format(Resources.Log_Load_File_Via_Args, args));
             AddCommand();
         }
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Control | Keys.S:
+                    SaveFile(savingType.SelectedIndex);
+                    return true;
+                case Keys.Control | Keys.O:
+                    btnLoad_Click(null, EventArgs.Empty);
+                    return true;
+                case Keys.Control | Keys.R:
+                    UpdataGridView();
+                    return true;
+                case Keys.F11:
+                    Form1_Resize();
+                    return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
         #endregion
 
         #region Inital
@@ -845,6 +864,7 @@ namespace ChapterTool.Forms
             set
             {
                 BackColor                                    = value;
+                statusStrip1.BackColor                       = value;
                 //btnExpand.BackColor                          = value;
             }
             private get { return BackColor; }
