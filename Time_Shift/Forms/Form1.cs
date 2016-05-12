@@ -623,7 +623,7 @@ namespace ChapterTool.Forms
         {
             if (comboBox1.SelectedIndex == 4)//reserved fps
             {
-                UpdataGridView(comboBox1.SelectedIndex);
+                UpdataGridView(comboBox1.SelectedIndex);//exactly is 29.970fps
             }
             else
             {
@@ -801,8 +801,8 @@ namespace ChapterTool.Forms
 
             if (cbRound.Checked)
             {
-                //当未手动提供帧率并且不是mpls或ifo这种已知帧率的，才进行蒙帧率操作
-                index = index == 0 && _rawMpls == null && _ifoGroup == null ? GetAutofps(settingAccuracy) : index;
+                //当未手动提供帧率[del]并且不是mpls或ifo这种已知帧率的，[/del]才进行蒙帧率操作
+                index = index == 0/* && _rawMpls == null && _ifoGroup == null */? GetAutofps(settingAccuracy) : index;
                 //if (index > 5) { --index; }// 跳过在30与50中间的空项
                 comboBox1.SelectedIndex = index - 1;
             }

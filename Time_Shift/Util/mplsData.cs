@@ -31,7 +31,7 @@ namespace ChapterTool.Util
         public List<Clip> ChapterClips   { get; } = new List<Clip>();
 
         /// <summary>include all time code in mpls</summary>
-        public Clip EntireClip { get; } = new Clip {Name = "FULL Chapter"};
+        public Clip EntireClip { get; } = new Clip {Name = "FULL Chapter" , TimeIn = 0};
 
         public override string ToString() => $"MPLS: {ChapterClips.Count} Viedo Clips, {EntireClip.TimeStamp.Count} Time Stamps";
 
@@ -64,7 +64,6 @@ namespace ChapterTool.Util
                 playItemEntries += lengthOfPlayItem + 2;//for that not counting the two length bytes themselves.
             }
             ParsePlaylistMark(playlistMarkSectionStartAddress);
-            EntireClip.TimeIn  = 0;
             EntireClip.TimeOut = ChapterClips.Sum(item => item.Length);
             EntireClip.Length  = EntireClip.TimeOut;
         }
@@ -82,8 +81,9 @@ namespace ChapterTool.Util
             playItemEntries                 = playlistSectionStartAddress + 0x0a;
         }
 
-        private void ParsePlayItem(int playItemEntries, out int lengthOfPlayItem, out int itemStartAdress, out int streamCount)
+        private bool ParsePlayItem(int playItemEntries, out int lengthOfPlayItem, out int itemStartAdress, out int streamCount)
         {
+            bool mulitAngle           = false;
             lengthOfPlayItem     = Byte2Int16(_data, playItemEntries);
             var bytes            = new byte[lengthOfPlayItem + 2];
             Array.Copy(_data, playItemEntries, bytes, 0, lengthOfPlayItem + 2);
@@ -101,8 +101,10 @@ namespace ChapterTool.Util
             int isMultiAngle           = (bytes[0x0c] >> 4) & 0x01;
             StringBuilder nameBuilder  = new StringBuilder(Encoding.ASCII.GetString(bytes, 0x02, 0x05));
 
+            //todo: fps info of multi-angle has been skiped too.
             if (isMultiAngle == 1)  //skip multi-angle
             {
+                mulitAngle = true;
                 int numberOfAngles = bytes[0x22];
                 for (int i = 1; i < numberOfAngles; i++)
                 {
@@ -113,6 +115,7 @@ namespace ChapterTool.Util
             }
             streamClip.Name = nameBuilder.ToString();
             ChapterClips.Add(streamClip);
+            return mulitAngle;
         }
 
         private static void StreamAttributeLog(string message)
