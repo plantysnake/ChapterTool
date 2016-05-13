@@ -54,6 +54,10 @@ namespace ChapterTool.Forms
             Log(string.Format(Resources.Log_Load_File_Via_Args, args));
             AddCommand();
         }
+        #endregion
+
+
+        #region HotKey
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             switch (keyData)
@@ -67,11 +71,81 @@ namespace ChapterTool.Forms
                 case Keys.Control | Keys.R:
                     UpdataGridView();
                     return true;
+                case Keys.Control | Keys.D0:
+                case Keys.Control | Keys.D1:
+                case Keys.Control | Keys.D2:
+                case Keys.Control | Keys.D3:
+                case Keys.Control | Keys.D4:
+                case Keys.Control | Keys.D5:
+                case Keys.Control | Keys.D6:
+                case Keys.Control | Keys.D7:
+                case Keys.Control | Keys.D8:
+                case Keys.Control | Keys.D9:
+                    SwitchByHotKey(keyData);
+                    return true;
+                case Keys.Control | Keys.L:
+                    btnLog_Click(null, EventArgs.Empty);
+                    return true;
                 case Keys.F11:
                     Form1_Resize();
                     return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private bool SwitchByHotKey(int index)
+        {
+            if (index >= comboBox2.Items.Count)
+            {
+                return false;
+            }
+            comboBox2.SelectedIndex = index;
+            comboBox2_SelectionChangeCommitted(null, EventArgs.Empty);
+            return true;
+        }
+
+        private void SwitchByHotKey(Keys keyData)
+        {
+            Keys numKey = keyData ^ Keys.Control;
+            Debug.WriteLine(numKey);
+            bool result = false;
+            switch (numKey)
+            {
+                case Keys.D1:
+                    result = SwitchByHotKey(0);
+                    break;
+                case Keys.D2:
+                    result = SwitchByHotKey(1);
+                    break;
+                case Keys.D3:
+                    result = SwitchByHotKey(2);
+                    break;
+                case Keys.D4:
+                    result = SwitchByHotKey(3);
+                    break;
+                case Keys.D5:
+                    result = SwitchByHotKey(4);
+                    break;
+                case Keys.D6:
+                    result = SwitchByHotKey(5);
+                    break;
+                case Keys.D7:
+                    result = SwitchByHotKey(6);
+                    break;
+                case Keys.D8:
+                    result = SwitchByHotKey(7);
+                    break;
+                case Keys.D9:
+                    result = SwitchByHotKey(8);
+                    break;
+                case Keys.D0:
+                    result = SwitchByHotKey(9);
+                    break;
+            }
+            if (!result)
+            {
+                tsTips.Text = Resources.Tips_Out_Of_Range;
+            }
         }
         #endregion
 

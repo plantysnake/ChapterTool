@@ -657,6 +657,15 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 输入的序号超出范围 的本地化字符串。
+        /// </summary>
+        internal static string Tips_Out_Of_Range {
+            get {
+                return ResourceManager.GetString("Tips_Out_Of_Range", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 保存失败 的本地化字符串。
         /// </summary>
         internal static string Tips_Save_Fail {
