@@ -56,7 +56,6 @@ namespace ChapterTool.Forms
         }
         #endregion
 
-
         #region HotKey
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -64,6 +63,14 @@ namespace ChapterTool.Forms
             {
                 case Keys.Control | Keys.S:
                     SaveFile(savingType.SelectedIndex);
+                    return true;
+                case Keys.Alt | Keys.S:
+                    if (comboBox2.SelectedIndex + 1 < comboBox2.Items.Count)
+                    {
+                        SaveFile(savingType.SelectedIndex);
+                        ++comboBox2.SelectedIndex;
+                        comboBox2_SelectionChangeCommitted(null, EventArgs.Empty);
+                    }
                     return true;
                 case Keys.Control | Keys.O:
                     btnLoad_Click(null, EventArgs.Empty);
@@ -1364,6 +1371,7 @@ namespace ChapterTool.Forms
         }
         #endregion
 
+        #region Zones
         private void creatZonesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count < 1) return;
@@ -1388,8 +1396,7 @@ namespace ChapterTool.Forms
             }
             string zones = zoneRange.OrderBy(item => item.Key).Aggregate(string.Empty, (current, zone) => current + $"/{zone.Key},{zone.Value},");
             string ret = "--zones " + zones.TrimStart('/');
-            var result = MessageBox.Show($"{ret}\n{Resources.Zones_Copy_To_Clip_Board}",
-                Resources.Message_ChapterTool_Info, MessageBoxButtons.YesNo);
+            var result = Notification.ShowInfo($"{ret}\n{Resources.Zones_Copy_To_Clip_Board}");
             if (result == DialogResult.Yes)
             {
                 Clipboard.SetText(ret);
@@ -1404,5 +1411,6 @@ namespace ChapterTool.Forms
                 createZonestMenuStrip.Show(MousePosition);
             }
         }
+        #endregion
     }
 }
