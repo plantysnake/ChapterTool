@@ -90,6 +90,20 @@ namespace ChapterTool.Forms
                 case Keys.Control | Keys.D9:
                     SwitchByHotKey(keyData);
                     return true;
+                case Keys.PageDown:
+                    if (comboBox2.SelectedIndex + 1 < comboBox2.Items.Count)
+                    {
+                        ++comboBox2.SelectedIndex;
+                        comboBox2_SelectionChangeCommitted(null, EventArgs.Empty);
+                    }
+                    return true;
+                case Keys.PageUp:
+                    if (comboBox2.SelectedIndex > 0)
+                    {
+                        --comboBox2.SelectedIndex;
+                        comboBox2_SelectionChangeCommitted(null, EventArgs.Empty);
+                    }
+                    return true;
                 case Keys.Control | Keys.L:
                     btnLog_Click(null, EventArgs.Empty);
                     return true;
