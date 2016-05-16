@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.ComponentModel;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace ChapterTool.Controls
 {
-
     public struct Pattern
     {
         public Regex PatRegex { set; get; }
@@ -48,6 +43,7 @@ namespace ChapterTool.Controls
             worker.DoWork += HighLight;
             worker.RunWorkerAsync(Rtf);
             worker.RunWorkerCompleted += (sender, args) => Rtf = args.Result as string;
+
             base.OnTextChanged(e);
         }
 
@@ -62,7 +58,7 @@ namespace ChapterTool.Controls
                 };
                 text.SelectionLength = text.Text.Length;
                 text.SelectionColor = OriginalColor;
-                text.SelectionFont = new Font("Consolas", 9, FontStyle.Regular);
+                text.SelectionFont = this.Font;// new Font("Consolas", 9, FontStyle.Regular);
 
                 foreach (var pattern in _patterns)
                 {
