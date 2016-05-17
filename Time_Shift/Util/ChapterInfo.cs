@@ -202,7 +202,7 @@ namespace ChapterTool.Util
 
         public void SaveText(string filename, bool notUseName) => File.WriteAllText(filename, GetText(notUseName), Encoding.UTF8);
 
-        public void SaveQpfile(string filename) => File.WriteAllLines(filename, Chapters.Select(c => c.FramsInfo.ToString().Replace("*", "I -1").Replace("K", "I -1")).ToArray());
+        public void SaveQpfile(string filename) => File.WriteAllLines(filename, Chapters.Select(c => c.FramsInfo.ToString().Replace("*", "I").Replace("K", "I")).ToArray());
 
         public void SaveCelltimes(string filename) => File.WriteAllLines(filename, Chapters.Select(c => ((long) Math.Round(c.Time.TotalSeconds*FramesPerSecond)).ToString()).ToArray());
 
