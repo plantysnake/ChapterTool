@@ -197,3 +197,4 @@ FakesAssemblies/
 
 # toaru database
 *.VC.db
+*.opendb

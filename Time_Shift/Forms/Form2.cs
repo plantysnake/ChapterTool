@@ -125,7 +125,7 @@ namespace ChapterTool.Forms
                     System.Diagnostics.Process.Start("https://bitbucket.org/TautCony/chaptertool");
                     break;
                 case MouseButtons.Middle:
-                    System.Diagnostics.Process.Start("http://vcb-s.com/");
+                    System.Diagnostics.Process.Start("https://raw.githubusercontent.com/tautcony/ChapterTool/master/Time_Shift/ChangeLog.txt");
                     break;
             }
         }

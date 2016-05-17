@@ -102,6 +102,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\HiLightTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\FormPreview.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -153,6 +156,7 @@
       <DependentUpon>FormLog.cs</DependentUpon>
     </Compile>
     <Compile Include="Util\CueData.cs" />
+    <Compile Include="Util\CueSharp.cs" />
     <Compile Include="Util\IfoData.cs" />
     <Compile Include="Util\IfoParser.cs" />
     <Compile Include="Util\LanguageHelper.cs" />
@@ -209,11 +213,15 @@
   <ItemGroup>
     <Content Include="ChangeLog.txt" />
     <Content Include="Images\about.ico" />
+    <None Include="Images\arrow_drop_down.png" />
+    <None Include="Images\arrow_drop_up.png" />
     <Content Include="Images\Ct.ico" />
     <Content Include="Images\icon.ico" />
+    <None Include="Images\unfold_more.png" />
     <Content Include="libmp4v2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\arrow_drop_down.bmp" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

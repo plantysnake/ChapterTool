@@ -35,11 +35,9 @@
             this.lbPath = new System.Windows.Forms.Label();
             this.btnTrans = new System.Windows.Forms.Button();
             this.cbAutoGenName = new System.Windows.Forms.CheckBox();
-            this.Tips = new System.Windows.Forms.Label();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.cbRound = new System.Windows.Forms.CheckBox();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deviationMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmAccuracy = new System.Windows.Forms.ToolStripMenuItem();
             this.cbMul1k1 = new System.Windows.Forms.CheckBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
@@ -48,7 +46,7 @@
             this.cbChapterName = new System.Windows.Forms.CheckBox();
             this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.combineMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.combineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -64,11 +62,20 @@
             this.btnPreview = new System.Windows.Forms.Button();
             this.xmlLang = new System.Windows.Forms.ComboBox();
             this.lbXmlLang = new System.Windows.Forms.Label();
-            this.btnExpand = new System.Windows.Forms.Button();
-            this.contextMenuStrip1.SuspendLayout();
+            this.createZonestMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.creatZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.tsTips = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.tsBtnExpand = new System.Windows.Forms.ToolStripDropDownButton();
+            this.deviationMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-            this.contextMenuStrip2.SuspendLayout();
+            this.combineMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.createZonestMenuStrip.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnLoad
@@ -136,7 +143,7 @@
             // cbAutoGenName
             // 
             this.cbAutoGenName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbAutoGenName.Location = new System.Drawing.Point(318, 488);
+            this.cbAutoGenName.Location = new System.Drawing.Point(303, 8);
             this.cbAutoGenName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cbAutoGenName.Name = "cbAutoGenName";
             this.cbAutoGenName.Size = new System.Drawing.Size(97, 21);
@@ -146,25 +153,6 @@
             this.toolTip1.SetToolTip(this.cbAutoGenName, "将章节名重新从Chapter 01开始标记");
             this.cbAutoGenName.UseVisualStyleBackColor = true;
             this.cbAutoGenName.CheckedChanged += new System.EventHandler(this.cbAutoGenName_CheckedChanged);
-            // 
-            // Tips
-            // 
-            this.Tips.Location = new System.Drawing.Point(12, 444);
-            this.Tips.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.Tips.Name = "Tips";
-            this.Tips.Size = new System.Drawing.Size(253, 17);
-            this.Tips.TabIndex = 1;
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(318, 440);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(12, 5, 3, 4);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(220, 24);
-            this.progressBar1.Step = 1;
-            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.progressBar1.TabIndex = 0;
-            this.progressBar1.Click += new System.EventHandler(this.progressBar1_Click);
             // 
             // comboBox1
             // 
@@ -178,6 +166,7 @@
             "24000 / 1000",
             "25000 / 1000",
             "30000 / 1001",
+            "RESER / VED",
             "50000 / 1000",
             "60000 / 1001"});
             this.comboBox1.Location = new System.Drawing.Point(447, 52);
@@ -192,7 +181,7 @@
             this.cbRound.AutoSize = true;
             this.cbRound.Checked = true;
             this.cbRound.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbRound.ContextMenuStrip = this.contextMenuStrip1;
+            this.cbRound.ContextMenuStrip = this.deviationMenuStrip;
             this.cbRound.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cbRound.Location = new System.Drawing.Point(417, 14);
             this.cbRound.Name = "cbRound";
@@ -204,12 +193,12 @@
             this.cbRound.UseVisualStyleBackColor = true;
             this.cbRound.CheckedChanged += new System.EventHandler(this.refresh_Click);
             // 
-            // contextMenuStrip1
+            // deviationMenuStrip
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deviationMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmAccuracy});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(125, 26);
+            this.deviationMenuStrip.Name = "contextMenuStrip1";
+            this.deviationMenuStrip.Size = new System.Drawing.Size(125, 26);
             // 
             // tsmAccuracy
             // 
@@ -222,7 +211,7 @@
             // 
             this.cbMul1k1.AutoSize = true;
             this.cbMul1k1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbMul1k1.Location = new System.Drawing.Point(192, 518);
+            this.cbMul1k1.Location = new System.Drawing.Point(182, 40);
             this.cbMul1k1.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbMul1k1.Name = "cbMul1k1";
             this.cbMul1k1.Size = new System.Drawing.Size(117, 21);
@@ -238,7 +227,7 @@
             this.numericUpDown1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.numericUpDown1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.numericUpDown1.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.numericUpDown1.Location = new System.Drawing.Point(516, 488);
+            this.numericUpDown1.Location = new System.Drawing.Point(501, 7);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             50,
             0,
@@ -253,7 +242,7 @@
             // lbShift
             // 
             this.lbShift.AutoSize = true;
-            this.lbShift.Location = new System.Drawing.Point(430, 491);
+            this.lbShift.Location = new System.Drawing.Point(413, 9);
             this.lbShift.Name = "lbShift";
             this.lbShift.Size = new System.Drawing.Size(68, 17);
             this.lbShift.TabIndex = 17;
@@ -263,7 +252,7 @@
             // 
             this.cbShift.AutoSize = true;
             this.cbShift.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbShift.Location = new System.Drawing.Point(318, 518);
+            this.cbShift.Location = new System.Drawing.Point(303, 40);
             this.cbShift.Name = "cbShift";
             this.cbShift.Size = new System.Drawing.Size(96, 21);
             this.cbShift.TabIndex = 18;
@@ -276,7 +265,7 @@
             // 
             this.cbChapterName.AutoSize = true;
             this.cbChapterName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbChapterName.Location = new System.Drawing.Point(192, 488);
+            this.cbChapterName.Location = new System.Drawing.Point(182, 8);
             this.cbChapterName.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.cbChapterName.Name = "cbChapterName";
             this.cbChapterName.Size = new System.Drawing.Size(108, 21);
@@ -296,7 +285,7 @@
             this.maskedTextBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.maskedTextBox1.ForeColor = System.Drawing.SystemColors.WindowText;
             this.maskedTextBox1.InsertKeyMode = System.Windows.Forms.InsertKeyMode.Overwrite;
-            this.maskedTextBox1.Location = new System.Drawing.Point(423, 516);
+            this.maskedTextBox1.Location = new System.Drawing.Point(406, 37);
             this.maskedTextBox1.Mask = "00:00:00.000";
             this.maskedTextBox1.Name = "maskedTextBox1";
             this.maskedTextBox1.PromptChar = 'T';
@@ -308,7 +297,7 @@
             // comboBox2
             // 
             this.comboBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.comboBox2.ContextMenuStrip = this.contextMenuStrip2;
+            this.comboBox2.ContextMenuStrip = this.combineMenuStrip;
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBox2.ForeColor = System.Drawing.SystemColors.WindowText;
@@ -322,14 +311,14 @@
             this.comboBox2.MouseEnter += new System.EventHandler(this.comboBox2_MouseEnter);
             this.comboBox2.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
-            // contextMenuStrip2
+            // combineMenuStrip
             // 
-            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.combineMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.combineToolStripMenuItem});
-            this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(125, 26);
-            this.contextMenuStrip2.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenuStrip2_Closed);
-            this.contextMenuStrip2.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip2_Opening);
+            this.combineMenuStrip.Name = "contextMenuStrip2";
+            this.combineMenuStrip.Size = new System.Drawing.Size(125, 26);
+            this.combineMenuStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenuStrip2_Closed);
+            this.combineMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip2_Opening);
             // 
             // combineToolStripMenuItem
             // 
@@ -353,7 +342,7 @@
             this.btnLog.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnLog.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
             this.btnLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnLog.Location = new System.Drawing.Point(516, 516);
+            this.btnLog.Location = new System.Drawing.Point(501, 37);
             this.btnLog.Name = "btnLog";
             this.btnLog.Size = new System.Drawing.Size(52, 23);
             this.btnLog.TabIndex = 24;
@@ -384,6 +373,7 @@
             this.dataGridView1.TabIndex = 25;
             this.dataGridView1.TabStop = false;
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
+            this.dataGridView1.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseUp);
             this.dataGridView1.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView1_RowsRemoved);
             this.dataGridView1.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataGridView1_UserDeletingRow);
             // 
@@ -436,7 +426,7 @@
             "Time Codes",
             "TsMuxeR Meta",
             "CUE"});
-            this.savingType.Location = new System.Drawing.Point(74, 486);
+            this.savingType.Location = new System.Drawing.Point(62, 4);
             this.savingType.Name = "savingType";
             this.savingType.Size = new System.Drawing.Size(108, 25);
             this.savingType.TabIndex = 26;
@@ -446,7 +436,7 @@
             // lbFormat
             // 
             this.lbFormat.AutoSize = true;
-            this.lbFormat.Location = new System.Drawing.Point(12, 491);
+            this.lbFormat.Location = new System.Drawing.Point(3, 10);
             this.lbFormat.Name = "lbFormat";
             this.lbFormat.Size = new System.Drawing.Size(56, 17);
             this.lbFormat.TabIndex = 27;
@@ -475,7 +465,7 @@
             this.xmlLang.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.xmlLang.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.xmlLang.FormattingEnabled = true;
-            this.xmlLang.Location = new System.Drawing.Point(74, 516);
+            this.xmlLang.Location = new System.Drawing.Point(62, 37);
             this.xmlLang.Name = "xmlLang";
             this.xmlLang.Size = new System.Drawing.Size(108, 25);
             this.xmlLang.TabIndex = 29;
@@ -485,26 +475,82 @@
             // lbXmlLang
             // 
             this.lbXmlLang.AutoSize = true;
-            this.lbXmlLang.Location = new System.Drawing.Point(12, 520);
+            this.lbXmlLang.Location = new System.Drawing.Point(3, 42);
             this.lbXmlLang.Name = "lbXmlLang";
             this.lbXmlLang.Size = new System.Drawing.Size(58, 17);
             this.lbXmlLang.TabIndex = 30;
             this.lbXmlLang.Text = "XML语言";
             // 
-            // btnExpand
+            // createZonestMenuStrip
             // 
-            this.btnExpand.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.btnExpand.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
-            this.btnExpand.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
-            this.btnExpand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExpand.Location = new System.Drawing.Point(544, 440);
-            this.btnExpand.Name = "btnExpand";
-            this.btnExpand.Size = new System.Drawing.Size(24, 24);
-            this.btnExpand.TabIndex = 31;
-            this.btnExpand.TabStop = false;
-            this.btnExpand.Text = "∨";
-            this.btnExpand.UseVisualStyleBackColor = true;
-            this.btnExpand.Click += new System.EventHandler(this.btnExpand_Click);
+            this.createZonestMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.creatZonesToolStripMenuItem});
+            this.createZonestMenuStrip.Name = "createZonestMenuStrip";
+            this.createZonestMenuStrip.Size = new System.Drawing.Size(136, 26);
+            // 
+            // creatZonesToolStripMenuItem
+            // 
+            this.creatZonesToolStripMenuItem.Name = "creatZonesToolStripMenuItem";
+            this.creatZonesToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.creatZonesToolStripMenuItem.Text = "生成Zones";
+            this.creatZonesToolStripMenuItem.Click += new System.EventHandler(this.creatZonesToolStripMenuItem_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.lbFormat);
+            this.panel1.Controls.Add(this.savingType);
+            this.panel1.Controls.Add(this.lbXmlLang);
+            this.panel1.Controls.Add(this.xmlLang);
+            this.panel1.Controls.Add(this.cbChapterName);
+            this.panel1.Controls.Add(this.cbMul1k1);
+            this.panel1.Controls.Add(this.cbAutoGenName);
+            this.panel1.Controls.Add(this.cbShift);
+            this.panel1.Controls.Add(this.btnLog);
+            this.panel1.Controls.Add(this.lbShift);
+            this.panel1.Controls.Add(this.numericUpDown1);
+            this.panel1.Controls.Add(this.maskedTextBox1);
+            this.panel1.Location = new System.Drawing.Point(12, 440);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(556, 64);
+            this.panel1.TabIndex = 32;
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsTips,
+            this.tsProgressBar1,
+            this.tsBtnExpand});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 511);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(580, 22);
+            this.statusStrip1.SizingGrip = false;
+            this.statusStrip1.TabIndex = 33;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // tsTips
+            // 
+            this.tsTips.Name = "tsTips";
+            this.tsTips.Size = new System.Drawing.Size(443, 17);
+            this.tsTips.Spring = true;
+            this.tsTips.Text = " ";
+            this.tsTips.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // tsProgressBar1
+            // 
+            this.tsProgressBar1.Name = "tsProgressBar1";
+            this.tsProgressBar1.Size = new System.Drawing.Size(100, 16);
+            this.tsProgressBar1.Click += new System.EventHandler(this.progressBar1_Click);
+            // 
+            // tsBtnExpand
+            // 
+            this.tsBtnExpand.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsBtnExpand.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnExpand.Image")));
+            this.tsBtnExpand.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsBtnExpand.Name = "tsBtnExpand";
+            this.tsBtnExpand.ShowDropDownArrow = false;
+            this.tsBtnExpand.Size = new System.Drawing.Size(20, 20);
+            this.tsBtnExpand.Text = "toolStripDropDownButton1";
+            this.tsBtnExpand.Click += new System.EventHandler(this.btnExpand_Click);
             // 
             // Form1
             // 
@@ -512,27 +558,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.ClientSize = new System.Drawing.Size(580, 551);
-            this.Controls.Add(this.btnExpand);
-            this.Controls.Add(this.lbXmlLang);
-            this.Controls.Add(this.xmlLang);
+            this.ClientSize = new System.Drawing.Size(580, 533);
+            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnPreview);
-            this.Controls.Add(this.lbFormat);
-            this.Controls.Add(this.savingType);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.comboBox2);
-            this.Controls.Add(this.btnLog);
-            this.Controls.Add(this.maskedTextBox1);
-            this.Controls.Add(this.cbChapterName);
-            this.Controls.Add(this.cbShift);
-            this.Controls.Add(this.lbShift);
-            this.Controls.Add(this.numericUpDown1);
-            this.Controls.Add(this.cbMul1k1);
             this.Controls.Add(this.cbRound);
             this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.progressBar1);
-            this.Controls.Add(this.Tips);
-            this.Controls.Add(this.cbAutoGenName);
             this.Controls.Add(this.btnTrans);
             this.Controls.Add(this.lbPath);
             this.Controls.Add(this.btnSave);
@@ -551,10 +584,15 @@
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
             this.Move += new System.EventHandler(this.Form1_Move);
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.deviationMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-            this.contextMenuStrip2.ResumeLayout(false);
+            this.combineMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.createZonestMenuStrip.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -567,8 +605,6 @@
         private System.Windows.Forms.Button btnTrans;
         private System.Windows.Forms.CheckBox cbAutoGenName;
         private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Label Tips;
-        private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.CheckBox cbRound;
         private System.Windows.Forms.CheckBox cbMul1k1;
@@ -578,13 +614,13 @@
         private System.Windows.Forms.CheckBox cbChapterName;
         private System.Windows.Forms.MaskedTextBox maskedTextBox1;
         private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ContextMenuStrip deviationMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem tsmAccuracy;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Button btnLog;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ContextMenuStrip combineMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem combineToolStripMenuItem;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.ComboBox savingType;
@@ -592,11 +628,17 @@
         private System.Windows.Forms.Button btnPreview;
         private System.Windows.Forms.ComboBox xmlLang;
         private System.Windows.Forms.Label lbXmlLang;
-        private System.Windows.Forms.Button btnExpand;
         private System.Windows.Forms.DataGridViewTextBoxColumn cFrams;
         private System.Windows.Forms.DataGridViewTextBoxColumn cChapterName;
         private System.Windows.Forms.DataGridViewTextBoxColumn cTimeCode;
         private System.Windows.Forms.DataGridViewTextBoxColumn cOrder;
+        private System.Windows.Forms.ContextMenuStrip createZonestMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem creatZonesToolStripMenuItem;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel tsTips;
+        private System.Windows.Forms.ToolStripProgressBar tsProgressBar1;
+        private System.Windows.Forms.ToolStripDropDownButton tsBtnExpand;
     }
 }
 

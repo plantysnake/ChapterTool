@@ -44,7 +44,7 @@ namespace ChapterTool.Util
                     cueData = File.ReadAllBytes(path).GetUTF8String();
                     if (string.IsNullOrEmpty(cueData))
                     {
-                        throw new Exception("Empty cue file");
+                        throw new InvalidDataException("Empty cue file");
                     }
                     break;
                 case ".flac":
@@ -61,6 +61,7 @@ namespace ChapterTool.Util
                 throw new Exception($"No Cue detected in {ext} file");
             }
             Chapter = PraseCue(cueData);
+            //Chapter = new CueSheet(cueData, true).ToChapterInfo();
         }
 
         private enum NextState
