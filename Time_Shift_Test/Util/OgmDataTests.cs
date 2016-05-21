@@ -15,7 +15,8 @@ namespace ChapterTool.Util.Tests
         [TestMethod()]
         public void OgmDataTest()
         {
-            const string path = @"..\..\..\[ogm_Sample]\00001.txt";
+            string path = @"..\..\[ogm_Sample]\00001.txt";
+            if (!File.Exists(path)) path = @"..\" + path;
             var result = OgmData.GetChapterInfo(File.ReadAllText(path));
             var expectResult = new[]
             {

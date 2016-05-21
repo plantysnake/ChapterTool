@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace ChapterTool.Util.Tests
@@ -10,7 +11,8 @@ namespace ChapterTool.Util.Tests
         [TestMethod()]
         public void IfoDataTest()
         {
-            const string path = @"..\..\..\[ifo_Sample]\VTS_05_0.IFO";
+            string path = @"..\..\[ifo_Sample]\VTS_05_0.IFO";
+            if (!File.Exists(path)) path = @"..\" + path;
             var result = IfoData.GetStreams(path).ToList();
             Assert.IsTrue(result.Count == 1);
             Assert.IsTrue(result[0].Chapters.Count == 7);

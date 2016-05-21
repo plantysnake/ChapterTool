@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using ChapterTool.Util;
 using System;
+using System.IO;
 
 namespace Knuckleball.Tests
 {
@@ -11,8 +12,8 @@ namespace Knuckleball.Tests
         [TestMethod()]
         public void Mp4ChapterTest()
         {
-            const string path = @"..\..\..\[Video_Sample]\Chapter.mp4";
-
+            string path = @"..\..\[Video_Sample]\Chapter.mp4";
+            if (!File.Exists(path)) path = @"..\" + path;
             var expectResult = new[]
             {
                 new { Name = "Chapter 01", Time = "00:00:00.000" },
