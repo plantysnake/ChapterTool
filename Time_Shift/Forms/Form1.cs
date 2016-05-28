@@ -347,6 +347,7 @@ namespace ChapterTool.Forms
                                      Resources.File_Filter_Mp4_File + @"(*.mp4,*.m4a)|*.mp4;*.m4a";
             try
             {
+                openFileDialog1.FileName = string.Empty;
                 if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
                 FilePath = openFileDialog1.FileName;
                 Log(string.Format(Resources.Log_Load_File_Via_Button, FilePath));
@@ -1174,6 +1175,7 @@ namespace ChapterTool.Forms
         {
             openFileDialog1.Filter = Resources.File_Filter_Text + @"(*.txt)|*.txt|" +
                                      Resources.File_Filter_All  + @"(*.*)|*.*";
+            openFileDialog1.FileName = string.Empty;
             try
             {
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
