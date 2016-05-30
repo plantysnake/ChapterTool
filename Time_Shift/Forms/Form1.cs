@@ -336,7 +336,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        private static readonly Regex RFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl|mp4|m4a)$", RegexOptions.IgnoreCase);
+        private static readonly Regex RFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl|mp4|m4a|m4v)$", RegexOptions.IgnoreCase);
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
@@ -378,7 +378,7 @@ namespace ChapterTool.Forms
 
         private enum FileType
         {
-            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4, M4a
+            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4, M4a, M4v
         }
 
         private bool Loadfile()
@@ -413,7 +413,8 @@ namespace ChapterTool.Forms
                     case FileType.Cue : LoadCue();      break;
                     case FileType.Xpl : LoadXpl();      break;
                     case FileType.Mp4 :
-                    case FileType.M4a : LoadMp4();      break;
+                    case FileType.M4a :
+                    case FileType.M4v : LoadMp4();      break;
                     default : throw new Exception("Invalid File Format");
                 }
                 if (_info == null) return false;
