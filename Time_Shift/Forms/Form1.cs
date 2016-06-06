@@ -931,12 +931,12 @@ namespace ChapterTool.Forms
             Log(string.Format(Resources.Log_FPS_Detect_Begin, accuracy));
             var result = MplsData.FrameRate.Select(fps  =>
                         _info.Chapters.Sum(item =>
-                        item.GetAccuracy(fps, accuracy))).ToList();
+                        item.IsAccuracy(fps, accuracy))).ToList();
             result[0] = 0; result[5] = 0; //skip two invalid frame rate.
             result.ForEach(count => Log(string.Format(Resources.Log_FPS_Detect_Count, count)));
             int autofpsCode = result.IndexOf(result.Max());
             _info.FramesPerSecond = (double) MplsData.FrameRate[autofpsCode];
-            Log(string.Format(Resources.Log_FPS_Detect_Result,MplsData.FrameRate[autofpsCode]));
+            Log(string.Format(Resources.Log_FPS_Detect_Result, MplsData.FrameRate[autofpsCode]));
             return autofpsCode == 0 ? 1 : autofpsCode;
         }
         #endregion

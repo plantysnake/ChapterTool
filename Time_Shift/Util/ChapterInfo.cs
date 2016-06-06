@@ -184,9 +184,9 @@ namespace ChapterTool.Util
         /// <summary>
         /// 生成 OGM 样式章节
         /// </summary>
-        /// <param name="notUseName">不使用章节名</param>
+        /// <param name="autoGenName">不使用章节名</param>
         /// <returns></returns>
-        public string GetText(bool notUseName)
+        public string GetText(bool autoGenName)
         {
             var lines = new StringBuilder();
             var name  = ChapterName.GetChapterName("Chapter");
@@ -194,13 +194,13 @@ namespace ChapterTool.Util
             {
                 lines.Append($"CHAPTER{item.Number:D2}={Time2String(item)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{item.Number:D2}NAME=");
-                lines.Append(notUseName ? name() : item.Name);
+                lines.Append(autoGenName ? name() : item.Name);
                 lines.Append(Environment.NewLine);
             }
             return lines.ToString();
         }
 
-        public void SaveText(string filename, bool notUseName) => File.WriteAllText(filename, GetText(notUseName), Encoding.UTF8);
+        public void SaveText(string filename, bool autoGenName) => File.WriteAllText(filename, GetText(autoGenName), Encoding.UTF8);
 
         public void SaveQpfile(string filename) => File.WriteAllLines(filename, Chapters.Select(c => c.FramsInfo.ToString().Replace("*", "I").Replace("K", "I")).ToArray());
 
@@ -216,7 +216,7 @@ namespace ChapterTool.Util
 
         public void SaveTimecodes(string filename) => File.WriteAllLines(filename, Chapters.Select(Time2String).ToArray());
 
-        public void SaveXml(string filename ,string lang, bool notUseName)
+        public void SaveXml(string filename, string lang, bool autoGenName)
         {
             if (string.IsNullOrWhiteSpace(lang)) lang = "und";
             Random rndb           = new Random();
@@ -233,7 +233,7 @@ namespace ChapterTool.Util
                 {
                     xmlchap.WriteStartElement("ChapterAtom");
                       xmlchap.WriteStartElement("ChapterDisplay");
-                        xmlchap.WriteElementString("ChapterString", notUseName ? name() : item.Name);
+                        xmlchap.WriteElementString("ChapterString", autoGenName ? name() : item.Name);
                         xmlchap.WriteElementString("ChapterLanguage", lang);
                       xmlchap.WriteEndElement();
                     xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
@@ -248,7 +248,7 @@ namespace ChapterTool.Util
             xmlchap.Close();
         }
 
-        public void SaveCue(string sourceFileName, string fileName, bool notUseName)
+        public void SaveCue(string sourceFileName, string fileName, bool autoGenName)
         {
             StringBuilder cueBuilder = new StringBuilder();
             cueBuilder.AppendLine("REM Generate By ChapterTool");
@@ -260,7 +260,7 @@ namespace ChapterTool.Util
             foreach (var chapter in Chapters)
             {
                 cueBuilder.AppendLine($"  TRACK {++index:D2} AUDIO");
-                cueBuilder.AppendLine($"    TITLE \"{(notUseName ? name(): chapter.Name)}\"");
+                cueBuilder.AppendLine($"    TITLE \"{(autoGenName ? name(): chapter.Name)}\"");
                 cueBuilder.AppendLine($"    INDEX 01 {chapter.Time.ToCueTimeStamp()}");
             }
             File.WriteAllText(fileName, cueBuilder.ToString());

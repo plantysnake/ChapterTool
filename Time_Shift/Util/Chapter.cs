@@ -42,7 +42,7 @@ namespace ChapterTool.Util
             Name   = name;
         }
 
-        public int GetAccuracy(decimal fps, decimal accuracy)
+        public int IsAccuracy(decimal fps, decimal accuracy)
         {
             var frams   = (decimal)Time.TotalMilliseconds * fps / 1000M;
             var rounded = Math.Round(frams, MidpointRounding.AwayFromZero);
