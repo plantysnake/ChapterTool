@@ -16,11 +16,11 @@ namespace ChapterTool.Util
                 , buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
         }
 
-        public static DialogResult ShowInfo(string argMessage)
+        public static DialogResult ShowInfo(string argMessage, MessageBoxButtons buttons = MessageBoxButtons.YesNo)
         {
             return MessageBox.Show(caption: Resources.Message_ChapterTool_Info,
                 text: argMessage,
-                buttons: MessageBoxButtons.YesNo,icon: MessageBoxIcon.Information);
+                buttons: buttons, icon: MessageBoxIcon.Information);
         }
     }
 }

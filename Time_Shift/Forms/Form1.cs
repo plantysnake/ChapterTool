@@ -570,8 +570,15 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
                 //progressBar1.SetState(3);
-                Notification.ShowError(@"Exception catched in fuction LoadMatroska", exception);
-                Log($"ERROR(LoadMatroska) {exception.Message}");
+                if (exception.Message == "No Chapter Found")
+                {
+                    Notification.ShowInfo(exception.Message, MessageBoxButtons.OK);
+                }
+                else
+                {
+                    Notification.ShowError(@"Exception catched in fuction LoadMatroska", exception);
+                    Log($"ERROR(LoadMatroska) {exception.Message}");
+                }
                 FilePath = string.Empty;
             }
         }
