@@ -132,36 +132,16 @@ namespace ChapterTool.Forms
             bool result = false;
             switch (numKey)
             {
-                case Keys.D1:
-                    result = SwitchByHotKey(0);
-                    break;
-                case Keys.D2:
-                    result = SwitchByHotKey(1);
-                    break;
-                case Keys.D3:
-                    result = SwitchByHotKey(2);
-                    break;
-                case Keys.D4:
-                    result = SwitchByHotKey(3);
-                    break;
-                case Keys.D5:
-                    result = SwitchByHotKey(4);
-                    break;
-                case Keys.D6:
-                    result = SwitchByHotKey(5);
-                    break;
-                case Keys.D7:
-                    result = SwitchByHotKey(6);
-                    break;
-                case Keys.D8:
-                    result = SwitchByHotKey(7);
-                    break;
-                case Keys.D9:
-                    result = SwitchByHotKey(8);
-                    break;
-                case Keys.D0:
-                    result = SwitchByHotKey(9);
-                    break;
+                case Keys.D1: result = SwitchByHotKey(0); break;
+                case Keys.D2: result = SwitchByHotKey(1); break;
+                case Keys.D3: result = SwitchByHotKey(2); break;
+                case Keys.D4: result = SwitchByHotKey(3); break;
+                case Keys.D5: result = SwitchByHotKey(4); break;
+                case Keys.D6: result = SwitchByHotKey(5); break;
+                case Keys.D7: result = SwitchByHotKey(6); break;
+                case Keys.D8: result = SwitchByHotKey(7); break;
+                case Keys.D9: result = SwitchByHotKey(8); break;
+                case Keys.D0: result = SwitchByHotKey(9); break;
             }
             if (!result)
             {
@@ -275,7 +255,6 @@ namespace ChapterTool.Forms
         private void progressBar1_Click(object sender, EventArgs e)
         {
             ++_poi[0];
-            //progressBar1.SetState(_poi[0]%2 == 0?1:3);
             Log(string.Format(Resources.Log_About_Form_Click, _poi[0]));
             if (_poi[0] >= _poi[1])
             {
@@ -353,11 +332,9 @@ namespace ChapterTool.Forms
                 Log(string.Format(Resources.Log_Load_File_Via_Button, FilePath));
                 comboBox2.Items.Clear();
                 if (Loadfile()) UpdataGridView();
-                //progressBar1.SetState(1);
             }
             catch (Exception exception)
             {
-                //progressBar1.SetState(2);
                 Notification.ShowError($"Exception catched in loading file: {FilePath}", exception);
                 Log($"ERROR(btnLoad_Click) {FilePath} {exception.Message}");
                 FilePath = string.Empty;
@@ -419,11 +396,10 @@ namespace ChapterTool.Forms
                 }
                 if (_info == null) return false;
                 _info.UpdataInfo(_chapterNameTemplate);
-                //progressBar1.SetState(1);
             }
             catch (Exception exception)
             {
-                //progressBar1.SetState(2);
+
                 Notification.ShowError(@"Exception catched in Function LoadFile", exception);
                 Log($"ERROR(LoadFile) {exception.Message}");
                 FilePath = string.Empty;
@@ -565,11 +541,9 @@ namespace ChapterTool.Forms
             try
             {
                 GetChapterInfoFromXml(matroska.GetXml(FilePath));
-                //progressBar1.SetState(1);
             }
             catch (Exception exception)
             {
-                //progressBar1.SetState(3);
                 if (exception.Message == "No Chapter Found")
                 {
                     Notification.ShowInfo(exception.Message, MessageBoxButtons.OK);
@@ -589,12 +563,12 @@ namespace ChapterTool.Forms
             {
                 _info = new CueData(FilePath).Chapter;
                 tsProgressBar1.Value = 33;
-                //progressBar1.SetState(1);
+
                 tsTips.Text = Resources.Tips_Load_Success;
             }
             catch (Exception exception)
             {
-                //progressBar1.SetState(3);
+
                 Notification.ShowError(@"Exception catched in fuction LoadCue", exception);
                 Log($"ERROR(LoadCue) {exception.Message}");
                 FilePath = string.Empty;
@@ -615,11 +589,11 @@ namespace ChapterTool.Forms
                 _customSavingPath = folderBrowserDialog1.SelectedPath;
                 RegistryStorage.Save(_customSavingPath);
                 Log(string.Format(Resources.Log_Set_Saving_Path, _customSavingPath));
-                //progressBar1.SetState(1);
+
             }
             catch (Exception exception)
             {
-                //progressBar1.SetState(2);
+
                 Notification.ShowError($"Exception catched while saving Path: {_customSavingPath}", exception);
                 Log($"ERROR(btnSave_MouseUp) {_customSavingPath}: {exception.Message}");
                 _customSavingPath = string.Empty;
@@ -1200,12 +1174,10 @@ namespace ChapterTool.Forms
                     return File.ReadAllBytes(chapterPath).GetUTF8String();
                 }
                 cbChapterName.CheckState = CheckState.Unchecked;
-                //progressBar1.SetState(1);
                 return string.Empty;
             }
             catch (Exception exception)
             {
-                //progressBar1.SetState(2);
                 Notification.ShowError($"Exception catched while opening file {FilePath}", exception);
                 Log($"ERROR(LoadChapterName) {exception.Message}");
                 return string.Empty;
