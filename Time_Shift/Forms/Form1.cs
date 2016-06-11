@@ -939,6 +939,12 @@ namespace ChapterTool.Forms
             Log(string.Format(Resources.Log_FPS_Detect_Result, MplsData.FrameRate[autofpsCode]));
             return autofpsCode == 0 ? 1 : autofpsCode;
         }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex != 3) return;
+            Clipboard.SetText((dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string ?? "").TrimEnd('K', '*', ' '));
+        }
         #endregion
 
         #region Form Color
