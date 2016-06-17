@@ -70,6 +70,10 @@ namespace ChapterTool.Forms
                         SaveFile(savingType.SelectedIndex);
                         ++comboBox2.SelectedIndex;
                         comboBox2_SelectionChangeCommitted(null, EventArgs.Empty);
+                        if (comboBox2.SelectedIndex + 1 == comboBox2.Items.Count)
+                        {
+                            SaveFile(savingType.SelectedIndex);
+                        }
                     }
                     return true;
                 case Keys.Control | Keys.O:
