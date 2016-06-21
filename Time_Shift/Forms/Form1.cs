@@ -133,21 +133,8 @@ namespace ChapterTool.Forms
         {
             Keys numKey = keyData ^ Keys.Control;
             Debug.WriteLine(numKey);
-            bool result = false;
-            switch (numKey)
-            {
-                case Keys.D1: result = SwitchByHotKey(0); break;
-                case Keys.D2: result = SwitchByHotKey(1); break;
-                case Keys.D3: result = SwitchByHotKey(2); break;
-                case Keys.D4: result = SwitchByHotKey(3); break;
-                case Keys.D5: result = SwitchByHotKey(4); break;
-                case Keys.D6: result = SwitchByHotKey(5); break;
-                case Keys.D7: result = SwitchByHotKey(6); break;
-                case Keys.D8: result = SwitchByHotKey(7); break;
-                case Keys.D9: result = SwitchByHotKey(8); break;
-                case Keys.D0: result = SwitchByHotKey(9); break;
-            }
-            if (!result)
+            if (numKey < Keys.D0 || numKey > Keys.D9) return;
+            if (!SwitchByHotKey((numKey - Keys.D1 + 10) % 10)) //shift D0 to 9
             {
                 tsTips.Text = Resources.Tips_Out_Of_Range;
             }
