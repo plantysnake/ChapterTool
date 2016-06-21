@@ -221,6 +221,8 @@ namespace ChapterTool.Forms
             comboBox2.SelectedIndex = -1;
             comboBox1.SelectedIndex = -1;
 
+            cbMul1k1.Checked        = false;
+
             _rawMpls                = null;
             _ifoGroup               = null;
             _xmlGroup               = null;
@@ -470,7 +472,20 @@ namespace ChapterTool.Forms
             }
             _info = CombineChapter ? _fullIfoChapter : _ifoGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
-            tsTips.Text = comboBox2.SelectedIndex == -1 ? Resources.Tips_Chapter_Not_find : Resources.Tips_IFO_Waring;
+            if (_ifoGroup.Count < 1)
+            {
+                tsTips.Text = Resources.Tips_Chapter_Not_find;
+                return;
+            }
+            if (Math.Abs(_ifoGroup.First().FramesPerSecond - 25.0) < 1e-5)
+            {
+                tsTips.Text = Resources.Tips_IFO_Waring_Unfix;
+            }
+            else
+            {
+                cbMul1k1.Checked = true;
+                tsTips.Text = Resources.Tips_IFO_Waring_Fixed;
+            }
         }
 
         private void LoadXpl()

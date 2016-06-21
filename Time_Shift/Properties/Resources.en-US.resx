@@ -138,7 +138,7 @@
   <data name="Message_How_Can_You_Find_Here" xml:space="preserve">
     <value>Hello, How Can You Find Here</value>
   </data>
-  <data name="Tips_IFO_Waring" xml:space="preserve">
+  <data name="Tips_IFO_Waring_Unfix" xml:space="preserve">
     <value>Please note wether the IFO need to fix time</value>
   </data>
   <data name="Tips_InValid_Type" xml:space="preserve">
@@ -320,5 +320,8 @@
   </data>
   <data name="Update_Check" xml:space="preserve">
     <value>Check &amp;Update</value>
+  </data>
+  <data name="Tips_IFO_Waring_Fixed" xml:space="preserve">
+    <value>IFO chapter loaded, coefficient 1.001 fixed, please uncheck if not necessary.</value>
   </data>
 </root>
