@@ -100,13 +100,14 @@ namespace ChapterTool.Util
         /// 将分开多段的 ifo 章节合并为一个章节
         /// </summary>
         /// <param name="source">解析获得的分段章节</param>
+        /// <param name="type">章节源格式</param>
         /// <returns></returns>
-        public static ChapterInfo CombineChapter(List<ChapterInfo> source)
+        public static ChapterInfo CombineChapter(List<ChapterInfo> source, string type = "DVD")
         {
             var fullChapter = new ChapterInfo
             {
                 Title           = "FULL Chapter",
-                SourceType      = "DVD",
+                SourceType      = type,
                 FramesPerSecond = source.First().FramesPerSecond
             };
             var duration = TimeSpan.Zero;
@@ -174,9 +175,10 @@ namespace ChapterTool.Util
         public void UpdataInfo(string chapterNameTemplate)
         {
             if (string.IsNullOrWhiteSpace(chapterNameTemplate)) return;
-            var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator();//移除首尾多余空行
-            Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name.Trim('\r'));//确保无多余换行符
-            cn.Dispose();
+            using (var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator())//移除首尾多余空行
+            {
+                Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name.Trim('\r'));//确保无多余换行符
+            }
         }
 
         #endregion
