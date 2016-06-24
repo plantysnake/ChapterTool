@@ -23,10 +23,11 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using ChapterTool.ChapterData;
 
 namespace ChapterTool.Util
 {
-    public class CueData
+    public class CueData : IData
     {
         public ChapterInfo Chapter { get; private set; }
 
@@ -351,5 +352,21 @@ namespace ChapterTool.Util
 
             return GetCueSheet(buffer, "flac");
         }
+
+        public int Count { get; } = 1;
+
+        public ChapterInfo this[int index]
+        {
+            get
+            {
+                if (index < 0 || index > 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index), "Index out of range");
+                }
+                return Chapter;
+            }
+        }
+
+        public string ChapterType { get; } = "CUE";
     }
 }

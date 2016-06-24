@@ -11,8 +11,8 @@ namespace ChapterTool.Util.Tests
         [TestMethod()]
         public void PraseCueTest()
         {
-            const string path = @"..\..\..\[cue_Sample]\ARCHIVES 2.cue";
-
+            string path = @"..\..\[cue_Sample]\ARCHIVES 2.cue";
+            if (!File.Exists(path)) path = @"..\" + path;
             var expectResult = new[]
             {
                 new { Name = "オーディオドラマ・1stパート", Time = "00:00:00.000"},

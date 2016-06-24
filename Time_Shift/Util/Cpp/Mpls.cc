@@ -22,6 +22,23 @@
 #include <string>
 #include <fstream>
 
+namespace ChapterTool
+{
+const double FrameRate[8] = { 0, 24000.0 / 1001, 24, 25, 30000.0 / 1001, 0, 50, 60000.0 / 1001 };
+
+struct ChapterUnit
+{
+    size_t time;//in milliseconds
+    size_t frames;
+    std::string chapterName;
+};
+
+struct ChapterInfo
+{
+    std::vector<struct ChapterUnit> TimeStamp;
+    std::string VideoName;
+};
+
 class Clip
 {
 public:
@@ -38,7 +55,31 @@ public:
     Clip(char *name) { Name = std::string(name); init(); }
     Clip(std::string name) { Name = name; init(); }
     void init() { Length = RelativeTimeIn = RelativeTimeOut = TimeIn = TimeOut = 0; }
+    struct ChapterInfo ToChapterInfo();
+private:
+    std::string _getChapterName(int index)
+    {
+        char buff[100];
+        snprintf(buff, sizeof(buff), "Chapter %02d", index);
+        return std::string(buff);
+    }
 };
+
+struct ChapterInfo Clip::ToChapterInfo()
+{
+    struct ChapterInfo ci;
+    ci.VideoName = Name;
+    int index = 1;
+    for (const int& stamp : TimeStamp)
+    {
+        struct ChapterUnit cu;
+        cu.time = (stamp - TimeIn) / 45;
+        cu.frames = (size_t)round((stamp - TimeIn) / 45000.0 * FrameRate[Fps]);
+        cu.chapterName = _getChapterName(index++);
+        ci.TimeStamp.push_back(cu);
+    }
+    return ci;
+}
 
 class MplsChapter
 {
@@ -47,7 +88,6 @@ private:
     std::vector<Clip> _chapterClips;
     Clip _entireClip;
     std::vector<unsigned char> _data;
-    const double _frameRate[8] = { 0, 24000.0 / 1001, 24, 25, 30000.0 / 1001, 0, 50, 60000.0 / 1001 };
     void ParseMpls();
     void ParseHeader(int& playlistMarkSectionStartAddress, int& playItemNumber, int& playItemEntries);
     void ParsePlayItem(int playItemEntries, int& lengthOfPlayItem, int& itemStartAdress, int& streamCount);
@@ -67,6 +107,8 @@ public:
     void Parse(const char *path);
     std::vector<Clip> &ChapterClips() { return _chapterClips; }
     Clip &EntireClip() { return _entireClip; }
+
+    static double FrameRate[8];
 };
 
 MplsChapter::MplsChapter(const std::string &path)
@@ -249,13 +291,13 @@ bool MplsChapter::IsEmptyOrWhiteSpace(const std::string &value)
     }
     return true;
 }
-
+}
 
 int main()
 {
-    std::string path;
-    std::cin >> path;
-    auto res = MplsChapter(path);
+    std::string path = "D:\\Code\\@ChapterTool\\Sample\\MPLS\\00001_Hidan_no_Aria_AA.mpls";
+    //std::cin >> path;
+    auto res = ChapterTool::MplsChapter(path);
     auto entire = res.EntireClip();
     std::cout << entire.Name << " " << entire.TimeStamp.size() << std::endl;
     for (const auto &item : entire.TimeStamp)
@@ -264,14 +306,23 @@ int main()
     }
     std::cout << std::endl;
     auto ct = res.ChapterClips();
-    for (const auto &clip : ct)
+    for (auto &clip : ct)
     {
-        std::cout << clip.Name << " " << clip.TimeStamp.size() << " " << clip.Fps << std::endl;
+        //std::cout << clip.Name << " " << clip.TimeStamp.size() << " " << clip.Fps << std::endl;
+        auto ci = clip.ToChapterInfo();
+        /*
         for (auto &item : clip.TimeStamp)
         {
             std::cout << item << " ";
         }
+        */
         std::cout << std::endl;
+        std::cout << "---------" << std::endl;
+        std::cout << ci.VideoName << ".m2ts" << std::endl;
+        for (auto &i : ci.TimeStamp)
+        {
+            std::cout << i.chapterName << " " << i.time << " " << i.frames << std::endl;
+        }
     }
     return 0;
 }

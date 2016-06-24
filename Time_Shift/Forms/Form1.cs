@@ -70,6 +70,10 @@ namespace ChapterTool.Forms
                         SaveFile(savingType.SelectedIndex);
                         ++comboBox2.SelectedIndex;
                         comboBox2_SelectionChangeCommitted(null, EventArgs.Empty);
+                        if (comboBox2.SelectedIndex + 1 == comboBox2.Items.Count)
+                        {
+                            SaveFile(savingType.SelectedIndex);
+                        }
                     }
                     return true;
                 case Keys.Control | Keys.O:
@@ -129,41 +133,8 @@ namespace ChapterTool.Forms
         {
             Keys numKey = keyData ^ Keys.Control;
             Debug.WriteLine(numKey);
-            bool result = false;
-            switch (numKey)
-            {
-                case Keys.D1:
-                    result = SwitchByHotKey(0);
-                    break;
-                case Keys.D2:
-                    result = SwitchByHotKey(1);
-                    break;
-                case Keys.D3:
-                    result = SwitchByHotKey(2);
-                    break;
-                case Keys.D4:
-                    result = SwitchByHotKey(3);
-                    break;
-                case Keys.D5:
-                    result = SwitchByHotKey(4);
-                    break;
-                case Keys.D6:
-                    result = SwitchByHotKey(5);
-                    break;
-                case Keys.D7:
-                    result = SwitchByHotKey(6);
-                    break;
-                case Keys.D8:
-                    result = SwitchByHotKey(7);
-                    break;
-                case Keys.D9:
-                    result = SwitchByHotKey(8);
-                    break;
-                case Keys.D0:
-                    result = SwitchByHotKey(9);
-                    break;
-            }
-            if (!result)
+            if (numKey < Keys.D0 || numKey > Keys.D9) return;
+            if (!SwitchByHotKey((numKey - Keys.D1 + 10) % 10)) //shift D0 to 9
             {
                 tsTips.Text = Resources.Tips_Out_Of_Range;
             }
@@ -237,6 +208,8 @@ namespace ChapterTool.Forms
             comboBox2.SelectedIndex = -1;
             comboBox1.SelectedIndex = -1;
 
+            cbMul1k1.Checked        = false;
+
             _rawMpls                = null;
             _ifoGroup               = null;
             _xmlGroup               = null;
@@ -275,7 +248,6 @@ namespace ChapterTool.Forms
         private void progressBar1_Click(object sender, EventArgs e)
         {
             ++_poi[0];
-            //progressBar1.SetState(_poi[0]%2 == 0?1:3);
             Log(string.Format(Resources.Log_About_Form_Click, _poi[0]));
             if (_poi[0] >= _poi[1])
             {
@@ -336,27 +308,26 @@ namespace ChapterTool.Forms
             }
         }
 
-        private static readonly Regex RFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl|mp4|m4a)$", RegexOptions.IgnoreCase);
+        private static readonly Regex RFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl|mp4|m4a|m4v)$", RegexOptions.IgnoreCase);
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = Resources.File_Filter_All_Support + @"(*.txt,*.xml,*.mpls,*.ifo,*.xpl,*.cue,*tak,*flac,*.mkv,*.mka,*.mp4,*.m4a)|*.txt;*.xml;*.mpls;*.ifo;*.xpl;*.cue;*.tak;*.flac;*.mkv;*.mka;*.mp4;*.m4a|" +
+            openFileDialog1.Filter = Resources.File_Filter_All_Support + @"(*.txt,*.xml,*.mpls,*.ifo,*.xpl,*.cue,*tak,*flac,*.mkv,*.mka,*.mp4,*.m4a,*.m4v)|*.txt;*.xml;*.mpls;*.ifo;*.xpl;*.cue;*.tak;*.flac;*.mkv;*.mka;*.mp4;*.m4a;*.m4v|" +
                                      Resources.File_Filter_Chapter_File + @"(*.txt,*.xml,*.mpls,*.ifo,*.xpl)|*.txt;*.xml;*.mpls;*.ifo;*.xpl|" +
                                      Resources.File_Filter_Cue_File +  @"(*.cue,*.tak,*.flac)|*.cue;*.tak;*.flac|" +
                                      Resources.File_Filter_Matroska_File + @"(*.mkv,*.mka)|*.mkv;*.mka|" +
-                                     Resources.File_Filter_Mp4_File + @"(*.mp4,*.m4a)|*.mp4;*.m4a";
+                                     Resources.File_Filter_Mp4_File + @"(*.mp4,*.m4a,*.m4v)|*.mp4;*.m4a;*.m4v";
             try
             {
+                openFileDialog1.FileName = string.Empty;
                 if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
                 FilePath = openFileDialog1.FileName;
                 Log(string.Format(Resources.Log_Load_File_Via_Button, FilePath));
                 comboBox2.Items.Clear();
                 if (Loadfile()) UpdataGridView();
-                //progressBar1.SetState(1);
             }
             catch (Exception exception)
             {
-                //progressBar1.SetState(2);
                 Notification.ShowError($"Exception catched in loading file: {FilePath}", exception);
                 Log($"ERROR(btnLoad_Click) {FilePath} {exception.Message}");
                 FilePath = string.Empty;
@@ -377,7 +348,7 @@ namespace ChapterTool.Forms
 
         private enum FileType
         {
-            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4, M4a
+            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4, M4a, M4v
         }
 
         private bool Loadfile()
@@ -412,16 +383,16 @@ namespace ChapterTool.Forms
                     case FileType.Cue : LoadCue();      break;
                     case FileType.Xpl : LoadXpl();      break;
                     case FileType.Mp4 :
-                    case FileType.M4a : LoadMp4();      break;
+                    case FileType.M4a :
+                    case FileType.M4v : LoadMp4();      break;
                     default : throw new Exception("Invalid File Format");
                 }
                 if (_info == null) return false;
                 _info.UpdataInfo(_chapterNameTemplate);
-                //progressBar1.SetState(1);
             }
             catch (Exception exception)
             {
-                //progressBar1.SetState(2);
+
                 Notification.ShowError(@"Exception catched in Function LoadFile", exception);
                 Log($"ERROR(LoadFile) {exception.Message}");
                 FilePath = string.Empty;
@@ -488,7 +459,20 @@ namespace ChapterTool.Forms
             }
             _info = CombineChapter ? _fullIfoChapter : _ifoGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
-            tsTips.Text = comboBox2.SelectedIndex == -1 ? Resources.Tips_Chapter_Not_find : Resources.Tips_IFO_Waring;
+            if (_ifoGroup.Count < 1)
+            {
+                tsTips.Text = Resources.Tips_Chapter_Not_find;
+                return;
+            }
+            if (Math.Abs(_ifoGroup.First().FramesPerSecond - 25.0) < 1e-5)
+            {
+                tsTips.Text = Resources.Tips_IFO_Waring_Unfix;
+            }
+            else
+            {
+                cbMul1k1.Checked = true;
+                tsTips.Text = Resources.Tips_IFO_Waring_Fixed;
+            }
         }
 
         private void LoadXpl()
@@ -563,13 +547,18 @@ namespace ChapterTool.Forms
             try
             {
                 GetChapterInfoFromXml(matroska.GetXml(FilePath));
-                //progressBar1.SetState(1);
             }
             catch (Exception exception)
             {
-                //progressBar1.SetState(3);
-                Notification.ShowError(@"Exception catched in fuction LoadMatroska", exception);
-                Log($"ERROR(LoadMatroska) {exception.Message}");
+                if (exception.Message == "No Chapter Found")
+                {
+                    Notification.ShowInfo(exception.Message, MessageBoxButtons.OK);
+                }
+                else
+                {
+                    Notification.ShowError(@"Exception catched in fuction LoadMatroska", exception);
+                    Log($"ERROR(LoadMatroska) {exception.Message}");
+                }
                 FilePath = string.Empty;
             }
         }
@@ -580,12 +569,12 @@ namespace ChapterTool.Forms
             {
                 _info = new CueData(FilePath).Chapter;
                 tsProgressBar1.Value = 33;
-                //progressBar1.SetState(1);
+
                 tsTips.Text = Resources.Tips_Load_Success;
             }
             catch (Exception exception)
             {
-                //progressBar1.SetState(3);
+
                 Notification.ShowError(@"Exception catched in fuction LoadCue", exception);
                 Log($"ERROR(LoadCue) {exception.Message}");
                 FilePath = string.Empty;
@@ -606,11 +595,11 @@ namespace ChapterTool.Forms
                 _customSavingPath = folderBrowserDialog1.SelectedPath;
                 RegistryStorage.Save(_customSavingPath);
                 Log(string.Format(Resources.Log_Set_Saving_Path, _customSavingPath));
-                //progressBar1.SetState(1);
+
             }
             catch (Exception exception)
             {
-                //progressBar1.SetState(2);
+
                 Notification.ShowError($"Exception catched while saving Path: {_customSavingPath}", exception);
                 Log($"ERROR(btnSave_MouseUp) {_customSavingPath}: {exception.Message}");
                 _customSavingPath = string.Empty;
@@ -929,13 +918,19 @@ namespace ChapterTool.Forms
             Log(string.Format(Resources.Log_FPS_Detect_Begin, accuracy));
             var result = MplsData.FrameRate.Select(fps  =>
                         _info.Chapters.Sum(item =>
-                        item.GetAccuracy(fps, accuracy))).ToList();
+                        item.IsAccuracy(fps, accuracy))).ToList();
             result[0] = 0; result[5] = 0; //skip two invalid frame rate.
             result.ForEach(count => Log(string.Format(Resources.Log_FPS_Detect_Count, count)));
             int autofpsCode = result.IndexOf(result.Max());
             _info.FramesPerSecond = (double) MplsData.FrameRate[autofpsCode];
-            Log(string.Format(Resources.Log_FPS_Detect_Result,MplsData.FrameRate[autofpsCode]));
+            Log(string.Format(Resources.Log_FPS_Detect_Result, MplsData.FrameRate[autofpsCode]));
             return autofpsCode == 0 ? 1 : autofpsCode;
+        }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex != 3) return;
+            Clipboard.SetText((dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string ?? "").TrimEnd('K', '*', ' '));
         }
         #endregion
 
@@ -1174,6 +1169,7 @@ namespace ChapterTool.Forms
         {
             openFileDialog1.Filter = Resources.File_Filter_Text + @"(*.txt)|*.txt|" +
                                      Resources.File_Filter_All  + @"(*.*)|*.*";
+            openFileDialog1.FileName = string.Empty;
             try
             {
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -1184,12 +1180,10 @@ namespace ChapterTool.Forms
                     return File.ReadAllBytes(chapterPath).GetUTF8String();
                 }
                 cbChapterName.CheckState = CheckState.Unchecked;
-                //progressBar1.SetState(1);
                 return string.Empty;
             }
             catch (Exception exception)
             {
-                //progressBar1.SetState(2);
                 Notification.ShowError($"Exception catched while opening file {FilePath}", exception);
                 Log($"ERROR(LoadChapterName) {exception.Message}");
                 return string.Empty;

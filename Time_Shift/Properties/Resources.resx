@@ -138,8 +138,11 @@
   <data name="Message_How_Can_You_Find_Here" xml:space="preserve">
     <value>你好呀，找到这里来干嘛呀</value>
   </data>
-  <data name="Tips_IFO_Waring" xml:space="preserve">
+  <data name="Tips_IFO_Waring_Unfix" xml:space="preserve">
     <value>IFO格式的章节，请注意是否需要修正时间</value>
+  </data>
+  <data name="Tips_IFO_Waring_Fixed" xml:space="preserve">
+    <value>IFO格式的章节，已自动*1.001，如需取消请手动操作</value>
   </data>
   <data name="Tips_InValid_Type" xml:space="preserve">
     <value>这个文件我不认识啊 _ (:3」∠)_</value>

@@ -603,11 +603,20 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 IFO格式的章节，已自动*1.001，如需取消请手动操作 的本地化字符串。
+        /// </summary>
+        internal static string Tips_IFO_Waring_Fixed {
+            get {
+                return ResourceManager.GetString("Tips_IFO_Waring_Fixed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 IFO格式的章节，请注意是否需要修正时间 的本地化字符串。
         /// </summary>
-        internal static string Tips_IFO_Waring {
+        internal static string Tips_IFO_Waring_Unfix {
             get {
-                return ResourceManager.GetString("Tips_IFO_Waring", resourceCulture);
+                return ResourceManager.GetString("Tips_IFO_Waring_Unfix", resourceCulture);
             }
         }
         
