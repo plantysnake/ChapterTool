@@ -175,7 +175,6 @@
     <Compile Include="Util\NativeMethods.cs" />
     <Compile Include="Util\Notification.cs" />
     <Compile Include="Util\OgmData.cs" />
-    <Compile Include="Util\RegistryStorage.cs" />
     <Compile Include="Util\SystemMenu.cs" />
     <Compile Include="Util\Updater.cs" />
     <Compile Include="Util\XmlData.cs" />
