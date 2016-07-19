@@ -74,7 +74,7 @@ namespace ChapterTool.Util
             };
             row.Cells.Add(new DataGridViewTextBoxCell {Value = $"{Chapters[index].Number:D2}"});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = Time2String(Chapters[index]) });
-            row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? ChapterName.Get(row.Index + 1) : Chapters[index].Name});
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? ChapterName.Get(index + 1) : Chapters[index].Name});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].FramsInfo});
             return row;
         }

@@ -73,6 +73,7 @@ namespace ChapterTool.Util
         public static string ToCueTimeStamp(this TimeSpan input)
         {
             int frames = (int) Math.Round(input.Milliseconds*75/1000F);
+            if (frames > 99) frames = 99;
             return $"{input.Hours*60 + input.Minutes:D2}:{input.Seconds:D2}:{frames:D2}";
         }
 
