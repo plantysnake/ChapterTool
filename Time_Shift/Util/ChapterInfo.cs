@@ -66,11 +66,8 @@ namespace ChapterTool.Util
         {
             var row = new DataGridViewRow
             {
-                Tag = Chapters[index],  //绑定对象，以便删除行时可以得知对于的 Chapter
-                DefaultCellStyle =      //设定背景色交替
-                {
-                    BackColor = (Chapters[index].Number-1)%2 == 0 ? EVEN_COLOR : ODD_COLOR
-                }
+                Tag = Chapters[index],  //绑定对象，以便删除行时可以得知对应的 Chapter
+                DefaultCellStyle =　{ BackColor = (Chapters[index].Number-1)%2 == 0 ? EVEN_COLOR : ODD_COLOR }
             };
             row.Cells.Add(new DataGridViewTextBoxCell {Value = $"{Chapters[index].Number:D2}"});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = Time2String(Chapters[index]) });
@@ -89,7 +86,7 @@ namespace ChapterTool.Util
         {
             var item = Chapters[row.Index];
             row.Tag  = item;
-            row.DefaultCellStyle.BackColor = row.Index%2 == 0 ? EVEN_COLOR : ODD_COLOR;
+            row.DefaultCellStyle.BackColor = (item.Number-1)%2 == 0 ? EVEN_COLOR : ODD_COLOR;
             row.Cells[0].Value = $"{item.Number:D2}";
             row.Cells[1].Value = item.Time2String(this);
             row.Cells[2].Value = autoGenName ? ChapterName.Get(row.Index + 1) : item.Name;
