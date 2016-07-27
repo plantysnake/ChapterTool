@@ -148,12 +148,16 @@ namespace ChapterTool.Forms
             TargetHeight[1] = Height;
             Text = $"[VCB-Studio] ChapterTool v{Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
-            Point saved = String2Point(RegistryStorage.Load(@"Software\ChapterTool", "location"));
-            if (saved != new Point(-32000, -32000))
+            if (!IsRunningOnMono())
             {
-                Location = saved;
-                Log(string.Format(Resources.Log_Load_Position_Successful, saved));
+                Point saved = String2Point(RegistryStorage.Load(@"Software\ChapterTool", "location"));
+                if (saved != new Point(-32000, -32000))
+                {
+                    Location = saved;
+                    Log(string.Format(Resources.Log_Load_Position_Successful, saved));
+                }
             }
+
             LanguageSelectionContainer.LoadLang(xmlLang);
             InsertAccuracyItems();
             SetDefault();
@@ -162,11 +166,11 @@ namespace ChapterTool.Forms
             ExtensionPanelShow                = false;
             savingType.SelectedIndex          = 0;
             btnTrans.Text                     = Environment.TickCount % 2 == 0 ? "↺" : "↻";
-            folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
+            if (!IsRunningOnMono()) folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
             Log(Updater.CheckUpdateWeekly("ChapterTool") ? Resources.Log_Update_Checked : Resources.Log_Update_Skiped);
             if (string.IsNullOrEmpty(FilePath)) return;
             if (Loadfile()) UpdataGridView();
-            RegistryStorage.Save(Resources.Message_How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
+            if (!IsRunningOnMono()) RegistryStorage.Save(Resources.Message_How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
         }
 
         private void InsertAccuracyItems()
@@ -184,11 +188,11 @@ namespace ChapterTool.Forms
                 ? Resources.Log_Wu_Zong : $"{Environment.UserName}{Resources.Log_Hello}");
             Log($"{Environment.OSVersion}");
 
-            Log(NativeMethods.IsUserAnAdmin() ? Resources.Log_With_Admin : Resources.Log_Without_Admin);
+            if (!IsRunningOnMono()) Log(NativeMethods.IsUserAnAdmin() ? Resources.Log_With_Admin : Resources.Log_Without_Admin);
 
             if (Environment.GetLogicalDrives().Length > 10) Log(Resources.Log_Hard_Drive_Plz);
 
-            using (var registryKey = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0"))
+            if (!IsRunningOnMono()) using (var registryKey = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0"))
             {
                 Log((string)registryKey?.GetValue("ProcessorNameString"));
             }
@@ -197,7 +201,7 @@ namespace ChapterTool.Forms
             {
                 Log($"{screen.DeviceName}{Resources.Log_Resolution}{screen.Bounds.Width}*{screen.Bounds.Height}");
             }
-            Log(string.Format(Resources.Log_Boot_Count, RegistryStorage.RegistryAddCount(@"Software\ChapterTool\Statistics", @"Count")));
+            if (!IsRunningOnMono()) Log(string.Format(Resources.Log_Boot_Count, RegistryStorage.RegistryAddCount(@"Software\ChapterTool\Statistics", @"Count")));
         }
 
         private void SetDefault()
@@ -227,6 +231,7 @@ namespace ChapterTool.Forms
 
         private void AddCommand()
         {
+            if (IsRunningOnMono()) return;
             _systemMenu = new SystemMenu(this);
             _systemMenu.AddCommand(Resources.Update_Check, Updater.CheckUpdate, true);
         }
@@ -237,6 +242,7 @@ namespace ChapterTool.Forms
 
             // Let it know all messages so it can handle WM_SYSCOMMAND
             // (This method is inlined)
+            if (IsRunningOnMono()) return;
             _systemMenu.HandleMessage(ref msg);
         }
 
