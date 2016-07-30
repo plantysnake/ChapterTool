@@ -82,6 +82,7 @@
     <Compile Include="Util\IfoParserTests.cs" />
     <Compile Include="Util\MplsDataTests.cs" />
     <Compile Include="Util\OgmDataTests.cs" />
+    <Compile Include="Util\VTTDataTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Time_Shift\Time_Shift.csproj">

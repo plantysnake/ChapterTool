@@ -177,6 +177,7 @@
     <Compile Include="Util\OgmData.cs" />
     <Compile Include="Util\SystemMenu.cs" />
     <Compile Include="Util\Updater.cs" />
+    <Compile Include="Util\VTTData.cs" />
     <Compile Include="Util\XmlData.cs" />
     <Compile Include="Util\XplData.cs" />
     <EmbeddedResource Include="Controls\cTextBox.resx">

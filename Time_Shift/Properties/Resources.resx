@@ -343,4 +343,7 @@
   <data name="Tips_Out_Of_Range" xml:space="preserve">
     <value>输入的序号超出范围</value>
   </data>
+  <data name="File_Filter_VTT_File" xml:space="preserve">
+    <value>WebVTT文件</value>
+  </data>
 </root>

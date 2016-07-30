@@ -144,6 +144,15 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 WebVTT文件 的本地化字符串。
+        /// </summary>
+        internal static string File_Filter_VTT_File {
+            get {
+                return ResourceManager.GetString("File_Filter_VTT_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 文件还没载入呢 的本地化字符串。
         /// </summary>
         internal static string File_Unloaded {

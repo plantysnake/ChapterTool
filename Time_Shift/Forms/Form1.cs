@@ -314,7 +314,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        private static readonly Regex RFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl|mp4|m4a|m4v)$", RegexOptions.IgnoreCase);
+        private static readonly Regex RFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl|mp4|m4a|m4v|vtt)$", RegexOptions.IgnoreCase);
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
@@ -322,7 +322,8 @@ namespace ChapterTool.Forms
                                      Resources.File_Filter_Chapter_File + @"(*.txt,*.xml,*.mpls,*.ifo,*.xpl)|*.txt;*.xml;*.mpls;*.ifo;*.xpl|" +
                                      Resources.File_Filter_Cue_File +  @"(*.cue,*.tak,*.flac)|*.cue;*.tak;*.flac|" +
                                      Resources.File_Filter_Matroska_File + @"(*.mkv,*.mka)|*.mkv;*.mka|" +
-                                     Resources.File_Filter_Mp4_File + @"(*.mp4,*.m4a,*.m4v)|*.mp4;*.m4a;*.m4v";
+                                     Resources.File_Filter_Mp4_File + @"(*.mp4,*.m4a,*.m4v)|*.mp4;*.m4a;*.m4v|" + 
+                                     Resources.File_Filter_VTT_File + @"(*.vtt)|*.vtt";
             try
             {
                 openFileDialog1.FileName = string.Empty;
@@ -354,7 +355,7 @@ namespace ChapterTool.Forms
 
         private enum FileType
         {
-            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4, M4a, M4v
+            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4, M4a, M4v, VTT
         }
 
         private bool Loadfile()
@@ -391,6 +392,7 @@ namespace ChapterTool.Forms
                     case FileType.Mp4 :
                     case FileType.M4a :
                     case FileType.M4v : LoadMp4();      break;
+                    case FileType.VTT: LoadWebVTT();    break;
                     default : throw new Exception("Invalid File Format");
                 }
                 if (_info == null) return false;
@@ -586,6 +588,15 @@ namespace ChapterTool.Forms
                 FilePath = string.Empty;
             }
         }
+
+        private void LoadWebVTT()
+        {
+            _info = VTTData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTF8String());
+            _info.UpdataInfo((int)numericUpDown1.Value);
+            tsProgressBar1.Value = 33;
+            tsTips.Text = Resources.Tips_Load_Success;
+        }
+
         #endregion
 
         #region Save File
