@@ -64,12 +64,12 @@
             this.lbXmlLang = new System.Windows.Forms.Label();
             this.createZonestMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.creatZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ShiftForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsTips = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.tsBtnExpand = new System.Windows.Forms.ToolStripDropDownButton();
-            this.ShiftForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deviationMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.combineMenuStrip.SuspendLayout();
@@ -489,14 +489,21 @@
             this.creatZonesToolStripMenuItem,
             this.ShiftForwardToolStripMenuItem});
             this.createZonestMenuStrip.Name = "createZonestMenuStrip";
-            this.createZonestMenuStrip.Size = new System.Drawing.Size(153, 70);
+            this.createZonestMenuStrip.Size = new System.Drawing.Size(136, 48);
             // 
             // creatZonesToolStripMenuItem
             // 
             this.creatZonesToolStripMenuItem.Name = "creatZonesToolStripMenuItem";
-            this.creatZonesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.creatZonesToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.creatZonesToolStripMenuItem.Text = "生成Zones";
             this.creatZonesToolStripMenuItem.Click += new System.EventHandler(this.creatZonesToolStripMenuItem_Click);
+            // 
+            // ShiftForwardToolStripMenuItem
+            // 
+            this.ShiftForwardToolStripMenuItem.Name = "ShiftForwardToolStripMenuItem";
+            this.ShiftForwardToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.ShiftForwardToolStripMenuItem.Text = "向前平移";
+            this.ShiftForwardToolStripMenuItem.Click += new System.EventHandler(this.ShiftForwardToolStripMenuItem_Click);
             // 
             // panel1
             // 
@@ -533,7 +540,7 @@
             // tsTips
             // 
             this.tsTips.Name = "tsTips";
-            this.tsTips.Size = new System.Drawing.Size(443, 17);
+            this.tsTips.Size = new System.Drawing.Size(412, 17);
             this.tsTips.Spring = true;
             this.tsTips.Text = " ";
             this.tsTips.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -554,13 +561,6 @@
             this.tsBtnExpand.Size = new System.Drawing.Size(20, 20);
             this.tsBtnExpand.Text = "toolStripDropDownButton1";
             this.tsBtnExpand.Click += new System.EventHandler(this.btnExpand_Click);
-            // 
-            // ShiftForwardToolStripMenuItem
-            // 
-            this.ShiftForwardToolStripMenuItem.Name = "ShiftForwardToolStripMenuItem";
-            this.ShiftForwardToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.ShiftForwardToolStripMenuItem.Text = "向前平移";
-            this.ShiftForwardToolStripMenuItem.Click += new System.EventHandler(this.ShiftForwardToolStripMenuItem_Click);
             // 
             // Form1
             // 

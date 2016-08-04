@@ -278,11 +278,31 @@ namespace ChapterTool.Forms
         private void Form1_DragDrop(object sender, DragEventArgs e)
         {
             _paths = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (string.IsNullOrEmpty(FilePath)) return;
+            if(Directory.Exists(FilePath))
+            {
+                _isUrl = true;
+                try
+                {
+                    _BDMVGroup = BDMVData.GetChapter(FilePath);
+                    if(_BDMVGroup == null) return;
+                    _info = _BDMVGroup.First();
+                }
+                catch (Exception exception)
+                {
+                    Notification.ShowError("Exception throwed while loading BluRay disc", exception);
+                }
+                UpdataGridView();
+                return;
+            }
+            _isUrl = false;
             if (!IsPathValid) return;
             Log(string.Format(Resources.Log_Load_File_Via_Dragging, FilePath));
             comboBox2.Items.Clear();
             if (Loadfile()) UpdataGridView();
         }
+
+        private bool _isUrl;
 
         private void Form1_DragEnter(object sender, DragEventArgs e)
         {
@@ -307,6 +327,7 @@ namespace ChapterTool.Forms
                     tsTips.Text = Resources.File_Unloaded;
                     return false;
                 }
+                if (_isUrl) return true;
                 if (RFileType.IsMatch(FilePath)) return true;
                 tsTips.Text = Resources.Tips_InValid_Type;
                 Log(Resources.Tips_InValid_Type_Log + $"[{Path.GetFileName(FilePath)}]");
@@ -343,6 +364,7 @@ namespace ChapterTool.Forms
             }
         }
 
+        private List<ChapterInfo> _BDMVGroup;
         private List<ChapterInfo> _ifoGroup;
         private List<ChapterInfo> _xplGroup;
         private MplsData          _rawMpls;

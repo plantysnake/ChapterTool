@@ -38,6 +38,7 @@ namespace ChapterTool.Util
         /// Corresponding Video file
         /// </summary>
         public string SourceName      { get; set; }
+        public string SourceIndex     { get; set; }
         public string SourceType      { get; set; }
         public double FramesPerSecond { get; set; }
         public TimeSpan Duration      { get; set; }

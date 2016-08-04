@@ -124,6 +124,7 @@
     <Compile Include="Knuckleball\MP4File.cs" />
     <Compile Include="Knuckleball\NativeMethods.cs" />
     <Compile Include="Util\Chapter.cs" />
+    <Compile Include="Util\ChapterData\BDMVData.cs" />
     <Compile Include="Util\ChapterInfo.cs" />
     <Compile Include="Util\ChapterName.cs" />
     <Compile Include="Util\Clip.cs" />
