@@ -32,7 +32,7 @@ using Microsoft.Win32;
 
 namespace ChapterTool.Util
 {
-    public static class ConvertMethod
+    public static class ToolKits
     {
         /// <summary>
         /// 将TimeSpan对象转换为 hh:mm:ss.sss 形式的字符串

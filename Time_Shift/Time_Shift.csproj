@@ -127,7 +127,7 @@
     <Compile Include="Util\ChapterInfo.cs" />
     <Compile Include="Util\ChapterName.cs" />
     <Compile Include="Util\Clip.cs" />
-    <Compile Include="Util\ConvertMethod.cs" />
+    <Compile Include="Util\ToolKits.cs" />
     <Compile Include="Controls\cTextBox.cs">
       <SubType>Component</SubType>
     </Compile>

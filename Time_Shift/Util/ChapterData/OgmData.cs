@@ -50,7 +50,7 @@ namespace ChapterTool.Util.ChapterData
             TimeSpan timeCode   = TimeSpan.Zero, initalTime;
             if (RTimeCodeLine.Match(lines.First()).Success)
             {
-                initalTime = ConvertMethod.RTimeFormat.Match(lines.First()).Value.ToTimeSpan();
+                initalTime = ToolKits.RTimeFormat.Match(lines.First()).Value.ToTimeSpan();
             }
             else
             {
@@ -64,7 +64,7 @@ namespace ChapterTool.Util.ChapterData
                         if (string.IsNullOrWhiteSpace(line)) break; //跳过空行
                         if (RTimeCodeLine.Match(line).Success)
                         {
-                            timeCode = ConvertMethod.RTimeFormat.Match(line).Value.ToTimeSpan() - initalTime;
+                            timeCode = ToolKits.RTimeFormat.Match(line).Value.ToTimeSpan() - initalTime;
                             state    = LineState.LName;
                             break;
                         }

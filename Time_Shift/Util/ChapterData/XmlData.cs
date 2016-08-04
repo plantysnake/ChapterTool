@@ -77,10 +77,10 @@ namespace ChapterTool.Util.ChapterData
                 switch (chapterAtomChildNode.Name)
                 {
                     case "ChapterTimeStart":
-                        startChapter.Time = ConvertMethod.RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
+                        startChapter.Time = ToolKits.RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
                         break;
                     case "ChapterTimeEnd":
-                        endChapter.Time = ConvertMethod.RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
+                        endChapter.Time = ToolKits.RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
                         break;
                     case "ChapterDisplay":
                         try
