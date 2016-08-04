@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
 
-namespace ChapterTool.Util
+namespace ChapterTool.Util.ChapterData
 {
     public static class XplData
     {

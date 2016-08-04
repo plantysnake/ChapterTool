@@ -18,6 +18,7 @@
 //
 // ****************************************************************************
 using System.Collections.Generic;
+using ChapterTool.Util.ChapterData;
 
 namespace ChapterTool.Util
 {

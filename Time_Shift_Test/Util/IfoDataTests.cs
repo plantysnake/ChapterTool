@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using ChapterTool.Util.ChapterData;
 
 namespace ChapterTool.Util.Tests
 {

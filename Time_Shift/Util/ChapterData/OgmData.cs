@@ -17,12 +17,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
+
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static ChapterTool.Util.ConvertMethod;
 
-namespace ChapterTool.Util
+namespace ChapterTool.Util.ChapterData
 {
     public static class OgmData
     {
@@ -50,7 +50,7 @@ namespace ChapterTool.Util
             TimeSpan timeCode   = TimeSpan.Zero, initalTime;
             if (RTimeCodeLine.Match(lines.First()).Success)
             {
-                initalTime = RTimeFormat.Match(lines.First()).Value.ToTimeSpan();
+                initalTime = ConvertMethod.RTimeFormat.Match(lines.First()).Value.ToTimeSpan();
             }
             else
             {
@@ -64,7 +64,7 @@ namespace ChapterTool.Util
                         if (string.IsNullOrWhiteSpace(line)) break; //跳过空行
                         if (RTimeCodeLine.Match(line).Success)
                         {
-                            timeCode = RTimeFormat.Match(line).Value.ToTimeSpan() - initalTime;
+                            timeCode = ConvertMethod.RTimeFormat.Match(line).Value.ToTimeSpan() - initalTime;
                             state    = LineState.LName;
                             break;
                         }

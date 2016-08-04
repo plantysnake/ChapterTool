@@ -17,15 +17,16 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
+
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using ChapterTool.ChapterData;
 
-namespace ChapterTool.Util
+namespace ChapterTool.Util.ChapterData
 {
     public class CueData : IData
     {

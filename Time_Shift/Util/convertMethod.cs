@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Security.Principal;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using ChapterTool.Util.ChapterData;
 using Microsoft.Win32;
 
 namespace ChapterTool.Util

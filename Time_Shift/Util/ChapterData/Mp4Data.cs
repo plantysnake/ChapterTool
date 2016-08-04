@@ -17,9 +17,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
+
 using Knuckleball;
 
-namespace ChapterTool.Util
+namespace ChapterTool.Util.ChapterData
 {
     public class Mp4Data
     {

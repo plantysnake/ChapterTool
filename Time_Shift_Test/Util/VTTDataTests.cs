@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using ChapterTool.Util.ChapterData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ChapterTool.Util.Tests

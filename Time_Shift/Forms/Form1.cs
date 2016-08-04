@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using ChapterTool.Properties;
 using System.Collections.Generic;
+using ChapterTool.Util.ChapterData;
 using System.Text.RegularExpressions;
 using static ChapterTool.Util.CTLogger;
 using static ChapterTool.Util.ConvertMethod;
