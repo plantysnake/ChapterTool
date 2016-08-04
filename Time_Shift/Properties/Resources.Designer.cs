@@ -585,6 +585,15 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 保存调用堆栈至剪切板？ 的本地化字符串。
+        /// </summary>
+        internal static string Message_Stack {
+            get {
+                return ResourceManager.GetString("Message_Stack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 读取MP4文件信息异常 的本地化字符串。
         /// </summary>
         internal static string Message_Unable_To_Read_Mp4_File {

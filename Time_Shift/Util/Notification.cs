@@ -9,12 +9,20 @@ namespace ChapterTool.Util
     {
         public static DialogResult ShowError(string argMessage, Exception exception)
         {
-            return MessageBox.Show(caption: Resources.Message_ChapterTool_Error,
+            var ret = MessageBox.Show(caption: Resources.Message_ChapterTool_Error,
                 text: $"{argMessage}:{Environment.NewLine}{exception.Message}"
 #if DEBUG
-                + $"{Environment.NewLine}{exception.StackTrace}"
+                + $"{Environment.NewLine}{exception.StackTrace}", buttons: MessageBoxButtons.OK
+#else
+                ,buttons: MessageBoxButtons.YesNo
 #endif
-                , buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Hand);
+                , icon: MessageBoxIcon.Hand);
+            if (ret != DialogResult.No) return ret;
+            if (ShowInfo(Resources.Message_Stack) == DialogResult.Yes)
+            {
+                Clipboard.SetText(exception.StackTrace);
+            }
+            return ret;
         }
 
         public static DialogResult ShowInfo(string argMessage, MessageBoxButtons buttons = MessageBoxButtons.YesNo)

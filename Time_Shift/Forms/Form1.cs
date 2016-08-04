@@ -965,10 +965,7 @@ namespace ChapterTool.Forms
             UpdataGridView();
         }
 
-        private void ShiftForwardToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FrameShiftForward();
-        }
+        private void ShiftForwardToolStripMenuItem_Click(object sender, EventArgs e) => FrameShiftForward();
 
         #endregion
 

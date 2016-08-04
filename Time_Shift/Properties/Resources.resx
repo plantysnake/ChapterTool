@@ -346,4 +346,7 @@
   <data name="File_Filter_VTT_File" xml:space="preserve">
     <value>WebVTT文件</value>
   </data>
+  <data name="Message_Stack" xml:space="preserve">
+    <value>保存调用堆栈至剪切板？</value>
+  </data>
 </root>
