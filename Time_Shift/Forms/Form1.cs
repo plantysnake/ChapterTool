@@ -157,7 +157,7 @@ namespace ChapterTool.Forms
                     Log(string.Format(Resources.Log_Load_Position_Successful, saved));
                 }
             }
-
+            
             LanguageSelectionContainer.LoadLang(xmlLang);
             InsertAccuracyItems();
             SetDefault();
@@ -171,6 +171,7 @@ namespace ChapterTool.Forms
             if (string.IsNullOrEmpty(FilePath)) return;
             if (Loadfile()) UpdataGridView();
             if (!IsRunningOnMono()) RegistryStorage.Save(Resources.Message_How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
+
         }
 
         private void InsertAccuracyItems()
@@ -949,6 +950,26 @@ namespace ChapterTool.Forms
             if (e.ColumnIndex != 3) return;
             Clipboard.SetText((dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string ?? "").TrimEnd('K', '*', ' '));
         }
+
+        private void FrameShiftForward()
+        {
+            if (!IsPathValid) return;
+            var fpsIndex = comboBox1.SelectedIndex + 1;
+            if (fpsIndex < 1) return;
+            var shiftFramesString = Notification.InputBox("向前平移N帧，小于0的将被删除", "请输入所需平移的帧数", "0");
+            int shiftFrames;
+            if (!int.TryParse(shiftFramesString, out shiftFrames)) return;
+            TimeSpan shiftTime = TimeSpan.FromTicks((long) Math.Round(shiftFrames/MplsData.FrameRate[fpsIndex]*TimeSpan.TicksPerSecond));
+            _info.UpdataInfo(shiftTime);
+            _info.Chapters = _info.Chapters.SkipWhile(item => item.Time < TimeSpan.Zero).ToList();
+            UpdataGridView();
+        }
+
+        private void ShiftForwardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FrameShiftForward();
+        }
+
         #endregion
 
         #region Form Color
