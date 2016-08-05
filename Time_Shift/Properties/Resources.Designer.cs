@@ -675,6 +675,15 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 载入中，请稍候… 的本地化字符串。
+        /// </summary>
+        internal static string Tips_Loading {
+            get {
+                return ResourceManager.GetString("Tips_Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 这应该是播放菜单的mpls 的本地化字符串。
         /// </summary>
         internal static string Tips_Menu_Clip {

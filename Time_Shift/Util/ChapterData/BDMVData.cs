@@ -28,17 +28,21 @@ namespace ChapterTool.Util.ChapterData
                 if (string.IsNullOrEmpty(eac3toPath)) return list;
                 RegistryStorage.Save(name: "eac3toPath",value: eac3toPath);
             }
+            var workingPath = Directory.GetParent(location).FullName;
+            location = location.Substring(location.LastIndexOf('\\') + 1);
+
             ProcessStartInfo processStartInfo = new ProcessStartInfo(eac3toPath, $"\"{location}\"")
             {
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
-                WorkingDirectory = Application.StartupPath
+                WorkingDirectory = workingPath
             };
             Process process = Process.Start(processStartInfo);
             Debug.Assert(process != null);
             string text = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
+            //while (!process.HasExited) Application.DoEvents();
             if (text.Contains("HD DVD / Blu-Ray disc structure not found."))
             {
                 throw new Exception("May be path is too complex or contains nonAscii characters");
@@ -61,6 +65,8 @@ namespace ChapterTool.Util.ChapterData
                 list.Add(chapterInfo);
             }
             var toBeRemove = new List<ChapterInfo>();
+            var chapterPath = Path.Combine(workingPath, "chapters.txt");
+            var logPath = Path.Combine(workingPath, "chapters - Log.txt");
             foreach (ChapterInfo current in list)
             {
                 processStartInfo.Arguments = $"\"{location}\" {current.SourceIndex})";
@@ -73,10 +79,6 @@ namespace ChapterTool.Util.ChapterData
                     toBeRemove.Add(current);
                     continue;
                 }
-                if (File.Exists("chapters.txt"))
-                {
-                    File.Delete("chapters.txt");
-                }
                 processStartInfo.Arguments = $"\"{location}\" {current.SourceIndex}) chapters.txt";
                 process = Process.Start(processStartInfo);
                 Debug.Assert(process != null);
@@ -86,12 +88,14 @@ namespace ChapterTool.Util.ChapterData
                 {
                     throw new Exception("Error creating chapters file.");
                 }
-                current.Chapters = OgmData.GetChapterInfo(File.ReadAllBytes("chapters.txt").GetUTF8String()).Chapters;
+                current.Chapters = OgmData.GetChapterInfo(File.ReadAllBytes(chapterPath).GetUTF8String()).Chapters;
                 if (current.Chapters.First().Name != "") continue;
                 var chapterName = ChapterName.GetChapterName("Chapter");
                 current.Chapters.ForEach(chapter => chapter.Name = chapterName());
             }
             toBeRemove.ForEach(item => list.Remove(item));
+            if(File.Exists(chapterPath)) File.Delete(chapterPath);
+            if(File.Exists(logPath)) File.Delete(logPath);
             return list;
         }
     }

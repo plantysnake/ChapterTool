@@ -617,6 +617,8 @@ namespace ChapterTool.Forms
             SetDefault();
             try
             {
+                tsTips.Text = Resources.Tips_Loading;
+                Application.DoEvents();
                 _bdmvGroup = BDMVData.GetChapter(FilePath);
                 if (_bdmvGroup == null || _bdmvGroup.Count == 0)
                 {
@@ -630,6 +632,7 @@ namespace ChapterTool.Forms
                 Notification.ShowError("Exception throwed while loading BluRay disc", exception);
                 return;
             }
+            tsTips.Text = Resources.Tips_Load_Success;
             Debug.Assert(_bdmvGroup != null);
             comboBox2.Enabled = comboBox2.Visible = _bdmvGroup.Count >= 1;
             if (!comboBox2.Enabled) return;
