@@ -75,6 +75,12 @@ namespace ChapterTool.Util.ChapterData
             NsFin
         }
 
+        private static readonly Regex RTitle      = new Regex(@"TITLE\s+\""(.+)\""", RegexOptions.Compiled);
+        private static readonly Regex RFile       = new Regex(@"FILE\s+\""(.+)\""\s+(WAVE|MP3|AIFF|BINARY|MOTOROLA)", RegexOptions.Compiled);
+        private static readonly Regex RTrack      = new Regex(@"TRACK\s+(\d+)", RegexOptions.Compiled);
+        private static readonly Regex RPerformer  = new Regex(@"PERFORMER\s+\""(.+)\""", RegexOptions.Compiled);
+        private static readonly Regex RTime       = new Regex(@"INDEX\s+(?<index>\d+)\s+(?<M>\d{2}):(?<S>\d{2}):(?<F>\d{2})", RegexOptions.Compiled);
+
         /// <summary>
         /// 解析 cue 播放列表
         /// </summary>
@@ -84,11 +90,6 @@ namespace ChapterTool.Util.ChapterData
         {
             var lines         = context.Split('\n');
             var cue           = new ChapterInfo {SourceType = "CUE", Tag = context, TagType = context.GetType()};
-            Regex rTitle      = new Regex(@"TITLE\s+\""(.+)\""", RegexOptions.Compiled);
-            Regex rFile       = new Regex(@"FILE\s+\""(.+)\""\s+(WAVE|MP3|AIFF|BINARY|MOTOROLA)", RegexOptions.Compiled);
-            Regex rTrack      = new Regex(@"TRACK\s+(\d+)", RegexOptions.Compiled);
-            Regex rPerformer  = new Regex(@"PERFORMER\s+\""(.+)\""", RegexOptions.Compiled);
-            Regex rTime       = new Regex(@"INDEX\s+(?<index>\d+)\s+(?<M>\d{2}):(?<S>\d{2}):(?<F>\d{2})", RegexOptions.Compiled);
             NextState nxState = NextState.NsStart;
             Chapter chapter   = null;
 
@@ -97,8 +98,8 @@ namespace ChapterTool.Util.ChapterData
                 switch (nxState)
                 {
                     case NextState.NsStart:
-                        var chapterTitleMatch = rTitle.Match(line);
-                        var fileMatch         = rFile.Match(line);
+                        var chapterTitleMatch = RTitle.Match(line);
+                        var fileMatch         = RFile.Match(line);
                         if (chapterTitleMatch.Success)
                         {
                             cue.Title = chapterTitleMatch.Groups[1].Value;
@@ -117,7 +118,7 @@ namespace ChapterTool.Util.ChapterData
                             nxState = NextState.NsFin;
                             break;
                         }
-                        var trackMatch = rTrack.Match(line);
+                        var trackMatch = RTrack.Match(line);
                         if (trackMatch.Success)         //读取到Track，获取其编号，跳至下一步
                         {
                             chapter = new Chapter { Number = int.Parse(trackMatch.Groups[1].Value) };
@@ -125,9 +126,9 @@ namespace ChapterTool.Util.ChapterData
                         }
                         break;
                     case NextState.NsTrack:
-                        var trackTitleMatch = rTitle.Match(line);
-                        var performerMatch  = rPerformer.Match(line);
-                        var timeMatch       = rTime.Match(line);
+                        var trackTitleMatch = RTitle.Match(line);
+                        var performerMatch  = RPerformer.Match(line);
+                        var timeMatch       = RTime.Match(line);
 
                         if (trackTitleMatch.Success)    //获取章节名
                         {
