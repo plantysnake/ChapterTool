@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Diagnostics;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ChapterTool.Util.ChapterData
 {
@@ -106,5 +104,4 @@ namespace ChapterTool.Util.ChapterData
             return list;
         }
     }
-
 }

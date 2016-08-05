@@ -336,7 +336,7 @@ namespace ChapterTool.Forms
                                      Resources.File_Filter_Chapter_File + @"(*.txt,*.xml,*.mpls,*.ifo,*.xpl)|*.txt;*.xml;*.mpls;*.ifo;*.xpl|" +
                                      Resources.File_Filter_Cue_File +  @"(*.cue,*.tak,*.flac)|*.cue;*.tak;*.flac|" +
                                      Resources.File_Filter_Matroska_File + @"(*.mkv,*.mka)|*.mkv;*.mka|" +
-                                     Resources.File_Filter_Mp4_File + @"(*.mp4,*.m4a,*.m4v)|*.mp4;*.m4a;*.m4v|" + 
+                                     Resources.File_Filter_Mp4_File + @"(*.mp4,*.m4a,*.m4v)|*.mp4;*.m4a;*.m4v|" +
                                      Resources.File_Filter_VTT_File + @"(*.vtt)|*.vtt";
             try
             {
@@ -435,7 +435,8 @@ namespace ChapterTool.Forms
         {
             //Reload File
             if (e.Button != MouseButtons.Right || string.IsNullOrEmpty(FilePath)) return;
-            if (Loadfile()) UpdataGridView();
+            if (_isUrl) LoadBDMV();
+            else if (Loadfile()) UpdataGridView();
         }
 
         private void LoadMpls()
