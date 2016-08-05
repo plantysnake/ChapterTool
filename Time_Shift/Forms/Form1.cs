@@ -619,7 +619,9 @@ namespace ChapterTool.Forms
             {
                 tsTips.Text = Resources.Tips_Loading;
                 Application.DoEvents();
+                BDMVData.OnLog += Log;
                 _bdmvGroup = BDMVData.GetChapter(FilePath);
+                BDMVData.OnLog -= Log;
                 if (_bdmvGroup == null || _bdmvGroup.Count == 0)
                 {
                     _bdmvGroup = null;

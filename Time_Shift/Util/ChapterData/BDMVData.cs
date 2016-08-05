@@ -11,6 +11,10 @@ namespace ChapterTool.Util.ChapterData
 {
     public static class BDMVData
     {
+        public delegate void LogEventHandler(string message);
+
+        public static event LogEventHandler OnLog;
+
         private static readonly Regex RDiskInfo = new Regex(@"(?<idx>\d)\) (?<mpls>\d+\.mpls), (?:(?:(?<dur>\d+:\d+:\d+)[\n\s\b]*(?<fn>.+\.m2ts))|(?:(?<fn2>.+\.m2ts), (?<dur2>\d+:\d+:\d+)))");
 
         public static List<ChapterInfo> GetChapter(string location)
@@ -45,8 +49,10 @@ namespace ChapterTool.Util.ChapterData
             //while (!process.HasExited) Application.DoEvents();
             if (text.Contains("HD DVD / Blu-Ray disc structure not found."))
             {
-                throw new Exception("May be path is too complex or contains nonAscii characters");
+                throw new Exception("May be the path is too complex or directory contains nonAscii characters");
             }
+            OnLog?.Invoke("Disc Info:\r\n" + text.Replace('\b', '\uFEFF'));
+
             foreach (Match match in RDiskInfo.Matches(text))
             {
                 var index = match.Groups["idx"].Value;
@@ -55,6 +61,7 @@ namespace ChapterTool.Util.ChapterData
                 if (string.IsNullOrEmpty(time)) time = match.Groups["dur2"].Value;
                 var file = match.Groups["fn"].Value;
                 if (string.IsNullOrEmpty(file)) file = match.Groups["fn2"].Value;
+                OnLog?.Invoke($"+ {index}) {mpls} -> [{file}] - [{time}]");
 
                 ChapterInfo chapterInfo = new ChapterInfo
                 {
