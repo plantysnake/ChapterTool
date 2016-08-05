@@ -52,7 +52,7 @@ namespace ChapterTool.Util
             return info.Mul1K1 ? new TimeSpan( (long) Math.Round((decimal) (item.Time + info.Offset).TotalSeconds*1.001M*TimeSpan.TicksPerSecond)).Time2String() : Time2String(item.Time + info.Offset);
         }
 
-        public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+)\s*:\s*(?<Minute>\d+)\s*:\s*(?<Second>\d+)\s*[\.,]\s*(?<Millisecond>\d{3})");
+        public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+)\s*:\s*(?<Minute>\d+)\s*:\s*(?<Second>\d+)\s*[\.,]\s*(?<Millisecond>\d{3})", RegexOptions.Compiled);
 
         /// <summary>
         /// 将符合 hh:mm:ss.sss 形式的字符串转换为TimeSpan对象
@@ -86,7 +86,7 @@ namespace ChapterTool.Util
         public static Point String2Point(string input)
         {
             if (string.IsNullOrWhiteSpace(input)) return new Point(-32000, -32000);
-            var rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");
+            var rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}", RegexOptions.Compiled);
             var result = rpos.Match(input);
             if (!result.Success) return new Point(-32000, -32000);
             int x = int.Parse(result.Groups["x"].Value);
@@ -141,7 +141,7 @@ namespace ChapterTool.Util
         {
             if (!File.Exists(ColorProfile)) return;
             string json = File.ReadAllText(ColorProfile);
-            Regex rcolor = new Regex("\"(?<hex>.+?)\"");
+            Regex rcolor = new Regex("\"(?<hex>.+?)\"", RegexOptions.Compiled);
             var matchesOfJson = rcolor.Matches(json);
             if (matchesOfJson.Count < 6)  return;
             window.BackChange     = ColorTranslator.FromHtml(matchesOfJson[0].Groups["hex"].Value);

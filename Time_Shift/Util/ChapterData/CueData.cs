@@ -84,11 +84,11 @@ namespace ChapterTool.Util.ChapterData
         {
             var lines         = context.Split('\n');
             var cue           = new ChapterInfo {SourceType = "CUE", Tag = context, TagType = context.GetType()};
-            Regex rTitle      = new Regex(@"TITLE\s+\""(.+)\""");
-            Regex rFile       = new Regex(@"FILE\s+\""(.+)\""\s+(WAVE|MP3|AIFF|BINARY|MOTOROLA)");
-            Regex rTrack      = new Regex(@"TRACK\s+(\d+)");
-            Regex rPerformer  = new Regex(@"PERFORMER\s+\""(.+)\""");
-            Regex rTime       = new Regex(@"INDEX\s+(?<index>\d+)\s+(?<M>\d{2}):(?<S>\d{2}):(?<F>\d{2})");
+            Regex rTitle      = new Regex(@"TITLE\s+\""(.+)\""", RegexOptions.Compiled);
+            Regex rFile       = new Regex(@"FILE\s+\""(.+)\""\s+(WAVE|MP3|AIFF|BINARY|MOTOROLA)", RegexOptions.Compiled);
+            Regex rTrack      = new Regex(@"TRACK\s+(\d+)", RegexOptions.Compiled);
+            Regex rPerformer  = new Regex(@"PERFORMER\s+\""(.+)\""", RegexOptions.Compiled);
+            Regex rTime       = new Regex(@"INDEX\s+(?<index>\d+)\s+(?<M>\d{2}):(?<S>\d{2}):(?<F>\d{2})", RegexOptions.Compiled);
             NextState nxState = NextState.NsStart;
             Chapter chapter   = null;
 

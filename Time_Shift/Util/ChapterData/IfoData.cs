@@ -40,7 +40,7 @@ namespace ChapterTool.Util.ChapterData
 
         private static ChapterInfo GetChapterInfo(string location, int titleSetNum)
         {
-            Regex titleRegex = new Regex(@"^VTS_(\d+)_0\.IFO", RegexOptions.IgnoreCase);
+            Regex titleRegex = new Regex(@"^VTS_(\d+)_0\.IFO", RegexOptions.IgnoreCase | RegexOptions.Compiled);
             var result       = titleRegex.Match(location);
             if (result.Success) titleSetNum = int.Parse(result.Groups[1].Value);
 

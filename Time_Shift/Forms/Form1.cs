@@ -331,8 +331,13 @@ namespace ChapterTool.Forms
         private static readonly Lazy<Regex> RFileType = new Lazy<Regex>(() =>
         {
             var allType = SupportTypes.SelectMany(supportType => supportType.Value).Aggregate(string.Empty, (current, type) => current + $"{type}|");
-            return new Regex($"\\.({allType.TrimEnd('|')})$", RegexOptions.IgnoreCase);
+            return new Regex($"\\.({allType.TrimEnd('|')})$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         });
+
+        private enum FileType
+        {
+            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4, M4a, M4v, VTT
+        }
 
         private static readonly Dictionary<string, string[]> SupportTypes = new Dictionary<string, string[]>
         {
@@ -388,11 +393,6 @@ namespace ChapterTool.Forms
         {
             get { return combineToolStripMenuItem.Checked; }
             set { combineToolStripMenuItem.Checked = value; }
-        }
-
-        private enum FileType
-        {
-            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4, M4a, M4v, VTT
         }
 
         private bool Loadfile()
@@ -743,7 +743,7 @@ namespace ChapterTool.Forms
              return savePath;
         }
 
-        private static readonly Regex RLang = new Regex(@"\((?<lang>.+)\)");
+        private static readonly Regex RLang = new Regex(@"\((?<lang>.+)\)", RegexOptions.Compiled);
 
         private void SaveFile(int saveType)
         {

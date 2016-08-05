@@ -34,8 +34,8 @@ namespace ChapterTool.Util
     {
         private static void OnResponse(IAsyncResult ar)
         {
-            Regex versionRegex = new Regex(@"<meta\s+name\s*=\s*'ChapterTool'\s+content\s*=\s*'(\d+\.\d+\.\d+\.\d+)'\s*>");
-            Regex baseUrlRegex = new Regex(@"<meta\s+name\s*=\s*'BaseUrl'\s+content\s*=\s*'(.+)'\s*>");
+            Regex versionRegex = new Regex(@"<meta\s+name\s*=\s*'ChapterTool'\s+content\s*=\s*'(\d+\.\d+\.\d+\.\d+)'\s*>", RegexOptions.Compiled);
+            Regex baseUrlRegex = new Regex(@"<meta\s+name\s*=\s*'BaseUrl'\s+content\s*=\s*'(.+)'\s*>", RegexOptions.Compiled);
             WebRequest webRequest = (WebRequest)ar.AsyncState;
             Stream responseStream;
             try
