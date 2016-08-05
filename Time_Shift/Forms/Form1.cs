@@ -158,7 +158,7 @@ namespace ChapterTool.Forms
                     Log(string.Format(Resources.Log_Load_Position_Successful, saved));
                 }
             }
-            
+
             LanguageSelectionContainer.LoadLang(xmlLang);
             InsertAccuracyItems();
             SetDefault();
@@ -319,7 +319,7 @@ namespace ChapterTool.Forms
                     return false;
                 }
                 if (_isUrl) return true;
-                if (RFileType.IsMatch(FilePath)) return true;
+                if (RFileType.Value.IsMatch(FilePath)) return true;
                 tsTips.Text = Resources.Tips_InValid_Type;
                 Log(Resources.Tips_InValid_Type_Log + $"[{Path.GetFileName(FilePath)}]");
                 FilePath = string.Empty;
@@ -328,16 +328,38 @@ namespace ChapterTool.Forms
             }
         }
 
-        private static readonly Regex RFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl|mp4|m4a|m4v|vtt)$", RegexOptions.IgnoreCase);
+        private static readonly Lazy<Regex> RFileType = new Lazy<Regex>(() =>
+        {
+            var allType = SupportTypes.SelectMany(supportType => supportType.Value).Aggregate(string.Empty, (current, type) => current + $"{type}|");
+            return new Regex($"\\.({allType.TrimEnd('|')})$", RegexOptions.IgnoreCase);
+        });
+
+        private static readonly Dictionary<string, string[]> SupportTypes = new Dictionary<string, string[]>
+        {
+            [Resources.File_Filter_Chapter_File]  = new[] {"txt", "xml", "mpls", "ifo", "xpl"},
+            [Resources.File_Filter_Cue_File]      = new[] {"cue", "tak", "flac"},
+            [Resources.File_Filter_Matroska_File] = new[] {"mkv", "mka"},
+            [Resources.File_Filter_Mp4_File]      = new[] {"mp4", "m4a", "m4v"},
+            [Resources.File_Filter_VTT_File]      = new[] {"vtt"}
+        };
+
+        private static readonly Lazy<string> MainFilter = new Lazy<string>(() =>
+        {
+            Func<IEnumerable<string>, string> getType = enumerable => enumerable.Aggregate(string.Empty, (current, type) => current + $"*.{type};");
+            string ret = Resources.File_Filter_All_Support;
+            string types = getType(SupportTypes.SelectMany(supportType => supportType.Value));
+            ret += $"({types.TrimEnd(';')})|{types}";
+            foreach (var supportType in SupportTypes)
+            {
+                types = getType(supportType.Value);
+                ret += $"|{supportType.Key}({types.TrimEnd(';')})|{types}";
+            }
+            return ret;
+        });
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = Resources.File_Filter_All_Support + @"(*.txt,*.xml,*.mpls,*.ifo,*.xpl,*.cue,*tak,*flac,*.mkv,*.mka,*.mp4,*.m4a,*.m4v)|*.txt;*.xml;*.mpls;*.ifo;*.xpl;*.cue;*.tak;*.flac;*.mkv;*.mka;*.mp4;*.m4a;*.m4v|" +
-                                     Resources.File_Filter_Chapter_File + @"(*.txt,*.xml,*.mpls,*.ifo,*.xpl)|*.txt;*.xml;*.mpls;*.ifo;*.xpl|" +
-                                     Resources.File_Filter_Cue_File +  @"(*.cue,*.tak,*.flac)|*.cue;*.tak;*.flac|" +
-                                     Resources.File_Filter_Matroska_File + @"(*.mkv,*.mka)|*.mkv;*.mka|" +
-                                     Resources.File_Filter_Mp4_File + @"(*.mp4,*.m4a,*.m4v)|*.mp4;*.m4a;*.m4v|" +
-                                     Resources.File_Filter_VTT_File + @"(*.vtt)|*.vtt";
+            openFileDialog1.Filter = MainFilter.Value;
             try
             {
                 openFileDialog1.FileName = string.Empty;
