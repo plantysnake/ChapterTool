@@ -1168,7 +1168,7 @@ namespace ChapterTool.Forms
         private void comboBox2_MouseEnter(object sender, EventArgs e)
         {
             var menuMpls = _rawMpls != null && _rawMpls.EntireClip.TimeStamp.Count < 5 && comboBox2.Items.Count > 20;
-            toolTip1.Show(menuMpls ? Resources.Tips_Menu_Clip : string.Format(Resources.Tips_Clip_Count, comboBox2.Items.Count), (IWin32Window)sender);
+            toolTip1.Show(menuMpls ? Resources.Tips_Menu_Clip : $"[{comboBox2.Text}] " + string.Format(Resources.Tips_Clip_Count, comboBox2.Items.Count), (IWin32Window)sender);
         }
 
         private void ToolTipRemoveAll(object sender, EventArgs e)  => toolTip1.Hide((IWin32Window)sender);
