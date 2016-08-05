@@ -21,7 +21,14 @@ namespace ChapterTool.Util.ChapterData
             {
                 throw new FileNotFoundException("Blu-Ray disc structure not found.");
             }
-            ProcessStartInfo processStartInfo = new ProcessStartInfo("C:\\Tool\\MeGUI\\tools\\eac3to\\eac3to.exe", $"\"{location}\"")
+            var eac3toPath = RegistryStorage.Load(name: "eac3toPath");
+            if (string.IsNullOrEmpty(eac3toPath) || !File.Exists(eac3toPath))
+            {
+                eac3toPath = Notification.InputBox("请输入eac3to的地址", "注意不要带上多余的空格", "C:\\eac3to\\eac3to.exe");
+                if (string.IsNullOrEmpty(eac3toPath)) return list;
+                RegistryStorage.Save(name: "eac3toPath",value: eac3toPath);
+            }
+            ProcessStartInfo processStartInfo = new ProcessStartInfo(eac3toPath, $"\"{location}\"")
             {
                 CreateNoWindow = true,
                 UseShellExecute = false,
