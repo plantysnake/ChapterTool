@@ -222,6 +222,7 @@ namespace ChapterTool.Forms
             _info                   = null;
             _fullIfoChapter         = null;
             _xplGroup               = null;
+            _bdmvGroup              = null;
 
             dataGridView1.Rows.Clear();
         }
@@ -282,17 +283,7 @@ namespace ChapterTool.Forms
             if(Directory.Exists(FilePath))
             {
                 _isUrl = true;
-                try
-                {
-                    _BDMVGroup = BDMVData.GetChapter(FilePath);
-                    if(_BDMVGroup == null) return;
-                    _info = _BDMVGroup.First();
-                }
-                catch (Exception exception)
-                {
-                    Notification.ShowError("Exception throwed while loading BluRay disc", exception);
-                }
-                UpdataGridView();
+                LoadBDMV();
                 return;
             }
             _isUrl = false;
@@ -364,7 +355,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        private List<ChapterInfo> _BDMVGroup;
+        private List<ChapterInfo> _bdmvGroup;
         private List<ChapterInfo> _ifoGroup;
         private List<ChapterInfo> _xplGroup;
         private MplsData          _rawMpls;
@@ -621,6 +612,36 @@ namespace ChapterTool.Forms
             tsTips.Text = Resources.Tips_Load_Success;
         }
 
+        private void LoadBDMV()
+        {
+            SetDefault();
+            try
+            {
+                _bdmvGroup = BDMVData.GetChapter(FilePath);
+                if (_bdmvGroup == null || _bdmvGroup.Count == 0)
+                {
+                    _bdmvGroup = null;
+                    return;
+                }
+                _info = _bdmvGroup.First();
+            }
+            catch (Exception exception)
+            {
+                Notification.ShowError("Exception throwed while loading BluRay disc", exception);
+                return;
+            }
+            Debug.Assert(_bdmvGroup != null);
+            comboBox2.Enabled = comboBox2.Visible = _bdmvGroup.Count >= 1;
+            if (!comboBox2.Enabled) return;
+            comboBox2.Items.Clear();
+            _bdmvGroup.ForEach(item =>
+            {
+                comboBox2.Items.Add($"{item.SourceName}__{item.Chapters.Count}");
+            });
+            comboBox2.SelectedIndex = ClipSeletIndex;
+            UpdataGridView();
+        }
+
         #endregion
 
         #region Save File
@@ -774,6 +795,9 @@ namespace ChapterTool.Forms
             else if (_xplGroup != null)
             {
                 _info = _xplGroup[ClipSeletIndex];
+            } else if (_bdmvGroup != null)
+            {
+                _info = _bdmvGroup[ClipSeletIndex];
             }
             _info.Mul1K1 = cbMul1k1.Checked;
             UpdataGridView();
