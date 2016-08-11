@@ -666,6 +666,15 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 载入失败… 的本地化字符串。
+        /// </summary>
+        internal static string Tips_Load_Fail {
+            get {
+                return ResourceManager.GetString("Tips_Load_Fail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 载入完成 (≧▽≦) 的本地化字符串。
         /// </summary>
         internal static string Tips_Load_Success {

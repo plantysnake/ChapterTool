@@ -635,7 +635,7 @@ namespace ChapterTool.Forms
             tsTips.Text = Resources.Tips_Load_Success;
         }
 
-        private void LoadBDMV()
+        private async void LoadBDMV()
         {
             SetDefault();
             try
@@ -643,11 +643,12 @@ namespace ChapterTool.Forms
                 tsTips.Text = Resources.Tips_Loading;
                 Application.DoEvents();
                 BDMVData.OnLog += Log;
-                _bdmvGroup = BDMVData.GetChapter(FilePath);
+                _bdmvGroup = await BDMVData.GetChapter(FilePath);
                 BDMVData.OnLog -= Log;
                 if (_bdmvGroup == null || _bdmvGroup.Count == 0)
                 {
                     _bdmvGroup = null;
+                    tsTips.Text = Resources.Tips_Load_Fail;
                     return;
                 }
                 _info = _bdmvGroup.First();

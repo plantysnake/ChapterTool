@@ -123,6 +123,7 @@
     <Compile Include="Knuckleball\IntPtrExtensions.cs" />
     <Compile Include="Knuckleball\MP4File.cs" />
     <Compile Include="Knuckleball\NativeMethods.cs" />
+    <Compile Include="TaskAsync.cs" />
     <Compile Include="Util\Chapter.cs" />
     <Compile Include="Util\ChapterData\BDMVData.cs" />
     <Compile Include="Util\ChapterInfo.cs" />

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace ChapterTool.Util.ChapterData
 {
@@ -15,7 +16,7 @@ namespace ChapterTool.Util.ChapterData
 
         private static readonly Regex RDiskInfo = new Regex(@"(?<idx>\d)\) (?<mpls>\d+\.mpls), (?:(?:(?<dur>\d+:\d+:\d+)[\n\s\b]*(?<fn>.+\.m2ts))|(?:(?<fn2>.+\.m2ts), (?<dur2>\d+:\d+:\d+)))", RegexOptions.Compiled);
 
-        public static List<ChapterInfo> GetChapter(string location)
+        public static async Task<List<ChapterInfo>> GetChapter(string location)
         {
             var list = new List<ChapterInfo>();
             string path = Path.Combine(Path.Combine(location, "BDMV"), "PLAYLIST");
@@ -32,7 +33,7 @@ namespace ChapterTool.Util.ChapterData
             }
             var workingPath = Directory.GetParent(location).FullName;
             location = location.Substring(location.LastIndexOf('\\') + 1);
-
+            /*
             ProcessStartInfo processStartInfo = new ProcessStartInfo(eac3toPath, $"\"{location}\"")
             {
                 CreateNoWindow = true,
@@ -45,6 +46,8 @@ namespace ChapterTool.Util.ChapterData
             string text = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
             //while (!process.HasExited) Application.DoEvents();
+            */
+            string text = await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\"", workingPath);
             if (text.Contains("HD DVD / Blu-Ray disc structure not found."))
             {
                 throw new Exception("May be the path is too complex or directory contains nonAscii characters");
@@ -54,10 +57,10 @@ namespace ChapterTool.Util.ChapterData
             foreach (Match match in RDiskInfo.Matches(text))
             {
                 var index = match.Groups["idx"].Value;
-                var mpls = match.Groups["mpls"].Value;
-                var time = match.Groups["dur"].Value;
+                var mpls  = match.Groups["mpls"].Value;
+                var time  = match.Groups["dur"].Value;
                 if (string.IsNullOrEmpty(time)) time = match.Groups["dur2"].Value;
-                var file = match.Groups["fn"].Value;
+                var file  = match.Groups["fn"].Value;
                 if (string.IsNullOrEmpty(file)) file = match.Groups["fn2"].Value;
                 OnLog?.Invoke($"+ {index}) {mpls} -> [{file}] - [{time}]");
 
@@ -74,21 +77,27 @@ namespace ChapterTool.Util.ChapterData
             var logPath = Path.Combine(workingPath, "chapters - Log.txt");
             foreach (ChapterInfo current in list)
             {
+                /*
                 processStartInfo.Arguments = $"\"{location}\" {current.SourceIndex})";
                 process = Process.Start(processStartInfo);
                 Debug.Assert(process != null);
                 text = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
+                */
+                text = await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\" {current.SourceIndex})", workingPath);
                 if (!text.Contains("Chapters"))
                 {
                     toBeRemove.Add(current);
                     continue;
                 }
+                /*
                 processStartInfo.Arguments = $"\"{location}\" {current.SourceIndex}) chapters.txt";
                 process = Process.Start(processStartInfo);
                 Debug.Assert(process != null);
                 text = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
+                */
+                text = await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\" {current.SourceIndex}) chapters.txt", workingPath);
                 if (!text.Contains("Creating file \"chapters.txt\"...") && !text.Contains("Done!"))
                 {
                     throw new Exception("Error creating chapters file.");
