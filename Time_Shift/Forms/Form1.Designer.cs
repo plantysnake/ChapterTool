@@ -540,7 +540,7 @@
             // tsTips
             // 
             this.tsTips.Name = "tsTips";
-            this.tsTips.Size = new System.Drawing.Size(412, 17);
+            this.tsTips.Size = new System.Drawing.Size(443, 17);
             this.tsTips.Spring = true;
             this.tsTips.Text = " ";
             this.tsTips.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;

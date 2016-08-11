@@ -256,7 +256,7 @@ namespace ChapterTool.Util.ChapterData
                 }
                 var language = Encoding.ASCII.GetString(stream, offset, 3);
                 if (language[0] == '\0') language = "und";
-                OnLog?.Invoke($"Stream[{clipName}] Language: {language}");
+                OnLog?.Invoke($"Stream[{clipName}] Language: {LanguageSelectionContainer.LookupISOCode(language)}");
                 if (0x0d == offset)
                 {
                     int channel = stream[0x0c] >> 4;

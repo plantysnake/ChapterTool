@@ -123,6 +123,15 @@
     <Compile Include="Knuckleball\IntPtrExtensions.cs" />
     <Compile Include="Knuckleball\MP4File.cs" />
     <Compile Include="Knuckleball\NativeMethods.cs" />
+    <Compile Include="SharpDvdInfo\DvdInfoContainer.cs" />
+    <Compile Include="SharpDvdInfo\DvdTypes\DvdAudio.cs" />
+    <Compile Include="SharpDvdInfo\DvdTypes\DvdSubpicture.cs" />
+    <Compile Include="SharpDvdInfo\DvdTypes\DvdVideo.cs" />
+    <Compile Include="SharpDvdInfo\Model\AudioProperties.cs" />
+    <Compile Include="SharpDvdInfo\Model\SubpictureProperties.cs" />
+    <Compile Include="SharpDvdInfo\Model\TitleInfo.cs" />
+    <Compile Include="SharpDvdInfo\Model\VideoProperties.cs" />
+    <Compile Include="SharpDvdInfo\Model\VmgmInfo.cs" />
     <Compile Include="TaskAsync.cs" />
     <Compile Include="Util\Chapter.cs" />
     <Compile Include="Util\ChapterData\BDMVData.cs" />
@@ -225,6 +234,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Resources\arrow_drop_down.bmp" />
+    <None Include="SharpDvdInfo\LICENSE" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
