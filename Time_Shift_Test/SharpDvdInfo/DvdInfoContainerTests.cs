@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using ChapterTool.Util;
 
 namespace SharpDvdInfo.Tests
 {
@@ -12,22 +13,28 @@ namespace SharpDvdInfo.Tests
         [TestMethod()]
         public void DvdInfoContainerTest()
         {
-            DvdInfoContainer dvd = new DvdInfoContainer("F:\\");
-            dvd.Titles.ForEach(title =>
+            var expectResult = new[]
             {
-                Console.WriteLine(title.TitleNumber + " " + title.TitleNumberInSet);
-                title.Chapters.ForEach(stamp => Console.WriteLine(stamp));
-            });
-
-            Console.WriteLine(@"==File test==");
+                new { Name = "Chapter 01", Time = "00:00:00.000" },
+                new { Name = "Chapter 02", Time = "00:17:42.500" },
+                new { Name = "Chapter 03", Time = "00:37:14.767" },
+                new { Name = "Chapter 04", Time = "00:56:24.167" },
+                new { Name = "Chapter 05", Time = "01:12:36.701" },
+                new { Name = "Chapter 06", Time = "01:32:26.268" },
+                new { Name = "Chapter 07", Time = "01:49:06.136" },
+                new { Name = "Chapter 08", Time = "01:49:06.636" }
+            };
             string path = @"..\..\[ifo_Sample]\VTS_05_0.IFO";
             if (!File.Exists(path)) path = @"..\" + path;
-            dvd = new DvdInfoContainer(path);
-            dvd.Titles.ForEach(title =>
+            var result = new DvdInfoContainer(path).GetChapterInfo();
+            int index = 0;
+            foreach (var chapter in result[0].Chapters)
             {
-                Console.WriteLine(title.TitleNumber);
-                title.Chapters.ForEach(stamp => Console.WriteLine(stamp));
-            });
+                Console.WriteLine(chapter);
+                Assert.IsTrue(expectResult[index].Name == chapter.Name);
+                Assert.IsTrue(expectResult[index].Time == chapter.Time.Time2String());
+                ++index;
+            }
         }
         /*
         [TestMethod()]
