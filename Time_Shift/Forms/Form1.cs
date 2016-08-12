@@ -472,12 +472,12 @@ namespace ChapterTool.Forms
             comboBox2.Enabled = comboBox2.Visible = _rawMpls.ChapterClips.Count >= 1;
             if (!comboBox2.Enabled) return;
             comboBox2.Items.Clear();
-            _rawMpls.ChapterClips.ForEach(item =>
+            foreach(var item in _rawMpls.ChapterClips)
             {
                 comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
                 Log($" |+{item.Name} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]");
                 Log(string.Format(Resources.Log_TimeStamp_Count, item.TimeStamp.Count));
-            });
+            }
             comboBox2.SelectedIndex = ClipSeletIndex;
             GetChapterInfoFromMpls(ClipSeletIndex);
         }
@@ -741,7 +741,7 @@ namespace ChapterTool.Forms
             while (File.Exists($"{savePath}_{index}{saveingTypeSuffix[saveType]}")) ++index;
             savePath += $"_{index}{saveingTypeSuffix[saveType]}";
 
-             return savePath;
+            return savePath;
         }
 
         private static readonly Regex RLang = new Regex(@"\((?<lang>.+)\)", RegexOptions.Compiled);
