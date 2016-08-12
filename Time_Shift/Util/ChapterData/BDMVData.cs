@@ -33,20 +33,6 @@ namespace ChapterTool.Util.ChapterData
             }
             var workingPath = Directory.GetParent(location).FullName;
             location = location.Substring(location.LastIndexOf('\\') + 1);
-            /*
-            ProcessStartInfo processStartInfo = new ProcessStartInfo(eac3toPath, $"\"{location}\"")
-            {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                WorkingDirectory = workingPath
-            };
-            Process process = Process.Start(processStartInfo);
-            Debug.Assert(process != null);
-            string text = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-            //while (!process.HasExited) Application.DoEvents();
-            */
             string text = await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\"", workingPath);
             if (text.Contains("HD DVD / Blu-Ray disc structure not found."))
             {
@@ -77,26 +63,12 @@ namespace ChapterTool.Util.ChapterData
             var logPath = Path.Combine(workingPath, "chapters - Log.txt");
             foreach (ChapterInfo current in list)
             {
-                /*
-                processStartInfo.Arguments = $"\"{location}\" {current.SourceIndex})";
-                process = Process.Start(processStartInfo);
-                Debug.Assert(process != null);
-                text = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-                */
                 text = await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\" {current.SourceIndex})", workingPath);
                 if (!text.Contains("Chapters"))
                 {
                     toBeRemove.Add(current);
                     continue;
                 }
-                /*
-                processStartInfo.Arguments = $"\"{location}\" {current.SourceIndex}) chapters.txt";
-                process = Process.Start(processStartInfo);
-                Debug.Assert(process != null);
-                text = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-                */
                 text = await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\" {current.SourceIndex}) chapters.txt", workingPath);
                 if (!text.Contains("Creating file \"chapters.txt\"...") && !text.Contains("Done!"))
                 {
