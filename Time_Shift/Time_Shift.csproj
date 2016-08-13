@@ -132,10 +132,9 @@
     <Compile Include="SharpDvdInfo\Model\TitleInfo.cs" />
     <Compile Include="SharpDvdInfo\Model\VideoProperties.cs" />
     <Compile Include="SharpDvdInfo\Model\VmgmInfo.cs" />
-    <Compile Include="TaskAsync.cs" />
+    <Compile Include="Util\TaskAsync.cs" />
     <Compile Include="Util\Chapter.cs" />
     <Compile Include="Util\ChapterData\BDMVData.cs" />
-    <Compile Include="Util\ChapterData\Mp4Data.cs" />
     <Compile Include="Util\ChapterInfo.cs" />
     <Compile Include="Util\ChapterName.cs" />
     <Compile Include="Util\Clip.cs" />
@@ -175,6 +174,7 @@
     <Compile Include="Util\LanguageHelper.cs" />
     <Compile Include="Util\LanguageSelectionContainer.cs" />
     <Compile Include="Util\ChapterData\MatroskaData.cs" />
+    <Compile Include="Util\ChapterData\Mp4Data.cs" />
     <Compile Include="Util\ChapterData\MplsData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -223,7 +223,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ChangeLog.txt" />
     <Content Include="Images\about.ico" />
     <None Include="Images\arrow_drop_down.png" />
     <None Include="Images\arrow_drop_up.png" />
