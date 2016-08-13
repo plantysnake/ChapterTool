@@ -88,7 +88,7 @@ namespace ChapterTool.Util.ChapterData
                 int seconds  = BcdToInt(playbackBytes[2]);
                 TimeSpan ret = new TimeSpan(hours, minutes, seconds);
                 if (Math.Abs(fps) > 1e-5)
-                    ret += TimeSpan.FromSeconds(Math.Round((double)frames/fps));
+                    ret += TimeSpan.FromSeconds((double)frames/fps);
                 return ret;
             }
             catch { return null; }
