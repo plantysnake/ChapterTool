@@ -123,11 +123,22 @@
     <Compile Include="Knuckleball\IntPtrExtensions.cs" />
     <Compile Include="Knuckleball\MP4File.cs" />
     <Compile Include="Knuckleball\NativeMethods.cs" />
+    <Compile Include="SharpDvdInfo\DvdInfoContainer.cs" />
+    <Compile Include="SharpDvdInfo\DvdTypes\DvdAudio.cs" />
+    <Compile Include="SharpDvdInfo\DvdTypes\DvdSubpicture.cs" />
+    <Compile Include="SharpDvdInfo\DvdTypes\DvdVideo.cs" />
+    <Compile Include="SharpDvdInfo\Model\AudioProperties.cs" />
+    <Compile Include="SharpDvdInfo\Model\SubpictureProperties.cs" />
+    <Compile Include="SharpDvdInfo\Model\TitleInfo.cs" />
+    <Compile Include="SharpDvdInfo\Model\VideoProperties.cs" />
+    <Compile Include="SharpDvdInfo\Model\VmgmInfo.cs" />
+    <Compile Include="TaskAsync.cs" />
     <Compile Include="Util\Chapter.cs" />
+    <Compile Include="Util\ChapterData\BDMVData.cs" />
     <Compile Include="Util\ChapterInfo.cs" />
     <Compile Include="Util\ChapterName.cs" />
     <Compile Include="Util\Clip.cs" />
-    <Compile Include="Util\ConvertMethod.cs" />
+    <Compile Include="Util\ToolKits.cs" />
     <Compile Include="Controls\cTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -156,15 +167,15 @@
     <Compile Include="Forms\FormLog.Designer.cs">
       <DependentUpon>FormLog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Util\CueData.cs" />
+    <Compile Include="Util\ChapterData\CueData.cs" />
     <Compile Include="Util\CueSharp.cs" />
-    <Compile Include="Util\IfoData.cs" />
-    <Compile Include="Util\IfoParser.cs" />
+    <Compile Include="Util\ChapterData\IfoData.cs" />
+    <Compile Include="Util\ChapterData\IfoParser.cs" />
     <Compile Include="Util\LanguageHelper.cs" />
     <Compile Include="Util\LanguageSelectionContainer.cs" />
-    <Compile Include="Util\MatroskaData.cs" />
-    <Compile Include="Util\Mp4Data.cs" />
-    <Compile Include="Util\MplsData.cs" />
+    <Compile Include="Util\ChapterData\MatroskaData.cs" />
+    <Compile Include="Util\ChapterData\Mp4Data.cs" />
+    <Compile Include="Util\ChapterData\MplsData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -174,12 +185,12 @@
     </Compile>
     <Compile Include="Util\NativeMethods.cs" />
     <Compile Include="Util\Notification.cs" />
-    <Compile Include="Util\OgmData.cs" />
-    <Compile Include="Util\RegistryStorage.cs" />
+    <Compile Include="Util\ChapterData\OgmData.cs" />
     <Compile Include="Util\SystemMenu.cs" />
     <Compile Include="Util\Updater.cs" />
-    <Compile Include="Util\XmlData.cs" />
-    <Compile Include="Util\XplData.cs" />
+    <Compile Include="Util\ChapterData\VTTData.cs" />
+    <Compile Include="Util\ChapterData\XmlData.cs" />
+    <Compile Include="Util\ChapterData\XplData.cs" />
     <EmbeddedResource Include="Controls\cTextBox.resx">
       <DependentUpon>cTextBox.cs</DependentUpon>
     </EmbeddedResource>
@@ -223,6 +234,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Resources\arrow_drop_down.bmp" />
+    <None Include="SharpDvdInfo\LICENSE" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

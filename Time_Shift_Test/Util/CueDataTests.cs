@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
+using ChapterTool.Util.ChapterData;
 
 namespace ChapterTool.Util.Tests
 {

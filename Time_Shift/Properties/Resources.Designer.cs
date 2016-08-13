@@ -144,6 +144,15 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 WebVTT文件 的本地化字符串。
+        /// </summary>
+        internal static string File_Filter_VTT_File {
+            get {
+                return ResourceManager.GetString("File_Filter_VTT_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 文件还没载入呢 的本地化字符串。
         /// </summary>
         internal static string File_Unloaded {
@@ -576,6 +585,15 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 保存调用堆栈至剪切板？ 的本地化字符串。
+        /// </summary>
+        internal static string Message_Stack {
+            get {
+                return ResourceManager.GetString("Message_Stack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 读取MP4文件信息异常 的本地化字符串。
         /// </summary>
         internal static string Message_Unable_To_Read_Mp4_File {
@@ -648,11 +666,29 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 载入失败… 的本地化字符串。
+        /// </summary>
+        internal static string Tips_Load_Fail {
+            get {
+                return ResourceManager.GetString("Tips_Load_Fail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 载入完成 (≧▽≦) 的本地化字符串。
         /// </summary>
         internal static string Tips_Load_Success {
             get {
                 return ResourceManager.GetString("Tips_Load_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 载入中，请稍候… 的本地化字符串。
+        /// </summary>
+        internal static string Tips_Loading {
+            get {
+                return ResourceManager.GetString("Tips_Loading", resourceCulture);
             }
         }
         

@@ -1,4 +1,24 @@
-﻿using System;
+﻿// ****************************************************************************
+//
+// Copyright (C) 2014-2016 TautCony (TautCony@vcb-s.com)
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// ****************************************************************************
+
+using System;
 using System.IO;
 using System.Net;
 using ChapterTool.Forms;
@@ -14,8 +34,8 @@ namespace ChapterTool.Util
     {
         private static void OnResponse(IAsyncResult ar)
         {
-            Regex versionRegex = new Regex(@"<meta\s+name\s*=\s*'ChapterTool'\s+content\s*=\s*'(\d+\.\d+\.\d+\.\d+)'\s*>");
-            Regex baseUrlRegex = new Regex(@"<meta\s+name\s*=\s*'BaseUrl'\s+content\s*=\s*'(.+)'\s*>");
+            Regex versionRegex = new Regex(@"<meta\s+name\s*=\s*'ChapterTool'\s+content\s*=\s*'(\d+\.\d+\.\d+\.\d+)'\s*>", RegexOptions.Compiled);
+            Regex baseUrlRegex = new Regex(@"<meta\s+name\s*=\s*'BaseUrl'\s+content\s*=\s*'(.+)'\s*>", RegexOptions.Compiled);
             WebRequest webRequest = (WebRequest)ar.AsyncState;
             Stream responseStream;
             try

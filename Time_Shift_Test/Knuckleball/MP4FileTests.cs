@@ -3,6 +3,7 @@ using System.Diagnostics;
 using ChapterTool.Util;
 using System;
 using System.IO;
+using ChapterTool.Util.ChapterData;
 
 namespace Knuckleball.Tests
 {

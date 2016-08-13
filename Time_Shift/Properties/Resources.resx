@@ -343,4 +343,16 @@
   <data name="Tips_Out_Of_Range" xml:space="preserve">
     <value>输入的序号超出范围</value>
   </data>
+  <data name="File_Filter_VTT_File" xml:space="preserve">
+    <value>WebVTT文件</value>
+  </data>
+  <data name="Message_Stack" xml:space="preserve">
+    <value>保存调用堆栈至剪切板？</value>
+  </data>
+  <data name="Tips_Loading" xml:space="preserve">
+    <value>载入中，请稍候…</value>
+  </data>
+  <data name="Tips_Load_Fail" xml:space="preserve">
+    <value>载入失败…</value>
+  </data>
 </root>

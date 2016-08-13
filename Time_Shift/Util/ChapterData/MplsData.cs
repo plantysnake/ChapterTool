@@ -1,6 +1,6 @@
 ﻿// ****************************************************************************
 //
-// Copyright (C) 2014-2015 TautCony (TautCony@vcb-s.com)
+// Copyright (C) 2014-2016 TautCony (TautCony@vcb-s.com)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,13 +17,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
+
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Collections.Generic;
 
-namespace ChapterTool.Util
+namespace ChapterTool.Util.ChapterData
 {
     public class MplsData
     {
@@ -255,7 +256,7 @@ namespace ChapterTool.Util
                 }
                 var language = Encoding.ASCII.GetString(stream, offset, 3);
                 if (language[0] == '\0') language = "und";
-                OnLog?.Invoke($"Stream[{clipName}] Language: {language}");
+                OnLog?.Invoke($"Stream[{clipName}] Language: {LanguageSelectionContainer.LookupISOCode(language)}");
                 if (0x0d == offset)
                 {
                     int channel = stream[0x0c] >> 4;

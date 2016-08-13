@@ -17,21 +17,21 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
+
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Diagnostics;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using static ChapterTool.Util.IfoParser;
 
-namespace ChapterTool.Util
+namespace ChapterTool.Util.ChapterData
 {
     public static class IfoData
     {
         public static IEnumerable<ChapterInfo> GetStreams(string ifoFile)
         {
-            int pgcCount = GetPGCnb(ifoFile);
+            int pgcCount = IfoParser.GetPGCnb(ifoFile);
             for (int i = 1; i <= pgcCount; i++)
             {
                 yield return GetChapterInfo(ifoFile, i);
@@ -40,7 +40,7 @@ namespace ChapterTool.Util
 
         private static ChapterInfo GetChapterInfo(string location, int titleSetNum)
         {
-            Regex titleRegex = new Regex(@"^VTS_(\d+)_0\.IFO", RegexOptions.IgnoreCase);
+            Regex titleRegex = new Regex(@"^VTS_(\d+)_0\.IFO", RegexOptions.IgnoreCase | RegexOptions.Compiled);
             var result       = titleRegex.Match(location);
             if (result.Success) titleSetNum = int.Parse(result.Groups[1].Value);
 
@@ -106,8 +106,8 @@ namespace ChapterTool.Util
             chapters.Add(new Chapter { Name = "Chapter 01" ,Time = TimeSpan.Zero});
 
             uint longestChainOffset   = stream.GetChainOffset(pcgItPosition, programChain);
-            int programMapOffset      = ToInt16(stream.GetFileBlock((pcgItPosition + longestChainOffset) + 230, 2));
-            int cellTableOffset       = ToInt16(stream.GetFileBlock((pcgItPosition + longestChainOffset) + 0xE8, 2));
+            int programMapOffset      = IfoParser.ToInt16(stream.GetFileBlock((pcgItPosition + longestChainOffset) + 230, 2));
+            int cellTableOffset       = IfoParser.ToInt16(stream.GetFileBlock((pcgItPosition + longestChainOffset) + 0xE8, 2));
             for (int currentProgram   = 0; currentProgram < programChainPrograms; ++currentProgram)
             {
                 int entryCell         = stream.GetFileBlock(((pcgItPosition + longestChainOffset) + programMapOffset) + currentProgram, 1)[0];
@@ -124,7 +124,7 @@ namespace ChapterTool.Util
                     if (cellType == 0x00 || cellType == 0x01)
                     {
                         bytes = stream.GetFileBlock(((pcgItPosition + longestChainOffset) + cellStart) + 4, 4);
-                        TimeSpan time = ReadTimeSpan(bytes, out fps) ?? TimeSpan.Zero;
+                        TimeSpan time = IfoParser.ReadTimeSpan(bytes, out fps) ?? TimeSpan.Zero;
                         totalTime    += time;
                     }
                 }

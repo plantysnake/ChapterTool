@@ -1,6 +1,6 @@
 ﻿// ****************************************************************************
 //
-// Copyright (C) 2014-2015 TautCony (TautCony@vcb-s.com)
+// Copyright (C) 2014-2016 TautCony (TautCony@vcb-s.com)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,17 +17,17 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
+
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static ChapterTool.Util.ConvertMethod;
 
-namespace ChapterTool.Util
+namespace ChapterTool.Util.ChapterData
 {
     public static class OgmData
     {
-        private static readonly Regex RTimeCodeLine = new Regex(@"^\s*CHAPTER\d+\s*=\s*(.*)");
-        private static readonly Regex RNameLine = new Regex(@"^\s*CHAPTER\d+NAME\s*=\s*(?<chapterName>.*)");
+        private static readonly Regex RTimeCodeLine = new Regex(@"^\s*CHAPTER\d+\s*=\s*(.*)", RegexOptions.Compiled);
+        private static readonly Regex RNameLine = new Regex(@"^\s*CHAPTER\d+NAME\s*=\s*(?<chapterName>.*)", RegexOptions.Compiled);
 
         public delegate void LogEventHandler(string message);
 
@@ -50,7 +50,7 @@ namespace ChapterTool.Util
             TimeSpan timeCode   = TimeSpan.Zero, initalTime;
             if (RTimeCodeLine.Match(lines.First()).Success)
             {
-                initalTime = RTimeFormat.Match(lines.First()).Value.ToTimeSpan();
+                initalTime = ToolKits.RTimeFormat.Match(lines.First()).Value.ToTimeSpan();
             }
             else
             {
@@ -64,7 +64,7 @@ namespace ChapterTool.Util
                         if (string.IsNullOrWhiteSpace(line)) break; //跳过空行
                         if (RTimeCodeLine.Match(line).Success)
                         {
-                            timeCode = RTimeFormat.Match(line).Value.ToTimeSpan() - initalTime;
+                            timeCode = ToolKits.RTimeFormat.Match(line).Value.ToTimeSpan() - initalTime;
                             state    = LineState.LName;
                             break;
                         }

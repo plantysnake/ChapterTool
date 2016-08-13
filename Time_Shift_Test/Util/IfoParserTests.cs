@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using ChapterTool.Util.ChapterData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ChapterTool.Util.Tests

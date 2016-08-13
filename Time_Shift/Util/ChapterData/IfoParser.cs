@@ -17,10 +17,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
+
 using System;
 using System.IO;
 
-namespace ChapterTool.Util
+namespace ChapterTool.Util.ChapterData
 {
     public static class IfoParser
     {
@@ -67,6 +68,13 @@ namespace ChapterTool.Util
             return ReadTimeSpan(ifoStream.GetFileBlock((pcgitPosition + chainOffset) + 4, 4), out fps);
         }
 
+        /// <param name="playbackBytes">
+        /// byte[0] hours in bcd format<br/>
+        /// byte[1] minutes in bcd format<br/>
+        /// byte[2] seconds in bcd format<br/>
+        /// byte[3] milliseconds in bcd format (2 high bits are the frame rate)
+        /// </param>
+        /// <param name="fps">fps of the chapter</param>
         internal static TimeSpan? ReadTimeSpan(byte[] playbackBytes, out double fps)
         {
             var frames    = GetFrames(playbackBytes[3]);
@@ -80,7 +88,7 @@ namespace ChapterTool.Util
                 int seconds  = BcdToInt(playbackBytes[2]);
                 TimeSpan ret = new TimeSpan(hours, minutes, seconds);
                 if (Math.Abs(fps) > 1e-5)
-                    ret += TimeSpan.FromSeconds((double) frames/fps);
+                    ret += TimeSpan.FromSeconds(Math.Round((double)frames/fps));
                 return ret;
             }
             catch { return null; }

@@ -1,6 +1,6 @@
 ﻿// ****************************************************************************
 //
-// Copyright (C) 2014-2015 TautCony (TautCony@vcb-s.com)
+// Copyright (C) 2014-2016 TautCony (TautCony@vcb-s.com)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,10 +27,12 @@ using System.Diagnostics;
 using System.Security.Principal;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using ChapterTool.Util.ChapterData;
+using Microsoft.Win32;
 
 namespace ChapterTool.Util
 {
-    public static class ConvertMethod
+    public static class ToolKits
     {
         /// <summary>
         /// 将TimeSpan对象转换为 hh:mm:ss.sss 形式的字符串
@@ -50,7 +52,7 @@ namespace ChapterTool.Util
             return info.Mul1K1 ? new TimeSpan( (long) Math.Round((decimal) (item.Time + info.Offset).TotalSeconds*1.001M*TimeSpan.TicksPerSecond)).Time2String() : Time2String(item.Time + info.Offset);
         }
 
-        public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+)\s*:\s*(?<Minute>\d+)\s*:\s*(?<Second>\d+)\s*[\.,]\s*(?<Millisecond>\d{3})");
+        public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+)\s*:\s*(?<Minute>\d+)\s*:\s*(?<Second>\d+)\s*[\.,]\s*(?<Millisecond>\d{3})", RegexOptions.Compiled);
 
         /// <summary>
         /// 将符合 hh:mm:ss.sss 形式的字符串转换为TimeSpan对象
@@ -72,6 +74,7 @@ namespace ChapterTool.Util
         public static string ToCueTimeStamp(this TimeSpan input)
         {
             int frames = (int) Math.Round(input.Milliseconds*75/1000F);
+            if (frames > 99) frames = 99;
             return $"{input.Hours*60 + input.Minutes:D2}:{input.Seconds:D2}:{frames:D2}";
         }
 
@@ -83,7 +86,7 @@ namespace ChapterTool.Util
         public static Point String2Point(string input)
         {
             if (string.IsNullOrWhiteSpace(input)) return new Point(-32000, -32000);
-            var rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}");
+            var rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}", RegexOptions.Compiled);
             var result = rpos.Match(input);
             if (!result.Success) return new Point(-32000, -32000);
             int x = int.Parse(result.Groups["x"].Value);
@@ -138,7 +141,7 @@ namespace ChapterTool.Util
         {
             if (!File.Exists(ColorProfile)) return;
             string json = File.ReadAllText(ColorProfile);
-            Regex rcolor = new Regex("\"(?<hex>.+?)\"");
+            Regex rcolor = new Regex("\"(?<hex>.+?)\"", RegexOptions.Compiled);
             var matchesOfJson = rcolor.Matches(json);
             if (matchesOfJson.Count < 6)  return;
             window.BackChange     = ColorTranslator.FromHtml(matchesOfJson[0].Groups["hex"].Value);
@@ -182,6 +185,62 @@ namespace ChapterTool.Util
                 //Do nothing. Probably the user canceled the UAC window
             }
             return false;
+        }
+
+        private static readonly Lazy<bool> IsRunningOnMonoValue = new Lazy<bool>(() => Type.GetType("Mono.Runtime") != null);
+
+        public static bool IsRunningOnMono() => IsRunningOnMonoValue.Value;
+    }
+
+    public static class RegistryStorage
+    {
+        public static string Load(string subKey = @"Software\ChapterTool", string name = "SavingPath")
+        {
+            string path = string.Empty;
+            // HKCU_CURRENT_USER\Software\
+            var registryKey = Registry.CurrentUser.OpenSubKey(subKey);
+            if (registryKey == null) return path;
+            path = (string)registryKey.GetValue(name);
+            registryKey.Close();
+            return path;
+        }
+
+        public static void Save(string value, string subKey = @"Software\ChapterTool", string name = "SavingPath")
+        {
+            // HKCU_CURRENT_USER\Software\
+            var registryKey = Registry.CurrentUser.CreateSubKey(subKey);
+            registryKey?.SetValue(name, value);
+            registryKey?.Close();
+        }
+
+        /// <summary>
+        /// 创建文件关联
+        /// </summary>
+        /// <param name="programFile">应用程序文件的完整路径("C:\abc\def.exe")</param>
+        /// <param name="extension">文件扩展名（例如 ".txt"）</param>
+        /// <param name="typeName">文件类型名称</param>
+        /// <param name="project">指向的文件打开方式</param>
+        /// <param name="argument">附加参数（不包括"%1"）</param>
+        public static void SetOpenMethod(string programFile, string extension, string typeName, string project, string argument = "")
+        {
+            Registry.ClassesRoot.CreateSubKey(extension)?.SetValue(typeName, project, RegistryValueKind.String);
+
+            RegistryKey subKey = Registry.ClassesRoot.CreateSubKey(project);
+            subKey = subKey?.CreateSubKey("shell");
+            subKey = subKey?.CreateSubKey("open");
+            subKey = subKey?.CreateSubKey("command");
+            subKey?.SetValue("", $@"""{programFile}"" ""%1"" {argument}", RegistryValueKind.ExpandString);
+            subKey?.Dispose();
+            NativeMethods.RefreshNotify();
+        }
+
+        public static int RegistryAddCount(string subKey, string name, int delta = 1)
+        {
+            var countS = Load(subKey, name);
+            int count = string.IsNullOrEmpty(countS) ? 0 : int.Parse(countS);
+            count += delta;
+            Save(count.ToString(), subKey, name);
+            return count - delta;
         }
     }
 }

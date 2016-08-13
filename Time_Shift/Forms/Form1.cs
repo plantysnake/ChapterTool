@@ -1,6 +1,6 @@
 ﻿// ****************************************************************************
 //
-// Copyright (C) 2014-2015 TautCony (TautCony@vcb-s.com)
+// Copyright (C) 2014-2016 TautCony (TautCony@vcb-s.com)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,9 +30,10 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using ChapterTool.Properties;
 using System.Collections.Generic;
+using ChapterTool.Util.ChapterData;
 using System.Text.RegularExpressions;
 using static ChapterTool.Util.CTLogger;
-using static ChapterTool.Util.ConvertMethod;
+using static ChapterTool.Util.ToolKits;
 
 
 namespace ChapterTool.Forms
@@ -148,12 +149,16 @@ namespace ChapterTool.Forms
             TargetHeight[1] = Height;
             Text = $"[VCB-Studio] ChapterTool v{Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
-            Point saved = String2Point(RegistryStorage.Load(@"Software\ChapterTool", "location"));
-            if (saved != new Point(-32000, -32000))
+            if (!IsRunningOnMono())
             {
-                Location = saved;
-                Log(string.Format(Resources.Log_Load_Position_Successful, saved));
+                Point saved = String2Point(RegistryStorage.Load(@"Software\ChapterTool", "location"));
+                if (saved != new Point(-32000, -32000))
+                {
+                    Location = saved;
+                    Log(string.Format(Resources.Log_Load_Position_Successful, saved));
+                }
             }
+
             LanguageSelectionContainer.LoadLang(xmlLang);
             InsertAccuracyItems();
             SetDefault();
@@ -162,11 +167,12 @@ namespace ChapterTool.Forms
             ExtensionPanelShow                = false;
             savingType.SelectedIndex          = 0;
             btnTrans.Text                     = Environment.TickCount % 2 == 0 ? "↺" : "↻";
-            folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
+            if (!IsRunningOnMono()) folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
             Log(Updater.CheckUpdateWeekly("ChapterTool") ? Resources.Log_Update_Checked : Resources.Log_Update_Skiped);
             if (string.IsNullOrEmpty(FilePath)) return;
             if (Loadfile()) UpdataGridView();
-            RegistryStorage.Save(Resources.Message_How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
+            if (!IsRunningOnMono()) RegistryStorage.Save(Resources.Message_How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
+
         }
 
         private void InsertAccuracyItems()
@@ -184,11 +190,11 @@ namespace ChapterTool.Forms
                 ? Resources.Log_Wu_Zong : $"{Environment.UserName}{Resources.Log_Hello}");
             Log($"{Environment.OSVersion}");
 
-            Log(NativeMethods.IsUserAnAdmin() ? Resources.Log_With_Admin : Resources.Log_Without_Admin);
+            if (!IsRunningOnMono()) Log(NativeMethods.IsUserAnAdmin() ? Resources.Log_With_Admin : Resources.Log_Without_Admin);
 
             if (Environment.GetLogicalDrives().Length > 10) Log(Resources.Log_Hard_Drive_Plz);
 
-            using (var registryKey = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0"))
+            if (!IsRunningOnMono()) using (var registryKey = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0"))
             {
                 Log((string)registryKey?.GetValue("ProcessorNameString"));
             }
@@ -197,7 +203,7 @@ namespace ChapterTool.Forms
             {
                 Log($"{screen.DeviceName}{Resources.Log_Resolution}{screen.Bounds.Width}*{screen.Bounds.Height}");
             }
-            Log(string.Format(Resources.Log_Boot_Count, RegistryStorage.RegistryAddCount(@"Software\ChapterTool\Statistics", @"Count")));
+            if (!IsRunningOnMono()) Log(string.Format(Resources.Log_Boot_Count, RegistryStorage.RegistryAddCount(@"Software\ChapterTool\Statistics", @"Count")));
         }
 
         private void SetDefault()
@@ -216,6 +222,7 @@ namespace ChapterTool.Forms
             _info                   = null;
             _fullIfoChapter         = null;
             _xplGroup               = null;
+            _bdmvGroup              = null;
 
             dataGridView1.Rows.Clear();
         }
@@ -227,6 +234,7 @@ namespace ChapterTool.Forms
 
         private void AddCommand()
         {
+            if (IsRunningOnMono()) return;
             _systemMenu = new SystemMenu(this);
             _systemMenu.AddCommand(Resources.Update_Check, Updater.CheckUpdate, true);
         }
@@ -237,6 +245,7 @@ namespace ChapterTool.Forms
 
             // Let it know all messages so it can handle WM_SYSCOMMAND
             // (This method is inlined)
+            if (IsRunningOnMono()) return;
             _systemMenu.HandleMessage(ref msg);
         }
 
@@ -270,11 +279,21 @@ namespace ChapterTool.Forms
         private void Form1_DragDrop(object sender, DragEventArgs e)
         {
             _paths = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (string.IsNullOrEmpty(FilePath)) return;
+            if(Directory.Exists(FilePath))
+            {
+                _isUrl = true;
+                LoadBDMV();
+                return;
+            }
+            _isUrl = false;
             if (!IsPathValid) return;
             Log(string.Format(Resources.Log_Load_File_Via_Dragging, FilePath));
             comboBox2.Items.Clear();
             if (Loadfile()) UpdataGridView();
         }
+
+        private bool _isUrl;
 
         private void Form1_DragEnter(object sender, DragEventArgs e)
         {
@@ -299,7 +318,8 @@ namespace ChapterTool.Forms
                     tsTips.Text = Resources.File_Unloaded;
                     return false;
                 }
-                if (RFileType.IsMatch(FilePath)) return true;
+                if (_isUrl) return true;
+                if (RFileType.Value.IsMatch(FilePath)) return true;
                 tsTips.Text = Resources.Tips_InValid_Type;
                 Log(Resources.Tips_InValid_Type_Log + $"[{Path.GetFileName(FilePath)}]");
                 FilePath = string.Empty;
@@ -308,15 +328,43 @@ namespace ChapterTool.Forms
             }
         }
 
-        private static readonly Regex RFileType = new Regex(@"\.(txt|xml|mpls|ifo|mkv|mka|cue|tak|flac|xpl|mp4|m4a|m4v)$", RegexOptions.IgnoreCase);
+        private static readonly Lazy<Regex> RFileType = new Lazy<Regex>(() =>
+        {
+            var allType = SupportTypes.SelectMany(supportType => supportType.Value).Aggregate(string.Empty, (current, type) => current + $"{type}|");
+            return new Regex($"\\.({allType.TrimEnd('|')})$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        });
+
+        private enum FileType
+        {
+            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4, M4a, M4v, VTT
+        }
+
+        private static readonly Dictionary<string, string[]> SupportTypes = new Dictionary<string, string[]>
+        {
+            [Resources.File_Filter_Chapter_File]  = new[] {"txt", "xml", "mpls", "ifo", "xpl"},
+            [Resources.File_Filter_Cue_File]      = new[] {"cue", "tak", "flac"},
+            [Resources.File_Filter_Matroska_File] = new[] {"mkv", "mka"},
+            [Resources.File_Filter_Mp4_File]      = new[] {"mp4", "m4a", "m4v"},
+            [Resources.File_Filter_VTT_File]      = new[] {"vtt"}
+        };
+
+        private static readonly Lazy<string> MainFilter = new Lazy<string>(() =>
+        {
+            Func<IEnumerable<string>, string> getType = enumerable => enumerable.Aggregate(string.Empty, (current, type) => current + $"*.{type};");
+            string ret = Resources.File_Filter_All_Support;
+            string types = getType(SupportTypes.SelectMany(supportType => supportType.Value));
+            ret += $"({types.TrimEnd(';')})|{types}";
+            foreach (var supportType in SupportTypes)
+            {
+                types = getType(supportType.Value);
+                ret += $"|{supportType.Key}({types.TrimEnd(';')})|{types}";
+            }
+            return ret;
+        });
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = Resources.File_Filter_All_Support + @"(*.txt,*.xml,*.mpls,*.ifo,*.xpl,*.cue,*tak,*flac,*.mkv,*.mka,*.mp4,*.m4a,*.m4v)|*.txt;*.xml;*.mpls;*.ifo;*.xpl;*.cue;*.tak;*.flac;*.mkv;*.mka;*.mp4;*.m4a;*.m4v|" +
-                                     Resources.File_Filter_Chapter_File + @"(*.txt,*.xml,*.mpls,*.ifo,*.xpl)|*.txt;*.xml;*.mpls;*.ifo;*.xpl|" +
-                                     Resources.File_Filter_Cue_File +  @"(*.cue,*.tak,*.flac)|*.cue;*.tak;*.flac|" +
-                                     Resources.File_Filter_Matroska_File + @"(*.mkv,*.mka)|*.mkv;*.mka|" +
-                                     Resources.File_Filter_Mp4_File + @"(*.mp4,*.m4a,*.m4v)|*.mp4;*.m4a;*.m4v";
+            openFileDialog1.Filter = MainFilter.Value;
             try
             {
                 openFileDialog1.FileName = string.Empty;
@@ -334,6 +382,7 @@ namespace ChapterTool.Forms
             }
         }
 
+        private List<ChapterInfo> _bdmvGroup;
         private List<ChapterInfo> _ifoGroup;
         private List<ChapterInfo> _xplGroup;
         private MplsData          _rawMpls;
@@ -344,11 +393,6 @@ namespace ChapterTool.Forms
         {
             get { return combineToolStripMenuItem.Checked; }
             set { combineToolStripMenuItem.Checked = value; }
-        }
-
-        private enum FileType
-        {
-            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4, M4a, M4v
         }
 
         private bool Loadfile()
@@ -385,6 +429,7 @@ namespace ChapterTool.Forms
                     case FileType.Mp4 :
                     case FileType.M4a :
                     case FileType.M4v : LoadMp4();      break;
+                    case FileType.VTT: LoadWebVTT();    break;
                     default : throw new Exception("Invalid File Format");
                 }
                 if (_info == null) return false;
@@ -412,7 +457,8 @@ namespace ChapterTool.Forms
         {
             //Reload File
             if (e.Button != MouseButtons.Right || string.IsNullOrEmpty(FilePath)) return;
-            if (Loadfile()) UpdataGridView();
+            if (_isUrl) LoadBDMV();
+            else if (Loadfile()) UpdataGridView();
         }
 
         private void LoadMpls()
@@ -426,12 +472,12 @@ namespace ChapterTool.Forms
             comboBox2.Enabled = comboBox2.Visible = _rawMpls.ChapterClips.Count >= 1;
             if (!comboBox2.Enabled) return;
             comboBox2.Items.Clear();
-            _rawMpls.ChapterClips.ForEach(item =>
+            foreach(var item in _rawMpls.ChapterClips)
             {
                 comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
                 Log($" |+{item.Name} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]");
                 Log(string.Format(Resources.Log_TimeStamp_Count, item.TimeStamp.Count));
-            });
+            }
             comboBox2.SelectedIndex = ClipSeletIndex;
             GetChapterInfoFromMpls(ClipSeletIndex);
         }
@@ -580,6 +626,51 @@ namespace ChapterTool.Forms
                 FilePath = string.Empty;
             }
         }
+
+        private void LoadWebVTT()
+        {
+            _info = VTTData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTF8String());
+            _info.UpdataInfo((int)numericUpDown1.Value);
+            tsProgressBar1.Value = 33;
+            tsTips.Text = Resources.Tips_Load_Success;
+        }
+
+        private async void LoadBDMV()
+        {
+            SetDefault();
+            try
+            {
+                tsTips.Text = Resources.Tips_Loading;
+                Application.DoEvents();
+                BDMVData.OnLog += Log;
+                _bdmvGroup = await BDMVData.GetChapter(FilePath);
+                BDMVData.OnLog -= Log;
+                if (_bdmvGroup == null || _bdmvGroup.Count == 0)
+                {
+                    _bdmvGroup = null;
+                    tsTips.Text = Resources.Tips_Load_Fail;
+                    return;
+                }
+                _info = _bdmvGroup.First();
+            }
+            catch (Exception exception)
+            {
+                Notification.ShowError("Exception throwed while loading BluRay disc", exception);
+                return;
+            }
+            tsTips.Text = Resources.Tips_Load_Success;
+            Debug.Assert(_bdmvGroup != null);
+            comboBox2.Enabled = comboBox2.Visible = _bdmvGroup.Count >= 1;
+            if (!comboBox2.Enabled) return;
+            comboBox2.Items.Clear();
+            _bdmvGroup.ForEach(item =>
+            {
+                comboBox2.Items.Add($"{item.SourceName}__{item.Chapters.Count}");
+            });
+            comboBox2.SelectedIndex = ClipSeletIndex;
+            UpdataGridView();
+        }
+
         #endregion
 
         #region Save File
@@ -650,10 +741,10 @@ namespace ChapterTool.Forms
             while (File.Exists($"{savePath}_{index}{saveingTypeSuffix[saveType]}")) ++index;
             savePath += $"_{index}{saveingTypeSuffix[saveType]}";
 
-             return savePath;
+            return savePath;
         }
 
-        private static readonly Regex RLang = new Regex(@"\((?<lang>.+)\)");
+        private static readonly Regex RLang = new Regex(@"\((?<lang>.+)\)", RegexOptions.Compiled);
 
         private void SaveFile(int saveType)
         {
@@ -733,6 +824,9 @@ namespace ChapterTool.Forms
             else if (_xplGroup != null)
             {
                 _info = _xplGroup[ClipSeletIndex];
+            } else if (_bdmvGroup != null)
+            {
+                _info = _bdmvGroup[ClipSeletIndex];
             }
             _info.Mul1K1 = cbMul1k1.Checked;
             UpdataGridView();
@@ -932,6 +1026,23 @@ namespace ChapterTool.Forms
             if (e.ColumnIndex != 3) return;
             Clipboard.SetText((dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string ?? "").TrimEnd('K', '*', ' '));
         }
+
+        private void FrameShiftForward()
+        {
+            if (!IsPathValid) return;
+            var fpsIndex = comboBox1.SelectedIndex + 1;
+            if (fpsIndex < 1) return;
+            var shiftFramesString = Notification.InputBox("向前平移N帧，小于0的将被删除", "请输入所需平移的帧数", "0");
+            int shiftFrames;
+            if (!int.TryParse(shiftFramesString, out shiftFrames)) return;
+            TimeSpan shiftTime = TimeSpan.FromTicks((long) Math.Round(shiftFrames/MplsData.FrameRate[fpsIndex]*TimeSpan.TicksPerSecond));
+            _info.UpdataInfo(shiftTime);
+            _info.Chapters = _info.Chapters.SkipWhile(item => item.Time < TimeSpan.Zero).ToList();
+            UpdataGridView();
+        }
+
+        private void ShiftForwardToolStripMenuItem_Click(object sender, EventArgs e) => FrameShiftForward();
+
         #endregion
 
         #region Form Color
@@ -1058,7 +1169,7 @@ namespace ChapterTool.Forms
         private void comboBox2_MouseEnter(object sender, EventArgs e)
         {
             var menuMpls = _rawMpls != null && _rawMpls.EntireClip.TimeStamp.Count < 5 && comboBox2.Items.Count > 20;
-            toolTip1.Show(menuMpls ? Resources.Tips_Menu_Clip : string.Format(Resources.Tips_Clip_Count, comboBox2.Items.Count), (IWin32Window)sender);
+            toolTip1.Show(menuMpls ? Resources.Tips_Menu_Clip : $"[{comboBox2.Text}] " + string.Format(Resources.Tips_Clip_Count, comboBox2.Items.Count), (IWin32Window)sender);
         }
 
         private void ToolTipRemoveAll(object sender, EventArgs e)  => toolTip1.Hide((IWin32Window)sender);

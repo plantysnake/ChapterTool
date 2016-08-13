@@ -76,12 +76,14 @@
   <ItemGroup>
     <Compile Include="Knuckleball\MP4FileTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SharpDvdInfo\DvdInfoContainerTests.cs" />
     <Compile Include="Util\CueDataTests.cs" />
     <Compile Include="Util\CueSheetTests.cs" />
     <Compile Include="Util\IfoDataTests.cs" />
     <Compile Include="Util\IfoParserTests.cs" />
     <Compile Include="Util\MplsDataTests.cs" />
     <Compile Include="Util\OgmDataTests.cs" />
+    <Compile Include="Util\VTTDataTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Time_Shift\Time_Shift.csproj">

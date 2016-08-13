@@ -64,6 +64,7 @@
             this.lbXmlLang = new System.Windows.Forms.Label();
             this.createZonestMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.creatZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ShiftForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsTips = new System.Windows.Forms.ToolStripStatusLabel();
@@ -485,9 +486,10 @@
             // createZonestMenuStrip
             // 
             this.createZonestMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.creatZonesToolStripMenuItem});
+            this.creatZonesToolStripMenuItem,
+            this.ShiftForwardToolStripMenuItem});
             this.createZonestMenuStrip.Name = "createZonestMenuStrip";
-            this.createZonestMenuStrip.Size = new System.Drawing.Size(136, 26);
+            this.createZonestMenuStrip.Size = new System.Drawing.Size(136, 48);
             // 
             // creatZonesToolStripMenuItem
             // 
@@ -495,6 +497,13 @@
             this.creatZonesToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.creatZonesToolStripMenuItem.Text = "生成Zones";
             this.creatZonesToolStripMenuItem.Click += new System.EventHandler(this.creatZonesToolStripMenuItem_Click);
+            // 
+            // ShiftForwardToolStripMenuItem
+            // 
+            this.ShiftForwardToolStripMenuItem.Name = "ShiftForwardToolStripMenuItem";
+            this.ShiftForwardToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.ShiftForwardToolStripMenuItem.Text = "向前平移";
+            this.ShiftForwardToolStripMenuItem.Click += new System.EventHandler(this.ShiftForwardToolStripMenuItem_Click);
             // 
             // panel1
             // 
@@ -530,8 +539,9 @@
             // 
             // tsTips
             // 
+            this.tsTips.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tsTips.Name = "tsTips";
-            this.tsTips.Size = new System.Drawing.Size(443, 17);
+            this.tsTips.Size = new System.Drawing.Size(412, 17);
             this.tsTips.Spring = true;
             this.tsTips.Text = " ";
             this.tsTips.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -640,6 +650,7 @@
         private System.Windows.Forms.ToolStripStatusLabel tsTips;
         private System.Windows.Forms.ToolStripProgressBar tsProgressBar1;
         private System.Windows.Forms.ToolStripDropDownButton tsBtnExpand;
+        private System.Windows.Forms.ToolStripMenuItem ShiftForwardToolStripMenuItem;
     }
 }
 

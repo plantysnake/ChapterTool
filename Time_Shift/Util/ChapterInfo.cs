@@ -1,6 +1,6 @@
 ﻿// ****************************************************************************
 //
-// Copyright (C) 2014-2015 TautCony (TautCony@vcb-s.com)
+// Copyright (C) 2014-2016 TautCony (TautCony@vcb-s.com)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ namespace ChapterTool.Util
         /// Corresponding Video file
         /// </summary>
         public string SourceName      { get; set; }
+        public string SourceIndex     { get; set; }
         public string SourceType      { get; set; }
         public double FramesPerSecond { get; set; }
         public TimeSpan Duration      { get; set; }
@@ -59,22 +60,19 @@ namespace ChapterTool.Util
 
         public override string ToString() => $"{Title} - {SourceType} - {Duration.Time2String()} - [{Chapters.Count} Chapters]";
 
-        private readonly Color EVEN_COLOR = Color.FromArgb(0xFF, 0x92, 0xAA, 0xF3);
-        private readonly Color ODD_COLOR  = Color.FromArgb(0xFF, 0xF3, 0xF7, 0xF7);
+        private static readonly Color EVEN_COLOR = Color.FromArgb(0xFF, 0x92, 0xAA, 0xF3);
+        private static readonly Color ODD_COLOR  = Color.FromArgb(0xFF, 0xF3, 0xF7, 0xF7);
 
         public DataGridViewRow GetRow(int index, bool autoGenName)
         {
             var row = new DataGridViewRow
             {
-                Tag = Chapters[index],  //绑定对象，以便删除行时可以得知对于的 Chapter
-                DefaultCellStyle =      //设定背景色交替
-                {
-                    BackColor = (Chapters[index].Number-1)%2 == 0 ? EVEN_COLOR : ODD_COLOR
-                }
+                Tag = Chapters[index],  //绑定对象，以便删除行时可以得知对应的 Chapter
+                DefaultCellStyle =　{ BackColor = (Chapters[index].Number-1)%2 == 0 ? EVEN_COLOR : ODD_COLOR }
             };
             row.Cells.Add(new DataGridViewTextBoxCell {Value = $"{Chapters[index].Number:D2}"});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = Time2String(Chapters[index]) });
-            row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? ChapterName.Get(row.Index + 1) : Chapters[index].Name});
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? ChapterName.Get(index + 1) : Chapters[index].Name});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].FramsInfo});
             return row;
         }
@@ -89,7 +87,7 @@ namespace ChapterTool.Util
         {
             var item = Chapters[row.Index];
             row.Tag  = item;
-            row.DefaultCellStyle.BackColor = row.Index%2 == 0 ? EVEN_COLOR : ODD_COLOR;
+            row.DefaultCellStyle.BackColor = (item.Number-1)%2 == 0 ? EVEN_COLOR : ODD_COLOR;
             row.Cells[0].Value = $"{item.Number:D2}";
             row.Cells[1].Value = item.Time2String(this);
             row.Cells[2].Value = autoGenName ? ChapterName.Get(row.Index + 1) : item.Name;

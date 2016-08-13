@@ -25,13 +25,13 @@ namespace ChapterTool.Util
     public static class LanguageSelectionContainer
     {
         // used by all tools except MP4box
-        private static readonly Dictionary<string, string> languagesReverseBibliographic;
+        private static readonly Dictionary<string, string> LanguagesReverseBibliographic;
 
         // used by MP4box
-        private static readonly Dictionary<string, string> languagesReverseTerminology;
+        private static readonly Dictionary<string, string> LanguagesReverseTerminology;
 
         //private static readonly Dictionary<string, string> languagesISO2;
-        private static readonly Dictionary<string, string> languagesReverseISO2;
+        private static readonly Dictionary<string, string> LanguagesReverseISO2;
 
         /// <summary>
         /// uses the ISO 639-2/B language codes
@@ -46,23 +46,23 @@ namespace ChapterTool.Util
         private static void addLanguage(string name, string iso3B, string iso3T, string iso2)
         {
             Languages.Add(name, iso3B);
-            languagesReverseBibliographic.Add(iso3B, name);
+            LanguagesReverseBibliographic.Add(iso3B, name);
 
             if (string.IsNullOrEmpty(iso3T))
             {
                 LanguagesTerminology.Add(name, iso3B);
-                languagesReverseTerminology.Add(iso3B, name);
+                LanguagesReverseTerminology.Add(iso3B, name);
             }
             else
             {
                 LanguagesTerminology.Add(name, iso3T);
-                languagesReverseTerminology.Add(iso3T, name);
+                LanguagesReverseTerminology.Add(iso3T, name);
             }
 
             if (!string.IsNullOrEmpty(iso2))
             {
                 //languagesISO2.Add(name, iso2);
-                languagesReverseISO2.Add(iso2, name);
+                LanguagesReverseISO2.Add(iso2, name);
             }
         }
 
@@ -73,14 +73,15 @@ namespace ChapterTool.Util
             // Attention: check all tools (eac3to, mkvmerge, mediainfo, ...)
 
             Languages = new Dictionary<string, string>();
-            languagesReverseBibliographic = new Dictionary<string, string>();
+            LanguagesReverseBibliographic = new Dictionary<string, string>();
 
             LanguagesTerminology = new Dictionary<string, string>();
-            languagesReverseTerminology = new Dictionary<string, string>();
+            LanguagesReverseTerminology = new Dictionary<string, string>();
 
             //languagesISO2 = new Dictionary<string, string>();
-            languagesReverseISO2 = new Dictionary<string, string>();
+            LanguagesReverseISO2 = new Dictionary<string, string>();
 
+            addLanguage("Not Specified", "   ", "", "  ");
             addLanguage("Abkhazian", "abk", "", "ab");
             addLanguage("Achinese", "ace", "", "");
             addLanguage("Acoli", "ach", "", "");
@@ -462,14 +463,14 @@ namespace ChapterTool.Util
             switch (code.Length)
             {
                 case 2:
-                    if (languagesReverseISO2.ContainsKey(code))
-                        return languagesReverseISO2[code];
+                    if (LanguagesReverseISO2.ContainsKey(code))
+                        return LanguagesReverseISO2[code];
                     break;
                 case 3:
-                    if (languagesReverseBibliographic.ContainsKey(code))
-                        return languagesReverseBibliographic[code];
-                    if (languagesReverseTerminology.ContainsKey(code))
-                        return languagesReverseTerminology[code];
+                    if (LanguagesReverseBibliographic.ContainsKey(code))
+                        return LanguagesReverseBibliographic[code];
+                    if (LanguagesReverseTerminology.ContainsKey(code))
+                        return LanguagesReverseTerminology[code];
                     break;
             }
             return "";

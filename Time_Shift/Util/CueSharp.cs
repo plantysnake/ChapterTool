@@ -11,6 +11,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using ChapterTool.Util.Cue.Types;
 
 namespace ChapterTool.Util
 {
@@ -25,10 +26,9 @@ namespace ChapterTool.Util
 
         // strings that don't belong or were mistyped in the global part of the cue
 
-        #endregion
+        #endregion Private Variables
 
         #region Properties
-
 
         /// <summary>
         /// Returns/Sets track in this cuefile.
@@ -46,7 +46,6 @@ namespace ChapterTool.Util
                 Tracks[tracknumber] = value;
             }
         }
-
 
         /// <summary>
         /// The catalog number must be 13 digits long and is encoded according to UPC/EAN rules.
@@ -89,7 +88,7 @@ namespace ChapterTool.Util
         /// </summary>
         public Track[] Tracks { get; set; } = new Track[0];
 
-        #endregion
+        #endregion Properties
 
         #region Constructors
 
@@ -153,7 +152,7 @@ namespace ChapterTool.Util
             ParseCue(_cueLines);
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Methods
 
@@ -196,58 +195,70 @@ namespace ChapterTool.Util
 
                 switch (file[i].Substring(0, file[i].IndexOf(' ')).ToUpper())
                 {
-                    case "CATALOG":
-                        ParseString(file[i], trackOn);
-                        break;
-                    case "CDTEXTFILE":
-                        ParseString(file[i], trackOn);
-                        break;
-                    case "FILE":
-                        currentFile = ParseFile(file[i], trackOn);
-                        break;
-                    case "FLAGS":
-                        ParseFlags(file[i], trackOn);
-                        break;
-                    case "INDEX":
-                        ParseIndex(file[i], trackOn);
-                        break;
-                    case "ISRC":
-                        ParseString(file[i], trackOn);
-                        break;
-                    case "PERFORMER":
-                        ParseString(file[i], trackOn);
-                        break;
-                    case "POSTGAP":
-                        ParseIndex(file[i], trackOn);
-                        break;
-                    case "PREGAP":
-                        ParseIndex(file[i], trackOn);
-                        break;
-                    case "REM":
-                        ParseComment(file[i], trackOn);
-                        break;
-                    case "SONGWRITER":
-                        ParseString(file[i], trackOn);
-                        break;
-                    case "TITLE":
-                        ParseString(file[i], trackOn);
-                        break;
-                    case "TRACK":
-                        trackOn++;
-                        ParseTrack(file[i], trackOn);
-                        if (currentFile.Filename != "") //if there's a file
-                        {
-                            Tracks[trackOn].DataFile = currentFile;
-                            currentFile = new AudioFile();
-                        }
-                        break;
-                    default:
-                        ParseGarbage(file[i], trackOn);
-                        //save discarded junk and place string[] with track it was found in
-                        break;
+                case "CATALOG":
+                    ParseString(file[i], trackOn);
+                    break;
+
+                case "CDTEXTFILE":
+                    ParseString(file[i], trackOn);
+                    break;
+
+                case "FILE":
+                    currentFile = ParseFile(file[i], trackOn);
+                    break;
+
+                case "FLAGS":
+                    ParseFlags(file[i], trackOn);
+                    break;
+
+                case "INDEX":
+                    ParseIndex(file[i], trackOn);
+                    break;
+
+                case "ISRC":
+                    ParseString(file[i], trackOn);
+                    break;
+
+                case "PERFORMER":
+                    ParseString(file[i], trackOn);
+                    break;
+
+                case "POSTGAP":
+                    ParseIndex(file[i], trackOn);
+                    break;
+
+                case "PREGAP":
+                    ParseIndex(file[i], trackOn);
+                    break;
+
+                case "REM":
+                    ParseComment(file[i], trackOn);
+                    break;
+
+                case "SONGWRITER":
+                    ParseString(file[i], trackOn);
+                    break;
+
+                case "TITLE":
+                    ParseString(file[i], trackOn);
+                    break;
+
+                case "TRACK":
+                    trackOn++;
+                    ParseTrack(file[i], trackOn);
+                    if (currentFile.Filename != "") //if there's a file
+                    {
+                        Tracks[trackOn].DataFile = currentFile;
+                        currentFile = new AudioFile();
+                    }
+                    break;
+
+                default:
+                    ParseGarbage(file[i], trackOn);
+                    //save discarded junk and place string[] with track it was found in
+                    break;
                 }
             }
-
         }
 
         private void ParseComment(string line, int trackOn)
@@ -301,29 +312,33 @@ namespace ChapterTool.Util
                     catch (Exception)
                     {
                         temp = line.ToUpper();
-
                     }
 
                     switch (temp)
                     {
-                        case "FLAGS":
-                            Tracks[trackOn].AddFlag(temp);
-                            break;
-                        case "DATA":
-                            Tracks[trackOn].AddFlag(temp);
-                            break;
-                        case "DCP":
-                            Tracks[trackOn].AddFlag(temp);
-                            break;
-                        case "4CH":
-                            Tracks[trackOn].AddFlag(temp);
-                            break;
-                        case "PRE":
-                            Tracks[trackOn].AddFlag(temp);
-                            break;
-                        case "SCMS":
-                            Tracks[trackOn].AddFlag(temp);
-                            break;
+                    case "FLAGS":
+                        Tracks[trackOn].AddFlag(temp);
+                        break;
+
+                    case "DATA":
+                        Tracks[trackOn].AddFlag(temp);
+                        break;
+
+                    case "DCP":
+                        Tracks[trackOn].AddFlag(temp);
+                        break;
+
+                    case "4CH":
+                        Tracks[trackOn].AddFlag(temp);
+                        break;
+
+                    case "PRE":
+                        Tracks[trackOn].AddFlag(temp);
+                        break;
+
+                    case "SCMS":
+                        Tracks[trackOn].AddFlag(temp);
+                        break;
                     }
 
                     //processing for a case when there isn't any more spaces
@@ -411,54 +426,59 @@ namespace ChapterTool.Util
 
             switch (category)
             {
-                case "CATALOG":
-                    if (trackOn == -1)
-                    {
-                        Catalog = line;
-                    }
-                    break;
-                case "CDTEXTFILE":
-                    if (trackOn == -1)
-                    {
-                        CDTextFile = line;
-                    }
-                    break;
-                case "ISRC":
-                    if (trackOn != -1)
-                    {
-                        Tracks[trackOn].ISRC = line;
-                    }
-                    break;
-                case "PERFORMER":
-                    if (trackOn == -1)
-                    {
-                        Performer = line;
-                    }
-                    else
-                    {
-                        Tracks[trackOn].Performer = line;
-                    }
-                    break;
-               case "SONGWRITER":
-                   if (trackOn == -1)
-                   {
-                       Songwriter = line;
-                   }
-                   else
-                   {
-                       Tracks[trackOn].Songwriter = line;
-                   }
-                    break;
-                case "TITLE":
-                    if (trackOn == -1)
-                    {
-                        Title = line;
-                    }
-                    else
-                    {
-                        Tracks[trackOn].Title = line;
-                    }
-                    break;
+            case "CATALOG":
+                if (trackOn == -1)
+                {
+                    Catalog = line;
+                }
+                break;
+
+            case "CDTEXTFILE":
+                if (trackOn == -1)
+                {
+                    CDTextFile = line;
+                }
+                break;
+
+            case "ISRC":
+                if (trackOn != -1)
+                {
+                    Tracks[trackOn].ISRC = line;
+                }
+                break;
+
+            case "PERFORMER":
+                if (trackOn == -1)
+                {
+                    Performer = line;
+                }
+                else
+                {
+                    Tracks[trackOn].Performer = line;
+                }
+                break;
+
+            case "SONGWRITER":
+                if (trackOn == -1)
+                {
+                    Songwriter = line;
+                }
+                else
+                {
+                    Tracks[trackOn].Songwriter = line;
+                }
+                break;
+
+            case "TITLE":
+                if (trackOn == -1)
+                {
+                    Title = line;
+                }
+                else
+                {
+                    Tracks[trackOn].Title = line;
+                }
+                break;
             }
         }
 
@@ -523,7 +543,6 @@ namespace ChapterTool.Util
                 Title = title
             };
         }
-
 
         public void AddTrack(string title, string performer, string filename, FileType fType)
         {
@@ -676,10 +695,12 @@ namespace ChapterTool.Util
             return output.ToString();
         }
 
-        #endregion
+        #endregion Methods
 
         //TODO: Fix calculation bugs; currently generates erroneous IDs.
+
         #region CalculateDiscIDs
+
         //For complete CDDB/freedb discID calculation, see:
         //http://www.freedb.org/modules.php?name=Sections&sop=viewarticle&artid=6
 
@@ -726,7 +747,7 @@ namespace ChapterTool.Util
             return ret;
         }
 
-        #endregion CalculateDiscIDS
+        #endregion CalculateDiscIDs
 
         public ChapterInfo ToChapterInfo()
         {
@@ -748,196 +769,19 @@ namespace ChapterTool.Util
         }
     }
 
-    /// <summary>
-    ///DCP - Digital copy permitted
-    ///4CH - Four channel audio
-    ///PRE - Pre-emphasis enabled (audio tracks only)
-    ///SCMS - Serial copy management system (not supported by all recorders)
-    ///There is a fourth subcode flag called "DATA" which is set for all non-audio tracks. This flag is set automatically based on the datatype of the track.
-    /// </summary>
-    public enum Flags
+    namespace Cue.Types
     {
-        DCP, CH4, PRE, SCMS, DATA, NONE
-    }
-
-    /// <summary>
-    /// BINARY - Intel binary file (least significant byte first)
-    /// MOTOROLA - Motorola binary file (most significant byte first)
-    /// AIFF - Audio AIFF file
-    /// WAVE - Audio WAVE file
-    /// MP3 - Audio MP3 file
-    /// </summary>
-    public enum FileType
-    {
-        BINARY, MOTOROLA, AIFF, WAVE, MP3
-    }
-
-    /// <summary>
-    /// <list>
-    /// <item>AUDIO - Audio/Music (2352)</item>
-    /// <item>CDG - Karaoke CD+G (2448)</item>
-    /// <item>MODE1/2048 - CDROM Mode1 Data (cooked)</item>
-    /// <item>MODE1/2352 - CDROM Mode1 Data (raw)</item>
-    /// <item>MODE2/2336 - CDROM-XA Mode2 Data</item>
-    /// <item>MODE2/2352 - CDROM-XA Mode2 Data</item>
-    /// <item>CDI/2336 - CDI Mode2 Data</item>
-    /// <item>CDI/2352 - CDI Mode2 Data</item>
-    /// </list>
-    /// </summary>
-    public enum DataType
-    {
-        AUDIO , CDG , MODE1_2048 , MODE1_2352 , MODE2_2336 , MODE2_2352 , CDI_2336 , CDI_2352
-    }
-
-    /// <summary>
-    /// This command is used to specify indexes (or subindexes) within a track.
-    /// Syntax:
-    ///  INDEX [number] [mm:ss:ff]
-    /// </summary>
-    public struct Index
-    {
-        //0-99
-        private int _number;
-
-        private int _minutes;
-        private int _seconds;
-        private int _frames;
-
         /// <summary>
-        /// Index number (0-99)
+        ///DCP - Digital copy permitted
+        ///4CH - Four channel audio
+        ///PRE - Pre-emphasis enabled (audio tracks only)
+        ///SCMS - Serial copy management system (not supported by all recorders)
+        ///There is a fourth subcode flag called "DATA" which is set for all non-audio tracks. This flag is set automatically based on the datatype of the track.
         /// </summary>
-        public int Number
+        public enum Flags
         {
-            get { return _number; }
-            set
-            {
-                if (value > 99)
-                {
-                    _number = 99;
-                }
-                else if (value < 0)
-                {
-                    _number = 0;
-                }
-                else
-                {
-                    _number = value;
-                }
-            }
+            DCP, CH4, PRE, SCMS, DATA, NONE
         }
-
-        /// <summary>
-        /// Possible values: 0-99
-        /// </summary>
-        public int Minutes
-        {
-            get { return _minutes; }
-            set
-            {
-                if (value > 99)
-                {
-                    _minutes = 99;
-                }
-                else if (value < 0)
-                {
-                    _minutes = 0;
-                }
-                else
-                {
-                    _minutes = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Possible values: 0-59
-        /// There are 60 seconds/minute
-        /// </summary>
-        public int Seconds
-        {
-            get { return _seconds; }
-            set
-            {
-                if (value >= 60)
-                {
-                    _seconds = 59;
-                }
-                else if (value < 0)
-                {
-                    _seconds = 0;
-                }
-                else
-                {
-                    _seconds = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Possible values: 0-74
-        /// There are 75 frames/second
-        /// </summary>
-        public int Frames
-        {
-            get { return _frames; }
-            set
-            {
-                if (value >= 75)
-                {
-                    _frames = 74;
-                }
-                else if (value < 0)
-                {
-                    _frames = 0;
-                }
-                else
-                {
-                    _frames = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// The Index of a track.
-        /// </summary>
-        /// <param name="number">Index number 0-99</param>
-        /// <param name="minutes">Minutes (0-99)</param>
-        /// <param name="seconds">Seconds (0-59)</param>
-        /// <param name="frames">Frames (0-74)</param>
-        public Index(int number, int minutes, int seconds, int frames)
-        {
-            _number = number;
-
-            _minutes = minutes;
-            _seconds = seconds;
-            _frames = frames;
-        }
-
-        /// <summary>
-        /// Setting or Getting the time stamp in TimeSpan
-        /// </summary>
-        public TimeSpan Time
-        {
-            get
-            {
-                var milliseconds = (int)Math.Round(_frames * (1000F / 75));
-                return new TimeSpan(0, 0, _minutes, _seconds, milliseconds);
-            }
-            set
-            {
-                Minutes = value.Hours*60 + value.Minutes;
-                Seconds = value.Seconds;
-                Frames = (int)Math.Round(value.Milliseconds * 75 / 1000F);
-            }
-        }
-    }
-
-    /// <summary>
-    /// This command is used to specify a data/audio file that will be written to the recorder.
-    /// </summary>
-    public struct AudioFile
-    {
-        public string Filename { get; set; }
 
         /// <summary>
         /// BINARY - Intel binary file (least significant byte first)
@@ -946,352 +790,550 @@ namespace ChapterTool.Util
         /// WAVE - Audio WAVE file
         /// MP3 - Audio MP3 file
         /// </summary>
-        public FileType Filetype { get; set; }
-
-        public AudioFile(string filename, string filetype)
+        public enum FileType
         {
-            Filename = filename;
+            BINARY, MOTOROLA, AIFF, WAVE, MP3
+        }
 
-            switch (filetype.Trim().ToUpper())
+        /// <summary>
+        /// <list>
+        /// <item>AUDIO - Audio/Music (2352)</item>
+        /// <item>CDG - Karaoke CD+G (2448)</item>
+        /// <item>MODE1/2048 - CDROM Mode1 Data (cooked)</item>
+        /// <item>MODE1/2352 - CDROM Mode1 Data (raw)</item>
+        /// <item>MODE2/2336 - CDROM-XA Mode2 Data</item>
+        /// <item>MODE2/2352 - CDROM-XA Mode2 Data</item>
+        /// <item>CDI/2336 - CDI Mode2 Data</item>
+        /// <item>CDI/2352 - CDI Mode2 Data</item>
+        /// </list>
+        /// </summary>
+        public enum DataType
+        {
+            AUDIO, CDG, MODE1_2048, MODE1_2352, MODE2_2336, MODE2_2352, CDI_2336, CDI_2352
+        }
+
+        /// <summary>
+        /// This command is used to specify indexes (or subindexes) within a track.
+        /// Syntax:
+        ///  INDEX [number] [mm:ss:ff]
+        /// </summary>
+        public struct Index
+        {
+            //0-99
+            private int _number;
+
+            private int _minutes;
+            private int _seconds;
+            private int _frames;
+
+            /// <summary>
+            /// Index number (0-99)
+            /// </summary>
+            public int Number
             {
+                get { return _number; }
+                set
+                {
+                    if (value > 99)
+                    {
+                        _number = 99;
+                    }
+                    else if (value < 0)
+                    {
+                        _number = 0;
+                    }
+                    else
+                    {
+                        _number = value;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Possible values: 0-99
+            /// </summary>
+            public int Minutes
+            {
+                get { return _minutes; }
+                set
+                {
+                    if (value > 99)
+                    {
+                        _minutes = 99;
+                    }
+                    else if (value < 0)
+                    {
+                        _minutes = 0;
+                    }
+                    else
+                    {
+                        _minutes = value;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Possible values: 0-59
+            /// There are 60 seconds/minute
+            /// </summary>
+            public int Seconds
+            {
+                get { return _seconds; }
+                set
+                {
+                    if (value >= 60)
+                    {
+                        _seconds = 59;
+                    }
+                    else if (value < 0)
+                    {
+                        _seconds = 0;
+                    }
+                    else
+                    {
+                        _seconds = value;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Possible values: 0-74
+            /// There are 75 frames/second
+            /// </summary>
+            public int Frames
+            {
+                get { return _frames; }
+                set
+                {
+                    if (value >= 75)
+                    {
+                        _frames = 74;
+                    }
+                    else if (value < 0)
+                    {
+                        _frames = 0;
+                    }
+                    else
+                    {
+                        _frames = value;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// The Index of a track.
+            /// </summary>
+            /// <param name="number">Index number 0-99</param>
+            /// <param name="minutes">Minutes (0-99)</param>
+            /// <param name="seconds">Seconds (0-59)</param>
+            /// <param name="frames">Frames (0-74)</param>
+            public Index(int number, int minutes, int seconds, int frames)
+            {
+                _number = number;
+
+                _minutes = minutes;
+                _seconds = seconds;
+                _frames = frames;
+            }
+
+            /// <summary>
+            /// Setting or Getting the time stamp in TimeSpan
+            /// </summary>
+            public TimeSpan Time
+            {
+                get
+                {
+                    var milliseconds = (int)Math.Round(_frames * (1000F / 75));
+                    return new TimeSpan(0, 0, _minutes, _seconds, milliseconds);
+                }
+                set
+                {
+                    Minutes = value.Hours * 60 + value.Minutes;
+                    Seconds = value.Seconds;
+                    Frames = (int)Math.Round(value.Milliseconds * 75 / 1000F);
+                }
+            }
+        }
+
+        /// <summary>
+        /// This command is used to specify a data/audio file that will be written to the recorder.
+        /// </summary>
+        public struct AudioFile
+        {
+            public string Filename { get; set; }
+
+            /// <summary>
+            /// BINARY - Intel binary file (least significant byte first)
+            /// MOTOROLA - Motorola binary file (most significant byte first)
+            /// AIFF - Audio AIFF file
+            /// WAVE - Audio WAVE file
+            /// MP3 - Audio MP3 file
+            /// </summary>
+            public FileType Filetype { get; set; }
+
+            public AudioFile(string filename, string filetype)
+            {
+                Filename = filename;
+
+                switch (filetype.Trim().ToUpper())
+                {
                 case "BINARY":
                     Filetype = FileType.BINARY;
                     break;
+
                 case "MOTOROLA":
                     Filetype = FileType.MOTOROLA;
                     break;
+
                 case "AIFF":
                     Filetype = FileType.AIFF;
                     break;
+
                 case "WAVE":
                     Filetype = FileType.WAVE;
                     break;
+
                 case "MP3":
                     Filetype = FileType.MP3;
                     break;
+
                 default:
                     Filetype = FileType.BINARY;
                     break;
+                }
+            }
+
+            public AudioFile(string filename, FileType filetype)
+            {
+                Filename = filename;
+                Filetype = filetype;
             }
         }
 
-        public AudioFile(string filename, FileType filetype)
-        {
-            Filename = filename;
-            Filetype = filetype;
-        }
-    }
-
-    /// <summary>
-    /// Track that contains either data or audio. It can contain Indices and comment information.
-    /// </summary>
-    public struct Track
-    {
-        #region Private Variables
-
-        // strings that don't belong or were mistyped in the global part of the cue
-
-        #endregion
-
-        #region Properties
-
         /// <summary>
-        /// Returns/Sets Index in this track.
+        /// Track that contains either data or audio. It can contain Indices and comment information.
         /// </summary>
-        /// <param name="indexnumber">Index in the track.</param>
-        /// <returns>Index at indexnumber.</returns>
-        public Index this[int indexnumber]
+        public struct Track
         {
-            get
+            #region Private Variables
+
+            // strings that don't belong or were mistyped in the global part of the cue
+
+            #endregion Private Variables
+
+            #region Properties
+
+            /// <summary>
+            /// Returns/Sets Index in this track.
+            /// </summary>
+            /// <param name="indexnumber">Index in the track.</param>
+            /// <returns>Index at indexnumber.</returns>
+            public Index this[int indexnumber]
             {
-                return Indices[indexnumber];
+                get
+                {
+                    return Indices[indexnumber];
+                }
+                set
+                {
+                    Indices[indexnumber] = value;
+                }
             }
-            set
+
+            public string[] Comments { get; set; }
+
+            public AudioFile DataFile { get; set; }
+
+            /// <summary>
+            /// Lines in the cue file that don't belong or have other general syntax errors.
+            /// </summary>
+            public string[] Garbage { get; set; }
+
+            public Index[] Indices { get; set; }
+
+            public string ISRC { get; set; }
+
+            public string Performer { get; set; }
+
+            public Index PostGap { get; set; }
+
+            public Index PreGap { get; set; }
+
+            public string Songwriter { get; set; }
+
+            /// <summary>
+            /// If the TITLE command appears before any TRACK commands, then the string will be encoded as the title of the entire disc.
+            /// </summary>
+            public string Title { get; set; }
+
+            public DataType TrackDataType { get; set; }
+
+            public Flags[] TrackFlags { get; set; }
+
+            public int TrackNumber { get; set; }
+
+            #endregion Properties
+
+            #region Contructors
+
+            public Track(int tracknumber, string datatype)
             {
-                Indices[indexnumber] = value;
-            }
-        }
+                TrackNumber = tracknumber;
 
-
-        public string[] Comments { get; set; }
-
-
-        public AudioFile DataFile { get; set; }
-
-        /// <summary>
-        /// Lines in the cue file that don't belong or have other general syntax errors.
-        /// </summary>
-        public string[] Garbage { get; set; }
-
-        public Index[] Indices { get; set; }
-
-        public string ISRC { get; set; }
-
-        public string Performer { get; set; }
-
-        public Index PostGap { get; set; }
-
-        public Index PreGap { get; set; }
-
-        public string Songwriter { get; set; }
-
-        /// <summary>
-        /// If the TITLE command appears before any TRACK commands, then the string will be encoded as the title of the entire disc.
-        /// </summary>
-        public string Title { get; set; }
-
-        public DataType TrackDataType { get; set; }
-
-        public Flags[] TrackFlags { get; set; }
-
-        public int TrackNumber { get; set; }
-
-        #endregion
-
-        #region Contructors
-
-        public Track(int tracknumber, string datatype)
-        {
-            TrackNumber = tracknumber;
-
-            switch (datatype.Trim ().ToUpper ())
-            {
+                switch (datatype.Trim().ToUpper())
+                {
                 case "AUDIO":
                     TrackDataType = DataType.AUDIO;
                     break;
+
                 case "CDG":
                     TrackDataType = DataType.CDG;
                     break;
+
                 case "MODE1/2048":
                     TrackDataType = DataType.MODE1_2048;
                     break;
+
                 case "MODE1/2352":
                     TrackDataType = DataType.MODE1_2352;
                     break;
+
                 case "MODE2/2336":
                     TrackDataType = DataType.MODE2_2336;
                     break;
+
                 case "MODE2/2352":
                     TrackDataType = DataType.MODE2_2352;
                     break;
+
                 case "CDI/2336":
                     TrackDataType = DataType.CDI_2336;
                     break;
+
                 case "CDI/2352":
                     TrackDataType = DataType.CDI_2352;
                     break;
+
                 default:
                     TrackDataType = DataType.AUDIO;
                     break;
+                }
+
+                TrackFlags = new Flags[0];
+                Songwriter = "";
+                Title = "";
+                ISRC = "";
+                Performer = "";
+                Indices = new Index[0];
+                Garbage = new string[0];
+                Comments = new string[0];
+                PreGap = new Index(-1, 0, 0, 0);
+                PostGap = new Index(-1, 0, 0, 0);
+                DataFile = new AudioFile();
             }
 
-            TrackFlags = new Flags[0];
-            Songwriter = "";
-            Title = "";
-            ISRC = "";
-            Performer = "";
-            Indices = new Index[0];
-            Garbage = new string[0];
-            Comments = new string[0];
-            PreGap = new Index(-1, 0, 0, 0);
-            PostGap = new Index(-1, 0, 0, 0);
-            DataFile = new AudioFile();
-        }
-
-        public Track(int tracknumber, DataType datatype)
-        {
-            TrackNumber = tracknumber;
-            TrackDataType = datatype;
-
-            TrackFlags = new Flags[0];
-            Songwriter = "";
-            Title = "";
-            ISRC = "";
-            Performer = "";
-            Indices = new Index[0];
-            Garbage = new string[0];
-            Comments = new string[0];
-            PreGap = new Index(-1, 0, 0, 0);
-            PostGap = new Index(-1, 0, 0, 0);
-            DataFile = new AudioFile();
-        }
-
-        #endregion
-
-        #region Methods
-        public void AddFlag(Flags flag)
-        {
-            //if it's not a none tag
-            //and if the tags hasn't already been added
-            if (flag != Flags.NONE && NewFlag(flag))
+            public Track(int tracknumber, DataType datatype)
             {
-                TrackFlags = (Flags[])CueSheet.ResizeArray(TrackFlags, TrackFlags.Length + 1);
-                TrackFlags[TrackFlags.Length - 1] = flag;
+                TrackNumber = tracknumber;
+                TrackDataType = datatype;
+
+                TrackFlags = new Flags[0];
+                Songwriter = "";
+                Title = "";
+                ISRC = "";
+                Performer = "";
+                Indices = new Index[0];
+                Garbage = new string[0];
+                Comments = new string[0];
+                PreGap = new Index(-1, 0, 0, 0);
+                PostGap = new Index(-1, 0, 0, 0);
+                DataFile = new AudioFile();
             }
-        }
 
-        public void AddFlag(string flag)
-        {
-            switch (flag.Trim().ToUpper())
+            #endregion Contructors
+
+            #region Methods
+
+            public void AddFlag(Flags flag)
             {
+                //if it's not a none tag
+                //and if the tags hasn't already been added
+                if (flag != Flags.NONE && NewFlag(flag))
+                {
+                    TrackFlags = (Flags[])CueSheet.ResizeArray(TrackFlags, TrackFlags.Length + 1);
+                    TrackFlags[TrackFlags.Length - 1] = flag;
+                }
+            }
+
+            public void AddFlag(string flag)
+            {
+                switch (flag.Trim().ToUpper())
+                {
                 case "DATA":
                     AddFlag(Flags.DATA);
                     break;
+
                 case "DCP":
                     AddFlag(Flags.DCP);
                     break;
+
                 case "4CH":
                     AddFlag(Flags.CH4);
                     break;
+
                 case "PRE":
                     AddFlag(Flags.PRE);
                     break;
+
                 case "SCMS":
                     AddFlag(Flags.SCMS);
                     break;
+
                 default:
                     return;
-            }
-        }
-
-        public TimeSpan Index00
-        {
-            get
-            {
-                if (Indices.Length < 2)
-                {
-                    return TimeSpan.Zero;
                 }
-                return Indices.First().Time;
             }
-        }
 
-        public TimeSpan Index01
-        {
-            get
+            public TimeSpan Index00
             {
-                if (Indices.Length < 1)
+                get
                 {
-                    return TimeSpan.Zero;
+                    if (Indices.Length < 2)
+                    {
+                        return TimeSpan.Zero;
+                    }
+                    return Indices.First().Time;
                 }
-                return Indices.Last().Time;
             }
+
+            public TimeSpan Index01
+            {
+                get
+                {
+                    if (Indices.Length < 1)
+                    {
+                        return TimeSpan.Zero;
+                    }
+                    return Indices.Last().Time;
+                }
+            }
+
+            public void AddGarbage(string garbage)
+            {
+                if (garbage.Trim() != "")
+                {
+                    Garbage = (string[])CueSheet.ResizeArray(Garbage, Garbage.Length + 1);
+                    Garbage[Garbage.Length - 1] = garbage;
+                }
+            }
+
+            public void AddComment(string comment)
+            {
+                if (comment.Trim() != "")
+                {
+                    Comments = (string[])CueSheet.ResizeArray(Comments, Comments.Length + 1);
+                    Comments[Comments.Length - 1] = comment;
+                }
+            }
+
+            public void AddIndex(int number, int minutes, int seconds, int frames)
+            {
+                Indices = (Index[])CueSheet.ResizeArray(Indices, Indices.Length + 1);
+
+                Indices[Indices.Length - 1] = new Index(number, minutes, seconds, frames);
+            }
+
+            public void RemoveIndex(int indexIndex)
+            {
+                for (int i = indexIndex; i < Indices.Length - 1; i++)
+                {
+                    Indices[i] = Indices[i + 1];
+                }
+                Indices = (Index[])CueSheet.ResizeArray(Indices, Indices.Length - 1);
+            }
+
+            /// <summary>
+            /// Checks if the flag is indeed new in this track.
+            /// </summary>
+            /// <param name="newFlag">The new flag to be added to the track.</param>
+            /// <returns>True if this flag doesn't already exist.</returns>
+            private bool NewFlag(Flags newFlag)
+            {
+                return TrackFlags.All(flag => flag != newFlag);
+            }
+
+            public override string ToString()
+            {
+                StringBuilder output = new StringBuilder();
+
+                //write file
+                if (DataFile.Filename != null && DataFile.Filename.Trim() != "")
+                {
+                    output.Append("FILE \"" + DataFile.Filename.Trim() + "\" " + DataFile.Filetype.ToString() + Environment.NewLine);
+                }
+
+                output.Append("  TRACK " + TrackNumber.ToString().PadLeft(2, '0') + " " + TrackDataType.ToString().Replace('_', '/'));
+
+                //write comments
+                foreach (string comment in Comments)
+                {
+                    output.Append(Environment.NewLine + "    REM " + comment);
+                }
+
+                if (Performer.Trim() != "")
+                {
+                    output.Append(Environment.NewLine + "    PERFORMER \"" + Performer + "\"");
+                }
+
+                if (Songwriter.Trim() != "")
+                {
+                    output.Append(Environment.NewLine + "    SONGWRITER \"" + Songwriter + "\"");
+                }
+
+                if (Title.Trim() != "")
+                {
+                    output.Append(Environment.NewLine + "    TITLE \"" + Title + "\"");
+                }
+
+                //write flags
+                if (TrackFlags.Length > 0)
+                {
+                    output.Append(Environment.NewLine + "    FLAGS");
+                }
+
+                foreach (Flags flag in TrackFlags)
+                {
+                    output.Append(" " + flag.ToString().Replace("CH4", "4CH"));
+                }
+
+                //write isrc
+                if (ISRC.Trim() != "")
+                {
+                    output.Append(Environment.NewLine + "    ISRC " + ISRC.Trim());
+                }
+
+                //write pregap
+                if (PreGap.Number != -1)
+                {
+                    output.Append(Environment.NewLine + "    PREGAP " + PreGap.Minutes.ToString().PadLeft(2, '0') + ":" + PreGap.Seconds.ToString().PadLeft(2, '0') + ":" + PreGap.Frames.ToString().PadLeft(2, '0'));
+                }
+
+                //write Indices
+                for (int j = 0; j < Indices.Length; j++)
+                {
+                    output.Append(Environment.NewLine + "    INDEX " + this[j].Number.ToString().PadLeft(2, '0') + " " + this[j].Minutes.ToString().PadLeft(2, '0') + ":" + this[j].Seconds.ToString().PadLeft(2, '0') + ":" + this[j].Frames.ToString().PadLeft(2, '0'));
+                }
+
+                //write postgap
+                if (PostGap.Number != -1)
+                {
+                    output.Append(Environment.NewLine + "    POSTGAP " + PostGap.Minutes.ToString().PadLeft(2, '0') + ":" + PostGap.Seconds.ToString().PadLeft(2, '0') + ":" + PostGap.Frames.ToString().PadLeft(2, '0'));
+                }
+
+                return output.ToString();
+            }
+
+            #endregion Methods
         }
-
-        public void AddGarbage(string garbage)
-        {
-            if (garbage.Trim() != "")
-            {
-                Garbage = (string[])CueSheet.ResizeArray(Garbage, Garbage.Length + 1);
-                Garbage[Garbage.Length - 1] = garbage;
-            }
-        }
-
-        public void AddComment(string comment)
-        {
-            if (comment.Trim() != "")
-            {
-                Comments = (string[])CueSheet.ResizeArray(Comments, Comments.Length + 1);
-                Comments[Comments.Length - 1] = comment;
-            }
-        }
-
-        public void AddIndex(int number, int minutes, int seconds, int frames)
-        {
-            Indices = (Index[])CueSheet.ResizeArray(Indices, Indices.Length + 1);
-
-            Indices[Indices.Length - 1] = new Index(number, minutes, seconds, frames);
-        }
-
-        public void RemoveIndex(int indexIndex)
-        {
-            for (int i = indexIndex; i < Indices.Length - 1; i++)
-            {
-                Indices[i] = Indices[i + 1];
-            }
-            Indices = (Index[])CueSheet.ResizeArray(Indices, Indices.Length - 1);
-        }
-
-        /// <summary>
-        /// Checks if the flag is indeed new in this track.
-        /// </summary>
-        /// <param name="newFlag">The new flag to be added to the track.</param>
-        /// <returns>True if this flag doesn't already exist.</returns>
-        private bool NewFlag(Flags newFlag)
-        {
-            return TrackFlags.All(flag => flag != newFlag);
-        }
-
-        public override string ToString()
-        {
-            StringBuilder output = new StringBuilder();
-
-            //write file
-            if (DataFile.Filename != null && DataFile.Filename.Trim() != "")
-            {
-                output.Append("FILE \"" + DataFile.Filename.Trim() + "\" " + DataFile.Filetype.ToString() + Environment.NewLine);
-            }
-
-            output.Append("  TRACK " + TrackNumber.ToString().PadLeft(2, '0') + " " + TrackDataType.ToString().Replace('_', '/'));
-
-            //write comments
-            foreach (string comment in Comments)
-            {
-                output.Append(Environment.NewLine + "    REM " + comment);
-            }
-
-            if (Performer.Trim() != "")
-            {
-                output.Append(Environment.NewLine + "    PERFORMER \"" + Performer + "\"");
-            }
-
-            if (Songwriter.Trim() != "")
-            {
-                output.Append(Environment.NewLine + "    SONGWRITER \"" + Songwriter + "\"");
-            }
-
-            if (Title.Trim() != "")
-            {
-                output.Append(Environment.NewLine + "    TITLE \"" + Title + "\"");
-            }
-
-            //write flags
-            if (TrackFlags.Length > 0)
-            {
-                output.Append(Environment.NewLine + "    FLAGS");
-            }
-
-            foreach (Flags flag in TrackFlags)
-            {
-                output.Append(" " + flag.ToString().Replace("CH4", "4CH"));
-            }
-
-            //write isrc
-            if (ISRC.Trim() != "")
-            {
-                output.Append(Environment.NewLine + "    ISRC " + ISRC.Trim());
-            }
-
-            //write pregap
-            if (PreGap.Number != -1)
-            {
-                output.Append(Environment.NewLine + "    PREGAP " + PreGap.Minutes.ToString().PadLeft(2, '0') + ":" + PreGap.Seconds.ToString().PadLeft(2, '0') + ":" + PreGap.Frames.ToString().PadLeft(2, '0'));
-            }
-
-            //write Indices
-            for (int j = 0; j < Indices.Length; j++)
-            {
-                output.Append(Environment.NewLine + "    INDEX " + this[j].Number.ToString().PadLeft(2, '0') + " " + this[j].Minutes.ToString().PadLeft(2, '0') + ":" + this[j].Seconds.ToString().PadLeft(2, '0') + ":" + this[j].Frames.ToString().PadLeft(2, '0'));
-            }
-
-            //write postgap
-            if (PostGap.Number != -1)
-            {
-                output.Append(Environment.NewLine + "    POSTGAP " + PostGap.Minutes.ToString().PadLeft(2, '0') + ":" + PostGap.Seconds.ToString().PadLeft(2, '0') + ":" + PostGap.Frames.ToString().PadLeft(2, '0'));
-            }
-
-            return output.ToString();
-        }
-        #endregion Methods
     }
 }

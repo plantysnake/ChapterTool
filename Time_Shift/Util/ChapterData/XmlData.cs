@@ -1,6 +1,6 @@
 ﻿// ****************************************************************************
 //
-// Copyright (C) 2014-2015 TautCony (TautCony@vcb-s.com)
+// Copyright (C) 2014-2016 TautCony (TautCony@vcb-s.com)
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,13 +17,13 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
-using System;
-using System.Linq;
-using System.Xml;
-using System.Collections.Generic;
-using static ChapterTool.Util.ConvertMethod;
 
-namespace ChapterTool.Util
+using System;
+using System.Xml;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace ChapterTool.Util.ChapterData
 {
     public static class XmlData
     {
@@ -77,10 +77,10 @@ namespace ChapterTool.Util
                 switch (chapterAtomChildNode.Name)
                 {
                     case "ChapterTimeStart":
-                        startChapter.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
+                        startChapter.Time = ToolKits.RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
                         break;
                     case "ChapterTimeEnd":
-                        endChapter.Time = RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
+                        endChapter.Time = ToolKits.RTimeFormat.Match(chapterAtomChildNode.InnerText).Value.ToTimeSpan();
                         break;
                     case "ChapterDisplay":
                         try

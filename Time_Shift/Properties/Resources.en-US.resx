@@ -324,4 +324,7 @@
   <data name="Tips_IFO_Waring_Fixed" xml:space="preserve">
     <value>IFO chapter loaded, coefficient 1.001 fixed, please uncheck if not necessary.</value>
   </data>
+  <data name="Message_Stack" xml:space="preserve">
+    <value>Save StackTrack to clipboard?</value>
+  </data>
 </root>
