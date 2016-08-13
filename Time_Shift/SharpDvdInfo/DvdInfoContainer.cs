@@ -288,7 +288,7 @@ namespace SharpDvdInfo
                 var index = 1;
                 var tmp = new ChapterInfo
                 {
-                    SourceName = $"VTS_{titleInfo.TitleSetNumber:D2}",
+                    SourceName = $"VTS_{titleInfo.TitleSetNumber:D2}_1",
                     SourceType = "DVD",
                 };
                 foreach (var time in titleInfo.Chapters)
