@@ -39,12 +39,10 @@
             this.cbRound = new System.Windows.Forms.CheckBox();
             this.deviationMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmAccuracy = new System.Windows.Forms.ToolStripMenuItem();
-            this.cbMul1k1 = new System.Windows.Forms.CheckBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.lbShift = new System.Windows.Forms.Label();
             this.cbShift = new System.Windows.Forms.CheckBox();
             this.cbChapterName = new System.Windows.Forms.CheckBox();
-            this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.combineMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.combineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,6 +68,7 @@
             this.tsTips = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.tsBtnExpand = new System.Windows.Forms.ToolStripDropDownButton();
+            this.textBoxExpression = new System.Windows.Forms.TextBox();
             this.deviationMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.combineMenuStrip.SuspendLayout();
@@ -208,21 +207,6 @@
             this.tsmAccuracy.Text = "误差范围";
             this.tsmAccuracy.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.Accuracy_DropDownItemClicked);
             // 
-            // cbMul1k1
-            // 
-            this.cbMul1k1.AutoSize = true;
-            this.cbMul1k1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbMul1k1.Location = new System.Drawing.Point(182, 40);
-            this.cbMul1k1.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
-            this.cbMul1k1.Name = "cbMul1k1";
-            this.cbMul1k1.Size = new System.Drawing.Size(117, 21);
-            this.cbMul1k1.TabIndex = 15;
-            this.cbMul1k1.TabStop = false;
-            this.cbMul1k1.Text = "章节时间 x 1.001";
-            this.toolTip1.SetToolTip(this.cbMul1k1, "用于DVD Decrypter提取的Chapter");
-            this.cbMul1k1.UseVisualStyleBackColor = true;
-            this.cbMul1k1.CheckedChanged += new System.EventHandler(this.cbMul1k1_CheckedChanged);
-            // 
             // numericUpDown1
             // 
             this.numericUpDown1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
@@ -253,12 +237,12 @@
             // 
             this.cbShift.AutoSize = true;
             this.cbShift.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbShift.Location = new System.Drawing.Point(303, 40);
+            this.cbShift.Location = new System.Drawing.Point(182, 40);
             this.cbShift.Name = "cbShift";
-            this.cbShift.Size = new System.Drawing.Size(96, 21);
+            this.cbShift.Size = new System.Drawing.Size(100, 21);
             this.cbShift.TabIndex = 18;
             this.cbShift.TabStop = false;
-            this.cbShift.Text = "平移所有时间";
+            this.cbShift.Text = "应用表达式 (t)";
             this.cbShift.UseVisualStyleBackColor = true;
             this.cbShift.CheckedChanged += new System.EventHandler(this.cbShift_CheckedChanged);
             // 
@@ -276,24 +260,6 @@
             this.toolTip1.SetToolTip(this.cbChapterName, "不取消勾选时将持续生效");
             this.cbChapterName.UseVisualStyleBackColor = true;
             this.cbChapterName.CheckedChanged += new System.EventHandler(this.cbChapterName_CheckedChanged);
-            // 
-            // maskedTextBox1
-            // 
-            this.maskedTextBox1.AsciiOnly = true;
-            this.maskedTextBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.maskedTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.maskedTextBox1.Culture = new System.Globalization.CultureInfo("");
-            this.maskedTextBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.maskedTextBox1.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.maskedTextBox1.InsertKeyMode = System.Windows.Forms.InsertKeyMode.Overwrite;
-            this.maskedTextBox1.Location = new System.Drawing.Point(406, 37);
-            this.maskedTextBox1.Mask = "00:00:00.000";
-            this.maskedTextBox1.Name = "maskedTextBox1";
-            this.maskedTextBox1.PromptChar = 'T';
-            this.maskedTextBox1.Size = new System.Drawing.Size(82, 23);
-            this.maskedTextBox1.TabIndex = 22;
-            this.maskedTextBox1.TabStop = false;
-            this.maskedTextBox1.MaskInputRejected += new System.Windows.Forms.MaskInputRejectedEventHandler(this.maskedTextBox1_MaskInputRejected);
             // 
             // comboBox2
             // 
@@ -507,18 +473,17 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.textBoxExpression);
             this.panel1.Controls.Add(this.lbFormat);
             this.panel1.Controls.Add(this.savingType);
             this.panel1.Controls.Add(this.lbXmlLang);
             this.panel1.Controls.Add(this.xmlLang);
             this.panel1.Controls.Add(this.cbChapterName);
-            this.panel1.Controls.Add(this.cbMul1k1);
             this.panel1.Controls.Add(this.cbAutoGenName);
             this.panel1.Controls.Add(this.cbShift);
             this.panel1.Controls.Add(this.btnLog);
             this.panel1.Controls.Add(this.lbShift);
             this.panel1.Controls.Add(this.numericUpDown1);
-            this.panel1.Controls.Add(this.maskedTextBox1);
             this.panel1.Location = new System.Drawing.Point(12, 440);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(556, 64);
@@ -541,7 +506,7 @@
             // 
             this.tsTips.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tsTips.Name = "tsTips";
-            this.tsTips.Size = new System.Drawing.Size(412, 17);
+            this.tsTips.Size = new System.Drawing.Size(443, 17);
             this.tsTips.Spring = true;
             this.tsTips.Text = " ";
             this.tsTips.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -562,6 +527,14 @@
             this.tsBtnExpand.Size = new System.Drawing.Size(20, 20);
             this.tsBtnExpand.Text = "toolStripDropDownButton1";
             this.tsBtnExpand.Click += new System.EventHandler(this.btnExpand_Click);
+            // 
+            // textBoxExpression
+            // 
+            this.textBoxExpression.Location = new System.Drawing.Point(303, 37);
+            this.textBoxExpression.Name = "textBoxExpression";
+            this.textBoxExpression.Size = new System.Drawing.Size(178, 23);
+            this.textBoxExpression.TabIndex = 31;
+            this.textBoxExpression.TextChanged += new System.EventHandler(this.textBoxExpression_TextChanged);
             // 
             // Form1
             // 
@@ -618,12 +591,10 @@
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.CheckBox cbRound;
-        private System.Windows.Forms.CheckBox cbMul1k1;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.Label lbShift;
         private System.Windows.Forms.CheckBox cbShift;
         private System.Windows.Forms.CheckBox cbChapterName;
-        private System.Windows.Forms.MaskedTextBox maskedTextBox1;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.ContextMenuStrip deviationMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem tsmAccuracy;
@@ -651,6 +622,7 @@
         private System.Windows.Forms.ToolStripProgressBar tsProgressBar1;
         private System.Windows.Forms.ToolStripDropDownButton tsBtnExpand;
         private System.Windows.Forms.ToolStripMenuItem ShiftForwardToolStripMenuItem;
+        private System.Windows.Forms.TextBox textBoxExpression;
     }
 }
 

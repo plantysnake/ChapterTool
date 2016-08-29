@@ -49,7 +49,7 @@ namespace ChapterTool.Util
         /// <returns></returns>
         public static string Time2String(this Chapter item, ChapterInfo info)
         {
-            return info.Mul1K1 ? new TimeSpan( (long) Math.Round((decimal) (item.Time + info.Offset).TotalSeconds*1.001M*TimeSpan.TicksPerSecond)).Time2String() : Time2String(item.Time + info.Offset);
+            return new TimeSpan((long)(info.Expr.Eval(item.Time.TotalSeconds) * TimeSpan.TicksPerSecond)).Time2String();
         }
 
         public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+)\s*:\s*(?<Minute>\d+)\s*:\s*(?<Second>\d+)\s*[\.,]\s*(?<Millisecond>\d{3})", RegexOptions.Compiled);
