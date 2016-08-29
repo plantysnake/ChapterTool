@@ -1325,15 +1325,17 @@ namespace ChapterTool.Forms
 
         private void cbShift_CheckedChanged(object sender, EventArgs e)
         {
-            if (!IsPathValid) return;
+            if (!IsPathValid || _info == null) return;
             if (cbShift.Checked)
             {
                 try
                 {
                     _info.Expr = new Expression(textBoxExpression.Text);
+                    Log($"Parse result: {_info.Expr}");
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
+                    Log($"Parse Failed: {exception.Message}");
                     _info.Expr = Expression.Empty;
                     tsTips.Text = Resources.Tips_Invalid_Shift_Time;
                 }
