@@ -27,6 +27,8 @@ namespace ChapterTool.Util
     {
         private IEnumerable<Token> PostExpression { get; set; }
 
+        private bool EvalAble { get; set; } = true;
+
         public static Expression Empty
         {
             get
@@ -305,18 +307,33 @@ namespace ChapterTool.Util
 
         public decimal Eval(double time)
         {
+            if (!EvalAble) return (decimal)time;
             try
             {
                 return Eval(new Dictionary<string, decimal> { ["t"] = (decimal)time });
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception.Message);
+                EvalAble = false;
+                Console.WriteLine($"Eval Failed: {exception.Message}");
                 return (decimal)time;
             }
         }
 
-        public decimal Eval() => Eval(new Dictionary<string, decimal>());
+        public decimal Eval()
+        {
+            if (!EvalAble) return 0;
+            try
+            {
+                return Eval(new Dictionary<string, decimal>());
+            }
+            catch (Exception exception)
+            {
+                EvalAble = false;
+                Console.WriteLine($"Eval Failed: {exception.Message}");
+                return 0;
+            }
+        }
 
 
     }
