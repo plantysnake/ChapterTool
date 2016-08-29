@@ -210,6 +210,8 @@ namespace ChapterTool.Util
                         }
                         if (stack.Peek().Value == "(") stack.Pop();
                         break;
+                        default:
+                        throw new ArgumentOutOfRangeException($"Invalid bracket token {token.Value}");
                     }
                     preToken = token;
                     break;
@@ -245,13 +247,11 @@ namespace ChapterTool.Util
                         }
                         stack.Push(token);
                         break;
-
                     default:
-                        throw new Exception($"Invalid operator stack item {token}");
+                        throw new Exception($"Unexcept token type: {token.Value} => {token.TokenType}");
                     }
                     preToken = token;
                     break;
-
                 default:
                     preToken = token;
                     retStack.Push(token);
