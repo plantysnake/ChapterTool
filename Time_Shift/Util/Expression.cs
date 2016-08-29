@@ -212,6 +212,7 @@ namespace ChapterTool.Util
                         if (stack.Peek().Value == "(") stack.Pop();
                         break;
                     }
+                    preToken = token;
                     break;
 
                 case Token.Symbol.Operator:
@@ -220,6 +221,8 @@ namespace ChapterTool.Util
                     {
                     case Token.Symbol.Blank:
                     case Token.Symbol.Bracket:
+                        if (preToken.Value == "(" && token.Value == "-")
+                            retStack.Push(new Token { TokenType = Token.Symbol.Number, Value = "0", Number = 0M });
                         stack.Push(token);
                         break;
 
