@@ -84,6 +84,7 @@
     <Compile Include="Util\IfoParserTests.cs" />
     <Compile Include="Util\MplsDataTests.cs" />
     <Compile Include="Util\OgmDataTests.cs" />
+    <Compile Include="Util\ToolKitsTests.cs" />
     <Compile Include="Util\VTTDataTests.cs" />
   </ItemGroup>
   <ItemGroup>
