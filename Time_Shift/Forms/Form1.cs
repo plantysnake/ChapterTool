@@ -1323,27 +1323,32 @@ namespace ChapterTool.Forms
 
         private void cbAutoGenName_CheckedChanged(object sender, EventArgs e) => UpdataGridView(0, false);
 
+        private Expression ParseExpression(string expr)
+        {
+            Expression ret;
+            try
+            {
+                ret = new Expression(textBoxExpression.Text);
+                Log($"Parse result: {ret}");
+            }
+            catch (Exception exception)
+            {
+                Log($"Parse Failed: {exception.Message}");
+                ret = Expression.Empty;
+                tsTips.Text = Resources.Tips_Invalid_Shift_Time;
+            }
+            return ret;
+        }
+
         private void cbShift_CheckedChanged(object sender, EventArgs e)
         {
-            if (!IsPathValid || _info == null) return;
-            if (cbShift.Checked)
+            if (!IsPathValid)
             {
-                try
-                {
-                    _info.Expr = new Expression(textBoxExpression.Text);
-                    Log($"Parse result: {_info.Expr}");
-                }
-                catch (Exception exception)
-                {
-                    Log($"Parse Failed: {exception.Message}");
-                    _info.Expr = Expression.Empty;
-                    tsTips.Text = Resources.Tips_Invalid_Shift_Time;
-                }
+                ParseExpression(textBoxExpression.Text);
+                return;
             }
-            else
-            {
-                _info.Expr = Expression.Empty;
-            }
+            if (_info == null) return;
+            _info.Expr = cbShift.Checked ? ParseExpression(textBoxExpression.Text) : Expression.Empty;
             UpdataGridView();
         }
 
@@ -1353,9 +1358,14 @@ namespace ChapterTool.Forms
             _info.UpdataInfo((int)numericUpDown1.Value);
             UpdataGridView(0, false);
         }
+
+        private readonly Regex _vaildExpression = new Regex(@"^[+\-*/\(\)\s\da-zA-Z]*$", RegexOptions.Compiled);
+        private readonly Regex _invalidVariable = new Regex(@"\d+[a-zA-Z]+", RegexOptions.Compiled);
         private void textBoxExpression_TextChanged(object sender, EventArgs e)
         {
-            //show parse error
+            var isValid = _vaildExpression.IsMatch(textBoxExpression.Text) &&
+                         !_invalidVariable.IsMatch(textBoxExpression.Text);
+            tsTips.Text = isValid ? "Valid expression" : "Invalid expression";
         }
 
         #endregion
