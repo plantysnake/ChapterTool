@@ -79,6 +79,7 @@
     <Compile Include="SharpDvdInfo\DvdInfoContainerTests.cs" />
     <Compile Include="Util\CueDataTests.cs" />
     <Compile Include="Util\CueSheetTests.cs" />
+    <Compile Include="Util\ExpressionTests.cs" />
     <Compile Include="Util\IfoDataTests.cs" />
     <Compile Include="Util\IfoParserTests.cs" />
     <Compile Include="Util\MplsDataTests.cs" />
