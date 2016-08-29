@@ -237,10 +237,12 @@ namespace ChapterTool.Util
                         {
                             retStack.Push(new Token { TokenType = Token.Symbol.Number, Value = "0", Number = 0M });
                         }
-                        else if (GetPriority(lastToken) >= GetPriority(token))
+                        else while (lastToken.TokenType != Token.Symbol.Bracket &&
+                                GetPriority(lastToken) >= GetPriority(token))
                         {
                             retStack.Push(lastToken);
                             stack.Pop();
+                            lastToken = stack.Peek();
                         }
                         stack.Push(token);
                         break;
