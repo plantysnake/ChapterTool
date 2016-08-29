@@ -723,8 +723,7 @@ namespace ChapterTool.Forms
             Log(string.Format(Resources.Log_Save_Time_Shift, cbShift.Checked));
             if (cbShift.Checked)
             {
-                Log(textBoxExpression.Text);
-                //Log(string.Format(Resources.Log_Save_Time_Shift_Amount,_info.Offset.Time2String()));
+                Log(string.Format(Resources.Log_Save_Time_Shift_Amount,_info.Expr));
             }
         }
 

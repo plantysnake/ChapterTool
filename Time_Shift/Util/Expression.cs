@@ -63,7 +63,9 @@ namespace ChapterTool.Util
             public Symbol TokenType { get; set; } = Symbol.Blank;
             public decimal Number { get; set; }
 
-            public static Lazy<Token> Empty => new Lazy<Token>(() => new Token("", Symbol.Blank));
+            public static Token End => new Token("", Symbol.Blank);
+            public static Token Zero => new Token("0", Symbol.Number);
+
 
             public Token()
             {
@@ -187,9 +189,9 @@ namespace ChapterTool.Util
         {
             var retStack = new Stack<Token>();
             var stack = new Stack<Token>();
-            stack.Push(Token.Empty.Value);
+            stack.Push(Token.End);
             int pos = 0;
-            var preToken = Token.Empty.Value;
+            var preToken = Token.End;
             bool comment = false;
             while (pos < expr.Length && !comment)
             {
@@ -199,10 +201,7 @@ namespace ChapterTool.Util
                 case Token.Symbol.Bracket:
                     switch (token.Value)
                     {
-                    case "(":
-                        stack.Push(token);
-                        break;
-
+                    case "(": stack.Push(token); break;
                     case ")":
                         while (stack.Peek().Value != "(")
                         {
@@ -222,7 +221,7 @@ namespace ChapterTool.Util
                     case Token.Symbol.Blank:
                     case Token.Symbol.Bracket:
                         if (preToken.Value == "(" && token.Value == "-")
-                            retStack.Push(new Token { TokenType = Token.Symbol.Number, Value = "0", Number = 0M });
+                            retStack.Push(Token.Zero);
                         stack.Push(token);
                         break;
 
@@ -235,7 +234,7 @@ namespace ChapterTool.Util
                         }
                         if (token.Value == "-" && preToken.TokenType == Token.Symbol.Operator)
                         {
-                            retStack.Push(new Token { TokenType = Token.Symbol.Number, Value = "0", Number = 0M });
+                            retStack.Push(Token.Zero);
                         }
                         else while (lastToken.TokenType != Token.Symbol.Bracket &&
                                 GetPriority(lastToken) >= GetPriority(token))
@@ -259,7 +258,7 @@ namespace ChapterTool.Util
                     break;
                 }
             }
-            while (stack.Peek().Value != Token.Empty.Value.Value)
+            while (stack.Peek().Value != string.Empty)
             {
                 retStack.Push(stack.Peek());
                 stack.Pop();
