@@ -100,7 +100,7 @@ namespace ChapterTool.Util
         /// <param name="frame"></param>
         /// <returns></returns>
         public static int ConvertFr2Index(double frame)
-            => Enumerable.Range(0, 7).First(index => Math.Abs(frame - (double)MplsData.FrameRate[index]) < 1e-5);
+            => Enumerable.Range(0, 8).First(index => Math.Abs(frame - (double)MplsData.FrameRate[index]) < 1e-5);
 
         /// <summary>
         /// 读取带或不带BOM头的UTF-8文本
