@@ -1362,16 +1362,13 @@ namespace ChapterTool.Forms
 
         private readonly Regex _vaildExpression = new Regex(@"^[+\-*/\^%\.\(\)\s\da-zA-Z]*$", RegexOptions.Compiled);
         private readonly Regex _invalidVariable = new Regex(@"(?:^|[+\-*/\^%\s])\d+[a-zA-Z]+", RegexOptions.Compiled);
-        private readonly Regex _balanceBrackets = new Regex(@"^[^\(\)]*(((?'Open'\()[^\(\)]*)+((?'Close-Open'\))[^\(\)]*)+)*(?(Open)(?!))$", RegexOptions.Compiled);
+        private readonly Regex _balanceBrackets = new Regex(@"^[^\(\)]*(((?'Open'\()[^\(\)]*)+((?'Close-Open'\))[^\(\)]*)+)*(?(Open)(?!))(?:$|(?://.*))", RegexOptions.Compiled);
 
         private void textBoxExpression_TextChanged(object sender, EventArgs e)
         {
-            var text = textBoxExpression.Text;
-            int index = text.IndexOf("//", StringComparison.Ordinal);
-            if (index > 0) text = text.Substring(0, index);
-            var isValid = _vaildExpression.IsMatch(text) &&
-                          _balanceBrackets.IsMatch(text) &&
-                         !_invalidVariable.IsMatch(text);
+            var isValid = _vaildExpression.IsMatch(textBoxExpression.Text) &&
+                          _balanceBrackets.IsMatch(textBoxExpression.Text) &&
+                         !_invalidVariable.IsMatch(textBoxExpression.Text);
             tsTips.Text = isValid ? "Valid expression" : "Invalid expression";
         }
 
