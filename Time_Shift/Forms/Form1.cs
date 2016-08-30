@@ -1366,9 +1366,12 @@ namespace ChapterTool.Forms
 
         private void textBoxExpression_TextChanged(object sender, EventArgs e)
         {
-            var isValid = _vaildExpression.IsMatch(textBoxExpression.Text) &&
-                          _balanceBrackets.IsMatch(textBoxExpression.Text) &&
-                         !_invalidVariable.IsMatch(textBoxExpression.Text);
+            var text = textBoxExpression.Text;
+            int index = text.IndexOf("//", StringComparison.Ordinal);
+            if (index > 0) text = text.Substring(0, index);
+            var isValid = _vaildExpression.IsMatch(text) &&
+                          _balanceBrackets.IsMatch(text) &&
+                         !_invalidVariable.IsMatch(text);
             tsTips.Text = isValid ? "Valid expression" : "Invalid expression";
         }
 
