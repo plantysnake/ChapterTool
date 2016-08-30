@@ -166,7 +166,12 @@ namespace ChapterTool.Util
             }
             pos = i;
             if (varRet.Length == 0)
-                return new Token(numRet, Token.Symbol.Number) { Number = decimal.Parse(numRet) };
+            {
+                decimal number;
+                if (!decimal.TryParse(numRet, out number))
+                    throw new Exception($"Invalid number token [{numRet}]");
+                return new Token(numRet, Token.Symbol.Number) { Number = number };
+            }
             return new Token(varRet, Token.Symbol.Variable);
         }
 
@@ -182,8 +187,8 @@ namespace ChapterTool.Util
                 ["^"] = 2
             };
             if (string.IsNullOrEmpty(token.Value) || token.TokenType == Token.Symbol.Blank) return -2;
-            if (token.TokenType == Token.Symbol.Variable ||
-                token.TokenType == Token.Symbol.Number) return -1;
+            if (!precedence.ContainsKey(token.Value))
+                throw new Exception($"Invalid operator [{token.Value}]");
             return precedence[token.Value];
         }
 
