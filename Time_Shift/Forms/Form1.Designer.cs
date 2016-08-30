@@ -64,11 +64,11 @@
             this.creatZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ShiftForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.textBoxExpression = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsTips = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.tsBtnExpand = new System.Windows.Forms.ToolStripDropDownButton();
-            this.textBoxExpression = new System.Windows.Forms.TextBox();
             this.deviationMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.combineMenuStrip.SuspendLayout();
@@ -489,6 +489,14 @@
             this.panel1.Size = new System.Drawing.Size(556, 64);
             this.panel1.TabIndex = 32;
             // 
+            // textBoxExpression
+            // 
+            this.textBoxExpression.Location = new System.Drawing.Point(303, 37);
+            this.textBoxExpression.Name = "textBoxExpression";
+            this.textBoxExpression.Size = new System.Drawing.Size(178, 23);
+            this.textBoxExpression.TabIndex = 31;
+            this.textBoxExpression.TextChanged += new System.EventHandler(this.textBoxExpression_TextChanged);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -527,14 +535,6 @@
             this.tsBtnExpand.Size = new System.Drawing.Size(20, 20);
             this.tsBtnExpand.Text = "toolStripDropDownButton1";
             this.tsBtnExpand.Click += new System.EventHandler(this.btnExpand_Click);
-            // 
-            // textBoxExpression
-            // 
-            this.textBoxExpression.Location = new System.Drawing.Point(303, 37);
-            this.textBoxExpression.Name = "textBoxExpression";
-            this.textBoxExpression.Size = new System.Drawing.Size(178, 23);
-            this.textBoxExpression.TabIndex = 31;
-            this.textBoxExpression.TextChanged += new System.EventHandler(this.textBoxExpression_TextChanged);
             // 
             // Form1
             // 

@@ -1328,7 +1328,7 @@ namespace ChapterTool.Forms
             Expression ret;
             try
             {
-                ret = new Expression(textBoxExpression.Text);
+                ret = new Expression(expr);
                 Log($"Parse result: {ret}");
             }
             catch (Exception exception)
