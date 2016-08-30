@@ -1344,7 +1344,8 @@ namespace ChapterTool.Forms
         {
             if (!IsPathValid)
             {
-                ParseExpression(textBoxExpression.Text);
+                if(cbShift.Checked)
+                    ParseExpression(textBoxExpression.Text);
                 return;
             }
             if (_info == null) return;
@@ -1359,11 +1360,14 @@ namespace ChapterTool.Forms
             UpdataGridView(0, false);
         }
 
-        private readonly Regex _vaildExpression = new Regex(@"^[+\-*/\(\)\s\da-zA-Z]*$", RegexOptions.Compiled);
-        private readonly Regex _invalidVariable = new Regex(@"\d+[a-zA-Z]+", RegexOptions.Compiled);
+        private readonly Regex _vaildExpression = new Regex(@"^[+\-*/\^%\.\(\)\s\da-zA-Z]*$", RegexOptions.Compiled);
+        private readonly Regex _invalidVariable = new Regex(@"(?:^|[+\-*/\^%\s])\d+[a-zA-Z]+", RegexOptions.Compiled);
+        private readonly Regex _balanceBrackets = new Regex(@"^[^\(\)]*(((?'Open'\()[^\(\)]*)+((?'Close-Open'\))[^\(\)]*)+)*(?(Open)(?!))$", RegexOptions.Compiled);
+
         private void textBoxExpression_TextChanged(object sender, EventArgs e)
         {
             var isValid = _vaildExpression.IsMatch(textBoxExpression.Text) &&
+                          _balanceBrackets.IsMatch(textBoxExpression.Text) &&
                          !_invalidVariable.IsMatch(textBoxExpression.Text);
             tsTips.Text = isValid ? "Valid expression" : "Invalid expression";
         }
