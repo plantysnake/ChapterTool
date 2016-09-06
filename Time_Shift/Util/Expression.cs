@@ -81,7 +81,7 @@ namespace ChapterTool.Util
 
             public enum Symbol
             {
-                Blank, Number, Variable, Operator, Bracket
+                Blank, Number, Variable, Operator, Bracket, Function
             }
 
             public override string ToString()
@@ -128,6 +128,44 @@ namespace ChapterTool.Util
             }
         }
 
+        private static readonly HashSet<string> FunctionTokens = new HashSet<string>
+        {
+            "abs",
+            "acos", "asin", "atan",
+            "cos", "sin", "tan",
+            "cosh", "sinh", "tanh",
+            "exp", "log", "log10", "sqrt",
+            "ceil", "floor"
+        };
+
+        private static Token EvalCMath(Token func, Token value)
+        {
+            if (!FunctionTokens.Contains(func.Value))
+                throw new Exception($"There is no function named {func.Value}");
+            var ret = new Token {TokenType = Token.Symbol.Number};
+            switch (func.Value)
+            {
+            case "abs"  : ret.Number = Math.Abs(value.Number); break;
+            case "acos" : ret.Number = (decimal)Math.Acos((double)value.Number); break;
+            case "asin" : ret.Number = (decimal)Math.Asin((double)value.Number); break;
+            case "atan" : ret.Number = (decimal)Math.Atan((double)value.Number); break;
+            case "cos"  : ret.Number = (decimal)Math.Cos((double)value.Number); break;
+            case "sin"  : ret.Number = (decimal)Math.Sin((double)value.Number); break;
+            case "tan"  : ret.Number = (decimal)Math.Tan((double)value.Number); break;
+            case "cosh" : ret.Number = (decimal)Math.Cosh((double)value.Number); break;
+            case "sinh" : ret.Number = (decimal)Math.Sinh((double)value.Number); break;
+            case "tanh" : ret.Number = (decimal)Math.Tanh((double)value.Number); break;
+            case "exp"  : ret.Number = (decimal)Math.Exp((double)value.Number); break;
+            case "log"  : ret.Number = (decimal)Math.Log((double)value.Number); break;
+            case "log10": ret.Number = (decimal)Math.Log10((double)value.Number); break;
+            case "sqrt" : ret.Number = (decimal)Math.Sqrt((double)value.Number); break;
+            case "ceil" : ret.Number = Math.Ceiling(value.Number); break;
+            case "floor": ret.Number = Math.Floor(value.Number); break;
+            }
+            return ret;
+        }
+
+
         private static Token GetToken(string expr, ref int pos)
         {
             const string tokens = "()+-*/%^";
@@ -172,6 +210,8 @@ namespace ChapterTool.Util
                     throw new Exception($"Invalid number token [{numRet}]");
                 return new Token(numRet, Token.Symbol.Number) { Number = number };
             }
+            if (FunctionTokens.Contains(varRet))
+                return new Token(varRet, Token.Symbol.Function);
             return new Token(varRet, Token.Symbol.Variable);
         }
 
@@ -196,6 +236,7 @@ namespace ChapterTool.Util
         {
             var retStack = new Stack<Token>();
             var stack = new Stack<Token>();
+            var funcStack = new Stack<Token>();
             stack.Push(Token.End);
             int pos = 0;
             var preToken = Token.End;
@@ -205,6 +246,9 @@ namespace ChapterTool.Util
                 var token = GetToken(expr, ref pos);
                 switch (token.TokenType)
                 {
+                case Token.Symbol.Function:
+                    funcStack.Push(token);
+                    break;
                 case Token.Symbol.Bracket:
                     switch (token.Value)
                     {
@@ -216,6 +260,11 @@ namespace ChapterTool.Util
                             stack.Pop();
                         }
                         if (stack.Peek().Value == "(") stack.Pop();
+                        if (funcStack.Count != 0)
+                        {
+                            retStack.Push(funcStack.Peek());
+                            funcStack.Pop();
+                        }
                         break;
                         default:
                         throw new ArgumentOutOfRangeException($"Invalid bracket token {token.Value}");
@@ -302,6 +351,11 @@ namespace ChapterTool.Util
                     case "%": stack.Push(lhs % rhs); break;
                     case "^": stack.Push(lhs ^ rhs); break;
                     }
+                    break;
+                case Token.Symbol.Function:
+                    var para = stack.Peek();
+                    stack.Pop();
+                    stack.Push(EvalCMath(token, para));
                     break;
                 }
             }

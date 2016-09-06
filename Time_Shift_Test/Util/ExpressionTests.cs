@@ -38,6 +38,53 @@ namespace ChapterTool.Util.Tests
             Assert.AreEqual(65536, ret.Eval());
         }
 
+        private static void EvalAreEqual(decimal expected, string actual)
+        {
+            Assert.AreEqual(expected, new Expression(actual).Eval());
+        }
+        private static void EvalAreNearly(decimal expected, string actual)
+        {
+            var ret = new Expression(actual).Eval();
+            Assert.IsTrue(Math.Abs(ret - expected) < 1e-10M);
+        }
+
+        [TestMethod()]
+        public void ExpressionWithFunctionTest()
+        {
+            var ret = new Expression("floor(1.133) + floor(log10(1023)) - ceil(0.9)");
+            Assert.AreEqual("1.133 floor 1023 log10 floor + 0.9 ceil - ", ret.ToString());
+            Assert.AreEqual(3M, ret.Eval());
+        }
+
+        [TestMethod()]
+        public void FunctionAbsTest()
+        {
+            EvalAreEqual(1908.8976M, "abs(-1908.8976)");
+            EvalAreEqual(1908.8976M, "abs(1908.8976)");
+
+            EvalAreEqual(1908, "abs(-1908)");
+            EvalAreEqual(1908, "abs(1908)");
+        }
+
+        [TestMethod()]
+        public void FunctionSctTest()
+        {
+            EvalAreNearly(1M, "sin(asin(1))");
+            EvalAreNearly(1M, "cos(acos(1))");
+            EvalAreNearly(1M, "tan(atan(1))");
+        }
+
+        [TestMethod()]
+        public void FunctionLog10Test()
+        {
+            EvalAreEqual(3.0M, "log10(1000.0)");
+            EvalAreEqual(3.0M, "log10(1000.0)");
+            EvalAreEqual(14.0M, "log10(10 ^ 14)");
+            EvalAreEqual(3.73895612695404M, "log10(5482.2158)");
+            EvalAreEqual(14.6615511428938M, "log10(458723662312872.125782332587)");
+            EvalAreEqual(-0.908382862219234M, "log10(0.12348583358871)");
+        }
+
         [TestMethod()]
         public void Uva12803Test()
         {
