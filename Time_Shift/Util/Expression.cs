@@ -135,7 +135,7 @@ namespace ChapterTool.Util
             "cos", "sin", "tan",
             "cosh", "sinh", "tanh",
             "exp", "log", "log10", "sqrt",
-            "ceil", "floor"
+            "ceil", "floor", "rand"
         };
 
         private static readonly Dictionary<string, decimal> MathDefines = new Dictionary<string, decimal>
@@ -154,6 +154,8 @@ namespace ChapterTool.Util
             ["M_SQRT2"]    = 1.41421356237309504880M, // sqrt(2)
             ["M_SQRT1_2"]  = 0.70710678118654752440M  // 1/sqrt(2)
         };
+
+        private static readonly Random Rnd = new Random();
 
         private static Token EvalCMath(Token func, Token value)
         {
@@ -178,6 +180,7 @@ namespace ChapterTool.Util
             case "sqrt" : ret.Number = (decimal)Math.Sqrt((double)value.Number); break;
             case "ceil" : ret.Number = Math.Ceiling(value.Number); break;
             case "floor": ret.Number = Math.Floor(value.Number); break;
+            case "rand" : ret.Number = (decimal)Rnd.NextDouble(); break;
             }
             return ret;
         }
@@ -372,9 +375,16 @@ namespace ChapterTool.Util
                     }
                     break;
                 case Token.Symbol.Function:
-                    var para = stack.Peek();
-                    stack.Pop();
-                    stack.Push(EvalCMath(token, para));
+                    if (token.Value == "rand")
+                    {
+                        stack.Push(EvalCMath(token, Token.Zero));
+                    }
+                    else
+                    {
+                        var para = stack.Peek();
+                        stack.Pop();
+                        stack.Push(EvalCMath(token, para));
+                    }
                     break;
                 }
             }
