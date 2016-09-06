@@ -57,7 +57,7 @@ namespace ChapterTool.Util
 
         private static bool IsDigit(char c) => c >= '0' && c <= '9' || c == '.';
 
-        private static bool IsAlpha(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+        private static bool IsAlpha(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 
         public class Token
         {
@@ -138,6 +138,23 @@ namespace ChapterTool.Util
             "ceil", "floor"
         };
 
+        private static readonly Dictionary<string, decimal> MathDefines = new Dictionary<string, decimal>
+        {
+            ["M_E"]        = 2.7182818284590452354M,
+            ["M_LOG2E"]    = 1.4426950408889634074M,
+            ["M_LOG10E"]   = 0.43429448190325182765M,
+            ["M_LN2"]      = 0.69314718055994530942M,
+            ["M_LN10"]     = 2.30258509299404568402M,
+            ["M_PI"]       = 3.14159265358979323846M,
+            ["M_PI_2"]     = 1.57079632679489661923M,
+            ["M_PI_4"]     = 0.78539816339744830962M,
+            ["M_1_PI"]     = 0.31830988618379067154M,
+            ["M_2_PI"]     = 0.63661977236758134308M,
+            ["M_2_SQRTPI"] = 1.12837916709551257390M,
+            ["M_SQRT2"]    = 1.41421356237309504880M,
+            ["M_SQRT1_2"]  = 0.70710678118654752440M
+        };
+
         private static Token EvalCMath(Token func, Token value)
         {
             if (!FunctionTokens.Contains(func.Value))
@@ -212,6 +229,8 @@ namespace ChapterTool.Util
             }
             if (FunctionTokens.Contains(varRet))
                 return new Token(varRet, Token.Symbol.Function);
+            if (MathDefines.ContainsKey(varRet))
+                return new Token(varRet, Token.Symbol.Number) {Number = MathDefines[varRet]};
             return new Token(varRet, Token.Symbol.Variable);
         }
 
