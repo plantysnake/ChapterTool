@@ -135,7 +135,7 @@ namespace ChapterTool.Util
             "cos", "sin", "tan",
             "cosh", "sinh", "tanh",
             "exp", "log", "log10", "sqrt",
-            "ceil", "floor", "rand"
+            "ceil", "floor", "rand", "dup"
         };
 
         private static readonly Dictionary<string, decimal> MathDefines = new Dictionary<string, decimal>
@@ -379,6 +379,10 @@ namespace ChapterTool.Util
                     {
                         stack.Push(EvalCMath(token, Token.Zero));
                     }
+                    else if (token.Value == "dup")
+                    {
+                        stack.Push(stack.Peek());
+                    }
                     else
                     {
                         var para = stack.Peek();
@@ -423,6 +427,99 @@ namespace ChapterTool.Util
             }
         }
 
+        private static string RemoveBrackets(string x)
+        {
+            if (x.First() == '(' && x.Last() == ')')
+            {
+                var p = 1;
+                foreach (var c in x.Skip(1).Take(x.Length - 2))
+                {
+                    if (c == '(') ++p;
+                    else if (c == ')') --p;
+                    if (p == 0) break;
+                }
+                if (p == 1) return x.Substring(1, x.Length - 2);
+            }
+            return x;
+        }
 
+        public static string Postfix2Infix(string expr)
+        {
+            const string funcName = "Postfix2Infix";
+            var op1 = new HashSet<string> {"exp", "log", "sqrt", "abs", "not", "dup"};
+            var op2 = new HashSet<string> {"+", "-", "*", "/", "max", "min", ">", "<", "=", ">=", "<=", "and", "or", "xor", "swap", "pow"};
+            var op3 = new HashSet<string> {"?"};
+
+            var exprList = expr.Split();
+
+            var stack = new Stack<string>();
+            foreach (var item in exprList)
+            {
+                if (op1.Contains(item))
+                {
+                    string operand1;
+                    try
+                    {
+                        operand1 = stack.Peek();
+                        stack.Pop();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        throw new Exception($"{funcName}: Invalid expression, require operands.");
+                    }
+                    if (item == "dup")
+                    {
+                        stack.Push(operand1);
+                        stack.Push(operand1);
+                    }
+                    else
+                    {
+                        stack.Push($"{item}({RemoveBrackets(operand1)})");
+                    }
+                }
+                else if (op2.Contains(item))
+                {
+                    string operand2, operand1;
+                    try
+                    {
+                        operand2 = stack.Peek();
+                        stack.Pop();
+                        operand1 = stack.Peek();
+                        stack.Pop();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        throw new Exception($"{funcName}: Invalid expression, require operands.");
+                    }
+                    stack.Push($"({operand1} {item} {operand2})");
+                }
+                else if (op3.Contains(item))
+                {
+                    string operand3, operand2, operand1;
+                    try
+                    {
+                        operand3 = stack.Peek();
+                        stack.Pop();
+                        operand2 = stack.Peek();
+                        stack.Pop();
+                        operand1 = stack.Peek();
+                        stack.Pop();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        throw new Exception($"{funcName}: Invalid expression, require operands.");
+                    }
+                    stack.Push($"({operand1} {item} {operand2} {":"} {operand3})");
+                }
+                else
+                {
+                    stack.Push(item);
+                }
+            }
+
+            if (stack.Count > 1)
+                throw new Exception($"{funcName}: Invalid expression, require operators.");
+            return RemoveBrackets(stack.Peek());
+        }
     }
 }

@@ -105,5 +105,12 @@ namespace ChapterTool.Util.Tests
             timer.Stop();
             Console.WriteLine($"Duration: {timer.Elapsed.Milliseconds}ms");
         }
+
+        [TestMethod()]
+        public void Postfix2InfixTest()
+        {
+            Assert.AreEqual("((x + (y * 64)) + (z * 256)) / 3", Expression.Postfix2Infix("x y 64 * + z 256 * + 3 /"));
+            Assert.AreEqual("((x + y) + z) / 3", Expression.Postfix2Infix("x y + z + 3 /"));
+        }
     }
 }
