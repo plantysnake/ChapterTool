@@ -541,9 +541,10 @@
             // cbPostFix
             // 
             this.cbPostFix.AutoSize = true;
-            this.cbPostFix.Location = new System.Drawing.Point(282, 43);
+            this.cbPostFix.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cbPostFix.Location = new System.Drawing.Point(285, 45);
             this.cbPostFix.Name = "cbPostFix";
-            this.cbPostFix.Size = new System.Drawing.Size(15, 14);
+            this.cbPostFix.Size = new System.Drawing.Size(12, 11);
             this.cbPostFix.TabIndex = 32;
             this.cbPostFix.UseVisualStyleBackColor = true;
             // 
