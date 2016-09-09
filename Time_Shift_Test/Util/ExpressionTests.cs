@@ -16,9 +16,9 @@ namespace ChapterTool.Util.Tests
         public void ExpressionConverTest()
         {
             var ret = new Expression("2^10%10   + 6 \t///comment sample");
-            Assert.AreEqual("2 10 ^ 10 % 6 + ", ret.ToString());
+            Assert.AreEqual("2 10 ^ 10 % 6 +", ret.ToString());
             ret = new Expression("((a+b)*(c+d))/(((e)))");
-            Assert.AreEqual("a b + c d + * e / ", ret.ToString());
+            Assert.AreEqual("a b + c d + * e /", ret.ToString());
         }
 
         [TestMethod()]
@@ -49,10 +49,18 @@ namespace ChapterTool.Util.Tests
         }
 
         [TestMethod()]
+        public void EmptyExpressionTest()
+        {
+            var ret = new Expression("");
+            Assert.AreEqual("", ret.ToString());
+            Assert.AreEqual(0M, ret.Eval());
+        }
+
+        [TestMethod()]
         public void ExpressionWithFunctionTest()
         {
             var ret = new Expression("floor(1.133) + floor(log10(1023)) - ceil(0.9)");
-            Assert.AreEqual("1.133 floor 1023 log10 floor + 0.9 ceil - ", ret.ToString());
+            Assert.AreEqual("1.133 floor 1023 log10 floor + 0.9 ceil -", ret.ToString());
             Assert.AreEqual(3M, ret.Eval());
         }
 

@@ -52,7 +52,7 @@ namespace ChapterTool.Util
 
         public override string ToString()
         {
-            return PostExpression.Reverse().Aggregate("", (word, token) => word + token.Value + " ");
+            return PostExpression.Aggregate("", (word, token) => $"{token.Value} {word}").TrimEnd();
         }
 
         private static bool IsDigit(char c) => c >= '0' && c <= '9' || c == '.';
