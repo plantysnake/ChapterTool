@@ -69,6 +69,7 @@
             this.tsTips = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.tsBtnExpand = new System.Windows.Forms.ToolStripDropDownButton();
+            this.cbPostFix = new System.Windows.Forms.CheckBox();
             this.deviationMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.combineMenuStrip.SuspendLayout();
@@ -473,6 +474,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.cbPostFix);
             this.panel1.Controls.Add(this.textBoxExpression);
             this.panel1.Controls.Add(this.lbFormat);
             this.panel1.Controls.Add(this.savingType);
@@ -535,6 +537,15 @@
             this.tsBtnExpand.Size = new System.Drawing.Size(20, 20);
             this.tsBtnExpand.Text = "toolStripDropDownButton1";
             this.tsBtnExpand.Click += new System.EventHandler(this.btnExpand_Click);
+            // 
+            // cbPostFix
+            // 
+            this.cbPostFix.AutoSize = true;
+            this.cbPostFix.Location = new System.Drawing.Point(282, 43);
+            this.cbPostFix.Name = "cbPostFix";
+            this.cbPostFix.Size = new System.Drawing.Size(15, 14);
+            this.cbPostFix.TabIndex = 32;
+            this.cbPostFix.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -623,6 +634,7 @@
         private System.Windows.Forms.ToolStripDropDownButton tsBtnExpand;
         private System.Windows.Forms.ToolStripMenuItem ShiftForwardToolStripMenuItem;
         private System.Windows.Forms.TextBox textBoxExpression;
+        private System.Windows.Forms.CheckBox cbPostFix;
     }
 }
 

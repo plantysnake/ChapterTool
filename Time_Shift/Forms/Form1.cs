@@ -1328,8 +1328,16 @@ namespace ChapterTool.Forms
             Expression ret;
             try
             {
-                ret = new Expression(expr);
-                Log($"Parse result: {ret}");
+                if (!cbPostFix.Checked)
+                {
+                    ret = new Expression(expr);
+                    Log($"Parse result: {ret}");
+                }
+                else
+                {
+                    ret = new Expression(expr.Split());
+                    Log($"Parse result: {Expression.Postfix2Infix(ret.ToString())}");
+                }
             }
             catch (Exception exception)
             {

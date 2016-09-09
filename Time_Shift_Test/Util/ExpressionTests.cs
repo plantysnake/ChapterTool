@@ -22,6 +22,15 @@ namespace ChapterTool.Util.Tests
         }
 
         [TestMethod()]
+        public void ExpressionPostFixTest()
+        {
+            var ret = new Expression("a b + c d + * e /".Split());
+            var exp = new Expression("((a+b)*(c+d))/(((e)))");
+            Assert.AreEqual("((a + b) * (c + d)) / e", Expression.Postfix2Infix(ret.ToString()));
+            Assert.AreEqual(exp.ToString(), ret.ToString());
+        }
+
+        [TestMethod()]
         public void ExpressionWEvalTest()
         {
             var ret = new Expression("1+1/2+1/3+1/4+1/5+1/6+1/7+1/8+1/9+1/10");

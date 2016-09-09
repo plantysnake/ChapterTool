@@ -50,6 +50,29 @@ namespace ChapterTool.Util
             PostExpression = BuildPostExpressionStack(expr);
         }
 
+        public Expression(IEnumerable<string> tokens)
+        {
+            PostExpression = tokens.TakeWhile(token => !token.StartsWith("//")).Reverse().Select(ToToken).ToList();
+        }
+
+        private static Token ToToken(string token)
+        {
+            const string operators = "()+-*/%^";
+            Token ret = new Token {Value = token, TokenType = Token.Symbol.Variable};
+            if (token == "(" || token == ")")
+                ret.TokenType = Token.Symbol.Bracket;
+            else if (FunctionTokens.Contains(token))
+                ret.TokenType = Token.Symbol.Function;
+            else if (token.First() >= '0' && token.First() <= '9')
+            {
+                ret.TokenType = Token.Symbol.Number;
+                ret.Number = decimal.Parse(token);
+            }
+            else if (token.Length == 1 && operators.Contains(token.First()))
+                ret.TokenType = Token.Symbol.Operator;
+            return ret;
+        }
+
         public override string ToString()
         {
             return PostExpression.Aggregate("", (word, token) => $"{token.Value} {word}").TrimEnd();
