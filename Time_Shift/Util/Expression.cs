@@ -52,7 +52,7 @@ namespace ChapterTool.Util
 
         public Expression(IEnumerable<string> tokens)
         {
-            PostExpression = tokens.TakeWhile(token => !token.StartsWith("//")).Reverse().Select(ToToken).ToList();
+            PostExpression = tokens.TakeWhile(token =>!token.StartsWith("//")).Where(token=> !string.IsNullOrEmpty(token)).Reverse().Select(ToToken);
         }
 
         private static Token ToToken(string token)
