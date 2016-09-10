@@ -639,7 +639,7 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
-        ///   查找类似 位移时间不科学的样子 的本地化字符串。
+        ///   查找类似 表达式不科学的样子 的本地化字符串。
         /// </summary>
         internal static string Tips_Invalid_Shift_Time {
             get {

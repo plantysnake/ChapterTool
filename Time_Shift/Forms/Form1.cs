@@ -214,7 +214,7 @@ namespace ChapterTool.Forms
             comboBox2.SelectedIndex = -1;
             comboBox1.SelectedIndex = -1;
 
-            cbMul1k1.Checked        = false;
+            cbShift.Checked        = false;
 
             _rawMpls                = null;
             _ifoGroup               = null;
@@ -516,7 +516,9 @@ namespace ChapterTool.Forms
             }
             else
             {
-                cbMul1k1.Checked = true;
+                //cbMul1k1.Checked = true;
+                textBoxExpression.Text = @"t * 1.001 //修正DVD时间";
+                cbShift.Checked = true;
                 tsTips.Text = Resources.Tips_IFO_Waring_Fixed;
             }
         }
@@ -717,11 +719,11 @@ namespace ChapterTool.Forms
             Log(string.Format(Resources.Log_Save_Is_Use_Chapter_Name, !cbAutoGenName.Checked));
             Log(string.Format(Resources.Log_Save_Is_Use_Chapter_Name_Template, cbChapterName.Checked));
             Log(string.Format(Resources.Log_Save_Chapter_Order_Shift, numericUpDown1.Value));
-            Log(string.Format(Resources.Log_Save_Time_Factor, cbMul1k1.Checked));
+            //Log(string.Format(Resources.Log_Save_Time_Factor, cbMul1k1.Checked));
             Log(string.Format(Resources.Log_Save_Time_Shift, cbShift.Checked));
             if (cbShift.Checked)
             {
-                Log(string.Format(Resources.Log_Save_Time_Shift_Amount,_info.Offset.Time2String()));
+                Log(string.Format(Resources.Log_Save_Time_Shift_Amount,_info.Expr));
             }
         }
 
@@ -828,7 +830,11 @@ namespace ChapterTool.Forms
             {
                 _info = _bdmvGroup[ClipSeletIndex];
             }
-            _info.Mul1K1 = cbMul1k1.Checked;
+            if (cbShift.Checked)
+            {
+                cbShift_CheckedChanged(new object(), new EventArgs());
+            }
+            //_info.Mul1K1 = cbMul1k1.Checked;
             UpdataGridView();
         }
 
@@ -844,7 +850,11 @@ namespace ChapterTool.Forms
             {
                 GetChapterInfoFromIFO(ClipSeletIndex);
             }
-            _info.Mul1K1 = cbMul1k1.Checked;
+            if (cbShift.Checked)
+            {
+                cbShift_CheckedChanged(new object(), new EventArgs());
+            }
+            //_info.Mul1K1 = cbMul1k1.Checked;
             UpdataGridView();
         }
 
@@ -989,11 +999,9 @@ namespace ChapterTool.Forms
                 index = comboBox1.SelectedIndex + 1;    //未勾选舍入时将帧率直接设置为下拉框当前帧率
             }
 
-            var coefficient = _info.Mul1K1 ? 1.001M : 1M;
             foreach (var chapter in _info.Chapters)
             {
-                var frams = (decimal) (chapter.Time.TotalMilliseconds + _info.Offset.TotalMilliseconds)
-                                      *coefficient*MplsData.FrameRate[index]/1000M;
+                var frams = _info.Expr.Eval(chapter.Time.TotalSeconds) * MplsData.FrameRate[index];
                 if (cbRound.Checked)
                 {
                     var rounded       = cbRound.Checked ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
@@ -1012,7 +1020,7 @@ namespace ChapterTool.Forms
             Log(string.Format(Resources.Log_FPS_Detect_Begin, accuracy));
             var result = MplsData.FrameRate.Select(fps  =>
                         _info.Chapters.Sum(item =>
-                        item.IsAccuracy(fps, accuracy))).ToList();
+                        item.IsAccuracy(fps, accuracy, _info.Expr))).ToList();
             result[0] = 0; result[5] = 0; //skip two invalid frame rate.
             result.ForEach(count => Log(string.Format(Resources.Log_FPS_Detect_Count, count)));
             int autofpsCode = result.IndexOf(result.Max());
@@ -1087,7 +1095,7 @@ namespace ChapterTool.Forms
             {
                 dataGridView1.BackgroundColor                = value;
                 numericUpDown1.BackColor                     = value;
-                maskedTextBox1.BackColor                     = value;
+                textBoxExpression.BackColor                  = value;
                 comboBox1.BackColor                          = value;
                 comboBox2.BackColor                          = value;
                 xmlLang.BackColor                            = value;
@@ -1141,7 +1149,7 @@ namespace ChapterTool.Forms
             {
                 ForeColor                                    = value;
                 numericUpDown1.ForeColor                     = value;
-                maskedTextBox1.ForeColor                     = value;
+                textBoxExpression.ForeColor                  = value;
                 //btnExpand.ForeColor                          = value;
                 comboBox1.ForeColor                          = value;
                 comboBox2.ForeColor                          = value;
@@ -1313,34 +1321,43 @@ namespace ChapterTool.Forms
 
         #endregion
 
-        private void cbMul1k1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (_info == null) return;
-            _info.Mul1K1 = cbMul1k1.Checked;
-            UpdataGridView();
-        }
-
         private void cbAutoGenName_CheckedChanged(object sender, EventArgs e) => UpdataGridView(0, false);
+
+        private Expression ParseExpression(string expr)
+        {
+            Expression ret;
+            try
+            {
+                if (!cbPostFix.Checked)
+                {
+                    ret = new Expression(expr);
+                    Log($"Parse result: {ret}");
+                }
+                else
+                {
+                    ret = new Expression(expr.Split());
+                    Log($"Parse result: {Expression.Postfix2Infix(ret.ToString())}");
+                }
+            }
+            catch (Exception exception)
+            {
+                Log($"Parse Failed: {exception.Message}");
+                ret = Expression.Empty;
+                tsTips.Text = Resources.Tips_Invalid_Shift_Time;
+            }
+            return ret;
+        }
 
         private void cbShift_CheckedChanged(object sender, EventArgs e)
         {
-            if (!IsPathValid) return;
-            if (cbShift.Checked)
+            if (!IsPathValid)
             {
-                try
-                {
-                    _info.Offset = maskedTextBox1.Text.ToTimeSpan();
-                }
-                catch (Exception)
-                {
-                    _info.Offset = TimeSpan.Zero;
-                    tsTips.Text = Resources.Tips_Invalid_Shift_Time;
-                }
+                if(cbShift.Checked)
+                    ParseExpression(textBoxExpression.Text);
+                return;
             }
-            else
-            {
-                _info.Offset = TimeSpan.Zero;
-            }
+            if (_info == null) return;
+            _info.Expr = cbShift.Checked ? ParseExpression(textBoxExpression.Text) : Expression.Empty;
             UpdataGridView();
         }
 
@@ -1351,7 +1368,18 @@ namespace ChapterTool.Forms
             UpdataGridView(0, false);
         }
 
-        private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e) => tsTips.Text = Resources.Tips_Invalid_Shift_Time;
+        private readonly Regex _vaildExpression = new Regex(@"^[+\-*/\^%\.,\(\)\s\da-zA-Z_]*(?:$|(?://.*))", RegexOptions.Compiled);
+        private readonly Regex _invalidVariable = new Regex(@"(?:^|[+\-*/\^%\s])\d+[a-zA-Z_]+", RegexOptions.Compiled);
+        private readonly Regex _balanceBrackets = new Regex(@"^[^\(\)]*(((?'Open'\()[^\(\)]*)+((?'Close-Open'\))[^\(\)]*)+)*(?(Open)(?!))(?:$|(?://.*))", RegexOptions.Compiled);
+
+        private void textBoxExpression_TextChanged(object sender, EventArgs e)
+        {
+            var isValid = _vaildExpression.IsMatch(textBoxExpression.Text) &&
+                          _balanceBrackets.IsMatch(textBoxExpression.Text) &&
+                         !_invalidVariable.IsMatch(textBoxExpression.Text);
+            tsTips.Text = isValid ? "Valid expression" : "Invalid expression";
+        }
+
         #endregion
 
         #region LogForm
@@ -1531,5 +1559,6 @@ namespace ChapterTool.Forms
             }
         }
         #endregion
+
     }
 }

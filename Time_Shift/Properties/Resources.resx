@@ -307,7 +307,7 @@
     <value>共 {0} 个片段</value>
   </data>
   <data name="Tips_Invalid_Shift_Time" xml:space="preserve">
-    <value>位移时间不科学的样子</value>
+    <value>表达式不科学的样子</value>
   </data>
   <data name="Tips_Menu_Clip" xml:space="preserve">
     <value>这应该是播放菜单的mpls</value>
