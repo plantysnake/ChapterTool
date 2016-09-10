@@ -18,8 +18,9 @@
 //
 // ****************************************************************************
 using System;
-using System.Collections.Generic;
+using System.Text;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace ChapterTool.Util
 {
@@ -41,9 +42,7 @@ namespace ChapterTool.Util
             }
         }
 
-        private Expression()
-        {
-        }
+        private Expression() { }
 
         public Expression(string expr)
         {
@@ -57,10 +56,14 @@ namespace ChapterTool.Util
 
         private static Token ToToken(string token)
         {
-            const string operators = "()+-*/%^";
             Token ret = new Token {Value = token, TokenType = Token.Symbol.Variable};
-            if (token == "(" || token == ")")
-                ret.TokenType = Token.Symbol.Bracket;
+            if (token.Length == 1 && OperatorTokens.Contains(token.First()))
+            {
+                if (token == "(" || token == ")")
+                    ret.TokenType = Token.Symbol.Bracket;
+                else
+                ret.TokenType = Token.Symbol.Operator;
+            }
             else if (FunctionTokens.ContainsKey(token))
                 ret.TokenType = Token.Symbol.Function;
             else if (IsDigit(token.First()))
@@ -68,8 +71,6 @@ namespace ChapterTool.Util
                 ret.TokenType = Token.Symbol.Number;
                 ret.Number = decimal.Parse(token);
             }
-            else if (token.Length == 1 && operators.Contains(token.First()))
-                ret.TokenType = Token.Symbol.Operator;
             return ret;
         }
 
@@ -82,7 +83,11 @@ namespace ChapterTool.Util
 
         private static bool IsAlpha(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 
-        private static bool IsSpace(char c) => " \t\n\v\f\r".Contains(c);
+        private static bool IsSpace(char c) => SpaceCharacter.Contains(c);
+
+        private const string SpaceCharacter = " \t\n\v\f\r";
+
+        private const string OperatorTokens = "()+-*/%^,";
 
         private static readonly Dictionary<string, int> FunctionTokens = new Dictionary<string, int>
         {
@@ -158,64 +163,47 @@ namespace ChapterTool.Util
 
         private static Token GetToken(string expr, ref int pos)
         {
-            const string tokens = "()+-*/%^";
-            string numRet = string.Empty;
-            string varRet = string.Empty;
+            var varRet = new StringBuilder();
             int i = pos;
-            while (IsSpace(expr[i])) ++i;
             for (; i < expr.Length; i++)
             {
-                if (IsDigit(expr[i]))
+                if (IsSpace(expr[i])) continue;
+
+                if (IsDigit(expr[i]) || IsAlpha(expr[i]))
                 {
-                    if (varRet.Length == 0)
-                        numRet += expr[i];
-                    else
-                        varRet += expr[i];
+                    varRet.Append(expr[i]);
                     continue;
                 }
-                if (IsAlpha(expr[i]))
+
+                if (varRet.Length != 0) break;
+
+                if (!OperatorTokens.Contains(expr[i])) continue;
+
+                pos = i + 1;
+                switch (expr[i])
                 {
-                    if (numRet.Length != 0)
-                        break;
-                    varRet += expr[i];
-                    continue;
-                }
-                if (tokens.Contains(expr[i]))
-                {
-                    if (numRet.Length == 0 && varRet.Length == 0)
-                    {
-                        pos = i + 1;
-                        if (expr[i] == '(' || expr[i] == ')')
-                            return new Token($"{expr[i]}", Token.Symbol.Bracket);
-                        return new Token($"{expr[i]}", Token.Symbol.Operator);
-                    }
-                    break;
-                }
-                if (expr[i] == ',')
-                {
-                    if (numRet.Length == 0 && varRet.Length == 0)
-                    {
-                        pos = i + 1;
+                    case '(': case ')':
+                        return new Token($"{expr[i]}", Token.Symbol.Bracket);
+                    case ',':
                         return new Token($"{expr[i]}", Token.Symbol.Comma);
-                    }
-                    break;
+                    default:
+                        return new Token($"{expr[i]}", Token.Symbol.Operator);
                 }
             }
             pos = i;
-            if (varRet.Length == 0)
+            var @var = varRet.ToString();
+            if (IsDigit(varRet[0]))
             {
                 decimal number;
-                if (!decimal.TryParse(numRet, out number))
-                    throw new Exception($"Invalid number token [{numRet}]");
-                return new Token(numRet, Token.Symbol.Number) { Number = number };
+                if (!decimal.TryParse(@var, out number))
+                    throw new Exception($"Invalid number token [{@var}]");
+                return new Token(number) {Value = @var};
             }
-            if (FunctionTokens.ContainsKey(varRet))
-            {
-                return new Token(varRet, Token.Symbol.Function) {ParaCount = FunctionTokens[varRet]};
-            }
-            if (MathDefines.ContainsKey(varRet))
-                return new Token(varRet, Token.Symbol.Number) {Number = MathDefines[varRet]};
-            return new Token(varRet, Token.Symbol.Variable);
+            if (FunctionTokens.ContainsKey(@var))
+                return new Token(@var, Token.Symbol.Function) {ParaCount = FunctionTokens[@var]};
+            if (MathDefines.ContainsKey(@var))
+                return new Token(MathDefines[@var]) {Value = @var};
+            return new Token(@var, Token.Symbol.Variable);
         }
 
         private static int GetPriority(Token token)
@@ -339,52 +327,38 @@ namespace ChapterTool.Util
             {
                 switch (token.TokenType)
                 {
-                case Token.Symbol.Number:
-                    stack.Push(token);
-                    break;
-
-                case Token.Symbol.Variable:
-                    stack.Push(new Token { TokenType = Token.Symbol.Number, Number = values[token.Value] });
-                    break;
-
+                case Token.Symbol.Number:   stack.Push(token); break;
+                case Token.Symbol.Variable: stack.Push(new Token(values[token.Value])); break;
                 case Token.Symbol.Operator:
-                    var rhs = stack.Peek();
-                    stack.Pop();
-                    var lhs = stack.Peek();
-                    stack.Pop();
-                    switch (token.Value)
+                    var rhs = stack.Peek(); stack.Pop();
+                    var lhs = stack.Peek(); stack.Pop();
+                    switch (token.Value.First())
                     {
-                    case "+": stack.Push(lhs + rhs); break;
-                    case "-": stack.Push(lhs - rhs); break;
-                    case "*": stack.Push(lhs * rhs); break;
-                    case "/": stack.Push(lhs / rhs); break;
-                    case "%": stack.Push(lhs % rhs); break;
-                    case "^": stack.Push(lhs ^ rhs); break;
+                    case '+': stack.Push(lhs + rhs); break;
+                    case '-': stack.Push(lhs - rhs); break;
+                    case '*': stack.Push(lhs * rhs); break;
+                    case '/': stack.Push(lhs / rhs); break;
+                    case '%': stack.Push(lhs % rhs); break;
+                    case '^': stack.Push(lhs ^ rhs); break;
                     }
                     break;
                 case Token.Symbol.Function:
                     switch (token.ParaCount)
                     {
                     case 0:
-                        if (token.Value == "rand")
+                        switch (token.Value)
                         {
-                            stack.Push(EvalCMath(token, Token.Zero));
-                        }
-                        else if (token.Value == "dup")
-                        {
-                            stack.Push(stack.Peek());
+                        case "rand": stack.Push(EvalCMath(token, Token.Zero)); break;
+                        case "dup":  stack.Push(stack.Peek()); break;
                         }
                         break;
                     case 1:
-                        var para = stack.Peek();
-                        stack.Pop();
+                        var para = stack.Peek(); stack.Pop();
                         stack.Push(EvalCMath(token, para));
                         break;
                     case 2:
-                        rhs = stack.Peek();
-                        stack.Pop();
-                        lhs = stack.Peek();
-                        stack.Pop();
+                        rhs = stack.Peek(); stack.Pop();
+                        lhs = stack.Peek(); stack.Pop();
                         stack.Push(EvalCMath(token, lhs, rhs));
                         break;
                     }
@@ -540,6 +514,12 @@ namespace ChapterTool.Util
             {
                 Value = value;
                 TokenType = type;
+            }
+
+            public Token(decimal number)
+            {
+                Number = number;
+                TokenType = Symbol.Number;
             }
 
             public enum Symbol
