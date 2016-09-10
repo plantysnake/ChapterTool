@@ -86,14 +86,14 @@ namespace ChapterTool.Util
 
         private static readonly Dictionary<string, int> FunctionTokens = new Dictionary<string, int>
         {
-            ["abs"] = 1,
-            ["acos"] = 1, ["asin"] = 1, ["atan"] = 1,["atan2"] = 2,
-            ["cos"] = 1, ["sin"] = 1, ["tan"] = 1,
-            ["cosh"] = 1, ["sinh"] = 1, ["tanh"] = 1,
-            ["exp"] = 1, ["log"] = 1, ["log10"] = 1, ["sqrt"] = 1,
+            ["abs"]  = 1,
+            ["acos"] = 1, ["asin"]  = 1, ["atan"]  = 1,["atan2"] = 2,
+            ["cos"]  = 1, ["sin"]   = 1, ["tan"]   = 1,
+            ["cosh"] = 1, ["sinh"]  = 1, ["tanh"]  = 1,
+            ["exp"]  = 1, ["log"]   = 1, ["log10"] = 1, ["sqrt"] = 1,
             ["ceil"] = 1, ["floor"] = 1,
-            ["rand"] = 0, ["dup"] = 0, ["int"] = 1, ["sign"] = 1,
-            ["pow"] = 2, ["max"] = 2, ["min"] = 2
+            ["rand"] = 0, ["dup"]   = 0, ["int"]   = 1, ["sign"] = 1,
+            ["pow"]  = 2, ["max"]   = 2, ["min"]   = 2
         };
 
         private static readonly Dictionary<string, decimal> MathDefines = new Dictionary<string, decimal>
