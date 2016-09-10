@@ -1368,7 +1368,7 @@ namespace ChapterTool.Forms
             UpdataGridView(0, false);
         }
 
-        private readonly Regex _vaildExpression = new Regex(@"^[+\-*/\^%\.\(\)\s\da-zA-Z_]*(?:$|(?://.*))", RegexOptions.Compiled);
+        private readonly Regex _vaildExpression = new Regex(@"^[+\-*/\^%\.,\(\)\s\da-zA-Z_]*(?:$|(?://.*))", RegexOptions.Compiled);
         private readonly Regex _invalidVariable = new Regex(@"(?:^|[+\-*/\^%\s])\d+[a-zA-Z_]+", RegexOptions.Compiled);
         private readonly Regex _balanceBrackets = new Regex(@"^[^\(\)]*(((?'Open'\()[^\(\)]*)+((?'Close-Open'\))[^\(\)]*)+)*(?(Open)(?!))(?:$|(?://.*))", RegexOptions.Compiled);
 

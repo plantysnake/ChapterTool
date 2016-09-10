@@ -61,7 +61,7 @@ namespace ChapterTool.Util
             Token ret = new Token {Value = token, TokenType = Token.Symbol.Variable};
             if (token == "(" || token == ")")
                 ret.TokenType = Token.Symbol.Bracket;
-            else if (FunctionTokens.Contains(token))
+            else if (FunctionTokens.ContainsKey(token))
                 ret.TokenType = Token.Symbol.Function;
             else if (IsDigit(token.First()))
             {
@@ -84,15 +84,16 @@ namespace ChapterTool.Util
 
         private static bool IsSpace(char c) => " \t\n\v\f\r".Contains(c);
 
-        private static readonly HashSet<string> FunctionTokens = new HashSet<string>
+        private static readonly Dictionary<string, int> FunctionTokens = new Dictionary<string, int>
         {
-            "abs",
-            "acos", "asin", "atan",
-            "cos", "sin", "tan",
-            "cosh", "sinh", "tanh",
-            "exp", "log", "log10", "sqrt",
-            "ceil", "floor",
-            "rand", "dup", "int", "sign"
+            ["abs"] = 1,
+            ["acos"] = 1, ["asin"] = 1, ["atan"] = 1,["atan2"] = 2,
+            ["cos"] = 1, ["sin"] = 1, ["tan"] = 1,
+            ["cosh"] = 1, ["sinh"] = 1, ["tanh"] = 1,
+            ["exp"] = 1, ["log"] = 1, ["log10"] = 1, ["sqrt"] = 1,
+            ["ceil"] = 1, ["floor"] = 1,
+            ["rand"] = 0, ["dup"] = 0, ["int"] = 1, ["sign"] = 1,
+            ["pow"] = 2, ["max"] = 2, ["min"] = 2
         };
 
         private static readonly Dictionary<string, decimal> MathDefines = new Dictionary<string, decimal>
@@ -114,9 +115,9 @@ namespace ChapterTool.Util
 
         private static readonly Random Rnd = new Random();
 
-        private static Token EvalCMath(Token func, Token value)
+        private static Token EvalCMath(Token func, Token value, Token value2 = null)
         {
-            if (!FunctionTokens.Contains(func.Value))
+            if (!FunctionTokens.ContainsKey(func.Value))
                 throw new Exception($"There is no function named {func.Value}");
             var ret = new Token {TokenType = Token.Symbol.Number};
             switch (func.Value)
@@ -140,6 +141,17 @@ namespace ChapterTool.Util
             case "rand" : ret.Number = (decimal)Rnd.NextDouble(); break;
             case "int"  : ret.Number = Math.Truncate(value.Number); break;
             case "sign" : ret.Number = Math.Sign(value.Number); break;
+            }
+            if (func.ParaCount == 2)
+            {
+                if (value2 == null) throw new NullReferenceException(nameof(value2));
+                switch (func.Value)
+                {
+                case "pow": ret.Number = (decimal)Math.Pow((double)value.Number, (double)value2.Number); break;
+                case "max": ret.Number = Math.Max(value.Number, value2.Number); break;
+                case "min": ret.Number = Math.Min(value.Number, value2.Number); break;
+                case "atan2": ret.Number = (decimal)Math.Atan2((double)value.Number, (double)value2.Number); break;
+                }
             }
             return ret;
         }
@@ -173,9 +185,18 @@ namespace ChapterTool.Util
                     if (numRet.Length == 0 && varRet.Length == 0)
                     {
                         pos = i + 1;
-                        if (expr[pos - 1] == '(' || expr[pos - 1] == ')')
-                            return new Token($"{expr[pos - 1]}", Token.Symbol.Bracket);
-                        return new Token($"{expr[pos - 1]}", Token.Symbol.Operator);
+                        if (expr[i] == '(' || expr[i] == ')')
+                            return new Token($"{expr[i]}", Token.Symbol.Bracket);
+                        return new Token($"{expr[i]}", Token.Symbol.Operator);
+                    }
+                    break;
+                }
+                if (expr[i] == ',')
+                {
+                    if (numRet.Length == 0 && varRet.Length == 0)
+                    {
+                        pos = i + 1;
+                        return new Token($"{expr[i]}", Token.Symbol.Comma);
                     }
                     break;
                 }
@@ -188,8 +209,10 @@ namespace ChapterTool.Util
                     throw new Exception($"Invalid number token [{numRet}]");
                 return new Token(numRet, Token.Symbol.Number) { Number = number };
             }
-            if (FunctionTokens.Contains(varRet))
-                return new Token(varRet, Token.Symbol.Function);
+            if (FunctionTokens.ContainsKey(varRet))
+            {
+                return new Token(varRet, Token.Symbol.Function) {ParaCount = FunctionTokens[varRet]};
+            }
             if (MathDefines.ContainsKey(varRet))
                 return new Token(varRet, Token.Symbol.Number) {Number = MathDefines[varRet]};
             return new Token(varRet, Token.Symbol.Variable);
@@ -228,6 +251,13 @@ namespace ChapterTool.Util
                 {
                 case Token.Symbol.Function:
                     funcStack.Push(token);
+                    break;
+                case Token.Symbol.Comma:
+                    while (stack.Peek().Value != "(")
+                    {
+                        retStack.Push(stack.Peek());
+                        stack.Pop();
+                    }
                     break;
                 case Token.Symbol.Bracket:
                     switch (token.Value)
@@ -333,19 +363,30 @@ namespace ChapterTool.Util
                     }
                     break;
                 case Token.Symbol.Function:
-                    if (token.Value == "rand")
+                    switch (token.ParaCount)
                     {
-                        stack.Push(EvalCMath(token, Token.Zero));
-                    }
-                    else if (token.Value == "dup")
-                    {
-                        stack.Push(stack.Peek());
-                    }
-                    else
-                    {
+                    case 0:
+                        if (token.Value == "rand")
+                        {
+                            stack.Push(EvalCMath(token, Token.Zero));
+                        }
+                        else if (token.Value == "dup")
+                        {
+                            stack.Push(stack.Peek());
+                        }
+                        break;
+                    case 1:
                         var para = stack.Peek();
                         stack.Pop();
                         stack.Push(EvalCMath(token, para));
+                        break;
+                    case 2:
+                        rhs = stack.Peek();
+                        stack.Pop();
+                        lhs = stack.Peek();
+                        stack.Pop();
+                        stack.Push(EvalCMath(token, lhs, rhs));
+                        break;
                     }
                     break;
                 }
@@ -485,6 +526,7 @@ namespace ChapterTool.Util
             public string Value { get; set; } = string.Empty;
             public Symbol TokenType { get; set; } = Symbol.Blank;
             public decimal Number { get; set; }
+            public int ParaCount { get; set; }
 
             public static Token End => new Token("", Symbol.Blank);
             public static Token Zero => new Token("0", Symbol.Number);
@@ -502,7 +544,7 @@ namespace ChapterTool.Util
 
             public enum Symbol
             {
-                Blank, Number, Variable, Operator, Bracket, Function
+                Blank, Number, Variable, Operator, Bracket, Function, Comma
             }
 
             public override string ToString()
