@@ -63,7 +63,7 @@ namespace ChapterTool.Util
                 ret.TokenType = Token.Symbol.Bracket;
             else if (FunctionTokens.Contains(token))
                 ret.TokenType = Token.Symbol.Function;
-            else if (token.First() >= '0' && token.First() <= '9')
+            else if (IsDigit(token.First()))
             {
                 ret.TokenType = Token.Symbol.Number;
                 ret.Number = decimal.Parse(token);
@@ -82,74 +82,7 @@ namespace ChapterTool.Util
 
         private static bool IsAlpha(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 
-        public class Token
-        {
-            public string Value { get; set; } = string.Empty;
-            public Symbol TokenType { get; set; } = Symbol.Blank;
-            public decimal Number { get; set; }
-
-            public static Token End => new Token("", Symbol.Blank);
-            public static Token Zero => new Token("0", Symbol.Number);
-
-
-            public Token()
-            {
-            }
-
-            public Token(string value, Symbol type)
-            {
-                Value = value;
-                TokenType = type;
-            }
-
-            public enum Symbol
-            {
-                Blank, Number, Variable, Operator, Bracket, Function
-            }
-
-            public override string ToString()
-            {
-                if (TokenType == Symbol.Number)
-                    return $"{TokenType} [{Number}]";
-                return $"{TokenType} [{Value}]";
-            }
-
-            public static Token operator +(Token lhs, Token rhs)
-            {
-                var ret = lhs.Number + rhs.Number;
-                return new Token { TokenType = Symbol.Number, Number = ret };
-            }
-
-            public static Token operator -(Token lhs, Token rhs)
-            {
-                var ret = lhs.Number - rhs.Number;
-                return new Token { TokenType = Symbol.Number, Number = ret };
-            }
-
-            public static Token operator *(Token lhs, Token rhs)
-            {
-                var ret = lhs.Number * rhs.Number;
-                return new Token { TokenType = Symbol.Number, Number = ret };
-            }
-
-            public static Token operator /(Token lhs, Token rhs)
-            {
-                var ret = lhs.Number / rhs.Number;
-                return new Token { TokenType = Symbol.Number, Number = ret };
-            }
-
-            public static Token operator %(Token lhs, Token rhs)
-            {
-                var ret = lhs.Number % rhs.Number;
-                return new Token { TokenType = Symbol.Number, Number = ret };
-            }
-
-            public static Token operator ^(Token lhs, Token rhs)
-            {
-                var ret = (decimal)Math.Pow((double)lhs.Number, (double)rhs.Number);
-                return new Token { TokenType = Symbol.Number, Number = ret };
-            }
-        }
+        private static bool IsSpace(char c) => " \t\n\v\f\r".Contains(c);
 
         private static readonly HashSet<string> FunctionTokens = new HashSet<string>
         {
@@ -158,7 +91,8 @@ namespace ChapterTool.Util
             "cos", "sin", "tan",
             "cosh", "sinh", "tanh",
             "exp", "log", "log10", "sqrt",
-            "ceil", "floor", "rand", "dup"
+            "ceil", "floor",
+            "rand", "dup", "int", "sign"
         };
 
         private static readonly Dictionary<string, decimal> MathDefines = new Dictionary<string, decimal>
@@ -204,10 +138,11 @@ namespace ChapterTool.Util
             case "ceil" : ret.Number = Math.Ceiling(value.Number); break;
             case "floor": ret.Number = Math.Floor(value.Number); break;
             case "rand" : ret.Number = (decimal)Rnd.NextDouble(); break;
+            case "int"  : ret.Number = Math.Truncate(value.Number); break;
+            case "sign" : ret.Number = Math.Sign(value.Number); break;
             }
             return ret;
         }
-
 
         private static Token GetToken(string expr, ref int pos)
         {
@@ -215,7 +150,7 @@ namespace ChapterTool.Util
             string numRet = string.Empty;
             string varRet = string.Empty;
             int i = pos;
-            while (expr[i] == ' ' || expr[i] == '\t') ++i;
+            while (IsSpace(expr[i])) ++i;
             for (; i < expr.Length; i++)
             {
                 if (IsDigit(expr[i]))
@@ -543,6 +478,75 @@ namespace ChapterTool.Util
             if (stack.Count > 1)
                 throw new Exception($"{funcName}: Invalid expression, require operators.");
             return RemoveBrackets(stack.Peek());
+        }
+
+        public class Token
+        {
+            public string Value { get; set; } = string.Empty;
+            public Symbol TokenType { get; set; } = Symbol.Blank;
+            public decimal Number { get; set; }
+
+            public static Token End => new Token("", Symbol.Blank);
+            public static Token Zero => new Token("0", Symbol.Number);
+
+
+            public Token()
+            {
+            }
+
+            public Token(string value, Symbol type)
+            {
+                Value = value;
+                TokenType = type;
+            }
+
+            public enum Symbol
+            {
+                Blank, Number, Variable, Operator, Bracket, Function
+            }
+
+            public override string ToString()
+            {
+                if (TokenType == Symbol.Number)
+                    return $"{TokenType} [{Number}]";
+                return $"{TokenType} [{Value}]";
+            }
+
+            public static Token operator +(Token lhs, Token rhs)
+            {
+                var ret = lhs.Number + rhs.Number;
+                return new Token { TokenType = Symbol.Number, Number = ret };
+            }
+
+            public static Token operator -(Token lhs, Token rhs)
+            {
+                var ret = lhs.Number - rhs.Number;
+                return new Token { TokenType = Symbol.Number, Number = ret };
+            }
+
+            public static Token operator *(Token lhs, Token rhs)
+            {
+                var ret = lhs.Number * rhs.Number;
+                return new Token { TokenType = Symbol.Number, Number = ret };
+            }
+
+            public static Token operator /(Token lhs, Token rhs)
+            {
+                var ret = lhs.Number / rhs.Number;
+                return new Token { TokenType = Symbol.Number, Number = ret };
+            }
+
+            public static Token operator %(Token lhs, Token rhs)
+            {
+                var ret = lhs.Number % rhs.Number;
+                return new Token { TokenType = Symbol.Number, Number = ret };
+            }
+
+            public static Token operator ^(Token lhs, Token rhs)
+            {
+                var ret = (decimal)Math.Pow((double)lhs.Number, (double)rhs.Number);
+                return new Token { TokenType = Symbol.Number, Number = ret };
+            }
         }
     }
 }
