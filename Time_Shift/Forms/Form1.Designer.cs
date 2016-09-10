@@ -546,6 +546,7 @@
             this.cbPostFix.Name = "cbPostFix";
             this.cbPostFix.Size = new System.Drawing.Size(12, 11);
             this.cbPostFix.TabIndex = 32;
+            this.toolTip1.SetToolTip(this.cbPostFix, "逆波兰表达式");
             this.cbPostFix.UseVisualStyleBackColor = true;
             // 
             // Form1
