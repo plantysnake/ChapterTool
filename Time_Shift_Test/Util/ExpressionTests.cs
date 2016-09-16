@@ -14,7 +14,7 @@ namespace ChapterTool.Util.Tests
         }
         private static void EvalAreNearly(decimal expected, string actual)
         {
-            Math.Abs(new Expression(actual).Eval() - expected).Should().BeLessThan(1e-10M);
+            new Expression(actual).Eval().Should().BeInRange(expected - 1e-10M, expected + 1e-10M);
         }
 
         [TestMethod()]
@@ -91,22 +91,22 @@ namespace ChapterTool.Util.Tests
         [TestMethod()]
         public void Uva12803Test()
         {
-            var timer = new System.Diagnostics.Stopwatch();
-            timer.Start();
             string path = Directory.GetCurrentDirectory() + "\\..\\..\\";
             if (!File.Exists(path + "Util\\expression.in")) path += "..\\";
             path += "Util\\";
+
+            var timer = new System.Diagnostics.Stopwatch();
+            timer.Start();
             var input  = File.ReadAllLines(path + "expression.in");
             var output = File.ReadAllLines(path + "expression.out");
             for (int i = 0; i < input.Length; ++i)
             {
-                var exp = new Expression(input[i]);
-                var tmp = exp.Eval().ToString("0.00");
+                var tmp = new Expression(input[i]).Eval().ToString("0.00");
                 tmp.Should().Be(output[i]);
                 Console.Write($"{tmp} ");
             }
             timer.Stop();
-            Console.WriteLine($"Duration: {timer.Elapsed.Milliseconds}ms");
+            Console.WriteLine($"\nDuration: {timer.Elapsed.Milliseconds}ms");
         }
 
         [TestMethod()]
