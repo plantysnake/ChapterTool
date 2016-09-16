@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using ChapterTool.Util;
+using FluentAssertions;
 
 namespace SharpDvdInfo.Tests
 {
@@ -31,8 +32,8 @@ namespace SharpDvdInfo.Tests
             foreach (var chapter in result[0].Chapters)
             {
                 Console.WriteLine(chapter);
-                Assert.IsTrue(expectResult[index].Name == chapter.Name);
-                Assert.IsTrue(expectResult[index].Time == chapter.Time.Time2String());
+                expectResult[index].Name.Should().Be(chapter.Name);
+                expectResult[index].Time.Should().Be(chapter.Time.Time2String());
                 ++index;
             }
         }

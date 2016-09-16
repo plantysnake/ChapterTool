@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using ChapterTool.Util.ChapterData;
+using FluentAssertions;
 
 namespace ChapterTool.Util.Tests
 {
@@ -30,8 +31,8 @@ namespace ChapterTool.Util.Tests
             foreach (var chapter in result.Chapters)
             {
                 Console.WriteLine(chapter.ToString());
-                Assert.IsTrue(expectResult[index].Name == chapter.Name);
-                Assert.IsTrue(expectResult[index].Time == chapter.Time.Time2String());
+                expectResult[index].Name.Should().Be(chapter.Name);
+                expectResult[index].Time.Should().Be(chapter.Time.Time2String());
                 ++index;
             }
         }
