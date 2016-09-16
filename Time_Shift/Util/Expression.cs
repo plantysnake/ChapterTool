@@ -400,6 +400,8 @@ namespace ChapterTool.Util
             }
         }
 
+        public static explicit operator decimal(Expression expr) => expr.Eval();
+
         private static string RemoveBrackets(string x)
         {
             if (x.First() == '(' && x.Last() == ')')
