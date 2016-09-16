@@ -197,7 +197,7 @@ namespace ChapterTool.Util.ChapterData
 
         public ChapterInfo ToChapterInfo(int index, bool combineChapter)
         {
-            if (index > ChapterClips.Count && !combineChapter)
+            if (index >= ChapterClips.Count && !combineChapter)
             {
                 throw new IndexOutOfRangeException("Index of Video Clip out of range");
             }
