@@ -122,6 +122,7 @@ namespace ChapterTool.Util
 
         private static Token EvalCMath(Token func, Token value, Token value2 = null)
         {
+            if (func.ParaCount == 2) return EvalCMathTwoToken(func, value, value2);
             if (!FunctionTokens.ContainsKey(func.Value))
                 throw new Exception($"There is no function named {func.Value}");
             var ret = new Token {TokenType = Token.Symbol.Number};
@@ -147,16 +148,27 @@ namespace ChapterTool.Util
             case "int"  : ret.Number = Math.Truncate(value.Number); break;
             case "sign" : ret.Number = Math.Sign(value.Number); break;
             }
-            if (func.ParaCount == 2)
+            return ret;
+        }
+
+        private static Token EvalCMathTwoToken(Token func, Token value, Token value2)
+        {
+            if (!FunctionTokens.ContainsKey(func.Value) && !OperatorTokens.Contains(func.Value))
+                throw new Exception($"There is no function/operator named {func.Value}");
+            var ret = new Token {TokenType = Token.Symbol.Number};
+            if (value2 == null) throw new NullReferenceException(nameof(value2));
+            switch (func.Value)
             {
-                if (value2 == null) throw new NullReferenceException(nameof(value2));
-                switch (func.Value)
-                {
-                case "pow": ret.Number = (decimal)Math.Pow((double)value.Number, (double)value2.Number); break;
-                case "max": ret.Number = Math.Max(value.Number, value2.Number); break;
-                case "min": ret.Number = Math.Min(value.Number, value2.Number); break;
-                case "atan2": ret.Number = (decimal)Math.Atan2((double)value.Number, (double)value2.Number); break;
-                }
+            case "pow": ret.Number = (decimal)Math.Pow((double)value.Number, (double)value2.Number); break;
+            case "max": ret.Number = Math.Max(value.Number, value2.Number); break;
+            case "min": ret.Number = Math.Min(value.Number, value2.Number); break;
+            case "atan2": ret.Number = (decimal)Math.Atan2((double)value.Number, (double)value2.Number); break;
+            case "+": ret.Number = value.Number + value2.Number; break;
+            case "-": ret.Number = value.Number - value2.Number; break;
+            case "*": ret.Number = value.Number * value2.Number; break;
+            case "/": ret.Number = value.Number / value2.Number; break;
+            case "%": ret.Number = value.Number % value2.Number; break;
+            case "^": ret.Number = (decimal)Math.Pow((double)value.Number, (double)value2.Number); break;
             }
             return ret;
         }
@@ -187,7 +199,7 @@ namespace ChapterTool.Util
                     case ',':
                         return new Token($"{expr[i]}", Token.Symbol.Comma);
                     default:
-                        return new Token($"{expr[i]}", Token.Symbol.Operator);
+                        return new Token($"{expr[i]}", Token.Symbol.Operator) {ParaCount = 2};
                 }
             }
             pos = i;
@@ -332,15 +344,7 @@ namespace ChapterTool.Util
                 case Token.Symbol.Operator:
                     var rhs = stack.Peek(); stack.Pop();
                     var lhs = stack.Peek(); stack.Pop();
-                    switch (token.Value.First())
-                    {
-                    case '+': stack.Push(lhs + rhs); break;
-                    case '-': stack.Push(lhs - rhs); break;
-                    case '*': stack.Push(lhs * rhs); break;
-                    case '/': stack.Push(lhs / rhs); break;
-                    case '%': stack.Push(lhs % rhs); break;
-                    case '^': stack.Push(lhs ^ rhs); break;
-                    }
+                    stack.Push(EvalCMath(token, lhs, rhs));
                     break;
                 case Token.Symbol.Function:
                     switch (token.ParaCount)
@@ -534,42 +538,6 @@ namespace ChapterTool.Util
                 if (TokenType == Symbol.Number)
                     return $"{TokenType} [{Number}]";
                 return $"{TokenType} [{Value}]";
-            }
-
-            public static Token operator +(Token lhs, Token rhs)
-            {
-                var ret = lhs.Number + rhs.Number;
-                return new Token { TokenType = Symbol.Number, Number = ret };
-            }
-
-            public static Token operator -(Token lhs, Token rhs)
-            {
-                var ret = lhs.Number - rhs.Number;
-                return new Token { TokenType = Symbol.Number, Number = ret };
-            }
-
-            public static Token operator *(Token lhs, Token rhs)
-            {
-                var ret = lhs.Number * rhs.Number;
-                return new Token { TokenType = Symbol.Number, Number = ret };
-            }
-
-            public static Token operator /(Token lhs, Token rhs)
-            {
-                var ret = lhs.Number / rhs.Number;
-                return new Token { TokenType = Symbol.Number, Number = ret };
-            }
-
-            public static Token operator %(Token lhs, Token rhs)
-            {
-                var ret = lhs.Number % rhs.Number;
-                return new Token { TokenType = Symbol.Number, Number = ret };
-            }
-
-            public static Token operator ^(Token lhs, Token rhs)
-            {
-                var ret = (decimal)Math.Pow((double)lhs.Number, (double)rhs.Number);
-                return new Token { TokenType = Symbol.Number, Number = ret };
             }
         }
     }
