@@ -772,7 +772,7 @@ namespace ChapterTool.Forms
         private void SaveFile(int saveType)
         {
             if (!IsPathValid) return;//防止保存先于载入
-
+            UpdataGridView();
             var savePath = GeneRateSavePath(saveType);
 
             SaveInfoLog(savePath);
