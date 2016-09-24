@@ -60,6 +60,16 @@ namespace ChapterTool.Forms
         #region HotKey
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            if ((keyData ^ Keys.Control) >= Keys.D0 && (keyData ^ Keys.Control) <= Keys.D9)
+            {
+                SwitchByHotKey(keyData);
+                return true;
+            }
+            if ((keyData ^ Keys.Alt) >= Keys.D0 && (keyData ^ Keys.Alt) <= Keys.D9)
+            {
+                SwitchTypeByHotKey(keyData);
+                return true;
+            }
             switch (keyData)
             {
                 case Keys.Control | Keys.S:
@@ -82,30 +92,6 @@ namespace ChapterTool.Forms
                     return true;
                 case Keys.Control | Keys.R:
                     UpdataGridView();
-                    return true;
-                case Keys.Control | Keys.D0:
-                case Keys.Control | Keys.D1:
-                case Keys.Control | Keys.D2:
-                case Keys.Control | Keys.D3:
-                case Keys.Control | Keys.D4:
-                case Keys.Control | Keys.D5:
-                case Keys.Control | Keys.D6:
-                case Keys.Control | Keys.D7:
-                case Keys.Control | Keys.D8:
-                case Keys.Control | Keys.D9:
-                    SwitchByHotKey(keyData);
-                    return true;
-                case Keys.Alt | Keys.D0:
-                case Keys.Alt | Keys.D1:
-                case Keys.Alt | Keys.D2:
-                case Keys.Alt | Keys.D3:
-                case Keys.Alt | Keys.D4:
-                case Keys.Alt | Keys.D5:
-                case Keys.Alt | Keys.D6:
-                case Keys.Alt | Keys.D7:
-                case Keys.Alt | Keys.D8:
-                case Keys.Alt | Keys.D9:
-                    SwitchTypeByHotKey(keyData);
                     return true;
                 case Keys.PageDown:
                     if (comboBox2.SelectedIndex + 1 < comboBox2.Items.Count)
