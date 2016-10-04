@@ -49,6 +49,7 @@
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.cbPostFix = new System.Windows.Forms.CheckBox();
             this.btnLog = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.cOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -69,7 +70,9 @@
             this.tsTips = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.tsBtnExpand = new System.Windows.Forms.ToolStripDropDownButton();
-            this.cbPostFix = new System.Windows.Forms.CheckBox();
+            this.loadMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.appendToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deviationMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.combineMenuStrip.SuspendLayout();
@@ -77,10 +80,12 @@
             this.createZonestMenuStrip.SuspendLayout();
             this.panel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.loadMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnLoad
             // 
+            this.btnLoad.ContextMenuStrip = this.loadMenuStrip;
             this.btnLoad.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
             this.btnLoad.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnLoad.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
@@ -94,7 +99,6 @@
             this.btnLoad.Text = "载入";
             this.btnLoad.UseVisualStyleBackColor = true;
             this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
-            this.btnLoad.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnLoad_MouseUp);
             // 
             // btnSave
             // 
@@ -303,6 +307,17 @@
             // openFileDialog1
             // 
             this.openFileDialog1.Title = "打开文件";
+            // 
+            // cbPostFix
+            // 
+            this.cbPostFix.AutoSize = true;
+            this.cbPostFix.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cbPostFix.Location = new System.Drawing.Point(285, 45);
+            this.cbPostFix.Name = "cbPostFix";
+            this.cbPostFix.Size = new System.Drawing.Size(12, 11);
+            this.cbPostFix.TabIndex = 32;
+            this.toolTip1.SetToolTip(this.cbPostFix, "逆波兰表达式");
+            this.cbPostFix.UseVisualStyleBackColor = true;
             // 
             // btnLog
             // 
@@ -538,16 +553,27 @@
             this.tsBtnExpand.Text = "toolStripDropDownButton1";
             this.tsBtnExpand.Click += new System.EventHandler(this.btnExpand_Click);
             // 
-            // cbPostFix
+            // loadMenuStrip
             // 
-            this.cbPostFix.AutoSize = true;
-            this.cbPostFix.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cbPostFix.Location = new System.Drawing.Point(285, 45);
-            this.cbPostFix.Name = "cbPostFix";
-            this.cbPostFix.Size = new System.Drawing.Size(12, 11);
-            this.cbPostFix.TabIndex = 32;
-            this.toolTip1.SetToolTip(this.cbPostFix, "逆波兰表达式");
-            this.cbPostFix.UseVisualStyleBackColor = true;
+            this.loadMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reloadToolStripMenuItem,
+            this.appendToolStripMenuItem});
+            this.loadMenuStrip.Name = "loadMenuStrip";
+            this.loadMenuStrip.Size = new System.Drawing.Size(153, 70);
+            // 
+            // reloadToolStripMenuItem
+            // 
+            this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.reloadToolStripMenuItem.Text = "重新载入";
+            this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
+            // 
+            // appendToolStripMenuItem
+            // 
+            this.appendToolStripMenuItem.Name = "appendToolStripMenuItem";
+            this.appendToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.appendToolStripMenuItem.Text = "追加合并";
+            this.appendToolStripMenuItem.Click += new System.EventHandler(this.appendToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -590,6 +616,7 @@
             this.panel1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.loadMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -637,6 +664,9 @@
         private System.Windows.Forms.ToolStripMenuItem ShiftForwardToolStripMenuItem;
         private System.Windows.Forms.TextBox textBoxExpression;
         private System.Windows.Forms.CheckBox cbPostFix;
+        private System.Windows.Forms.ContextMenuStrip loadMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem appendToolStripMenuItem;
     }
 }
 

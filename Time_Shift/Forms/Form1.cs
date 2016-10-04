@@ -423,7 +423,8 @@ namespace ChapterTool.Forms
                 }
                 switch (fileType)
                 {
-                    case FileType.Mpls: LoadMpls();     break;
+                    case FileType.Mpls:
+                           LoadMpls(out _rawMpls);      break;
                     case FileType.Xml : LoadXml();      break;
                     case FileType.Txt : LoadOgm();      break;
                     case FileType.Ifo : LoadIfo();      break;
@@ -460,31 +461,28 @@ namespace ChapterTool.Forms
             return true;
         }
 
-        private void btnLoad_MouseUp(object sender, MouseEventArgs e)
-        {
-            //Reload File
-            if (e.Button != MouseButtons.Right || string.IsNullOrEmpty(FilePath)) return;
-            if (_isUrl) LoadBDMV();
-            else if (Loadfile()) UpdataGridView();
-        }
-
-        private void LoadMpls()
+        private void LoadMpls(out MplsData rawMpls, bool display = true, string customPath = "")
         {
             MplsData.OnLog += Log;
-            _rawMpls = new MplsData(FilePath);
+            if (string.IsNullOrEmpty(customPath))
+                customPath = FilePath;
+            rawMpls = new MplsData(customPath);
             MplsData.OnLog -= Log;
             Log(Resources.Log_MPLS_Load_Success);
-            Log(string.Format(Resources.Log_MPLS_Clip_Count, _rawMpls.ChapterClips.Count));
-
-            comboBox2.Enabled = comboBox2.Visible = _rawMpls.ChapterClips.Count >= 1;
-            if (!comboBox2.Enabled) return;
-            comboBox2.Items.Clear();
-            foreach(var item in _rawMpls.ChapterClips)
+            Log(string.Format(Resources.Log_MPLS_Clip_Count, rawMpls.ChapterClips.Count));
+            if (display)
             {
-                comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
-                Log($" |+{item.Name} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]");
+                comboBox2.Enabled = comboBox2.Visible = rawMpls.ChapterClips.Count >= 1;
+                if (!comboBox2.Enabled) return;
+                comboBox2.Items.Clear();
+            }
+            foreach(var item in rawMpls.ChapterClips)
+            {
+                if (display) comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
+                Log($" |+{item.Name} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]{{{MplsData.Pts2Time(item.Length).TotalSeconds}}}");
                 Log(string.Format(Resources.Log_TimeStamp_Count, item.TimeStamp.Count));
             }
+            if (!display) return;
             comboBox2.SelectedIndex = ClipSeletIndex;
             GetChapterInfoFromMpls(ClipSeletIndex);
         }
@@ -680,6 +678,32 @@ namespace ChapterTool.Forms
             UpdataGridView();
         }
 
+        #endregion
+
+        #region AppendFile
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(FilePath)) return;
+            if (_isUrl) LoadBDMV();
+            else if (Loadfile()) UpdataGridView();
+        }
+
+        private void appendToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_rawMpls == null) return;
+            string dir = Path.GetDirectoryName(FilePath);
+            openFileDialog1.Filter = @"appendable file(mpls file)|*.mpls";
+            openFileDialog1.InitialDirectory = dir;
+            if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
+            string newFile = openFileDialog1.FileName;
+            MplsData appendMpls;
+            LoadMpls(out appendMpls, false, newFile);
+            _rawMpls.EntireClip.TimeStamp.AddRange(appendMpls.EntireClip.TimeStamp.Select(stamp=>stamp+ _rawMpls.EntireClip.Length));
+            _rawMpls.EntireClip.Length += appendMpls.EntireClip.Length;
+            CombineChapter = true;
+            GetChapterInfoFromMpls(ClipSeletIndex);
+            UpdataGridView();
+        }
         #endregion
 
         #region Save File
