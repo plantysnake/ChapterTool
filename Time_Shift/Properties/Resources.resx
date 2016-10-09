@@ -355,4 +355,7 @@
   <data name="Tips_Load_Fail" xml:space="preserve">
     <value>载入失败…</value>
   </data>
+  <data name="Message_Need_Newer_dotNet" xml:space="preserve">
+    <value>需要 .Net4.6 或以上版本以保证所有功能正常运作，是否不再提示？</value>
+  </data>
 </root>
