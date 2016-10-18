@@ -115,5 +115,20 @@ namespace ChapterTool.Util.Tests
             Expression.Postfix2Infix("x y 64 * + z 256 * + 3 /").Should().Be("((x + (y * 64)) + (z * 256)) / 3");
             Expression.Postfix2Infix("x y + z + 3 /").Should().Be("((x + y) + z) / 3");
         }
+
+        /*
+        [TestMethod()]
+        public void TernaryOperatorTest()
+        {
+            //x>22 ? x<96 ? 4*(x-16)^2+40000 : 65536:0
+            //x 22 > x 96 < x 16 - dup * 4 * 40000 + 65536 ? 0 ?
+
+            //a 20 < 65535 a 40 < x a 80 < y z ? ? ?
+            //a<20 ? 65535 : a < 40? x : a < 80 ? y : z
+
+            //x 32768 - -512 > 32768 32768 32768 x - 256 / sqrt 4 min 256 * - ?
+            //32768-x < 512 ? 32768 : 32768 - 256*min{sqrt[|32768-x|/256],4}
+        }
+        */
     }
 }

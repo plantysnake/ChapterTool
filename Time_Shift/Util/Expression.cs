@@ -46,6 +46,7 @@ namespace ChapterTool.Util
 
         public Expression(string expr)
         {
+            System.Windows.Forms.MessageBox.Show("HERE");
             PostExpression = BuildPostExpressionStack(expr);
         }
 
@@ -87,7 +88,7 @@ namespace ChapterTool.Util
 
         private const string SpaceCharacter = " \t\n\v\f\r";
 
-        private const string OperatorTokens = "()+-*/%^,";
+        private const string OperatorTokens = "\0(\0)\0+\0-\0*\0/\0%\0^\0,\0>\0<\0<=\0>=\0and\0or\0xor\0";
 
         private static readonly Dictionary<string, int> FunctionTokens = new Dictionary<string, int>
         {
@@ -169,9 +170,17 @@ namespace ChapterTool.Util
             case "/": ret.Number = value.Number / value2.Number; break;
             case "%": ret.Number = value.Number % value2.Number; break;
             case "^": ret.Number = (decimal)Math.Pow((double)value.Number, (double)value2.Number); break;
+            case ">": ret.Number = value.Number > value2.Number ? 1 : 0; ret.TokenType = Token.Symbol.Boolean; break;
+            case "<": ret.Number = value.Number < value2.Number ? 1 : 0; ret.TokenType = Token.Symbol.Boolean; break;
+            case ">=": ret.Number = value.Number >= value2.Number ? 1 : 0; ret.TokenType = Token.Symbol.Boolean; break;
+            case "<=": ret.Number = value.Number <= value2.Number ? 1 : 0; ret.TokenType = Token.Symbol.Boolean; break;
+            case "and": ret.Number = (value.Number != 0M) && (value2.Number != 0M) ? 1 : 0; ret.TokenType = Token.Symbol.Boolean; break;
+            case "or": ret.Number = (value.Number != 0M) || (value2.Number != 0M) ? 1 : 0; ret.TokenType = Token.Symbol.Boolean; break;
+            case "xor": var t1 = value.Number != 0; var t2 = value.Number != 0; ret.Number = t1 ^ t2 ? 1 : 0; ret.TokenType = Token.Symbol.Boolean; break;
             }
             return ret;
         }
+
 
         private static Token GetToken(string expr, ref int pos)
         {
@@ -179,8 +188,12 @@ namespace ChapterTool.Util
             int i = pos;
             for (; i < expr.Length; i++)
             {
-                if (IsSpace(expr[i])) continue;
-
+                if (IsSpace(expr[i]))
+                {
+                    if (varRet.Length != 0)
+                        break;
+                    continue;
+                }
                 if (IsDigit(expr[i]) || IsAlpha(expr[i]))
                 {
                     varRet.Append(expr[i]);
@@ -192,6 +205,12 @@ namespace ChapterTool.Util
                 if (!OperatorTokens.Contains(expr[i])) continue;
 
                 pos = i + 1;
+                if (pos < expr.Length && expr[pos] == '=' &&
+                    (expr[pos - 1] == '>' || expr[pos - 1] == '<'))
+                {
+                    ++pos;
+                    return new Token($"{expr[i]}=", Token.Symbol.Operator) { ParaCount = 2 };
+                }
                 switch (expr[i])
                 {
                     case '(': case ')':
@@ -213,6 +232,8 @@ namespace ChapterTool.Util
             }
             if (FunctionTokens.ContainsKey(@var))
                 return new Token(@var, Token.Symbol.Function) {ParaCount = FunctionTokens[@var]};
+            if (OperatorTokens.Contains($"\0{@var}\0"))
+                return new Token(@var, Token.Symbol.Operator) { ParaCount = 2 };
             if (MathDefines.ContainsKey(@var))
                 return new Token(MathDefines[@var]) {Value = @var};
             return new Token(@var, Token.Symbol.Variable);
@@ -222,11 +243,10 @@ namespace ChapterTool.Util
         {
             var precedence = new Dictionary<string, int>
             {
-                ["+"] = 0,
-                ["-"] = 0,
-                ["*"] = 1,
-                ["/"] = 1,
-                ["%"] = 1,
+                [">"] = -1, ["<"] = -1,
+                [">="] = -1, ["<="] = -1,
+                ["+"] = 0, ["-"] = 0,
+                ["*"] = 1, ["/"] = 1, ["%"] = 1,
                 ["^"] = 2
             };
             if (string.IsNullOrEmpty(token.Value) || token.TokenType == Token.Symbol.Blank) return -2;
@@ -276,7 +296,7 @@ namespace ChapterTool.Util
                             funcStack.Pop();
                         }
                         break;
-                        default:
+                    default:
                         throw new ArgumentOutOfRangeException($"Invalid bracket token {token.Value}");
                     }
                     preToken = token;
@@ -324,6 +344,7 @@ namespace ChapterTool.Util
                     break;
                 }
             }
+
             while (stack.Peek().Value != string.Empty)
             {
                 retStack.Push(stack.Peek());
@@ -364,6 +385,16 @@ namespace ChapterTool.Util
                         rhs = stack.Peek(); stack.Pop();
                         lhs = stack.Peek(); stack.Pop();
                         stack.Push(EvalCMath(token, lhs, rhs));
+                        break;
+                    case 3:
+                        var expr2 = stack.Peek(); stack.Pop();
+                        var expr1 = stack.Peek(); stack.Pop();
+                        var condition = stack.Peek(); stack.Pop();
+                        if (condition.TokenType == Token.Symbol.Boolean ||
+                            condition.TokenType == Token.Symbol.Number)
+                        {
+                            stack.Push(condition.Number == 0 ? expr2 : expr1);
+                        }
                         break;
                     }
                     break;
@@ -530,11 +561,13 @@ namespace ChapterTool.Util
 
             public enum Symbol
             {
-                Blank, Number, Variable, Operator, Bracket, Function, Comma
+                Blank, Number, Variable, Operator, Bracket, Function, Comma, Boolean
             }
 
             public override string ToString()
             {
+                if (TokenType == Symbol.Boolean)
+                    return Number == 0 ? "False" : "True";
                 if (TokenType == Symbol.Number)
                     return $"{TokenType} [{Number}]";
                 return $"{TokenType} [{Value}]";
