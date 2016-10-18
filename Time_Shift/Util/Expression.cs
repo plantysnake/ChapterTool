@@ -46,7 +46,6 @@ namespace ChapterTool.Util
 
         public Expression(string expr)
         {
-            System.Windows.Forms.MessageBox.Show("HERE");
             PostExpression = BuildPostExpressionStack(expr);
         }
 
