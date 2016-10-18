@@ -415,7 +415,7 @@ namespace ChapterTool.Util
             catch (Exception exception)
             {
                 EvalAble = false;
-                Console.WriteLine($"Eval Failed: {exception.Message}");
+                Console.WriteLine($@"Eval Failed: {exception.Message}");
                 return (decimal)time;
             }
         }
@@ -430,7 +430,7 @@ namespace ChapterTool.Util
             catch (Exception exception)
             {
                 EvalAble = false;
-                Console.WriteLine($"Eval Failed: {exception.Message}");
+                Console.WriteLine($@"Eval Failed: {exception.Message}");
                 return 0;
             }
         }

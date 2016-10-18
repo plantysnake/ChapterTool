@@ -11,6 +11,7 @@ namespace ChapterTool
         [STAThread]
         static void Main(string[] args)
         {
+            var options = args.TakeWhile(item => item.StartsWith("--")).ToArray();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -22,7 +23,6 @@ namespace ChapterTool
             }
             else
             {
-                var option = args.TakeWhile(item => item.StartsWith("--"));
                 string argsFull = string.Join(" ", args.SkipWhile(item => item.StartsWith("--")));
                 Application.Run(new Forms.Form1(argsFull));
             }

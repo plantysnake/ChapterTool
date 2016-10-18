@@ -154,7 +154,7 @@ namespace ChapterTool.Forms
         {
             TargetHeight[0] = Height - 66;
             TargetHeight[1] = Height;
-            Text = $"[VCB-Studio] ChapterTool v{Assembly.GetExecutingAssembly().GetName().Version}";
+            Text = $@"[VCB-Studio] ChapterTool v{Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
             if (!IsRunningOnMono())
             {
