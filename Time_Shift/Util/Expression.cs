@@ -221,21 +221,20 @@ namespace ChapterTool.Util
                 }
             }
             pos = i;
-            var @var = varRet.ToString();
+            var variable = varRet.ToString();
             if (IsDigit(varRet[0]))
             {
-                decimal number;
-                if (!decimal.TryParse(@var, out number))
-                    throw new Exception($"Invalid number token [{@var}]");
-                return new Token(number) {Value = @var};
+                if (!decimal.TryParse(variable, out decimal number))
+                    throw new Exception($"Invalid number token [{variable}]");
+                return new Token(number) {Value = variable};
             }
-            if (FunctionTokens.ContainsKey(@var))
-                return new Token(@var, Token.Symbol.Function) {ParaCount = FunctionTokens[@var]};
-            if (OperatorTokens.Contains($"\0{@var}\0"))
-                return new Token(@var, Token.Symbol.Operator) { ParaCount = 2 };
-            if (MathDefines.ContainsKey(@var))
-                return new Token(MathDefines[@var]) {Value = @var};
-            return new Token(@var, Token.Symbol.Variable);
+            if (FunctionTokens.ContainsKey(variable))
+                return new Token(variable, Token.Symbol.Function) {ParaCount = FunctionTokens[variable]};
+            if (OperatorTokens.Contains($"\0{variable}\0"))
+                return new Token(variable, Token.Symbol.Operator) { ParaCount = 2 };
+            if (MathDefines.ContainsKey(variable))
+                return new Token(MathDefines[variable]) {Value = variable};
+            return new Token(variable, Token.Symbol.Variable);
         }
 
         private static int GetPriority(Token token)

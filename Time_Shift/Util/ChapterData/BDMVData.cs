@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace ChapterTool.Util.ChapterData
 
         private static readonly Regex RDiskInfo = new Regex(@"(?<idx>\d)\) (?<mpls>\d+\.mpls), (?:(?:(?<dur>\d+:\d+:\d+)[\n\s\b]*(?<fn>.+\.m2ts))|(?:(?<fn2>.+\.m2ts), (?<dur2>\d+:\d+:\d+)))", RegexOptions.Compiled);
 
-        public static async Task<List<ChapterInfo>> GetChapter(string location)
+        public static async Task<List<ChapterInfo>> GetChapterAsync(string location)
         {
             var list = new List<ChapterInfo>();
             string path = Path.Combine(Path.Combine(location, "BDMV"), "PLAYLIST");

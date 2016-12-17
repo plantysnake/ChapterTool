@@ -56,9 +56,7 @@ namespace ChapterTool.Util.ChapterData
                 pgc.Title = pgc.SourceName = $"{fileName.Substring(0, barIndex)}_{titleSetNum}";
             }
 
-            TimeSpan duration;
-            double fps;
-            pgc.Chapters        = GetChapters(location, titleSetNum, out duration, out fps);
+            pgc.Chapters        = GetChapters(location, titleSetNum, out TimeSpan duration, out double fps);
             pgc.Duration        = duration;
             pgc.FramesPerSecond = fps;
 

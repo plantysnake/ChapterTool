@@ -20,7 +20,7 @@ namespace ChapterTool.Util
         public static void Log(string message)
         {
             DateTime actionDate = DateTime.Now;
-            string logMessage = $"{actionDate.ToString("[yyyy-MM-dd][HH:mm:ss]")} {message}";
+            string logMessage = $"{actionDate:[yyyy-MM-dd][HH:mm:ss]} {message}";
             LogContext.AppendLine(logMessage);
             OnLogLineAdded(logMessage, actionDate);
         }

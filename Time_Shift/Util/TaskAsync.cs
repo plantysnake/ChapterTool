@@ -2,9 +2,8 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace ChapterTool
+namespace ChapterTool.Util
 {
-
     public static class TaskAsync
     {
         public static async Task<string> RunProcessAsync(string fileName, string args, string workingDirectory = "")

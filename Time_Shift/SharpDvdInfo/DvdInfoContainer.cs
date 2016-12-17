@@ -146,11 +146,11 @@ namespace SharpDvdInfo
                         char langChar1 = (char) GetBits(buffer, 8, 16);
                         char langChar2 = (char) GetBits(buffer, 8, 24);
 
-                        audioStream.Language = ChapterTool.Util.LanguageSelectionContainer.LookupISOCode($"{langChar1}{langChar2}");
+                        audioStream.Language = LanguageSelectionContainer.LookupISOCode($"{langChar1}{langChar2}");
                     }
                     else
                     {
-                        audioStream.Language = ChapterTool.Util.LanguageSelectionContainer.LookupISOCode("  ");
+                        audioStream.Language = LanguageSelectionContainer.LookupISOCode("  ");
                     }
                     audioStream.Extension = (DvdAudioType)GetBits(buffer, 8, 40);
                     item.AudioStreams.Add(audioStream);
@@ -178,11 +178,11 @@ namespace SharpDvdInfo
                         string langCode = langChar1.ToString(CultureInfo.InvariantCulture) +
                                               langChar2.ToString(CultureInfo.InvariantCulture);
 
-                        sub.Language = ChapterTool.Util.LanguageSelectionContainer.LookupISOCode(langCode);
+                        sub.Language = LanguageSelectionContainer.LookupISOCode(langCode);
                     }
                     else
                     {
-                        sub.Language = ChapterTool.Util.LanguageSelectionContainer.LookupISOCode("  ");
+                        sub.Language = LanguageSelectionContainer.LookupISOCode("  ");
                     }
                     sub.Extension = (DvdSubpictureType)GetBits(buffer, 8, 40);
                     item.SubtitleStreams.Add(sub);
