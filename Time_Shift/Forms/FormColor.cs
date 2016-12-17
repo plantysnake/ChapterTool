@@ -25,11 +25,11 @@ using System.Collections.Generic;
 
 namespace ChapterTool.Forms
 {
-    public partial class Form3 : Form
+    public partial class FormColor : Form
     {
         private readonly Form1 _mainWindow;
         private readonly List<Color> _currentSetting;
-        public Form3(Form1 mainWindow)
+        public FormColor(Form1 mainWindow)
         {
             InitializeComponent();
             MaximizeBox     = false;

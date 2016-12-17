@@ -267,7 +267,7 @@ namespace ChapterTool.Forms
             Log(string.Format(Resources.Log_About_Form_Click, _poi[0]));
             if (_poi[0] >= _poi[1])
             {
-                Form2 version = new Form2();
+                FormAbout version = new FormAbout();
                 Log(Resources.Log_About_Form_Opened);
                 version.Show();
                 _poi[0]  = 00;
@@ -290,7 +290,7 @@ namespace ChapterTool.Forms
             if(Directory.Exists(FilePath))
             {
                 _isUrl = true;
-                LoadBDMV();
+                LoadBDMVAsync();
                 return;
             }
             _isUrl = false;
@@ -642,7 +642,7 @@ namespace ChapterTool.Forms
             tsTips.Text = Resources.Tips_Load_Success;
         }
 
-        private async void LoadBDMV()
+        private async void LoadBDMVAsync()
         {
             SetDefault();
             try
@@ -684,7 +684,7 @@ namespace ChapterTool.Forms
         private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(FilePath)) return;
-            if (_isUrl) LoadBDMV();
+            if (_isUrl) LoadBDMVAsync();
             else if (Loadfile()) UpdataGridView();
         }
 
@@ -696,8 +696,7 @@ namespace ChapterTool.Forms
             openFileDialog1.InitialDirectory = dir;
             if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
             string newFile = openFileDialog1.FileName;
-            MplsData appendMpls;
-            LoadMpls(out appendMpls, false, newFile);
+            LoadMpls(out MplsData appendMpls, false, newFile);
             _rawMpls.EntireClip.TimeStamp.AddRange(appendMpls.EntireClip.TimeStamp.Select(stamp=>stamp+ _rawMpls.EntireClip.Length));
             _rawMpls.EntireClip.Length += appendMpls.EntireClip.Length;
             CombineChapter = true;
@@ -1072,8 +1071,7 @@ namespace ChapterTool.Forms
             var fpsIndex = comboBox1.SelectedIndex + 1;
             if (fpsIndex < 1) return;
             var shiftFramesString = Notification.InputBox("向前平移N帧，小于0的将被删除", "请输入所需平移的帧数", "0");
-            int shiftFrames;
-            if (!int.TryParse(shiftFramesString, out shiftFrames)) return;
+            if (!int.TryParse(shiftFramesString, out int shiftFrames)) return;
             TimeSpan shiftTime = TimeSpan.FromTicks((long) Math.Round(shiftFrames/MplsData.FrameRate[fpsIndex]*TimeSpan.TicksPerSecond));
             _info.UpdataInfo(shiftTime);
             _info.Chapters = _info.Chapters.SkipWhile(item => item.Time < TimeSpan.Zero).ToList();
@@ -1085,14 +1083,14 @@ namespace ChapterTool.Forms
         #endregion
 
         #region Form Color
-        private Form3 _fcolor;
+        private FormColor _fcolor;
 
         private void Color_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right) return;
             if (_fcolor == null)
             {
-                _fcolor = new Form3(this);
+                _fcolor = new FormColor(this);
             }
             Log(Resources.Log_Color_Setting_Form_Open);
             _fcolor.Show();

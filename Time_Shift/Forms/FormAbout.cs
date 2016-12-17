@@ -27,10 +27,10 @@ using System.Windows.Forms;
 
 namespace ChapterTool.Forms
 {
-    public partial class Form2 : Form
+    public partial class FormAbout : Form
     {
         private readonly int _poi;
-        public Form2()
+        public FormAbout()
         {
             InitializeComponent();
             //this.SizeChanged += new System.EventHandler(this.Form2_SizeChanged);
