@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Net;
 using System.Drawing;
-using System.Reflection;
 using System.Windows.Forms;
 using System.ComponentModel;
 
@@ -25,7 +24,7 @@ namespace ChapterTool.Forms
         public FormUpdater(string currentProgram, Version version, string baseUrl)
         {
             InitializeComponent();
-            Icon              = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
+            Icon              = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             _newPath          = currentProgram + ".new";
             _exePath          = currentProgram;
             _backupPath       = currentProgram + ".bak";

@@ -37,7 +37,7 @@ namespace ChapterTool.Forms
             _mainWindow    = mainWindow;
             _mainPos       = mainWindow.Location;
             ScrollBarSet();
-            Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         }
 
         private void ScrollBarSet()

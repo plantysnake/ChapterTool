@@ -21,6 +21,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Linq;
+using System.Text;
 using System.Drawing;
 using Microsoft.Win32;
 using ChapterTool.Util;
@@ -358,15 +359,15 @@ namespace ChapterTool.Forms
         private static readonly Lazy<string> MainFilter = new Lazy<string>(() =>
         {
             Func<IEnumerable<string>, string> getType = enumerable => enumerable.Aggregate(string.Empty, (current, type) => current + $"*.{type};");
-            string ret = Resources.File_Filter_All_Support;
+            StringBuilder ret = new StringBuilder(Resources.File_Filter_All_Support);
             string types = getType(SupportTypes.SelectMany(supportType => supportType.Value));
-            ret += $"({types.TrimEnd(';')})|{types}";
+            ret.Append($" ({types.TrimEnd(';')})|{types}");
             foreach (var supportType in SupportTypes)
             {
                 types = getType(supportType.Value);
-                ret += $"|{supportType.Key}({types.TrimEnd(';')})|{types}";
+                ret.Append($"|{supportType.Key} ({types.TrimEnd(';')})|{types}");
             }
-            return ret;
+            return ret.ToString();
         });
 
         private void btnLoad_Click(object sender, EventArgs e)
