@@ -650,7 +650,7 @@ namespace ChapterTool.Forms
                 tsTips.Text = Resources.Tips_Loading;
                 Application.DoEvents();
                 BDMVData.OnLog += Log;
-                _bdmvGroup = await BDMVData.GetChapter(FilePath);
+                _bdmvGroup = await BDMVData.GetChapterAsync(FilePath);
                 BDMVData.OnLog -= Log;
                 if (_bdmvGroup == null || _bdmvGroup.Count == 0)
                 {

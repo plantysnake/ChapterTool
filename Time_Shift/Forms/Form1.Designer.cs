@@ -31,6 +31,9 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.btnLoad = new System.Windows.Forms.Button();
+            this.loadMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.appendToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnSave = new System.Windows.Forms.Button();
             this.lbPath = new System.Windows.Forms.Label();
             this.btnTrans = new System.Windows.Forms.Button();
@@ -70,9 +73,7 @@
             this.tsTips = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.tsBtnExpand = new System.Windows.Forms.ToolStripDropDownButton();
-            this.loadMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.appendToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadMenuStrip.SuspendLayout();
             this.deviationMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.combineMenuStrip.SuspendLayout();
@@ -80,7 +81,6 @@
             this.createZonestMenuStrip.SuspendLayout();
             this.panel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
-            this.loadMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnLoad
@@ -99,6 +99,28 @@
             this.btnLoad.Text = "载入";
             this.btnLoad.UseVisualStyleBackColor = true;
             this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+            // 
+            // loadMenuStrip
+            // 
+            this.loadMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reloadToolStripMenuItem,
+            this.appendToolStripMenuItem});
+            this.loadMenuStrip.Name = "loadMenuStrip";
+            this.loadMenuStrip.Size = new System.Drawing.Size(125, 48);
+            // 
+            // reloadToolStripMenuItem
+            // 
+            this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.reloadToolStripMenuItem.Text = "重新载入";
+            this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
+            // 
+            // appendToolStripMenuItem
+            // 
+            this.appendToolStripMenuItem.Name = "appendToolStripMenuItem";
+            this.appendToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.appendToolStripMenuItem.Text = "追加合并";
+            this.appendToolStripMenuItem.Click += new System.EventHandler(this.appendToolStripMenuItem_Click);
             // 
             // btnSave
             // 
@@ -531,7 +553,7 @@
             // 
             this.tsTips.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tsTips.Name = "tsTips";
-            this.tsTips.Size = new System.Drawing.Size(443, 17);
+            this.tsTips.Size = new System.Drawing.Size(412, 17);
             this.tsTips.Spring = true;
             this.tsTips.Text = " ";
             this.tsTips.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -552,28 +574,6 @@
             this.tsBtnExpand.Size = new System.Drawing.Size(20, 20);
             this.tsBtnExpand.Text = "toolStripDropDownButton1";
             this.tsBtnExpand.Click += new System.EventHandler(this.btnExpand_Click);
-            // 
-            // loadMenuStrip
-            // 
-            this.loadMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.reloadToolStripMenuItem,
-            this.appendToolStripMenuItem});
-            this.loadMenuStrip.Name = "loadMenuStrip";
-            this.loadMenuStrip.Size = new System.Drawing.Size(153, 70);
-            // 
-            // reloadToolStripMenuItem
-            // 
-            this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.reloadToolStripMenuItem.Text = "重新载入";
-            this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
-            // 
-            // appendToolStripMenuItem
-            // 
-            this.appendToolStripMenuItem.Name = "appendToolStripMenuItem";
-            this.appendToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.appendToolStripMenuItem.Text = "追加合并";
-            this.appendToolStripMenuItem.Click += new System.EventHandler(this.appendToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -607,6 +607,7 @@
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
             this.Move += new System.EventHandler(this.Form1_Move);
+            this.loadMenuStrip.ResumeLayout(false);
             this.deviationMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.combineMenuStrip.ResumeLayout(false);
@@ -616,7 +617,6 @@
             this.panel1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            this.loadMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

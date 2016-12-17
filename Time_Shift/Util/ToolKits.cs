@@ -111,10 +111,12 @@ namespace ChapterTool.Util
         {
             if (buffer == null) return null;
             if (buffer.Length <= 3) return Encoding.UTF8.GetString(buffer);
-            if (buffer[0] == 0xef && buffer[1] == 0xbb && buffer[2] == 0xbf)
-            {
+            if (buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
                 return new UTF8Encoding(false).GetString(buffer, 3, buffer.Length - 3);
-            }
+            if (buffer[0] == 0xFF && buffer[1] == 0xFE)
+                return  Encoding.Unicode.GetString(buffer);
+            if (buffer[0] == 0xFE && buffer[1] == 0xFF)
+                return Encoding.BigEndianUnicode.GetString(buffer);
             return Encoding.UTF8.GetString(buffer);
         }
 
