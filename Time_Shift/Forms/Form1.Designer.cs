@@ -553,7 +553,7 @@
             // 
             this.tsTips.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tsTips.Name = "tsTips";
-            this.tsTips.Size = new System.Drawing.Size(412, 17);
+            this.tsTips.Size = new System.Drawing.Size(443, 17);
             this.tsTips.Spring = true;
             this.tsTips.Text = " ";
             this.tsTips.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -606,7 +606,6 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
-            this.Move += new System.EventHandler(this.Form1_Move);
             this.loadMenuStrip.ResumeLayout(false);
             this.deviationMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
