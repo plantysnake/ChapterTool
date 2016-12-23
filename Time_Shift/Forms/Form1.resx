@@ -186,8 +186,8 @@
   <data name="cFrams.HeaderText" xml:space="preserve">
     <value> 帧数 </value>
   </data>
-  <data name="cbChapterName.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>12, 3, 3, 3</value>
+  <data name="&gt;&gt;savingType.Parent" xml:space="preserve">
+    <value>panel1</value>
   </data>
   <data name="&gt;&gt;tsTips.Name" xml:space="preserve">
     <value>tsTips</value>
@@ -297,8 +297,8 @@
   <data name="&gt;&gt;statusStrip1.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
-  <data name="lbXmlLang.TabIndex" type="System.Int32, mscorlib">
-    <value>30</value>
+  <data name="&gt;&gt;lbPath.ZOrder" xml:space="preserve">
+    <value>12</value>
   </data>
   <data name="&gt;&gt;cbAutoGenName.Type" xml:space="preserve">
     <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -382,6 +382,9 @@
   <data name="cbChapterName.Text" xml:space="preserve">
     <value>使用章节名模板</value>
   </data>
+  <data name="&gt;&gt;cbAutoGenName.Parent" xml:space="preserve">
+    <value>panel1</value>
+  </data>
   <data name="btnTrans.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
@@ -393,6 +396,9 @@
   </data>
   <data name="&gt;&gt;comboBox1.Type" xml:space="preserve">
     <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cbChapterName.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>12, 3, 3, 3</value>
   </data>
   <data name="combineToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>124, 22</value>
@@ -409,8 +415,8 @@
   <data name="cbChapterName.TabIndex" type="System.Int32, mscorlib">
     <value>21</value>
   </data>
-  <data name="dataGridView1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>556, 351</value>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -427,8 +433,8 @@
   <data name="savingType.Items5" xml:space="preserve">
     <value>CUE</value>
   </data>
-  <data name="cbPostFix.TabIndex" type="System.Int32, mscorlib">
-    <value>32</value>
+  <data name="savingType.Items4" xml:space="preserve">
+    <value>TsMuxeR Meta</value>
   </data>
   <data name="savingType.Items3" xml:space="preserve">
     <value>Time Codes</value>
@@ -442,8 +448,8 @@
   <data name="&gt;&gt;statusStrip1.Type" xml:space="preserve">
     <value>System.Windows.Forms.StatusStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;comboBox1.Name" xml:space="preserve">
+    <value>comboBox1</value>
   </data>
   <data name="dataGridView1.ToolTip" xml:space="preserve">
     <value />
@@ -487,11 +493,11 @@
   <data name="cTimeCode.HeaderText" xml:space="preserve">
     <value> 时间点 </value>
   </data>
-  <data name="&gt;&gt;comboBox2.ZOrder" xml:space="preserve">
-    <value>8</value>
+  <data name="&gt;&gt;xmlLang.Name" xml:space="preserve">
+    <value>xmlLang</value>
   </data>
-  <data name="&gt;&gt;cbAutoGenName.Parent" xml:space="preserve">
-    <value>panel1</value>
+  <data name="cbPostFix.TabIndex" type="System.Int32, mscorlib">
+    <value>32</value>
   </data>
   <data name="btnSave.Text" xml:space="preserve">
     <value>保存</value>
@@ -523,6 +529,9 @@
   <data name="cbChapterName.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
+  <data name="btnTrans.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
   <data name="&gt;&gt;btnLog.ZOrder" xml:space="preserve">
     <value>9</value>
   </data>
@@ -538,11 +547,11 @@
   <data name="cbRound.Text" xml:space="preserve">
     <value>帧数取整 </value>
   </data>
+  <data name="comboBox2.ToolTip" xml:space="preserve">
+    <value />
+  </data>
   <data name="&gt;&gt;numericUpDown1.Parent" xml:space="preserve">
     <value>panel1</value>
-  </data>
-  <data name="btnSave.Location" type="System.Drawing.Point, System.Drawing">
-    <value>109, 36</value>
   </data>
   <data name="lbFormat.TabIndex" type="System.Int32, mscorlib">
     <value>27</value>
@@ -553,6 +562,9 @@
   <data name="&gt;&gt;cChapterName.Name" xml:space="preserve">
     <value>cChapterName</value>
   </data>
+  <data name="&gt;&gt;appendToolStripMenuItem.Name" xml:space="preserve">
+    <value>appendToolStripMenuItem</value>
+  </data>
   <data name="btnLoad.Location" type="System.Drawing.Point, System.Drawing">
     <value>12, 36</value>
   </data>
@@ -562,8 +574,8 @@
   <data name="&gt;&gt;cbChapterName.Parent" xml:space="preserve">
     <value>panel1</value>
   </data>
-  <data name="&gt;&gt;textBoxExpression.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="lbShift.Text" xml:space="preserve">
+    <value>平移章节号</value>
   </data>
   <data name="&gt;&gt;btnLoad.Type" xml:space="preserve">
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -586,8 +598,8 @@
   <data name="&gt;&gt;textBoxExpression.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="&gt;&gt;savingType.Name" xml:space="preserve">
-    <value>savingType</value>
+  <data name="&gt;&gt;cbPostFix.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;cTimeCode.Type" xml:space="preserve">
     <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -607,8 +619,8 @@
   <data name="combineMenuStrip.ToolTip" xml:space="preserve">
     <value />
   </data>
-  <data name="btnTrans.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 4, 4, 4</value>
+  <data name="&gt;&gt;savingType.Name" xml:space="preserve">
+    <value>savingType</value>
   </data>
   <data name="&gt;&gt;deviationMenuStrip.Name" xml:space="preserve">
     <value>deviationMenuStrip</value>
@@ -634,7 +646,7 @@
   <data name="&gt;&gt;combineToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="comboBox2.ToolTip" xml:space="preserve">
+  <data name="loadMenuStrip.ToolTip" xml:space="preserve">
     <value />
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -705,9 +717,6 @@
   <data name="textBoxExpression.Location" type="System.Drawing.Point, System.Drawing">
     <value>303, 37</value>
   </data>
-  <data name="cOrder.HeaderText" xml:space="preserve">
-    <value>#</value>
-  </data>
   <data name="&gt;&gt;loadMenuStrip.Type" xml:space="preserve">
     <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -737,6 +746,9 @@
   </data>
   <data name="comboBox1.Items4" xml:space="preserve">
     <value>RESER / VED</value>
+  </data>
+  <data name="statusStrip1.TabIndex" type="System.Int32, mscorlib">
+    <value>33</value>
   </data>
   <data name="lbShift.ToolTip" xml:space="preserve">
     <value />
@@ -800,9 +812,6 @@
   </data>
   <data name="lbShift.TabIndex" type="System.Int32, mscorlib">
     <value>17</value>
-  </data>
-  <data name="&gt;&gt;cbRound.Parent" xml:space="preserve">
-    <value>$this</value>
   </data>
   <data name="btnPreview.Location" type="System.Drawing.Point, System.Drawing">
     <value>500, 9</value>
@@ -891,8 +900,8 @@
   <data name="btnTrans.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
   </data>
-  <data name="xmlLang.TabIndex" type="System.Int32, mscorlib">
-    <value>29</value>
+  <data name="&gt;&gt;tsProgressBar1.Name" xml:space="preserve">
+    <value>tsProgressBar1</value>
   </data>
   <data name="cbRound.Size" type="System.Drawing.Size, System.Drawing">
     <value>76, 21</value>
@@ -915,8 +924,8 @@
   <data name="comboBox1.Items3" xml:space="preserve">
     <value>30000 / 1001</value>
   </data>
-  <data name="&gt;&gt;cbPostFix.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="cOrder.HeaderText" xml:space="preserve">
+    <value>#</value>
   </data>
   <data name="&gt;&gt;toolTip1.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolTip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -936,9 +945,6 @@
   <data name="&gt;&gt;panel1.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="&gt;&gt;cbRound.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="savingType.ToolTip" xml:space="preserve">
     <value />
   </data>
@@ -957,8 +963,8 @@
   <data name="lbPath.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
   </data>
-  <data name="&gt;&gt;lbPath.ZOrder" xml:space="preserve">
-    <value>12</value>
+  <data name="&gt;&gt;cbRound.Parent" xml:space="preserve">
+    <value>$this</value>
   </data>
   <data name="&gt;&gt;panel1.Type" xml:space="preserve">
     <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -1002,11 +1008,11 @@
   <data name="tsBtnExpand.Text" xml:space="preserve">
     <value>toolStripDropDownButton1</value>
   </data>
+  <data name="&gt;&gt;textBoxExpression.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="cbChapterName.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
-  </data>
-  <data name="&gt;&gt;savingType.Parent" xml:space="preserve">
-    <value>panel1</value>
   </data>
   <data name="&gt;&gt;lbShift.Name" xml:space="preserve">
     <value>lbShift</value>
@@ -1014,11 +1020,14 @@
   <data name="btnTrans.Location" type="System.Drawing.Point, System.Drawing">
     <value>538, 9</value>
   </data>
+  <data name="dataGridView1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>556, 351</value>
+  </data>
   <data name="&gt;&gt;cbRound.ZOrder" xml:space="preserve">
     <value>9</value>
   </data>
-  <data name="&gt;&gt;comboBox1.Name" xml:space="preserve">
-    <value>comboBox1</value>
+  <data name="lbXmlLang.TabIndex" type="System.Int32, mscorlib">
+    <value>30</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
     <value>580, 533</value>
@@ -1027,9 +1036,6 @@
     <value>11</value>
   </data>
   <data name="createZonestMenuStrip.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="loadMenuStrip.ToolTip" xml:space="preserve">
     <value />
   </data>
   <data name="&gt;&gt;folderBrowserDialog1.Name" xml:space="preserve">
@@ -1041,8 +1047,8 @@
   <data name="folderBrowserDialog1.Description" xml:space="preserve">
     <value>请设置所要保存的位置</value>
   </data>
-  <data name="savingType.Items4" xml:space="preserve">
-    <value>TsMuxeR Meta</value>
+  <data name="&gt;&gt;cbRound.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="cbShift.Size" type="System.Drawing.Size, System.Drawing">
     <value>100, 21</value>
@@ -1059,12 +1065,6 @@
   <data name="btnSave.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
   </data>
-  <data name="cbChapterName.Size" type="System.Drawing.Size, System.Drawing">
-    <value>108, 21</value>
-  </data>
-  <data name="&gt;&gt;tsProgressBar1.Name" xml:space="preserve">
-    <value>tsProgressBar1</value>
-  </data>
   <data name="&gt;&gt;btnPreview.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
@@ -1080,11 +1080,11 @@
   <data name="&gt;&gt;toolTip1.Name" xml:space="preserve">
     <value>toolTip1</value>
   </data>
-  <data name="lbShift.Text" xml:space="preserve">
-    <value>平移章节号</value>
+  <data name="&gt;&gt;comboBox2.ZOrder" xml:space="preserve">
+    <value>8</value>
   </data>
-  <data name="statusStrip1.TabIndex" type="System.Int32, mscorlib">
-    <value>33</value>
+  <data name="btnSave.Location" type="System.Drawing.Point, System.Drawing">
+    <value>109, 36</value>
   </data>
   <data name="panel1.Location" type="System.Drawing.Point, System.Drawing">
     <value>12, 440</value>
@@ -1104,8 +1104,8 @@
   <data name="&gt;&gt;creatZonesToolStripMenuItem.Name" xml:space="preserve">
     <value>creatZonesToolStripMenuItem</value>
   </data>
-  <data name="&gt;&gt;appendToolStripMenuItem.Name" xml:space="preserve">
-    <value>appendToolStripMenuItem</value>
+  <data name="cbChapterName.Size" type="System.Drawing.Size, System.Drawing">
+    <value>108, 21</value>
   </data>
   <data name="lbXmlLang.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -1131,8 +1131,8 @@
   <data name="numericUpDown1.ToolTip" xml:space="preserve">
     <value />
   </data>
-  <data name="&gt;&gt;xmlLang.Name" xml:space="preserve">
-    <value>xmlLang</value>
+  <data name="xmlLang.TabIndex" type="System.Int32, mscorlib">
+    <value>29</value>
   </data>
   <data name="btnPreview.ToolTip" xml:space="preserve">
     <value />

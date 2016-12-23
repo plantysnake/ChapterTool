@@ -16,7 +16,7 @@ namespace ChapterTool.Util
         {
             System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
 
-            string name = "MainForm";
+            string name = "Form1";
 
             var frm = (Form)Assembly.Load("CameraTest").CreateInstance(name);
             if (frm == null) return;
@@ -37,13 +37,20 @@ namespace ChapterTool.Util
         public static void SetLang(string lang, Form form, Type formType)
         {
             System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
-            if (form != null)
-            {
-                System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(formType);
-                resources.ApplyResources(form, "$this");
-                AppLang(form, resources);
-            }
+            if (form == null) return;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(formType);
+            resources.ApplyResources(form, "$this");
+            AppLang(form, resources);
         }
+
+        public static void SetLang(string lang, Control control, Type formType)
+        {
+            //System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
+            if (control == null) return;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(formType);
+            AppLang(control, resources);
+        }
+
         #endregion
 
         #region AppLang for control
@@ -54,25 +61,32 @@ namespace ChapterTool.Util
         /// <param name="resources"></param>
         private static void AppLang(Control control, System.ComponentModel.ComponentResourceManager resources)
         {
-            MenuStrip menuStrip = control as MenuStrip;
+            var menuStrip = control as MenuStrip;
             if (menuStrip != null)
             {
                 resources.ApplyResources(menuStrip, menuStrip.Name);
-                if (menuStrip.Items.Count > 0)
+                foreach (ToolStripMenuItem c in menuStrip.Items)
                 {
-                    foreach (ToolStripMenuItem c in menuStrip.Items)
-                    {
-                        AppLang(c, resources);
-                    }
+                    AppLang(c, resources);
                 }
             }
 
-            DataGridView gridView = control as DataGridView;
+            var contextMenuStrip = control as ContextMenuStrip;
+            if (contextMenuStrip != null)
+            {
+                resources.ApplyResources(contextMenuStrip, contextMenuStrip.Name);
+                foreach (ToolStripMenuItem c in contextMenuStrip.Items)
+                {
+                    AppLang(c, resources);
+                }
+            }
+
+            var gridView = control as DataGridView;
             if (gridView != null)
             {
-                foreach (DataGridViewColumn column in gridView.Columns)
+                foreach (DataGridViewColumn c in gridView.Columns)
                 {
-                    resources.ApplyResources(column, column.Name);
+                    resources.ApplyResources(c, c.Name);
                 }
             }
 
@@ -94,7 +108,6 @@ namespace ChapterTool.Util
         {
             if (item == null) return;
             resources.ApplyResources(item, item.Name);
-            if (item.DropDownItems.Count <= 0) return;
             foreach (ToolStripMenuItem c in item.DropDownItems)
             {
                 AppLang(c, resources);

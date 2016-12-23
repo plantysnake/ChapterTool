@@ -117,8 +117,24 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="loadMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>144, 48</value>
+  </data>
   <data name="btnLoad.Text" xml:space="preserve">
     <value>Load</value>
+  </data>
+  <data name="reloadToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="reloadToolStripMenuItem.Text" xml:space="preserve">
+    <value>Reload file</value>
+  </data>
+  <data name="appendToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="appendToolStripMenuItem.Text" xml:space="preserve">
+    <value>Append file</value>
   </data>
   <data name="btnSave.Text" xml:space="preserve">
     <value>Save</value>
@@ -129,7 +145,9 @@
   <data name="cbAutoGenName.ToolTip" xml:space="preserve">
     <value>Rename the chapter name from Chapter 01</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="deviationMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>170, 26</value>
+  </data>
   <data name="cbRound.Size" type="System.Drawing.Size, System.Drawing">
     <value>62, 21</value>
   </data>
@@ -137,7 +155,13 @@
     <value>Round</value>
   </data>
   <data name="cbRound.ToolTip" xml:space="preserve">
-    <value>You can edit the error range in right-click menu</value>
+    <value>You can edit the tolerance scope in right-click menu</value>
+  </data>
+  <data name="tsmAccuracy.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 22</value>
+  </data>
+  <data name="tsmAccuracy.Text" xml:space="preserve">
+    <value>tolerance scope</value>
   </data>
   <data name="lbShift.Size" type="System.Drawing.Size, System.Drawing">
     <value>72, 17</value>
@@ -159,6 +183,15 @@
   </data>
   <data name="cbChapterName.ToolTip" xml:space="preserve">
     <value>It will remain in effect until unchecked</value>
+  </data>
+  <data name="combineMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>164, 26</value>
+  </data>
+  <data name="combineToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 22</value>
+  </data>
+  <data name="combineToolStripMenuItem.Text" xml:space="preserve">
+    <value>Merge chapter</value>
   </data>
   <data name="cbPostFix.ToolTip" xml:space="preserve">
     <value>Inverse Polish expression</value>
@@ -193,6 +226,21 @@
   </data>
   <data name="lbXmlLang.Text" xml:space="preserve">
     <value>Lang</value>
+  </data>
+  <data name="createZonestMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 48</value>
+  </data>
+  <data name="creatZonesToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>189, 22</value>
+  </data>
+  <data name="creatZonesToolStripMenuItem.Text" xml:space="preserve">
+    <value>Create Zones</value>
+  </data>
+  <data name="ShiftForwardToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>189, 22</value>
+  </data>
+  <data name="ShiftForwardToolStripMenuItem.Text" xml:space="preserve">
+    <value>Forward translation</value>
   </data>
   <data name="tsBtnExpand.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

@@ -45,8 +45,14 @@ namespace ChapterTool.Forms
         public Form1()
         {
             InitializeComponent();
-            //LanguageHelper.SetLang("en-US", this, typeof(Form1));
             AddCommand();
+            /*
+            LanguageHelper.SetLang("en-US", this, typeof(Form1));
+            LanguageHelper.SetLang("en-US", deviationMenuStrip, typeof(Form1));
+            LanguageHelper.SetLang("en-US", combineMenuStrip, typeof(Form1));
+            LanguageHelper.SetLang("en-US", createZonestMenuStrip, typeof(Form1));
+            LanguageHelper.SetLang("en-US", loadMenuStrip, typeof(Form1));
+            */
         }
 
         public Form1(string args)
