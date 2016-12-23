@@ -67,6 +67,15 @@ namespace ChapterTool.Util
                 }
             }
 
+            DataGridView gridView = control as DataGridView;
+            if (gridView != null)
+            {
+                foreach (DataGridViewColumn column in gridView.Columns)
+                {
+                    resources.ApplyResources(column, column.Name);
+                }
+            }
+
             foreach (Control c in control.Controls)
             {
                 resources.ApplyResources(c, c.Name);
