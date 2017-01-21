@@ -205,8 +205,8 @@ namespace ChapterTool.Util.ChapterData
             int state = 0, beginPos = 0;
             for (int i = 0; i < length; ++i)
             {
-                if ((buffer[i] >= 0x41) && (buffer[i] <= 0x5A))
-                    buffer[i] -= 0x20;
+                if (buffer[i] >= 'A' && buffer[i] <= 'Z')
+                    buffer[i] -= 'a' - 'A';
                 switch ((char)buffer[i])
                 {
                 case 'c': state = 1; break;//C
@@ -253,16 +253,18 @@ namespace ChapterTool.Util.ChapterData
             var cueLength = endPos - beginPos + 1;
             if (cueLength <= 10) return string.Empty;
             string cueSheet = Encoding.UTF8.GetString(buffer, beginPos, cueLength);
-            Debug.WriteLine(cueSheet);
+            //Debug.WriteLine(cueSheet);
 
             return cueSheet;
         }
+
+        private const long SizeThreshold = 1 << 20;
 
         private static string GetCueFromTak(string takPath)
         {
             using (var fs = File.Open(takPath, FileMode.Open, FileAccess.Read))
             {
-                if (fs.Length < 1 << 20)// 小于1M，文档太小了
+                if (fs.Length < SizeThreshold)
                     return string.Empty;
                 var header = new byte[4];
                 fs.Read(header, 0, 4);
@@ -277,48 +279,10 @@ namespace ChapterTool.Util.ChapterData
 
         private static string GetCueFromFlac(string flacPath)
         {
-            using (var fs = File.Open(flacPath, FileMode.Open, FileAccess.Read))
-            {
-                if (fs.Length < 1 << 20)// 小于1M，文档太小了
-                    return string.Empty;
-                var header = new byte[4];
-                fs.Read(header, 0, 4);
-                if (Encoding.ASCII.GetString(header, 0, 4) != "fLaC")
-                    throw new InvalidDataException($"Except an flac but get an {Encoding.ASCII.GetString(header, 0, 4)}");
-
-                var buffer = new byte[1];
-                //4个字节的METADATA_BLOCK_HEADER
-                do
-                {
-                    fs.Read(header, 0, 4);
-                    //读取BLOCK长度
-                    int length = (header[1] << 16) | (header[2] << 8) | header[3];
-                    //解析
-                    //检查最高位是否为1
-                    if ((header[0] & 0x80) == 0x80)
-                    {
-                        //最后一个METADATA_BLOCK
-                        if ((header[0] & 0x7F) == 0x04)//是VORBIS_COMMENT
-                        {
-                            buffer = new byte[length];
-                            //读取BLOCK DATA
-                            fs.Read(buffer, 0, length);
-                        }
-                        break;
-                    }
-                    //不是最后一个METADATA_BLOCK
-                    if ((header[0] & 0x7F) == 0x04)//是VORBIS_COMMENT
-                    {
-                        buffer = new byte[length];
-                        //读取BLOCK DATA
-                        fs.Read(buffer, 0, length);
-                        break;
-                    }
-                    //移动文件指针
-                    fs.Seek(length, SeekOrigin.Current);
-                } while (fs.Position <= 1048576L);
-                return GetCueSheet(buffer, "flac");
-            }
+            var info = FlacData.GetMetadataFromFlac(flacPath);
+            if (info.VorbisComment.ContainsKey("cuesheet"))
+                return info.VorbisComment["cuesheet"];
+            return string.Empty;
         }
 
         public int Count { get; } = 1;
