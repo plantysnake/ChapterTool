@@ -31,9 +31,7 @@ namespace Knuckleball
         private List<Chapter> chapters = new List<Chapter>();
         private HashSet<Guid> hashedIndex = new HashSet<Guid>();
 
-        public delegate void LogEventHandler(string message);
-
-        public static event LogEventHandler OnLog;
+        public static event Action<string> OnLog;
 
         /// <summary>
         /// Prevents a default instance of the <see cref="ChapterList"/> class from being created.

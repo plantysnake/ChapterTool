@@ -29,9 +29,7 @@ namespace ChapterTool.Util.ChapterData
         private static readonly Regex RTimeCodeLine = new Regex(@"^\s*CHAPTER\d+\s*=\s*(.*)", RegexOptions.Compiled);
         private static readonly Regex RNameLine = new Regex(@"^\s*CHAPTER\d+NAME\s*=\s*(?<chapterName>.*)", RegexOptions.Compiled);
 
-        public delegate void LogEventHandler(string message);
-
-        public static event LogEventHandler OnLog;
+        public static event Action<string> OnLog;
 
         private enum LineState
         {

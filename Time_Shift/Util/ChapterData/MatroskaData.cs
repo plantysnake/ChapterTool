@@ -33,9 +33,7 @@ namespace ChapterTool.Util.ChapterData
 
         private readonly string _mkvextractPath;
 
-        public delegate void LogEventHandler(string message);
-
-        public static event LogEventHandler OnLog;
+        public static event Action<string> OnLog;
 
         public MatroskaData()
         {
