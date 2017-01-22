@@ -10,11 +10,11 @@ namespace ChapterTool.Util.ChapterData
 {
     public class FlacInfo
     {
-        public long RawLength     { get; set; }
-        public long TrueLength    { get; }
-        public double CompressRate { get; }
-        public bool HasCover       { get; set; }
-        public string Encoder      { get; set; }
+        public long RawLength                           { get; set; }
+        public long TrueLength                          { get; set; }
+        public double CompressRate => TrueLength / (double)RawLength;
+        public bool HasCover                            { get; set; }
+        public string Encoder                           { get; set; }
         public Dictionary<string, string> VorbisComment { get; set; }
 
         public FlacInfo()
@@ -47,7 +47,7 @@ namespace ChapterTool.Util.ChapterData
             using (var fs = File.Open(flacPath, FileMode.Open, FileAccess.Read))
             {
                 if (fs.Length < SizeThreshold) return new FlacInfo();
-                FlacInfo info = new FlacInfo();
+                FlacInfo info = new FlacInfo {TrueLength = fs.Length};
                 var header = fs.ReadBytes(4);
                 if (Encoding.ASCII.GetString(header, 0, 4) != "fLaC")
                     throw new InvalidDataException($"Except an flac but get an {Encoding.ASCII.GetString(header, 0, 4)}");
@@ -61,7 +61,7 @@ namespace ChapterTool.Util.ChapterData
                     bool lastMetadataBlock = blockHeader >> 31 == 0x1;
                     BlockType blockType = (BlockType)((blockHeader >> 24) & 0x7f);
                     int length = (int) (blockHeader & 0xffffff);
-                    info.RawLength += length;
+                    info.TrueLength -= length;
                     OnLog?.Invoke($"|+{blockType} with Length: {length}");
                     switch (blockType)
                     {
@@ -103,7 +103,7 @@ namespace ChapterTool.Util.ChapterData
             int bitPerSample = (int) br.GetBits(5)+1;
             int totalSample = (int) br.GetBits(36);
             var md5 = fs.ReadBytes(16);
-            info.RawLength += channelCount * bitPerSample * totalSample;
+            info.RawLength = channelCount * bitPerSample / 8 * totalSample;
             OnLog?.Invoke($" | minimum block size: {minBlockSize}, maximum block size: {maxBlockSize}");
             OnLog?.Invoke($" | minimum frame size: {minFrameSize}, maximum frame size: {maxFrameSize}");
             OnLog?.Invoke($" | Sample rate: {sampleRate}Hz, bits per sample: {bitPerSample}-bit");
@@ -148,7 +148,7 @@ namespace ChapterTool.Util.ChapterData
             int indexedColorCount = (int) fs.ReadUInt();
             int pictureDataLength = (int) fs.ReadUInt();
             fs.Seek(pictureDataLength, SeekOrigin.Current);
-            info.RawLength += pictureDataLength;
+            info.TrueLength -= pictureDataLength;
             info.HasCover = true;
             OnLog?.Invoke($" | picture type: {mimeType}");
             OnLog?.Invoke($" | attribute: {pictureWidth}px*{pictureHeight}px@{colorDepth}-bit");
@@ -177,7 +177,7 @@ namespace ChapterTool.Util.ChapterData
             if (!littleEndian) buffer = buffer.Reverse().ToArray();
             return BitConverter.ToUInt32(buffer, 0);
         }
-        
+
         private static byte[] ReadBytes(this Stream fs, int length)
         {
             var ret = new byte[length];
