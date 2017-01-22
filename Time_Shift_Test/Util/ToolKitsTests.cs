@@ -1,10 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ChapterTool.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FluentAssertions;
 
 namespace ChapterTool.Util.Tests
 {
@@ -31,8 +29,8 @@ namespace ChapterTool.Util.Tests
                 "04:15:01.456",
                 "05:00:00.254"
             };
-            Assert.IsTrue(tsList.Select(item => item.Time2String()).SequenceEqual(expectList));
-            Assert.IsTrue(expectList.Select(item => item.ToTimeSpan()).SequenceEqual(tsList));
+            tsList.Select(item => item.Time2String()).Should().Equal(expectList);
+            expectList.Select(item => item.ToTimeSpan()).Should().Equal(tsList);
         }
 
         [TestMethod()]
@@ -41,7 +39,7 @@ namespace ChapterTool.Util.Tests
             var frameRate = new List<double> { 0, 24000D / 1001, 24D, 25D, 30000D / 1001, 50D, 60000D / 1001 };
             var expected = new List<int> {0, 1, 2, 3, 4, 6, 7};
             frameRate.Select(ToolKits.ConvertFr2Index).ToList().ForEach(Console.Write);
-            Assert.IsTrue(frameRate.Select(ToolKits.ConvertFr2Index).SequenceEqual(expected));
+            frameRate.Select(ToolKits.ConvertFr2Index).Should().Equal(expected);
         }
     }
 }

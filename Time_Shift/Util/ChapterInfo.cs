@@ -17,6 +17,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
+
 using System;
 using System.IO;
 using System.Xml;
@@ -70,11 +71,11 @@ namespace ChapterTool.Util
         {
             var row = new DataGridViewRow
             {
-                Tag = Chapters[index],  //绑定对象，以便删除行时可以得知对应的 Chapter
-                DefaultCellStyle =　{ BackColor = (Chapters[index].Number-1)%2 == 0 ? EVEN_COLOR : ODD_COLOR }
+                Tag = Chapters[index], //绑定对象，以便删除行时可以得知对应的 Chapter
+                DefaultCellStyle = {BackColor = (Chapters[index].Number - 1)%2 == 0 ? EVEN_COLOR : ODD_COLOR}
             };
             row.Cells.Add(new DataGridViewTextBoxCell {Value = $"{Chapters[index].Number:D2}"});
-            row.Cells.Add(new DataGridViewTextBoxCell {Value = Time2String(Chapters[index]) });
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = Time2String(Chapters[index])});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? ChapterName.Get(index + 1) : Chapters[index].Name});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].FramsInfo});
             return row;
@@ -124,7 +125,7 @@ namespace ChapterTool.Util
                         Name   = name.Get()
                     });
                 }
-                duration += chapterClip.Duration;//每次加上当前段的总时长作为下一段位移的基准
+                duration += chapterClip.Duration; //每次加上当前段的总时长作为下一段位移的基准
             }
             fullChapter.Duration = duration;
             return fullChapter;
@@ -140,12 +141,16 @@ namespace ChapterTool.Util
             for (var i = 0; i < Chapters.Count; i++)
             {
                 Chapter c = Chapters[i];
-                double frames = c.Time.TotalSeconds * FramesPerSecond;
-                Chapters[i] = new Chapter { Name = c.Name, Time = new TimeSpan((long)Math.Round(frames / fps * TimeSpan.TicksPerSecond)) };
+                double frames = c.Time.TotalSeconds*FramesPerSecond;
+                Chapters[i] = new Chapter
+                {
+                    Name = c.Name,
+                    Time = new TimeSpan((long) Math.Round(frames/fps*TimeSpan.TicksPerSecond))
+                };
             }
-            double totalFrames = Duration.TotalSeconds * FramesPerSecond;
-            Duration = new TimeSpan((long)Math.Round(totalFrames / fps * TimeSpan.TicksPerSecond));
-            FramesPerSecond = fps;
+            double totalFrames = Duration.TotalSeconds*FramesPerSecond;
+            Duration           = new TimeSpan((long) Math.Round(totalFrames/fps*TimeSpan.TicksPerSecond));
+            FramesPerSecond    = fps;
         }
 
         #region updataInfo
@@ -176,9 +181,9 @@ namespace ChapterTool.Util
         public void UpdataInfo(string chapterNameTemplate)
         {
             if (string.IsNullOrWhiteSpace(chapterNameTemplate)) return;
-            using (var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator())//移除首尾多余空行
+            using (var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator()) //移除首尾多余空行
             {
-                Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name.Trim('\r'));//确保无多余换行符
+                Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name.Trim('\r')); //确保无多余换行符
             }
         }
 
@@ -206,6 +211,73 @@ namespace ChapterTool.Util
         public void SaveText(string filename, bool autoGenName) => File.WriteAllText(filename, GetText(autoGenName), Encoding.UTF8);
 
         public void SaveQpfile(string filename) => File.WriteAllLines(filename, Chapters.Select(c => c.FramsInfo.ToString().Replace("*", "I").Replace("K", "I")).ToArray());
+
+        public static void Chapter2Qpfile(string ipath, string opath, double fps, string tcfile = "")
+        {
+            var ilines = File.ReadAllLines(ipath);
+            string[] tclines = null;
+            var olines = new List<string>();
+            int tcindex = 0, tcframe = 0;
+            if (!string.IsNullOrEmpty(tcfile))
+            {
+                tclines = File.ReadAllLines(tcfile);
+                tcindex = 0;
+                foreach (var tcline in tclines)
+                {
+                    if (char.IsDigit(tcline.Trim().First()))
+                    {
+                        tcframe = 0;
+                        break;
+                    }
+                    ++tcindex;
+                    if (tcindex >= tclines.Length)
+                        throw new IndexOutOfRangeException("TC index out of range! TC file and Chapter file mismatch?");
+                }
+            }
+
+            foreach (var line in ilines.Select(i => i.Trim().ToLower()))
+            {
+                if (!line.StartsWith("chapter")) continue;
+                var segments = line.Substring(7).Split('=');
+                if (segments.Length < 2) continue;
+                if (!segments[0].All(char.IsDigit)) continue;
+                int index;
+                if (int.TryParse(segments[0], out index)) continue;
+                var times = segments[1].Split(':');
+                if (times.Length > 3) continue;
+                var time = 0.0;
+                try
+                {
+                    time = times.Aggregate(time, (current, t) => current*60 + double.Parse(t));
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+                int frame;
+                if (string.IsNullOrEmpty(tcfile)) frame = (int) (time + 0.001*fps);
+                else
+                {
+                    var timeLower = (time - 0.0005)*1000;
+                    while (true)
+                    {
+                        if (tclines != null && double.Parse(tclines[tcindex]) >= timeLower) break;
+                        while (true)
+                        {
+                            ++tcindex;
+                            if (tclines != null && tcindex >= tclines.Length)
+                                throw new IndexOutOfRangeException(
+                                    "TC index out of range! TC file and Chapter file mismatch?");
+                            if (tclines != null && char.IsDigit(tclines[tcindex].Trim().First())) break;
+                        }
+                        ++tcframe;
+                    }
+                    frame = tcframe;
+                }
+                olines.Add($"{frame} I");
+            }
+            File.WriteAllLines(opath, olines);
+        }
 
         public void SaveCelltimes(string filename) => File.WriteAllLines(filename, Chapters.Select(c => ((long) Math.Round(c.Time.TotalSeconds*FramesPerSecond)).ToString()).ToArray());
 

@@ -52,12 +52,11 @@ namespace ChapterTool.Util.ChapterData
 
         private void ParseMpls()
         {
-            int playlistMarkSectionStartAddress, playItemNumber, playItemEntries;
-            ParseHeader(out playlistMarkSectionStartAddress, out playItemNumber, out playItemEntries);
+            ParseHeader(out int playlistMarkSectionStartAddress, out int playItemNumber, out int playItemEntries);
             for (var playItemOrder = 0; playItemOrder < playItemNumber; playItemOrder++)
             {
-                int lengthOfPlayItem, itemStartAdress, streamCount;
-                ParsePlayItem(playItemEntries, out lengthOfPlayItem, out itemStartAdress, out streamCount);
+
+                ParsePlayItem(playItemEntries, out int lengthOfPlayItem, out int itemStartAdress, out int streamCount);
                 for (int streamOrder = 0; streamOrder < streamCount; streamOrder++)
                 {
                     ParseStream(itemStartAdress, streamOrder, playItemOrder);
@@ -84,7 +83,7 @@ namespace ChapterTool.Util.ChapterData
 
         private bool ParsePlayItem(int playItemEntries, out int lengthOfPlayItem, out int itemStartAdress, out int streamCount)
         {
-            bool mulitAngle           = false;
+            bool mulitAngle      = false;
             lengthOfPlayItem     = Byte2Int16(_data, playItemEntries);
             var bytes            = new byte[lengthOfPlayItem + 2];
             Array.Copy(_data, playItemEntries, bytes, 0, lengthOfPlayItem + 2);
@@ -197,7 +196,7 @@ namespace ChapterTool.Util.ChapterData
 
         public ChapterInfo ToChapterInfo(int index, bool combineChapter)
         {
-            if (index > ChapterClips.Count && !combineChapter)
+            if (index >= ChapterClips.Count && !combineChapter)
             {
                 throw new IndexOutOfRangeException("Index of Video Clip out of range");
             }
@@ -233,6 +232,19 @@ namespace ChapterTool.Util.ChapterData
         }
     }
 
+    public class Clip
+    {
+        public string Name { get; set; }
+        public List<int> TimeStamp { get; } = new List<int>();
+        public int Fps { get; set; }
+        public int Length { get; set; }
+        public int RelativeTimeIn { get; set; }
+        public int RelativeTimeOut { get; set; }
+        public int TimeIn { get; set; }
+        public int TimeOut { get; set; }
+        public override string ToString() => $"{Name} - {MplsData.Pts2Time(Length)}";
+    }
+
     internal static class StreamAttribute
     {
         public delegate void LogEventHandler(string message);
@@ -242,8 +254,7 @@ namespace ChapterTool.Util.ChapterData
         public static void LogStreamAttributes(byte[] stream, string clipName)
         {
             var streamCodingType = stream[0x0b];
-            string streamCoding;
-            var result = StreamCoding.TryGetValue(streamCodingType, out streamCoding);
+            var result = StreamCoding.TryGetValue(streamCodingType, out string streamCoding);
             if (!result) streamCoding = "und";
             OnLog?.Invoke($"Stream[{clipName}] Type: {streamCoding}");
             if (0x01 != streamCodingType && 0x02 != streamCodingType &&

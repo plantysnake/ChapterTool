@@ -28,7 +28,7 @@ namespace ChapterTool.Forms
     public partial class FormPreview : Form
     {
         private Point _mainPos;
-        private Form1 _mainWindow;
+        private readonly Form1 _mainWindow;
 
         public FormPreview(string text, Form1 mainWindow)
         {
@@ -37,7 +37,9 @@ namespace ChapterTool.Forms
             _mainWindow    = mainWindow;
             _mainPos       = mainWindow.Location;
             ScrollBarSet();
-            Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+
+            _mainWindow.Move += Form1_Move;
         }
 
         private void ScrollBarSet()
@@ -60,7 +62,6 @@ namespace ChapterTool.Forms
 
         private void cTextBox1_DoubleClick(object sender, EventArgs e) => Close();
 
-
         private void FormPreview_Load(object sender, EventArgs e)
         {
             _mainPos.X = _mainPos.X - Size.Width;
@@ -73,10 +74,14 @@ namespace ChapterTool.Forms
             Hide();
         }
 
-
         private void FormPreview_Activated(object sender, EventArgs e)
         {
             //_mainWindow.Activate();
+        }
+
+        private void Form1_Move(object sender, EventArgs e)
+        {
+            this.Location = new Point(_mainWindow.Location.X - Width, _mainWindow.Location.Y);
         }
     }
 }

@@ -92,7 +92,7 @@ namespace ChapterTool.Util
 
             form.StartPosition = FormStartPosition.CenterScreen;
 
-            var lblPrompt = new System.Windows.Forms.Label
+            var lblPrompt = new Label
             {
                 Parent = form,
                 AutoSize = true,
@@ -101,7 +101,7 @@ namespace ChapterTool.Util
                 Text = prompt
             };
 
-            var edInput = new System.Windows.Forms.TextBox
+            var edInput = new TextBox
             {
                 Parent = form,
                 Left = lblPrompt.Left,
@@ -116,7 +116,7 @@ namespace ChapterTool.Util
             //Command buttons should be 50x14 dlus
             Size buttonSize = ScaleSize(new Size(50, 14), dialogUnits.Width / 4, dialogUnits.Height / 8);
 
-            System.Windows.Forms.Button bbOk = new System.Windows.Forms.Button
+            Button bbOk = new Button
             {
                 Parent = form,
                 Text = "OK",
@@ -126,7 +126,7 @@ namespace ChapterTool.Util
             bbOk.Location = new Point(MulDiv(38, dialogUnits.Width, 4), buttonTop);
             bbOk.Size = buttonSize;
 
-            System.Windows.Forms.Button bbCancel = new System.Windows.Forms.Button
+            Button bbCancel = new Button
             {
                 Parent = form,
                 Text = "Cancel",
@@ -141,10 +141,7 @@ namespace ChapterTool.Util
                 value = edInput.Text;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 }

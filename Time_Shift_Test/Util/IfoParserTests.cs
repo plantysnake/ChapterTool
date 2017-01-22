@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using ChapterTool.Util.ChapterData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 
 namespace ChapterTool.Util.Tests
 {
@@ -18,7 +19,7 @@ namespace ChapterTool.Util.Tests
                 var result = Regex.Match(hex, @"\d{2}");
                 if (result.Success)
                 {
-                    Assert.IsTrue(int.Parse(hex) == IfoParser.BcdToInt((byte)i));
+                    int.Parse(hex).Should().Be(IfoParser.BcdToInt((byte)i));
                     Console.Write($"[{hex}->{IfoParser.BcdToInt((byte)i):D3}] ");
                     ++validValueCount;
                 }

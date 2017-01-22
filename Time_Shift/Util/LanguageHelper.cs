@@ -15,18 +15,15 @@ namespace ChapterTool.Util
         private static void SetAllLang(string lang)
         {
             System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
-            Form frm = null;
 
-            string name = "MainForm";
+            string name = "Form1";
 
-            frm = (Form)Assembly.Load("CameraTest").CreateInstance(name);
+            var frm = (Form)Assembly.Load("CameraTest").CreateInstance(name);
+            if (frm == null) return;
 
-            if (frm != null)
-            {
-                System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager();
-                resources.ApplyResources(frm, "$this");
-                AppLang(frm, resources);
-            }
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager();
+            resources.ApplyResources(frm, "$this");
+            AppLang(frm, resources);
         }
         #endregion
 
@@ -40,13 +37,20 @@ namespace ChapterTool.Util
         public static void SetLang(string lang, Form form, Type formType)
         {
             System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
-            if (form != null)
-            {
-                System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(formType);
-                resources.ApplyResources(form, "$this");
-                AppLang(form, resources);
-            }
+            if (form == null) return;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(formType);
+            resources.ApplyResources(form, "$this");
+            AppLang(form, resources);
         }
+
+        public static void SetLang(string lang, Control control, Type formType)
+        {
+            //System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
+            if (control == null) return;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(formType);
+            AppLang(control, resources);
+        }
+
         #endregion
 
         #region AppLang for control
@@ -57,16 +61,32 @@ namespace ChapterTool.Util
         /// <param name="resources"></param>
         private static void AppLang(Control control, System.ComponentModel.ComponentResourceManager resources)
         {
-            if (control is MenuStrip)
+            var menuStrip = control as MenuStrip;
+            if (menuStrip != null)
             {
-                resources.ApplyResources(control, control.Name);
-                MenuStrip ms = (MenuStrip)control;
-                if (ms.Items.Count > 0)
+                resources.ApplyResources(menuStrip, menuStrip.Name);
+                foreach (ToolStripMenuItem c in menuStrip.Items)
                 {
-                    foreach (ToolStripMenuItem c in ms.Items)
-                    {
-                        AppLang(c, resources);
-                    }
+                    AppLang(c, resources);
+                }
+            }
+
+            var contextMenuStrip = control as ContextMenuStrip;
+            if (contextMenuStrip != null)
+            {
+                resources.ApplyResources(contextMenuStrip, contextMenuStrip.Name);
+                foreach (ToolStripMenuItem c in contextMenuStrip.Items)
+                {
+                    AppLang(c, resources);
+                }
+            }
+
+            var gridView = control as DataGridView;
+            if (gridView != null)
+            {
+                foreach (DataGridViewColumn c in gridView.Columns)
+                {
+                    resources.ApplyResources(c, c.Name);
                 }
             }
 
@@ -86,17 +106,11 @@ namespace ChapterTool.Util
         /// <param name="resources"></param>
         private static void AppLang(ToolStripMenuItem item, System.ComponentModel.ComponentResourceManager resources)
         {
-            if (item is ToolStripMenuItem)
+            if (item == null) return;
+            resources.ApplyResources(item, item.Name);
+            foreach (ToolStripMenuItem c in item.DropDownItems)
             {
-                resources.ApplyResources(item, item.Name);
-                ToolStripMenuItem tsmi = (ToolStripMenuItem)item;
-                if (tsmi.DropDownItems.Count > 0)
-                {
-                    foreach (ToolStripMenuItem c in tsmi.DropDownItems)
-                    {
-                        AppLang(c, resources);
-                    }
-                }
+                AppLang(c, resources);
             }
         }
         #endregion

@@ -289,7 +289,7 @@
     <value>Skip Update checking</value>
   </data>
   <data name="Log_Without_Admin" xml:space="preserve">
-    <value>Oh~, I'm not the administrator</value>
+    <value>Oh~, I haven't granted administrator privileges</value>
   </data>
   <data name="Log_With_Admin" xml:space="preserve">
     <value>Wow ( •̀ ω •́ )y, I can do some thing naive!</value>
@@ -326,5 +326,26 @@
   </data>
   <data name="Message_Stack" xml:space="preserve">
     <value>Save StackTrack to clipboard?</value>
+  </data>
+  <data name="Zones_Copy_To_Clip_Board" xml:space="preserve">
+    <value>Copy content to clipboard?</value>
+  </data>
+  <data name="Zones_Set_Round_First" xml:space="preserve">
+    <value>Please set to round frames mode first.</value>
+  </data>
+  <data name="Tips_Out_Of_Range" xml:space="preserve">
+    <value>Index out of range</value>
+  </data>
+  <data name="File_Filter_VTT_File" xml:space="preserve">
+    <value>WebVTT File</value>
+  </data>
+  <data name="Tips_Loading" xml:space="preserve">
+    <value>Loading, please wait…</value>
+  </data>
+  <data name="Tips_Load_Fail" xml:space="preserve">
+    <value>Load failed…</value>
+  </data>
+  <data name="Message_Need_Newer_dotNet" xml:space="preserve">
+    <value>Require .Net4.6 or higher to support all feature，no longer remind？</value>
   </data>
 </root>

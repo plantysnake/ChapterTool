@@ -576,6 +576,15 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 需要 .Net4.6 或以上版本以保证所有功能正常运作，是否不再提示？ 的本地化字符串。
+        /// </summary>
+        internal static string Message_Need_Newer_dotNet {
+            get {
+                return ResourceManager.GetString("Message_Need_Newer_dotNet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 使用 Chapter Tool 打开 .mpls 文件？ 的本地化字符串。
         /// </summary>
         internal static string Message_Open_With_CT {

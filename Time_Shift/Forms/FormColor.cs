@@ -25,11 +25,11 @@ using System.Collections.Generic;
 
 namespace ChapterTool.Forms
 {
-    public partial class Form3 : Form
+    public partial class FormColor : Form
     {
         private readonly Form1 _mainWindow;
         private readonly List<Color> _currentSetting;
-        public Form3(Form1 mainWindow)
+        public FormColor(Form1 mainWindow)
         {
             InitializeComponent();
             MaximizeBox     = false;
@@ -48,13 +48,15 @@ namespace ChapterTool.Forms
             textFront.MouseEnter += (sender, args) => toolTip1.Show(@"文字前景色", (IWin32Window)sender);
             bordBack.MouseEnter  += (sender, args) => toolTip1.Show(@"按键边框色", (IWin32Window)sender);
 
-            back.MouseLeave      += (sender, args) => toolTip1.RemoveAll();
-            textBack.MouseLeave  += (sender, args) => toolTip1.RemoveAll();
-            overBack.MouseLeave  += (sender, args) => toolTip1.RemoveAll();
-            downBack.MouseLeave  += (sender, args) => toolTip1.RemoveAll();
-            textFront.MouseLeave += (sender, args) => toolTip1.RemoveAll();
-            bordBack.MouseLeave  += (sender, args) => toolTip1.RemoveAll();
+            back.MouseLeave      += OnMouseLeave;
+            textBack.MouseLeave  += OnMouseLeave;
+            overBack.MouseLeave  += OnMouseLeave;
+            downBack.MouseLeave  += OnMouseLeave;
+            textFront.MouseLeave += OnMouseLeave;
+            bordBack.MouseLeave  += OnMouseLeave;
         }
+
+        private void OnMouseLeave(object sender, EventArgs e) => toolTip1.RemoveAll();
 
         private void SetDefault()
         {

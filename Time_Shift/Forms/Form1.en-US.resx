@@ -117,8 +117,24 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="loadMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>144, 48</value>
+  </data>
   <data name="btnLoad.Text" xml:space="preserve">
     <value>Load</value>
+  </data>
+  <data name="reloadToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="reloadToolStripMenuItem.Text" xml:space="preserve">
+    <value>Reload file</value>
+  </data>
+  <data name="appendToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="appendToolStripMenuItem.Text" xml:space="preserve">
+    <value>Append file</value>
   </data>
   <data name="btnSave.Text" xml:space="preserve">
     <value>Save</value>
@@ -126,34 +142,162 @@
   <data name="cbAutoGenName.Text" xml:space="preserve">
     <value>Auto Gen</value>
   </data>
-  <data name="cbChapterName.Text" xml:space="preserve">
-    <value>Use Template</value>
+  <data name="cbAutoGenName.ToolTip" xml:space="preserve">
+    <value>Rename the chapter name from Chapter 01</value>
   </data>
-  <data name="cbMul1k1.Text" xml:space="preserve">
-    <value>Time x 1.001</value>
+  <data name="deviationMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>170, 26</value>
+  </data>
+  <data name="cbRound.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 21</value>
   </data>
   <data name="cbRound.Text" xml:space="preserve">
     <value>Round</value>
   </data>
-  <data name="cbShift.Text" xml:space="preserve">
-    <value>Shift Time</value>
+  <data name="cbRound.ToolTip" xml:space="preserve">
+    <value>You can edit the tolerance scope in right-click menu</value>
   </data>
-  <data name="cChapterName.HeaderText" xml:space="preserve">
-    <value>Chapter Name</value>
+  <data name="tsmAccuracy.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 22</value>
   </data>
-  <data name="cFrams.HeaderText" xml:space="preserve">
-    <value>Frams</value>
+  <data name="tsmAccuracy.Text" xml:space="preserve">
+    <value>tolerance scope</value>
   </data>
-  <data name="cTimeCode.HeaderText" xml:space="preserve">
-    <value>Time Stamp</value>
-  </data>
-  <data name="lbFormat.Text" xml:space="preserve">
-    <value>Type</value>
+  <data name="lbShift.Size" type="System.Drawing.Size, System.Drawing">
+    <value>72, 17</value>
   </data>
   <data name="lbShift.Text" xml:space="preserve">
     <value>Shift Order</value>
   </data>
+  <data name="cbShift.Size" type="System.Drawing.Size, System.Drawing">
+    <value>81, 21</value>
+  </data>
+  <data name="cbShift.Text" xml:space="preserve">
+    <value>Shift Time</value>
+  </data>
+  <data name="cbChapterName.Size" type="System.Drawing.Size, System.Drawing">
+    <value>104, 21</value>
+  </data>
+  <data name="cbChapterName.Text" xml:space="preserve">
+    <value>Use Template</value>
+  </data>
+  <data name="cbChapterName.ToolTip" xml:space="preserve">
+    <value>It will remain in effect until unchecked</value>
+  </data>
+  <data name="combineMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>164, 26</value>
+  </data>
+  <data name="combineToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 22</value>
+  </data>
+  <data name="combineToolStripMenuItem.Text" xml:space="preserve">
+    <value>Merge chapter</value>
+  </data>
+  <data name="cbPostFix.ToolTip" xml:space="preserve">
+    <value>Inverse Polish expression</value>
+  </data>
+  <data name="cTimeCode.HeaderText" xml:space="preserve">
+    <value>Time Stamp</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="cTimeCode.Width" type="System.Int32, mscorlib">
+    <value>82</value>
+  </data>
+  <data name="cChapterName.HeaderText" xml:space="preserve">
+    <value>Chapter Name</value>
+  </data>
+  <data name="cChapterName.Width" type="System.Int32, mscorlib">
+    <value>98</value>
+  </data>
+  <data name="cFrams.HeaderText" xml:space="preserve">
+    <value>Frams</value>
+  </data>
+  <data name="cFrams.Width" type="System.Int32, mscorlib">
+    <value>48</value>
+  </data>
+  <data name="lbFormat.Size" type="System.Drawing.Size, System.Drawing">
+    <value>36, 17</value>
+  </data>
+  <data name="lbFormat.Text" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="lbXmlLang.Size" type="System.Drawing.Size, System.Drawing">
+    <value>36, 17</value>
+  </data>
   <data name="lbXmlLang.Text" xml:space="preserve">
     <value>Lang</value>
+  </data>
+  <data name="createZonestMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 48</value>
+  </data>
+  <data name="creatZonesToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>189, 22</value>
+  </data>
+  <data name="creatZonesToolStripMenuItem.Text" xml:space="preserve">
+    <value>Create Zones</value>
+  </data>
+  <data name="ShiftForwardToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>189, 22</value>
+  </data>
+  <data name="ShiftForwardToolStripMenuItem.Text" xml:space="preserve">
+    <value>Forward translation</value>
+  </data>
+  <data name="tsBtnExpand.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABQSURBVEhLYxgFo2AUjILhAZiAuA+IDxCBQepA6ikCQkB8
+        Doj/48EgeZA6qgB8FlLVIhjAZiFNLIIBZAtpahEMgCxYAKVHwSgYBaOALoCBAQCARx+VJacCbgAAAABJ
+        RU5ErkJggg==
+</value>
+  </data>
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAMAEBAQAAAABAAoAQAANgAAACAgEAAAAAQA6AIAAF4BAAAwMBAAAAAEAGgGAABGBAAAKAAAABAA
+        AAAgAAAAAQAEAAAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAIAAAIAAAACAgACAAAAAgACAAICA
+        AACAgIAAwMDAAAAA/wAA/wAAAP//AP8AAAD/AP8A//8AAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AACAAQAAtv0AALb9
+        AACAbQAAtv0AALb9AACAbQAAtv0AALb9AACAAQAAtv8AALb/AACA/wAA//8AAP//AAAoAAAAIAAAAEAA
+        AAABAAQAAAAAAAACAAAAAAAAAAAAABAAAAAQAAAAAAAAAAAAgAAAgAAAAICAAIAAAACAAIAAgIAAAICA
+        gADAwMAAAAD/AAD/AAAA//8A/wAAAP8A/wD//wAA////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAA///////////////////////////wAAAP8AAAD/Oc/8/znP/P85z/z/AAOc/wADnP85z/z/Oc
+        /8/znP/P8AA5z/AAOc/znP/P85z/z/Oc/8/wAAAP8AAAD/Oc///znP//85z///AA///wAP//////////
+        //////////////////8oAAAAMAAAAGAAAAABAAQAAAAAAIAEAAAAAAAAAAAAABAAAAAQAAAAAAAAAAAA
+        gAAAgAAAAICAAIAAAACAAIAAgIAAAMDAwACAgIAAAAD/AAD/AAAA//8A/wAAAP8A/wD//wAA////AAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAPAA
+        AAAADwAA8AAAAAAPAADwAAAAAA8AAPAAAAAADwAA8PDw//8PAADw8PD//w8AAPDw8P//DwAA8PDw//8P
+        AADwAAAPDw8AAPAAAA8PDwAA8AAADw8PAADwAAAPDw8AAPDw8P//DwAA8PDw//8PAADw8PD//w8AAPDw
+        8P//DwAA8AAADw8PAADwAAAPDw8AAPAAAA8PDwAA8AAADw8PAADw8PD//w8AAPDw8P//DwAA8PDw//8P
+        AADw8PD//w8AAPAAAAAADwAA8AAAAAAPAADwAAAAAA8AAPAAAAAADwAA8PDw////AADw8PD///8AAPDw
+        8P///wAA8PDw////AADwAAD///8AAPAAAP///wAA8AAA////AADwAAD///8AAP///////wAA////////
+        AAD///////8AAP///////wAA////////AAD///////8AAA==
+</value>
   </data>
 </root>

@@ -1,24 +1,27 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ChapterTool.Util;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FluentAssertions;
 
 namespace ChapterTool.Util.Tests
 {
     [TestClass()]
     public class ExpressionTests
     {
+        private static void EvalAreEqual(decimal expected, string actual)
+        {
+            new Expression(actual).Eval().Should().Be(expected);
+        }
+        private static void EvalAreNearly(decimal expected, string actual)
+        {
+            new Expression(actual).Eval().Should().BeInRange(expected - 1e-10M, expected + 1e-10M);
+        }
+
         [TestMethod()]
         public void ExpressionConverTest()
         {
-            var ret = new Expression("2^10%10   + 6 \t///comment sample");
-            Assert.AreEqual("2 10 ^ 10 % 6 +", ret.ToString());
-            ret = new Expression("((a+b)*(c+d))/(((e)))");
-            Assert.AreEqual("a b + c d + * e /", ret.ToString());
+            new Expression("2^10%10   + 6 \t///comment sample").ToString().Should().Be("2 10 ^ 10 % 6 +");
+            new Expression("((a+b)*(c+d))/(((e)))").ToString().Should().Be("a b + c d + * e /");
         }
 
         [TestMethod()]
@@ -26,51 +29,34 @@ namespace ChapterTool.Util.Tests
         {
             var ret = new Expression("a b + c d + * e /".Split());
             var exp = new Expression("((a+b)*(c+d))/(((e)))");
-            Assert.AreEqual("((a + b) * (c + d)) / e", Expression.Postfix2Infix(ret.ToString()));
-            Assert.AreEqual(exp.ToString(), ret.ToString());
+            "((a + b) * (c + d)) / e".Should().Be(Expression.Postfix2Infix(ret.ToString()));
+            exp.ToString().Should().Be(ret.ToString());
         }
 
         [TestMethod()]
         public void ExpressionWEvalTest()
         {
-            var ret = new Expression("1+1/2+1/3+1/4+1/5+1/6+1/7+1/8+1/9+1/10");
-            Assert.AreEqual(2.9289682539682539682539682539682539M, ret.Eval());
-            ret = new Expression("1-1/2-1/4+1/8-1/16+1/32-1/64+1/128-1/256+1/512-1/1024");
-            Assert.AreEqual(0.3330078125M, ret.Eval());
-            ret = new Expression("1-(1/2)-(1/4)+(1/8)-(1/16)+(1/32)-(1/64)+(1/128)-(1/256)+(1/512)-(1/1024)");
-            Assert.AreEqual(0.3330078125M, ret.Eval());
-            ret = new Expression("2^2^2^2");
-            Console.WriteLine($"without bracket: {ret}");
-            Assert.AreEqual(256, ret.Eval());
-            ret = new Expression("2^(2^(2^2))");
-            Console.WriteLine($"with    bracket: {ret}");
-            Assert.AreEqual(65536, ret.Eval());
-        }
-
-        private static void EvalAreEqual(decimal expected, string actual)
-        {
-            Assert.AreEqual(expected, new Expression(actual).Eval());
-        }
-        private static void EvalAreNearly(decimal expected, string actual)
-        {
-            var ret = new Expression(actual).Eval();
-            Assert.IsTrue(Math.Abs(ret - expected) < 1e-10M);
+            EvalAreEqual(2.9289682539682539682539682539682539M, "1+1/2+1/3+1/4+1/5+1/6+1/7+1/8+1/9+1/10");
+            EvalAreEqual(0.3330078125M, "1-1/2-1/4+1/8-1/16+1/32-1/64+1/128-1/256+1/512-1/1024");
+            EvalAreEqual(0.3330078125M, "1-(1/2)-(1/4)+(1/8)-(1/16)+(1/32)-(1/64)+(1/128)-(1/256)+(1/512)-(1/1024)");
+            EvalAreEqual(256, "2^2^2^2");
+            EvalAreEqual(65536, "2^(2^(2^2))");
         }
 
         [TestMethod()]
         public void EmptyExpressionTest()
         {
-            var ret = new Expression("");
-            Assert.AreEqual("", ret.ToString());
-            Assert.AreEqual(0M, ret.Eval());
+            var ret = new Expression(string.Empty);
+            ret.ToString().Should().BeEmpty();
+            ret.Eval().Should().Be(0M);
         }
 
         [TestMethod()]
         public void ExpressionWithFunctionTest()
         {
             var ret = new Expression("floor(1.133) + floor(log10(1023)) - ceil(0.9)");
-            Assert.AreEqual("1.133 floor 1023 log10 floor + 0.9 ceil -", ret.ToString());
-            Assert.AreEqual(3M, ret.Eval());
+            ret.ToString().Should().Be("1.133 floor 1023 log10 floor + 0.9 ceil -");
+            ret.Eval().Should().Be(3M);
         }
 
         [TestMethod()]
@@ -105,29 +91,44 @@ namespace ChapterTool.Util.Tests
         [TestMethod()]
         public void Uva12803Test()
         {
-            var timer = new System.Diagnostics.Stopwatch();
-            timer.Start();
             string path = Directory.GetCurrentDirectory() + "\\..\\..\\";
             if (!File.Exists(path + "Util\\expression.in")) path += "..\\";
             path += "Util\\";
+
+            var timer = new System.Diagnostics.Stopwatch();
+            timer.Start();
             var input  = File.ReadAllLines(path + "expression.in");
             var output = File.ReadAllLines(path + "expression.out");
             for (int i = 0; i < input.Length; ++i)
             {
-                var exp = new Expression(input[i]);
-                var tmp = exp.Eval().ToString("0.00");
-                Assert.AreEqual(output[i], tmp);
+                var tmp = new Expression(input[i]).Eval().ToString("0.00");
+                tmp.Should().Be(output[i]);
                 Console.Write($"{tmp} ");
             }
             timer.Stop();
-            Console.WriteLine($"Duration: {timer.Elapsed.Milliseconds}ms");
+            Console.WriteLine($"\nDuration: {timer.Elapsed.Milliseconds}ms");
         }
 
         [TestMethod()]
         public void Postfix2InfixTest()
         {
-            Assert.AreEqual("((x + (y * 64)) + (z * 256)) / 3", Expression.Postfix2Infix("x y 64 * + z 256 * + 3 /"));
-            Assert.AreEqual("((x + y) + z) / 3", Expression.Postfix2Infix("x y + z + 3 /"));
+            Expression.Postfix2Infix("x y 64 * + z 256 * + 3 /").Should().Be("((x + (y * 64)) + (z * 256)) / 3");
+            Expression.Postfix2Infix("x y + z + 3 /").Should().Be("((x + y) + z) / 3");
         }
+
+        /*
+        [TestMethod()]
+        public void TernaryOperatorTest()
+        {
+            //x>22 ? x<96 ? 4*(x-16)^2+40000 : 65536:0
+            //x 22 > x 96 < x 16 - dup * 4 * 40000 + 65536 ? 0 ?
+
+            //a 20 < 65535 a 40 < x a 80 < y z ? ? ?
+            //a<20 ? 65535 : a < 40? x : a < 80 ? y : z
+
+            //x 32768 - -512 > 32768 32768 32768 x - 256 / sqrt 4 min 256 * - ?
+            //32768-x < 512 ? 32768 : 32768 - 256*min{sqrt[|32768-x|/256],4}
+        }
+        */
     }
 }

@@ -58,7 +58,7 @@ namespace ChapterTool.Controls
                 };
                 text.SelectionLength = text.Text.Length;
                 text.SelectionColor = OriginalColor;
-                text.SelectionFont = this.Font;// new Font("Consolas", 9, FontStyle.Regular);
+                text.SelectionFont = Font;// new Font("Consolas", 9, FontStyle.Regular);
 
                 foreach (var pattern in _patterns)
                 {

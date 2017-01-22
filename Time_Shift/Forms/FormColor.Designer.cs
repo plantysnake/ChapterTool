@@ -1,6 +1,6 @@
 ﻿namespace ChapterTool.Forms
 {
-    partial class Form3
+    partial class FormColor
     {
         /// <summary>
         /// Required designer variable.

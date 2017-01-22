@@ -132,13 +132,13 @@
     <Compile Include="SharpDvdInfo\Model\TitleInfo.cs" />
     <Compile Include="SharpDvdInfo\Model\VideoProperties.cs" />
     <Compile Include="SharpDvdInfo\Model\VmgmInfo.cs" />
+    <Compile Include="Util\ChapterData\FlacData.cs" />
     <Compile Include="Util\Expression.cs" />
     <Compile Include="Util\TaskAsync.cs" />
     <Compile Include="Util\Chapter.cs" />
     <Compile Include="Util\ChapterData\BDMVData.cs" />
     <Compile Include="Util\ChapterInfo.cs" />
     <Compile Include="Util\ChapterName.cs" />
-    <Compile Include="Util\Clip.cs" />
     <Compile Include="Util\ToolKits.cs" />
     <Compile Include="Controls\cTextBox.cs">
       <SubType>Component</SubType>
@@ -150,17 +150,17 @@
     <Compile Include="Forms\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Form2.cs">
+    <Compile Include="Forms\FormAbout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Form2.Designer.cs">
-      <DependentUpon>Form2.cs</DependentUpon>
+    <Compile Include="Forms\FormAbout.Designer.cs">
+      <DependentUpon>FormAbout.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Form3.cs">
+    <Compile Include="Forms\FormColor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Form3.Designer.cs">
-      <DependentUpon>Form3.cs</DependentUpon>
+    <Compile Include="Forms\FormColor.Designer.cs">
+      <DependentUpon>FormColor.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FormLog.cs">
       <SubType>Form</SubType>
@@ -197,15 +197,17 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Form1.en-US.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Form2.resx">
-      <DependentUpon>Form2.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\FormAbout.resx">
+      <DependentUpon>FormAbout.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Form3.resx">
-      <DependentUpon>Form3.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\FormColor.resx">
+      <DependentUpon>FormColor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormLog.resx">
       <DependentUpon>FormLog.cs</DependentUpon>
@@ -216,7 +218,9 @@
     <EmbeddedResource Include="Forms\FormUpdater.resx">
       <DependentUpon>FormUpdater.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.en-US.resx" />
+    <EmbeddedResource Include="Properties\Resources.en-US.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>

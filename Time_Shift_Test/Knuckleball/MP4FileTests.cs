@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
 using ChapterTool.Util;
 using System;
 using System.IO;
 using ChapterTool.Util.ChapterData;
+using FluentAssertions;
 
 namespace Knuckleball.Tests
 {
@@ -31,8 +31,8 @@ namespace Knuckleball.Tests
             foreach (var chapter in result.Chapter.Chapters)
             {
                 Console.WriteLine(chapter);
-                Assert.IsTrue(expectResult[index].Name == chapter.Name);
-                Assert.IsTrue(expectResult[index].Time == chapter.Time.Time2String());
+                expectResult[index].Name.Should().Be(chapter.Name);
+                expectResult[index].Time.Should().Be(chapter.Time.Time2String());
                 ++index;
             }
         }
