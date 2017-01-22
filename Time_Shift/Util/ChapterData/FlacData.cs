@@ -62,6 +62,7 @@ namespace ChapterTool.Util.ChapterData
                     BlockType blockType = (BlockType)((blockHeader >> 24) & 0x7f);
                     int length = (int) (blockHeader & 0xffffff);
                     info.RawLength += length;
+                    OnLog?.Invoke($"|+{blockType} with Length: {length}");
                     switch (blockType)
                     {
                     case BlockType.STREAMINFO:
@@ -78,7 +79,6 @@ namespace ChapterTool.Util.ChapterData
                     case BlockType.APPLICATION:
                     case BlockType.SEEKTABLE:
                     case BlockType.CUESHEET:
-                        OnLog?.Invoke($"{blockType} with Length: {length}");
                         fs.Seek(length, SeekOrigin.Current);
                         break;
                     default:
@@ -104,10 +104,12 @@ namespace ChapterTool.Util.ChapterData
             int totalSample = (int) br.GetBits(36);
             var md5 = fs.ReadBytes(16);
             info.RawLength += channelCount * bitPerSample * totalSample;
-            OnLog?.Invoke($"minimum block size: {minBlockSize}, maximum block size: {maxBlockSize}");
-            OnLog?.Invoke($"minimum frame size: {minFrameSize}, maximum frame size: {maxFrameSize}");
-            OnLog?.Invoke($"Sample rate: {sampleRate}Hz, bits per sample: {bitPerSample}-bit");
-            OnLog?.Invoke($"{channelCount}-channel");
+            OnLog?.Invoke($" | minimum block size: {minBlockSize}, maximum block size: {maxBlockSize}");
+            OnLog?.Invoke($" | minimum frame size: {minFrameSize}, maximum frame size: {maxFrameSize}");
+            OnLog?.Invoke($" | Sample rate: {sampleRate}Hz, bits per sample: {bitPerSample}-bit");
+            OnLog?.Invoke($" | Channel count: {channelCount}");
+            string md5String = md5.Aggregate("", (current, item) => current + $"{item:X2}");
+            OnLog?.Invoke($" | MD5: {md5String}");
         }
 
         private static void ParseVorbisComment(Stream fs, ref FlacInfo info)
@@ -117,6 +119,7 @@ namespace ChapterTool.Util.ChapterData
             var vendorRawStringData = fs.ReadBytes(vendorLength);
             var vendor = Encoding.UTF8.GetString(vendorRawStringData, 0, vendorLength);
             info.Encoder = vendor;
+            OnLog?.Invoke($" | Vendor: {vendor}");
             int userCommentListLength = (int) fs.ReadUInt(true);
             for (int i = 0; i < userCommentListLength; ++i)
             {
@@ -127,6 +130,8 @@ namespace ChapterTool.Util.ChapterData
                 var key = comment.Substring(0, spilterIndex);
                 var value = comment.Substring(spilterIndex + 1, comment.Length - 1 - spilterIndex);
                 info.VorbisComment[key] = value;
+                var summary = value.Length > 15 ? value.Substring(0, 15) + "..." : value;
+                OnLog?.Invoke($" | [{key}] = '{summary}'");
             }
         }
 
