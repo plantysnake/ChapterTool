@@ -627,7 +627,7 @@ namespace ChapterTool.Forms
         {
             try
             {
-                _info = new CueData(FilePath).Chapter;
+                _info = new CueData(FilePath, Log).Chapter;
                 tsProgressBar1.Value = 33;
 
                 tsTips.Text = Resources.Tips_Load_Success;

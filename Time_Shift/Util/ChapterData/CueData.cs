@@ -36,7 +36,8 @@ namespace ChapterTool.Util.ChapterData
         /// 从文件中获取cue播放列表并转换为ChapterInfo
         /// </summary>
         /// <param name="path"></param>
-        public CueData(string path)
+        /// <param name="log"></param>
+        public CueData(string path, Action<string> log = null)
         {
             string cueData;
             var ext = Path.GetExtension(path)?.ToLower();
@@ -49,7 +50,7 @@ namespace ChapterTool.Util.ChapterData
                 break;
 
             case ".flac":
-                cueData = GetCueFromFlac(path);
+                cueData = GetCueFromFlac(path, log);
                 break;
 
             case ".tak":
@@ -277,9 +278,11 @@ namespace ChapterTool.Util.ChapterData
             }
         }
 
-        private static string GetCueFromFlac(string flacPath)
+        private static string GetCueFromFlac(string flacPath, Action<string> log = null)
         {
+            FlacData.OnLog += log;
             var info = FlacData.GetMetadataFromFlac(flacPath);
+            FlacData.OnLog -= log;
             if (info.VorbisComment.ContainsKey("cuesheet"))
                 return info.VorbisComment["cuesheet"];
             return string.Empty;

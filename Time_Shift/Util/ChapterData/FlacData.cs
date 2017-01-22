@@ -28,6 +28,8 @@ namespace ChapterTool.Util.ChapterData
     {
         private const long SizeThreshold = 1 << 20;
 
+        public static event Action<string> OnLog;
+
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         private enum BlockType
         {
@@ -46,8 +48,7 @@ namespace ChapterTool.Util.ChapterData
             {
                 if (fs.Length < SizeThreshold) return new FlacInfo();
                 FlacInfo info = new FlacInfo();
-                var header = new byte[4];
-                fs.Read(header, 0, 4);
+                var header = fs.ReadBytes(4);
                 if (Encoding.ASCII.GetString(header, 0, 4) != "fLaC")
                     throw new InvalidDataException($"Except an flac but get an {Encoding.ASCII.GetString(header, 0, 4)}");
                 //METADATA_BLOCK_HEADER
@@ -60,7 +61,7 @@ namespace ChapterTool.Util.ChapterData
                     bool lastMetadataBlock = blockHeader >> 31 == 0x1;
                     BlockType blockType = (BlockType)((blockHeader >> 24) & 0x7f);
                     int length = (int) (blockHeader & 0xffffff);
-
+                    info.RawLength += length;
                     switch (blockType)
                     {
                     case BlockType.STREAMINFO:
@@ -77,10 +78,11 @@ namespace ChapterTool.Util.ChapterData
                     case BlockType.APPLICATION:
                     case BlockType.SEEKTABLE:
                     case BlockType.CUESHEET:
+                        OnLog?.Invoke($"{blockType} with Length: {length}");
                         fs.Seek(length, SeekOrigin.Current);
                         break;
                     default:
-                        throw new System.ArgumentOutOfRangeException($"Invalid BLOCK_TYPE: 0x{blockType:X}");
+                        throw new ArgumentOutOfRangeException($"Invalid BLOCK_TYPE: 0x{blockType:X}");
                     }
                     if (lastMetadataBlock) break;
                 }
@@ -100,8 +102,12 @@ namespace ChapterTool.Util.ChapterData
             int channelCount = (int) br.GetBits(3)+1;
             int bitPerSample = (int) br.GetBits(5)+1;
             int totalSample = (int) br.GetBits(36);
-            info.RawLength = channelCount * bitPerSample * totalSample;
             var md5 = fs.ReadBytes(16);
+            info.RawLength += channelCount * bitPerSample * totalSample;
+            OnLog?.Invoke($"minimum block size: {minBlockSize}, maximum block size: {maxBlockSize}");
+            OnLog?.Invoke($"minimum frame size: {minFrameSize}, maximum frame size: {maxFrameSize}");
+            OnLog?.Invoke($"Sample rate: {sampleRate}Hz, bits per sample: {bitPerSample}-bit");
+            OnLog?.Invoke($"{channelCount}-channel");
         }
 
         private static void ParseVorbisComment(Stream fs, ref FlacInfo info)
@@ -137,6 +143,7 @@ namespace ChapterTool.Util.ChapterData
             int indexedColorCount = (int) fs.ReadUInt();
             int pictureDataLength = (int) fs.ReadUInt();
             fs.Seek(pictureDataLength, SeekOrigin.Current);
+            info.RawLength += pictureDataLength;
             info.HasCover = true;
         }
 
