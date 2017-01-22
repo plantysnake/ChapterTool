@@ -207,7 +207,7 @@ namespace ChapterTool.Util.ChapterData
             for (int i = 0; i < length; ++i)
             {
                 if (buffer[i] >= 'A' && buffer[i] <= 'Z')
-                    buffer[i] -= 'a' - 'A';
+                    buffer[i] = (byte)(buffer[i] - 'A' + 'a');
                 switch ((char)buffer[i])
                 {
                 case 'c': state = 1; break;//C
