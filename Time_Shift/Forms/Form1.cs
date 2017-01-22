@@ -855,30 +855,12 @@ namespace ChapterTool.Forms
 
         private void comboBox2_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            if (_rawMpls != null)
-            {
-                GetChapterInfoFromMpls(ClipSeletIndex);
-            }
-            else if (_xmlGroup != null)
-            {
-                _info = _xmlGroup[ClipSeletIndex];
-            }
-            else if (_ifoGroup != null)
-            {
-                GetChapterInfoFromIFO(ClipSeletIndex);
-            }
-            else if (_xplGroup != null)
-            {
-                _info = _xplGroup[ClipSeletIndex];
-            } else if (_bdmvGroup != null)
-            {
-                _info = _bdmvGroup[ClipSeletIndex];
-            }
-            if (Shift)
-            {
-                cbShift_CheckedChanged(new object(), new EventArgs());
-            }
-            //_info.Mul1K1 = cbMul1k1.Checked;
+                 if (_rawMpls   != null) GetChapterInfoFromMpls(ClipSeletIndex);
+            else if (_ifoGroup  != null) GetChapterInfoFromIFO (ClipSeletIndex);
+            else if (_xmlGroup  != null)     _info = _xmlGroup [ClipSeletIndex];
+            else if (_xplGroup  != null)     _info = _xplGroup [ClipSeletIndex];
+            else if (_bdmvGroup != null)     _info = _bdmvGroup[ClipSeletIndex];
+            if (Shift) cbShift_CheckedChanged(null, null);
             UpdataGridView();
         }
 
@@ -886,19 +868,9 @@ namespace ChapterTool.Forms
         {
             if (_rawMpls == null && _ifoGroup == null) return;
             CombineChapter = !CombineChapter;
-            if (_rawMpls != null)
-            {
-                GetChapterInfoFromMpls(ClipSeletIndex);
-            }
-            else if (_ifoGroup != null)
-            {
-                GetChapterInfoFromIFO(ClipSeletIndex);
-            }
-            if (Shift)
-            {
-                cbShift_CheckedChanged(new object(), new EventArgs());
-            }
-            //_info.Mul1K1 = cbMul1k1.Checked;
+                 if (_rawMpls  != null) GetChapterInfoFromMpls(ClipSeletIndex);
+            else if (_ifoGroup != null) GetChapterInfoFromIFO(ClipSeletIndex);
+            if (Shift) cbShift_CheckedChanged(null, null);
             UpdataGridView();
         }
 
