@@ -130,8 +130,8 @@ namespace ChapterTool.Util.ChapterData
                 var key = comment.Substring(0, spilterIndex);
                 var value = comment.Substring(spilterIndex + 1, comment.Length - 1 - spilterIndex);
                 info.VorbisComment[key] = value;
-                var summary = value.Length > 15 ? value.Substring(0, 15) + "..." : value;
-                OnLog?.Invoke($" | [{key}] = '{summary}'");
+                var summary = value.Length > 25 ? value.Substring(0, 25) + "..." : value;
+                OnLog?.Invoke($" | [{key}] = '{summary.Replace('\n', ' ')}'");
             }
         }
 
@@ -150,6 +150,8 @@ namespace ChapterTool.Util.ChapterData
             fs.Seek(pictureDataLength, SeekOrigin.Current);
             info.RawLength += pictureDataLength;
             info.HasCover = true;
+            OnLog?.Invoke($" | picture type: {mimeType}");
+            OnLog?.Invoke($" | attribute: {pictureWidth}px*{pictureHeight}px@{colorDepth}-bit");
         }
 
         private static ushort ReadUShort(this Stream fs)
