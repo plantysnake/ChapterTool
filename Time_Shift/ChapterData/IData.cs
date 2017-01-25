@@ -1,4 +1,5 @@
-﻿using ChapterTool.Util;
+﻿using System;
+using ChapterTool.Util;
 
 namespace ChapterTool.ChapterData
 {
@@ -9,5 +10,7 @@ namespace ChapterTool.ChapterData
         ChapterInfo this[int index] { get; }
 
         string ChapterType { get; }
+
+        event Action<string> OnLog;
     }
 }

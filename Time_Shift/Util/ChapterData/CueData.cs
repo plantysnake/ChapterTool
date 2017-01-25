@@ -303,5 +303,6 @@ namespace ChapterTool.Util.ChapterData
         }
 
         public string ChapterType { get; } = "CUE";
+        public event Action<string> OnLog;
     }
 }

@@ -1,4 +1,23 @@
-﻿using System;
+﻿// ****************************************************************************
+//
+// Copyright (C) 2014-2017 TautCony (TautCony@vcb-s.com)
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// ****************************************************************************
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -48,9 +67,9 @@ namespace ChapterTool.Util.ChapterData
             {
                 if (fs.Length < SizeThreshold) return new FlacInfo();
                 FlacInfo info = new FlacInfo {TrueLength = fs.Length};
-                var header = fs.ReadBytes(4);
-                if (Encoding.ASCII.GetString(header, 0, 4) != "fLaC")
-                    throw new InvalidDataException($"Except an flac but get an {Encoding.ASCII.GetString(header, 0, 4)}");
+                var header = Encoding.ASCII.GetString(fs.ReadBytes(4), 0, 4);
+                if (header != "fLaC")
+                    throw new InvalidDataException($"Except an flac but get an {header}");
                 //METADATA_BLOCK_HEADER
                 //1-bit Last-metadata-block flag
                 //7-bit BLOCK_TYPE
@@ -82,7 +101,7 @@ namespace ChapterTool.Util.ChapterData
                         fs.Seek(length, SeekOrigin.Current);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException($"Invalid BLOCK_TYPE: 0x{blockType:X}");
+                        throw new ArgumentOutOfRangeException($"Invalid BLOCK_TYPE: 0x{blockType:X2}");
                     }
                     if (lastMetadataBlock) break;
                 }
