@@ -340,5 +340,35 @@ namespace ChapterTool.Util
             }
             File.WriteAllText(fileName, cueBuilder.ToString());
         }
+
+        public void SaveJsonChapter(string fileName, bool autoGenName)
+        {
+            StringBuilder jsonBuilder = new StringBuilder();
+            jsonBuilder.Append("{");
+            jsonBuilder.Append("\"sourceName\":");
+            jsonBuilder.Append(SourceType == "MPLS" ? $"\"{SourceName}.m2ts\"," : "\"undefined\",");
+            jsonBuilder.Append("\"chapter\":");
+            jsonBuilder.Append("[");
+
+            TimeSpan baseTime = TimeSpan.Zero;
+            Chapter prevChapter = null;
+            var name = ChapterName.GetChapterName("Chapter");
+            foreach (Chapter chapter in Chapters)
+            {
+                if (chapter.Time == TimeSpan.MinValue && prevChapter != null)
+                {
+                    baseTime = prevChapter.Time;//update base time
+                    name = ChapterName.GetChapterName("Chapter");
+                }
+                TimeSpan time = chapter.Time - baseTime;
+                string chapterName = (autoGenName ? name() : chapter.Name);
+                jsonBuilder.Append($"{{\"name\":\"{chapterName}\",\"time\":{time.TotalSeconds}}},");
+                prevChapter = chapter;
+            }
+            jsonBuilder.Remove(jsonBuilder.Length - 1, 1);
+            jsonBuilder.Append("]");
+            jsonBuilder.Append("}");
+            File.WriteAllText(fileName, jsonBuilder.ToString());
+        }
     }
 }

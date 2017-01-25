@@ -85,47 +85,44 @@
             // 
             // btnLoad
             // 
-            resources.ApplyResources(this.btnLoad, "btnLoad");
             this.btnLoad.ContextMenuStrip = this.loadMenuStrip;
             this.btnLoad.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
             this.btnLoad.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnLoad.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
+            resources.ApplyResources(this.btnLoad, "btnLoad");
             this.btnLoad.Name = "btnLoad";
             this.btnLoad.TabStop = false;
-            this.toolTip1.SetToolTip(this.btnLoad, resources.GetString("btnLoad.ToolTip"));
             this.btnLoad.UseVisualStyleBackColor = true;
             this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
             // 
             // loadMenuStrip
             // 
-            resources.ApplyResources(this.loadMenuStrip, "loadMenuStrip");
             this.loadMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.reloadToolStripMenuItem,
             this.appendToolStripMenuItem});
             this.loadMenuStrip.Name = "loadMenuStrip";
-            this.toolTip1.SetToolTip(this.loadMenuStrip, resources.GetString("loadMenuStrip.ToolTip"));
+            resources.ApplyResources(this.loadMenuStrip, "loadMenuStrip");
             // 
             // reloadToolStripMenuItem
             // 
-            resources.ApplyResources(this.reloadToolStripMenuItem, "reloadToolStripMenuItem");
             this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
+            resources.ApplyResources(this.reloadToolStripMenuItem, "reloadToolStripMenuItem");
             this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
             // 
             // appendToolStripMenuItem
             // 
-            resources.ApplyResources(this.appendToolStripMenuItem, "appendToolStripMenuItem");
             this.appendToolStripMenuItem.Name = "appendToolStripMenuItem";
+            resources.ApplyResources(this.appendToolStripMenuItem, "appendToolStripMenuItem");
             this.appendToolStripMenuItem.Click += new System.EventHandler(this.appendToolStripMenuItem_Click);
             // 
             // btnSave
             // 
-            resources.ApplyResources(this.btnSave, "btnSave");
             this.btnSave.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
             this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
+            resources.ApplyResources(this.btnSave, "btnSave");
             this.btnSave.Name = "btnSave";
             this.btnSave.TabStop = false;
-            this.toolTip1.SetToolTip(this.btnSave, resources.GetString("btnSave.ToolTip"));
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             this.btnSave.MouseEnter += new System.EventHandler(this.btnSave_MouseEnter);
@@ -136,19 +133,17 @@
             // 
             resources.ApplyResources(this.lbPath, "lbPath");
             this.lbPath.Name = "lbPath";
-            this.toolTip1.SetToolTip(this.lbPath, resources.GetString("lbPath.ToolTip"));
             this.lbPath.MouseEnter += new System.EventHandler(this.lbPath_MouseEnter);
             this.lbPath.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // btnTrans
             // 
-            resources.ApplyResources(this.btnTrans, "btnTrans");
             this.btnTrans.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
             this.btnTrans.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnTrans.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
+            resources.ApplyResources(this.btnTrans, "btnTrans");
             this.btnTrans.Name = "btnTrans";
             this.btnTrans.TabStop = false;
-            this.toolTip1.SetToolTip(this.btnTrans, resources.GetString("btnTrans.ToolTip"));
             this.btnTrans.UseVisualStyleBackColor = true;
             this.btnTrans.Click += new System.EventHandler(this.refresh_Click);
             this.btnTrans.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Color_MouseUp);
@@ -164,9 +159,9 @@
             // 
             // comboBox1
             // 
-            resources.ApplyResources(this.comboBox1, "comboBox1");
             this.comboBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            resources.ApplyResources(this.comboBox1, "comboBox1");
             this.comboBox1.ForeColor = System.Drawing.SystemColors.WindowText;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
@@ -179,7 +174,6 @@
             resources.GetString("comboBox1.Items6")});
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.TabStop = false;
-            this.toolTip1.SetToolTip(this.comboBox1, resources.GetString("comboBox1.ToolTip"));
             this.comboBox1.SelectionChangeCommitted += new System.EventHandler(this.comboBox1_SelectionChangeCommitted);
             // 
             // cbRound
@@ -196,24 +190,23 @@
             // 
             // deviationMenuStrip
             // 
-            resources.ApplyResources(this.deviationMenuStrip, "deviationMenuStrip");
             this.deviationMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmAccuracy});
             this.deviationMenuStrip.Name = "contextMenuStrip1";
-            this.toolTip1.SetToolTip(this.deviationMenuStrip, resources.GetString("deviationMenuStrip.ToolTip"));
+            resources.ApplyResources(this.deviationMenuStrip, "deviationMenuStrip");
             // 
             // tsmAccuracy
             // 
-            resources.ApplyResources(this.tsmAccuracy, "tsmAccuracy");
             this.tsmAccuracy.Name = "tsmAccuracy";
+            resources.ApplyResources(this.tsmAccuracy, "tsmAccuracy");
             this.tsmAccuracy.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.Accuracy_DropDownItemClicked);
             // 
             // numericUpDown1
             // 
-            resources.ApplyResources(this.numericUpDown1, "numericUpDown1");
             this.numericUpDown1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.numericUpDown1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.numericUpDown1.ForeColor = System.Drawing.SystemColors.WindowText;
+            resources.ApplyResources(this.numericUpDown1, "numericUpDown1");
             this.numericUpDown1.Maximum = new decimal(new int[] {
             50,
             0,
@@ -221,21 +214,18 @@
             0});
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.TabStop = false;
-            this.toolTip1.SetToolTip(this.numericUpDown1, resources.GetString("numericUpDown1.ToolTip"));
             this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
             // 
             // lbShift
             // 
             resources.ApplyResources(this.lbShift, "lbShift");
             this.lbShift.Name = "lbShift";
-            this.toolTip1.SetToolTip(this.lbShift, resources.GetString("lbShift.ToolTip"));
             // 
             // cbShift
             // 
             resources.ApplyResources(this.cbShift, "cbShift");
             this.cbShift.Name = "cbShift";
             this.cbShift.TabStop = false;
-            this.toolTip1.SetToolTip(this.cbShift, resources.GetString("cbShift.ToolTip"));
             this.cbShift.UseVisualStyleBackColor = true;
             this.cbShift.CheckedChanged += new System.EventHandler(this.cbShift_CheckedChanged);
             // 
@@ -250,33 +240,31 @@
             // 
             // comboBox2
             // 
-            resources.ApplyResources(this.comboBox2, "comboBox2");
             this.comboBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.comboBox2.ContextMenuStrip = this.combineMenuStrip;
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            resources.ApplyResources(this.comboBox2, "comboBox2");
             this.comboBox2.ForeColor = System.Drawing.SystemColors.WindowText;
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.TabStop = false;
-            this.toolTip1.SetToolTip(this.comboBox2, resources.GetString("comboBox2.ToolTip"));
             this.comboBox2.SelectionChangeCommitted += new System.EventHandler(this.comboBox2_SelectionChangeCommitted);
             this.comboBox2.MouseEnter += new System.EventHandler(this.comboBox2_MouseEnter);
             this.comboBox2.MouseLeave += new System.EventHandler(this.ToolTipRemoveAll);
             // 
             // combineMenuStrip
             // 
-            resources.ApplyResources(this.combineMenuStrip, "combineMenuStrip");
             this.combineMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.combineToolStripMenuItem});
             this.combineMenuStrip.Name = "contextMenuStrip2";
-            this.toolTip1.SetToolTip(this.combineMenuStrip, resources.GetString("combineMenuStrip.ToolTip"));
+            resources.ApplyResources(this.combineMenuStrip, "combineMenuStrip");
             this.combineMenuStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenuStrip2_Closed);
             this.combineMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip2_Opening);
             // 
             // combineToolStripMenuItem
             // 
-            resources.ApplyResources(this.combineToolStripMenuItem, "combineToolStripMenuItem");
             this.combineToolStripMenuItem.Name = "combineToolStripMenuItem";
+            resources.ApplyResources(this.combineToolStripMenuItem, "combineToolStripMenuItem");
             this.combineToolStripMenuItem.Click += new System.EventHandler(this.combineToolStripMenuItem_Click);
             // 
             // folderBrowserDialog1
@@ -297,19 +285,17 @@
             // 
             // btnLog
             // 
-            resources.ApplyResources(this.btnLog, "btnLog");
             this.btnLog.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
             this.btnLog.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnLog.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
+            resources.ApplyResources(this.btnLog, "btnLog");
             this.btnLog.Name = "btnLog";
             this.btnLog.TabStop = false;
-            this.toolTip1.SetToolTip(this.btnLog, resources.GetString("btnLog.ToolTip"));
             this.btnLog.UseVisualStyleBackColor = true;
             this.btnLog.Click += new System.EventHandler(this.btnLog_Click);
             // 
             // dataGridView1
             // 
-            resources.ApplyResources(this.dataGridView1, "dataGridView1");
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -322,11 +308,11 @@
             this.cFrams});
             this.dataGridView1.EnableHeadersVisualStyles = false;
             this.dataGridView1.GridColor = System.Drawing.SystemColors.Highlight;
+            resources.ApplyResources(this.dataGridView1, "dataGridView1");
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.TabStop = false;
-            this.toolTip1.SetToolTip(this.dataGridView1, resources.GetString("dataGridView1.ToolTip"));
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
             this.dataGridView1.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseUp);
@@ -367,9 +353,9 @@
             // 
             // savingType
             // 
-            resources.ApplyResources(this.savingType, "savingType");
             this.savingType.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.savingType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            resources.ApplyResources(this.savingType, "savingType");
             this.savingType.FormattingEnabled = true;
             this.savingType.Items.AddRange(new object[] {
             resources.GetString("savingType.Items"),
@@ -377,72 +363,66 @@
             resources.GetString("savingType.Items2"),
             resources.GetString("savingType.Items3"),
             resources.GetString("savingType.Items4"),
-            resources.GetString("savingType.Items5")});
+            resources.GetString("savingType.Items5"),
+            resources.GetString("savingType.Items6")});
             this.savingType.Name = "savingType";
             this.savingType.TabStop = false;
-            this.toolTip1.SetToolTip(this.savingType, resources.GetString("savingType.ToolTip"));
             this.savingType.SelectedIndexChanged += new System.EventHandler(this.savingType_SelectedIndexChanged);
             // 
             // lbFormat
             // 
             resources.ApplyResources(this.lbFormat, "lbFormat");
             this.lbFormat.Name = "lbFormat";
-            this.toolTip1.SetToolTip(this.lbFormat, resources.GetString("lbFormat.ToolTip"));
             // 
             // btnPreview
             // 
-            resources.ApplyResources(this.btnPreview, "btnPreview");
             this.btnPreview.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
             this.btnPreview.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.btnPreview.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
+            resources.ApplyResources(this.btnPreview, "btnPreview");
             this.btnPreview.Name = "btnPreview";
             this.btnPreview.TabStop = false;
-            this.toolTip1.SetToolTip(this.btnPreview, resources.GetString("btnPreview.ToolTip"));
             this.btnPreview.UseVisualStyleBackColor = true;
             this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
             this.btnPreview.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnPreview_MouseUp);
             // 
             // xmlLang
             // 
-            resources.ApplyResources(this.xmlLang, "xmlLang");
             this.xmlLang.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.xmlLang.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            resources.ApplyResources(this.xmlLang, "xmlLang");
             this.xmlLang.FormattingEnabled = true;
             this.xmlLang.Name = "xmlLang";
             this.xmlLang.TabStop = false;
-            this.toolTip1.SetToolTip(this.xmlLang, resources.GetString("xmlLang.ToolTip"));
             this.xmlLang.SelectionChangeCommitted += new System.EventHandler(this.xmlLang_SelectionChangeCommitted);
             // 
             // lbXmlLang
             // 
             resources.ApplyResources(this.lbXmlLang, "lbXmlLang");
             this.lbXmlLang.Name = "lbXmlLang";
-            this.toolTip1.SetToolTip(this.lbXmlLang, resources.GetString("lbXmlLang.ToolTip"));
             // 
             // createZonestMenuStrip
             // 
-            resources.ApplyResources(this.createZonestMenuStrip, "createZonestMenuStrip");
             this.createZonestMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.creatZonesToolStripMenuItem,
             this.ShiftForwardToolStripMenuItem});
             this.createZonestMenuStrip.Name = "createZonestMenuStrip";
-            this.toolTip1.SetToolTip(this.createZonestMenuStrip, resources.GetString("createZonestMenuStrip.ToolTip"));
+            resources.ApplyResources(this.createZonestMenuStrip, "createZonestMenuStrip");
             // 
             // creatZonesToolStripMenuItem
             // 
-            resources.ApplyResources(this.creatZonesToolStripMenuItem, "creatZonesToolStripMenuItem");
             this.creatZonesToolStripMenuItem.Name = "creatZonesToolStripMenuItem";
+            resources.ApplyResources(this.creatZonesToolStripMenuItem, "creatZonesToolStripMenuItem");
             this.creatZonesToolStripMenuItem.Click += new System.EventHandler(this.creatZonesToolStripMenuItem_Click);
             // 
             // ShiftForwardToolStripMenuItem
             // 
-            resources.ApplyResources(this.ShiftForwardToolStripMenuItem, "ShiftForwardToolStripMenuItem");
             this.ShiftForwardToolStripMenuItem.Name = "ShiftForwardToolStripMenuItem";
+            resources.ApplyResources(this.ShiftForwardToolStripMenuItem, "ShiftForwardToolStripMenuItem");
             this.ShiftForwardToolStripMenuItem.Click += new System.EventHandler(this.ShiftForwardToolStripMenuItem_Click);
             // 
             // panel1
             // 
-            resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Controls.Add(this.cbPostFix);
             this.panel1.Controls.Add(this.textBoxExpression);
             this.panel1.Controls.Add(this.lbFormat);
@@ -455,52 +435,50 @@
             this.panel1.Controls.Add(this.btnLog);
             this.panel1.Controls.Add(this.lbShift);
             this.panel1.Controls.Add(this.numericUpDown1);
+            resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Name = "panel1";
-            this.toolTip1.SetToolTip(this.panel1, resources.GetString("panel1.ToolTip"));
             // 
             // textBoxExpression
             // 
             resources.ApplyResources(this.textBoxExpression, "textBoxExpression");
             this.textBoxExpression.Name = "textBoxExpression";
-            this.toolTip1.SetToolTip(this.textBoxExpression, resources.GetString("textBoxExpression.ToolTip"));
             this.textBoxExpression.TextChanged += new System.EventHandler(this.textBoxExpression_TextChanged);
             // 
             // statusStrip1
             // 
-            resources.ApplyResources(this.statusStrip1, "statusStrip1");
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsTips,
             this.tsProgressBar1,
             this.tsBtnExpand});
+            resources.ApplyResources(this.statusStrip1, "statusStrip1");
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.SizingGrip = false;
-            this.toolTip1.SetToolTip(this.statusStrip1, resources.GetString("statusStrip1.ToolTip"));
             // 
             // tsTips
             // 
-            resources.ApplyResources(this.tsTips, "tsTips");
             this.tsTips.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tsTips.Name = "tsTips";
+            resources.ApplyResources(this.tsTips, "tsTips");
             this.tsTips.Spring = true;
             // 
             // tsProgressBar1
             // 
-            resources.ApplyResources(this.tsProgressBar1, "tsProgressBar1");
             this.tsProgressBar1.Name = "tsProgressBar1";
+            resources.ApplyResources(this.tsProgressBar1, "tsProgressBar1");
             this.tsProgressBar1.Click += new System.EventHandler(this.progressBar1_Click);
             // 
             // tsBtnExpand
             // 
-            resources.ApplyResources(this.tsBtnExpand, "tsBtnExpand");
             this.tsBtnExpand.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            resources.ApplyResources(this.tsBtnExpand, "tsBtnExpand");
             this.tsBtnExpand.Name = "tsBtnExpand";
             this.tsBtnExpand.ShowDropDownArrow = false;
             this.tsBtnExpand.Click += new System.EventHandler(this.btnExpand_Click);
             // 
             // Form1
             // 
-            resources.ApplyResources(this, "$this");
             this.AllowDrop = true;
+            resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.statusStrip1);
@@ -518,7 +496,6 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "Form1";
-            this.toolTip1.SetToolTip(this, resources.GetString("$this.ToolTip"));
             this.TransparencyKey = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(10)))), ((int)(((byte)(143)))));
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);

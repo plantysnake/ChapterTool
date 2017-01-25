@@ -782,7 +782,7 @@ namespace ChapterTool.Forms
             if (ext == ".mpls" || ext == ".ifo")
                 savePath += $"__{_info.SourceName}";
 
-            string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf", ".TimeCodes.txt", ".TsMuxeR_Meta.txt", ".cue" };
+            string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf", ".TimeCodes.txt", ".TsMuxeR_Meta.txt", ".cue" , ".json" };
             int index = 1;
             while (File.Exists($"{savePath}_{index}{saveingTypeSuffix[saveType]}")) ++index;
             savePath += $"_{index}{saveingTypeSuffix[saveType]}";
@@ -822,6 +822,9 @@ namespace ChapterTool.Forms
                         break;
                     case 5: //CUE
                         _info.SaveCue(Path.GetFileName(FilePath), savePath, AutoGenName);
+                        break;
+                    case 6: //JSON
+                        _info.SaveJsonChapter(savePath, AutoGenName);
                         break;
                 }
                 tsProgressBar1.Value = 100;
