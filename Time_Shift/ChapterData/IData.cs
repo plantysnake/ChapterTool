@@ -11,6 +11,6 @@ namespace ChapterTool.ChapterData
 
         string ChapterType { get; }
 
-        event Action<string> OnLog;
+        //event Action<string> OnLog;
     }
 }
