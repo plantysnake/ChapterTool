@@ -73,6 +73,7 @@
             this.tsTips = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.tsBtnExpand = new System.Windows.Forms.ToolStripDropDownButton();
+            this.InsertSplitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadMenuStrip.SuspendLayout();
             this.deviationMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -405,7 +406,8 @@
             // 
             this.createZonestMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.creatZonesToolStripMenuItem,
-            this.ShiftForwardToolStripMenuItem});
+            this.ShiftForwardToolStripMenuItem,
+            this.InsertSplitToolStripMenuItem});
             this.createZonestMenuStrip.Name = "createZonestMenuStrip";
             resources.ApplyResources(this.createZonestMenuStrip, "createZonestMenuStrip");
             // 
@@ -474,6 +476,12 @@
             this.tsBtnExpand.Name = "tsBtnExpand";
             this.tsBtnExpand.ShowDropDownArrow = false;
             this.tsBtnExpand.Click += new System.EventHandler(this.btnExpand_Click);
+            // 
+            // InsertSplitToolStripMenuItem
+            // 
+            this.InsertSplitToolStripMenuItem.Name = "InsertSplitToolStripMenuItem";
+            resources.ApplyResources(this.InsertSplitToolStripMenuItem, "InsertSplitToolStripMenuItem");
+            this.InsertSplitToolStripMenuItem.Click += new System.EventHandler(this.InsertSplitToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -561,6 +569,7 @@
         private System.Windows.Forms.ContextMenuStrip loadMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem appendToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem InsertSplitToolStripMenuItem;
     }
 }
 

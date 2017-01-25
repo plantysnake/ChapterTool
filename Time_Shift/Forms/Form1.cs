@@ -1565,5 +1565,13 @@ namespace ChapterTool.Forms
         }
         #endregion
 
+        private void InsertSplitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count != 1) return;
+            DataGridViewRow row = dataGridView1.SelectedRows[0];
+            Chapter split = new Chapter("Split line", TimeSpan.MinValue, -1);
+            _info.Chapters.Insert(row.Index, split);
+            UpdataGridView();
+        }
     }
 }

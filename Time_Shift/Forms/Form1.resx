@@ -826,19 +826,25 @@
     <value>755, 18</value>
   </metadata>
   <data name="creatZonesToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>135, 22</value>
+    <value>152, 22</value>
   </data>
   <data name="creatZonesToolStripMenuItem.Text" xml:space="preserve">
     <value>生成Zones</value>
   </data>
   <data name="ShiftForwardToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>135, 22</value>
+    <value>152, 22</value>
   </data>
   <data name="ShiftForwardToolStripMenuItem.Text" xml:space="preserve">
     <value>向前平移</value>
   </data>
+  <data name="InsertSplitToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="InsertSplitToolStripMenuItem.Text" xml:space="preserve">
+    <value>插入分隔条</value>
+  </data>
   <data name="createZonestMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>136, 48</value>
+    <value>153, 92</value>
   </data>
   <data name="&gt;&gt;createZonestMenuStrip.Name" xml:space="preserve">
     <value>createZonestMenuStrip</value>
@@ -1110,6 +1116,12 @@
   </data>
   <data name="&gt;&gt;tsBtnExpand.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripDropDownButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;InsertSplitToolStripMenuItem.Name" xml:space="preserve">
+    <value>InsertSplitToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;InsertSplitToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>Form1</value>
