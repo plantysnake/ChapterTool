@@ -239,6 +239,8 @@ namespace ChapterTool.Forms
             _xplGroup               = null;
             _bdmvGroup              = null;
 
+            splitRowInsrted = false;
+
             dataGridView1.Rows.Clear();
         }
         #endregion
@@ -944,6 +946,9 @@ namespace ChapterTool.Forms
         #endregion
 
         #region Grid View
+
+        private bool splitRowInsrted = false;
+
         private void UpdataGridView(int fpsIndex = 0, bool updateFrameInfo = true)
         {
             if (!IsPathValid || _info == null) return;
@@ -967,7 +972,7 @@ namespace ChapterTool.Forms
             }
 
             SKIP:
-            bool clearRows = _info.Chapters.Count != dataGridView1.Rows.Count;
+            bool clearRows = _info.Chapters.Count != dataGridView1.Rows.Count || splitRowInsrted;
             if (clearRows) dataGridView1.Rows.Clear();
             for (var i = 0; i < _info.Chapters.Count; i++)
             {
@@ -1595,6 +1600,7 @@ namespace ChapterTool.Forms
             DataGridViewRow row = dataGridView1.SelectedRows[0];
             Chapter split = new Chapter("Split line", TimeSpan.MinValue, -1);
             _info.Chapters.Insert(row.Index, split);
+            splitRowInsrted = true;
             UpdataGridView();
         }
     }

@@ -44,8 +44,6 @@ namespace ChapterTool.Util
         public double FramesPerSecond { get; set; }
         public TimeSpan Duration      { get; set; }
         public List<Chapter> Chapters { get; set; } = new List<Chapter>();
-        //public TimeSpan Offset        { get; set; } = TimeSpan.Zero;
-        //public bool Mul1K1            { get; set; }
 
         public Expression Expr { get; set; } = Expression.Empty;
 
@@ -77,6 +75,7 @@ namespace ChapterTool.Util
             if (Chapters[index].Number == -1)
             {
                 row.DefaultCellStyle.BackColor = Color.Black;
+                row.Height = 3;
                 for (int i = 0; i < 4; ++i)
                     row.Cells.Add(new DataGridViewTextBoxCell {Value = ""});
                 return row;
@@ -98,12 +97,6 @@ namespace ChapterTool.Util
         {
             var item = Chapters[row.Index];
             row.Tag  = item;
-            if (item.Number == -1)
-            {
-                row.DefaultCellStyle.BackColor = Color.Black;
-                for(int i = 0; i < 4; ++i) row.Cells[i].Value = "";
-                return;
-            }
             row.DefaultCellStyle.BackColor = (item.Number-1)%2 == 0 ? EVEN_COLOR : ODD_COLOR;
             row.Cells[0].Value = $"{item.Number:D2}";
             row.Cells[1].Value = item.Time2String(this);
