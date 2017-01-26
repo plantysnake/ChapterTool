@@ -31,6 +31,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using ChapterTool.Properties;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using ChapterTool.Util.ChapterData;
 using System.Text.RegularExpressions;
 using static ChapterTool.Util.CTLogger;
@@ -80,17 +81,17 @@ namespace ChapterTool.Forms
             switch (keyData)
             {
                 case Keys.Control | Keys.S:
-                    SaveFile(savingType.SelectedIndex);
+                    SaveFile(SelectedSaveType);
                     return true;
                 case Keys.Alt | Keys.S:
                     if (comboBox2.SelectedIndex + 1 < comboBox2.Items.Count)
                     {
-                        SaveFile(savingType.SelectedIndex);
+                        SaveFile(SelectedSaveType);
                         ++comboBox2.SelectedIndex;
                         comboBox2_SelectionChangeCommitted(null, EventArgs.Empty);
                         if (comboBox2.SelectedIndex + 1 == comboBox2.Items.Count)
                         {
-                            SaveFile(savingType.SelectedIndex);
+                            SaveFile(SelectedSaveType);
                         }
                     }
                     return true;
@@ -172,7 +173,7 @@ namespace ChapterTool.Forms
                     Log(string.Format(Resources.Log_Load_Position_Successful, saved));
                 }
             }
-
+            LoadSaveType();
             LanguageSelectionContainer.LoadLang(xmlLang);
             InsertAccuracyItems();
             SetDefault();
@@ -719,10 +720,11 @@ namespace ChapterTool.Forms
         #endregion
 
         #region Save File
-        private void btnSave_Click(object sender, EventArgs e) => SaveFile(savingType.SelectedIndex);
+        private void btnSave_Click(object sender, EventArgs e) => SaveFile((SaveTypeEnum)savingType.SelectedIndex);
 
         private string _customSavingPath = string.Empty;
 
+        private SaveTypeEnum SelectedSaveType => (SaveTypeEnum) savingType.SelectedIndex;
 
         private void btnSave_MouseUp(object sender, MouseEventArgs e)
         {
@@ -771,7 +773,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        private string GeneRateSavePath(int saveType)
+        private string GeneRateSavePath(SaveTypeEnum saveType)
         {
             var rootPath = string.IsNullOrWhiteSpace(_customSavingPath) ? Path.GetDirectoryName(FilePath) : _customSavingPath;
             var fileName = Path.GetFileNameWithoutExtension(FilePath);
@@ -782,17 +784,39 @@ namespace ChapterTool.Forms
             if (ext == ".mpls" || ext == ".ifo")
                 savePath += $"__{_info.SourceName}";
 
-            string[] saveingTypeSuffix = { ".txt", ".xml", ".qpf", ".TimeCodes.txt", ".TsMuxeR_Meta.txt", ".cue" , ".json" };
             int index = 1;
-            while (File.Exists($"{savePath}_{index}{saveingTypeSuffix[saveType]}")) ++index;
-            savePath += $"_{index}{saveingTypeSuffix[saveType]}";
+            while (File.Exists($"{savePath}_{index}{SaveTypeSuffix[saveType]}")) ++index;
+            savePath += $"_{index}{SaveTypeSuffix[saveType]}";
 
             return savePath;
         }
 
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
+        private enum SaveTypeEnum
+        {
+            TXT, XML, QPF, TimeCodes, TsmuxerMeta, CUE, JSON
+        }
+
+        private static readonly Dictionary<SaveTypeEnum, string> SaveTypeSuffix = new Dictionary<SaveTypeEnum, string>
+        {
+            [SaveTypeEnum.TXT]         = ".txt",
+            [SaveTypeEnum.XML]         = ".xml",
+            [SaveTypeEnum.QPF]         = ".qpf",
+            [SaveTypeEnum.TimeCodes]   = ".TimeCodes.txt",
+            [SaveTypeEnum.TsmuxerMeta] = ".TsMuxeR_Meta.txt",
+            [SaveTypeEnum.CUE]         = ".cue",
+            [SaveTypeEnum.JSON]        = ".json"
+        };
+
+        private void LoadSaveType()
+        {
+            foreach (var type in Enum.GetNames(typeof(SaveTypeEnum)))
+                savingType.Items.Add(type);
+        }
+
         private static readonly Regex RLang = new Regex(@"\((?<lang>.+)\)", RegexOptions.Compiled);
 
-        private void SaveFile(int saveType)
+        private void SaveFile(SaveTypeEnum saveType)
         {
             if (!IsPathValid) return;//防止保存先于载入
             UpdataGridView();
@@ -804,26 +828,26 @@ namespace ChapterTool.Forms
             {
                 switch (saveType)
                 {
-                    case 0: //TXT
+                    case SaveTypeEnum.TXT:
                         _info.SaveText(savePath, AutoGenName);
                         break;
-                    case 1: //XML
+                    case SaveTypeEnum.XML:
                         string key = RLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
                         _info.SaveXml(savePath, string.IsNullOrWhiteSpace(key) ? "" : LanguageSelectionContainer.Languages[key], AutoGenName);
                         break;
-                    case 2: //QPF
+                    case SaveTypeEnum.QPF:
                         _info.SaveQpfile(savePath);
                         break;
-                    case 3: //Time Codes
+                    case SaveTypeEnum.TimeCodes:
                         _info.SaveTimecodes(savePath);
                         break;
-                    case 4: //Tsmuxer
+                    case SaveTypeEnum.TsmuxerMeta:
                         _info.SaveTsmuxerMeta(savePath);
                         break;
-                    case 5: //CUE
+                    case SaveTypeEnum.CUE:
                         _info.SaveCue(Path.GetFileName(FilePath), savePath, AutoGenName);
                         break;
-                    case 6: //JSON
+                    case SaveTypeEnum.JSON:
                         _info.SaveJsonChapter(savePath, AutoGenName);
                         break;
                 }

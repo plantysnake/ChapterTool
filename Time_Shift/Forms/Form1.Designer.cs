@@ -67,13 +67,13 @@
             this.createZonestMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.creatZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ShiftForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.InsertSplitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.textBoxExpression = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsTips = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.tsBtnExpand = new System.Windows.Forms.ToolStripDropDownButton();
-            this.InsertSplitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadMenuStrip.SuspendLayout();
             this.deviationMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -358,14 +358,6 @@
             this.savingType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             resources.ApplyResources(this.savingType, "savingType");
             this.savingType.FormattingEnabled = true;
-            this.savingType.Items.AddRange(new object[] {
-            resources.GetString("savingType.Items"),
-            resources.GetString("savingType.Items1"),
-            resources.GetString("savingType.Items2"),
-            resources.GetString("savingType.Items3"),
-            resources.GetString("savingType.Items4"),
-            resources.GetString("savingType.Items5"),
-            resources.GetString("savingType.Items6")});
             this.savingType.Name = "savingType";
             this.savingType.TabStop = false;
             this.savingType.SelectedIndexChanged += new System.EventHandler(this.savingType_SelectedIndexChanged);
@@ -423,6 +415,12 @@
             resources.ApplyResources(this.ShiftForwardToolStripMenuItem, "ShiftForwardToolStripMenuItem");
             this.ShiftForwardToolStripMenuItem.Click += new System.EventHandler(this.ShiftForwardToolStripMenuItem_Click);
             // 
+            // InsertSplitToolStripMenuItem
+            // 
+            this.InsertSplitToolStripMenuItem.Name = "InsertSplitToolStripMenuItem";
+            resources.ApplyResources(this.InsertSplitToolStripMenuItem, "InsertSplitToolStripMenuItem");
+            this.InsertSplitToolStripMenuItem.Click += new System.EventHandler(this.InsertSplitToolStripMenuItem_Click);
+            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.cbPostFix);
@@ -476,12 +474,6 @@
             this.tsBtnExpand.Name = "tsBtnExpand";
             this.tsBtnExpand.ShowDropDownArrow = false;
             this.tsBtnExpand.Click += new System.EventHandler(this.btnExpand_Click);
-            // 
-            // InsertSplitToolStripMenuItem
-            // 
-            this.InsertSplitToolStripMenuItem.Name = "InsertSplitToolStripMenuItem";
-            resources.ApplyResources(this.InsertSplitToolStripMenuItem, "InsertSplitToolStripMenuItem");
-            this.InsertSplitToolStripMenuItem.Click += new System.EventHandler(this.InsertSplitToolStripMenuItem_Click);
             // 
             // Form1
             // 
