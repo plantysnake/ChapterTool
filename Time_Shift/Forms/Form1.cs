@@ -99,6 +99,7 @@ namespace ChapterTool.Forms
                     btnLoad_Click(null, EventArgs.Empty);
                     return true;
                 case Keys.Control | Keys.R:
+                case Keys.F5:
                     UpdataGridView();
                     return true;
                 case Keys.PageDown:
@@ -239,7 +240,7 @@ namespace ChapterTool.Forms
             _xplGroup               = null;
             _bdmvGroup              = null;
 
-            splitRowInsrted = false;
+            _splitRowInsrted = false;
 
             dataGridView1.Rows.Clear();
         }
@@ -473,28 +474,34 @@ namespace ChapterTool.Forms
 
         private void LoadMpls(out MplsData rawMpls, bool display = true, string customPath = "")
         {
-            MplsData.OnLog += Log;
-            if (string.IsNullOrEmpty(customPath))
-                customPath = FilePath;
-            rawMpls = new MplsData(customPath);
-            MplsData.OnLog -= Log;
-            Log(Resources.Log_MPLS_Load_Success);
-            Log(string.Format(Resources.Log_MPLS_Clip_Count, rawMpls.ChapterClips.Count));
-            if (display)
+            try
             {
-                comboBox2.Enabled = comboBox2.Visible = rawMpls.ChapterClips.Count >= 1;
-                if (!comboBox2.Enabled) return;
-                comboBox2.Items.Clear();
+                MplsData.OnLog += Log;
+                if (string.IsNullOrEmpty(customPath))
+                    customPath = FilePath;
+                rawMpls = new MplsData(customPath);
+                Log(Resources.Log_MPLS_Load_Success);
+                Log(string.Format(Resources.Log_MPLS_Clip_Count, rawMpls.ChapterClips.Count));
+                if (display)
+                {
+                    comboBox2.Enabled = comboBox2.Visible = rawMpls.ChapterClips.Count >= 1;
+                    if (!comboBox2.Enabled) return;
+                    comboBox2.Items.Clear();
+                }
+                foreach (var item in rawMpls.ChapterClips)
+                {
+                    if (display) comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
+                    Log($" |+{item.Name} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]{{{MplsData.Pts2Time(item.Length).TotalSeconds}}}");
+                    Log(string.Format(Resources.Log_TimeStamp_Count, item.TimeStamp.Count));
+                }
+                if (!display) return;
+                comboBox2.SelectedIndex = ClipSeletIndex;
+                GetChapterInfoFromMpls(ClipSeletIndex);
             }
-            foreach(var item in rawMpls.ChapterClips)
+            finally
             {
-                if (display) comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
-                Log($" |+{item.Name} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]{{{MplsData.Pts2Time(item.Length).TotalSeconds}}}");
-                Log(string.Format(Resources.Log_TimeStamp_Count, item.TimeStamp.Count));
+                MplsData.OnLog -= Log;
             }
-            if (!display) return;
-            comboBox2.SelectedIndex = ClipSeletIndex;
-            GetChapterInfoFromMpls(ClipSeletIndex);
         }
 
         private void LoadIfo()
@@ -576,23 +583,32 @@ namespace ChapterTool.Forms
             {
                 Knuckleball.ChapterList.OnLog += Log;
                 var mp4 = new Mp4Data(FilePath);
-                Knuckleball.ChapterList.OnLog -= Log;
                 _info = mp4.Chapter;
             }
             catch (Exception exception)
             {
                 Notification.ShowError(Resources.Message_Unable_To_Read_Mp4_File, exception);
             }
+            finally
+            {
+                Knuckleball.ChapterList.OnLog -= Log;
+            }
         }
 
         private void LoadOgm()
         {
-            OgmData.OnLog += Log;
-            _info = OgmData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTF8String());
-            OgmData.OnLog -= Log;
-            _info.UpdataInfo((int)numericUpDown1.Value);
-            tsProgressBar1.Value = 33;
-            tsTips.Text = Resources.Tips_Load_Success;
+            try
+            {
+                OgmData.OnLog += Log;
+                _info = OgmData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTF8String());
+                _info.UpdataInfo((int)numericUpDown1.Value);
+                tsProgressBar1.Value = 33;
+                tsTips.Text = Resources.Tips_Load_Success;
+            }
+            finally
+            {
+                OgmData.OnLog -= Log;
+            }
         }
 
         private void LoadXml()
@@ -604,11 +620,10 @@ namespace ChapterTool.Forms
 
         private void LoadMatroska()
         {
-            MatroskaData.OnLog += Log;
-            var matroska = new MatroskaData();
-            MatroskaData.OnLog -= Log;
             try
             {
+                MatroskaData.OnLog += Log;
+                var matroska = new MatroskaData();
                 GetChapterInfoFromXml(matroska.GetXml(FilePath));
             }
             catch (Exception exception)
@@ -623,6 +638,10 @@ namespace ChapterTool.Forms
                     Log($"ERROR(LoadMatroska) {exception.Message}");
                 }
                 FilePath = string.Empty;
+            }
+            finally
+            {
+                MatroskaData.OnLog -= Log;
             }
         }
 
@@ -659,16 +678,22 @@ namespace ChapterTool.Forms
             {
                 tsTips.Text = Resources.Tips_Loading;
                 Application.DoEvents();
-                BDMVData.OnLog += Log;
-                _bdmvGroup = await BDMVData.GetChapterAsync(FilePath);
-                BDMVData.OnLog -= Log;
-                if (_bdmvGroup == null || _bdmvGroup.Count == 0)
+                try
                 {
-                    _bdmvGroup = null;
-                    tsTips.Text = Resources.Tips_Load_Fail;
-                    return;
+                    BDMVData.OnLog += Log;
+                    _bdmvGroup = await BDMVData.GetChapterAsync(FilePath);
+                    if (_bdmvGroup == null || _bdmvGroup.Count == 0)
+                    {
+                        _bdmvGroup = null;
+                        tsTips.Text = Resources.Tips_Load_Fail;
+                        return;
+                    }
+                    _info = _bdmvGroup.First();
                 }
-                _info = _bdmvGroup.First();
+                finally
+                {
+                    BDMVData.OnLog -= Log;
+                }
             }
             catch (Exception exception)
             {
@@ -909,11 +934,17 @@ namespace ChapterTool.Forms
         #region GeneRate Chapter Info
         private void GetChapterInfoFromMpls(int index)
         {
-            MplsData.OnLog += Log;
-            _info = _rawMpls.ToChapterInfo(index, CombineChapter);
-            MplsData.OnLog -= Log;
-            tsTips.Text = _info.Chapters.Count < 2 ? Resources.Tips_Chapter_Not_find : Resources.Tips_Load_Success;
-            _info.UpdataInfo(_chapterNameTemplate);
+            try
+            {
+                MplsData.OnLog += Log;
+                _info = _rawMpls.ToChapterInfo(index, CombineChapter);
+                tsTips.Text = _info.Chapters.Count < 2 ? Resources.Tips_Chapter_Not_find : Resources.Tips_Load_Success;
+                _info.UpdataInfo(_chapterNameTemplate);
+            }
+            finally
+            {
+                MplsData.OnLog -= Log;
+            }
         }
 
         private void GetChapterInfoFromIFO(int index)
@@ -947,7 +978,7 @@ namespace ChapterTool.Forms
 
         #region Grid View
 
-        private bool splitRowInsrted = false;
+        private bool _splitRowInsrted;
 
         private void UpdataGridView(int fpsIndex = 0, bool updateFrameInfo = true)
         {
@@ -972,7 +1003,7 @@ namespace ChapterTool.Forms
             }
 
             SKIP:
-            bool clearRows = _info.Chapters.Count != dataGridView1.Rows.Count || splitRowInsrted;
+            bool clearRows = _info.Chapters.Count != dataGridView1.Rows.Count || _splitRowInsrted;
             if (clearRows) dataGridView1.Rows.Clear();
             for (var i = 0; i < _info.Chapters.Count; i++)
             {
@@ -1600,7 +1631,7 @@ namespace ChapterTool.Forms
             DataGridViewRow row = dataGridView1.SelectedRows[0];
             Chapter split = new Chapter("Split line", TimeSpan.MinValue, -1);
             _info.Chapters.Insert(row.Index, split);
-            splitRowInsrted = true;
+            _splitRowInsrted = true;
             UpdataGridView();
         }
     }

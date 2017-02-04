@@ -280,12 +280,18 @@ namespace ChapterTool.Util.ChapterData
 
         private static string GetCueFromFlac(string flacPath, Action<string> log = null)
         {
-            FlacData.OnLog += log;
-            var info = FlacData.GetMetadataFromFlac(flacPath);
-            FlacData.OnLog -= log;
-            if (info.VorbisComment.ContainsKey("cuesheet"))
-                return info.VorbisComment["cuesheet"];
-            return string.Empty;
+            try
+            {
+                FlacData.OnLog += log;
+                var info = FlacData.GetMetadataFromFlac(flacPath);
+                if (info.VorbisComment.ContainsKey("cuesheet"))
+                    return info.VorbisComment["cuesheet"];
+                return string.Empty;
+            }
+            finally
+            {
+                FlacData.OnLog -= log;
+            }
         }
 
         public int Count { get; } = 1;

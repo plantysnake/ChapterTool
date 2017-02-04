@@ -63,7 +63,7 @@ namespace ChapterTool.Util.ChapterData
 
         public static FlacInfo GetMetadataFromFlac(string flacPath)
         {
-            using (var fs = File.Open(flacPath, FileMode.Open, FileAccess.Read))
+            using (var fs = File.Open(flacPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 if (fs.Length < SizeThreshold) return new FlacInfo();
                 FlacInfo info = new FlacInfo {TrueLength = fs.Length};
