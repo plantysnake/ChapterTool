@@ -20,26 +20,37 @@
 using System;
 using System.Linq;
 using System.Drawing;
-using System.Reflection;
 using System.Windows.Forms;
 
 namespace ChapterTool.Forms
 {
     public partial class FormPreview : Form
     {
-        private Point _mainPos;
-        private readonly Form1 _mainWindow;
+        private readonly Form1 _mainForm;
 
-        public FormPreview(string text, Form1 mainWindow)
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+            if (m.Msg == 0x84 && (int)m.Result == 1)
+                m.Result = (IntPtr)(-1);
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var p = base.CreateParams;
+                if (TopMost) p.ExStyle |= 8;
+                return p;
+            }
+        }
+
+        public FormPreview(Form1 mainForm)
         {
             InitializeComponent();
-            cTextBox1.Text = text;
-            _mainWindow    = mainWindow;
-            _mainPos       = mainWindow.Location;
-            ScrollBarSet();
-            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-
-            _mainWindow.Move += Form1_Move;
+            _mainForm       = mainForm;
+            _mainForm.Move += Form1_Move;
+            Icon            = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         }
 
         private void ScrollBarSet()
@@ -64,8 +75,7 @@ namespace ChapterTool.Forms
 
         private void FormPreview_Load(object sender, EventArgs e)
         {
-            _mainPos.X = _mainPos.X - Size.Width;
-            Location   = _mainPos;
+            Form1_Move(this, null);
         }
 
         private void FormPreview_FormClosing(object sender, FormClosingEventArgs e)
@@ -74,14 +84,9 @@ namespace ChapterTool.Forms
             Hide();
         }
 
-        private void FormPreview_Activated(object sender, EventArgs e)
-        {
-            //_mainWindow.Activate();
-        }
-
         private void Form1_Move(object sender, EventArgs e)
         {
-            this.Location = new Point(_mainWindow.Location.X - Width, _mainWindow.Location.Y);
+            Location = new Point(_mainForm.Location.X - Width, _mainForm.Location.Y);
         }
     }
 }
