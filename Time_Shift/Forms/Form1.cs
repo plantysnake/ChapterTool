@@ -856,26 +856,26 @@ namespace ChapterTool.Forms
                 switch (saveType)
                 {
                     case SaveTypeEnum.TXT:
-                        _info.SaveText(savePath, AutoGenName);
+                        _info.GetText(AutoGenName).SaveAs(savePath);
                         break;
                     case SaveTypeEnum.XML:
                         string key = RLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
                         _info.SaveXml(savePath, string.IsNullOrWhiteSpace(key) ? "" : LanguageSelectionContainer.Languages[key], AutoGenName);
                         break;
                     case SaveTypeEnum.QPF:
-                        _info.SaveQpfile(savePath);
+                        _info.GetTimecodes().SaveAs(savePath);
                         break;
                     case SaveTypeEnum.TimeCodes:
-                        _info.SaveTimecodes(savePath);
+                        _info.GetTimecodes().SaveAs(savePath);
                         break;
                     case SaveTypeEnum.TsmuxerMeta:
-                        _info.SaveTsmuxerMeta(savePath);
+                        _info.GetTimecodes().SaveAs(savePath);
                         break;
                     case SaveTypeEnum.CUE:
-                        _info.SaveCue(Path.GetFileName(FilePath), savePath, AutoGenName);
+                        _info.GetCue(Path.GetFileName(FilePath), AutoGenName).SaveAs(savePath);
                         break;
                     case SaveTypeEnum.JSON:
-                        _info.SaveJsonChapter(savePath, AutoGenName);
+                        _info.GetJson(AutoGenName).SaveAs(savePath);
                         break;
                 }
                 tsProgressBar1.Value = 100;
@@ -1477,7 +1477,10 @@ namespace ChapterTool.Forms
             if (!IsPathValid) return;
             if (_previewForm == null)
             {
-                _previewForm = new FormPreview(_info.GetText(AutoGenName), this);
+                _previewForm = new FormPreview(this)
+                {
+                    TopMost = true
+                };
             }
             _previewForm.UpdateText(_info.GetText(AutoGenName));
             _previewForm.Show();
@@ -1512,8 +1515,10 @@ namespace ChapterTool.Forms
 
         private void InsertMpls()
         {
-            var targetPath = Path.GetDirectoryName(FilePath) + "\\..\\STREAM";
-            Debug.Assert(targetPath != null);
+            var basePath = Path.GetDirectoryName(FilePath);
+            Debug.Assert(basePath != null);
+            var targetPath = Path.Combine(basePath, "\\..\\STREAM");
+            if (!Directory.Exists(targetPath)) return;
 
             combineMenuStrip.Items.Add(new ToolStripSeparator());
             var fileLine = comboBox2.Text;
@@ -1545,8 +1550,11 @@ namespace ChapterTool.Forms
 
         private void InsertXpl()
         {
-            var targetPath = Path.GetDirectoryName(FilePath) + "\\..\\HVDVD_TS";
-            Debug.Assert(targetPath != null);
+            var basePath = Path.GetDirectoryName(FilePath);
+            Debug.Assert(basePath != null);
+            var targetPath = Path.Combine(basePath, "\\..\\HVDVD_TS");
+            if (!Directory.Exists(targetPath)) return;
+
             combineMenuStrip.Items.Add(new ToolStripSeparator());
             var file = Path.GetFileName(_info.SourceName);
             ToolStripMenuItem fMenuItem = new ToolStripMenuItem(string.Format(Resources.Menu_Open_File, file));
@@ -1560,18 +1568,9 @@ namespace ChapterTool.Forms
 
         private void contextMenuStrip2_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (_rawMpls != null)
-            {
-                InsertMpls();
-            }
-            else if (_ifoGroup != null)
-            {
-                InsertIfo();
-            }
-            else if (_xplGroup != null)
-            {
-                InsertXpl();
-            }
+                 if (_rawMpls  != null) InsertMpls();
+            else if (_ifoGroup != null) InsertIfo();
+            else if (_xplGroup != null) InsertXpl();
         }
 
         private void contextMenuStrip2_Closed(object sender, ToolStripDropDownClosedEventArgs e)

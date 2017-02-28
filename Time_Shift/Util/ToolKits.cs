@@ -154,6 +154,12 @@ namespace ChapterTool.Util
             window.TextFrontColor = ColorTranslator.FromHtml(matchesOfJson[5].Groups["hex"].Value);
         }
 
+        public static void SaveAs(this string[] chapter, string path) => File.WriteAllLines(path, chapter, Encoding.UTF8);
+
+        public static void SaveAs(this string chapter, string path) => File.WriteAllText(path, chapter, Encoding.UTF8);
+
+        public static void SaveAs(this object chapter, string path) => File.WriteAllText(path, chapter.ToString(), Encoding.UTF8);
+
         public static bool IsAdministrator()
         {
             WindowsIdentity identity = WindowsIdentity.GetCurrent();

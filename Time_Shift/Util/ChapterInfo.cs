@@ -214,9 +214,7 @@ namespace ChapterTool.Util
             return lines.ToString();
         }
 
-        public void SaveText(string filename, bool autoGenName) => File.WriteAllText(filename, GetText(autoGenName), Encoding.UTF8);
-
-        public void SaveQpfile(string filename) => File.WriteAllLines(filename, Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => c.FramsInfo.ToString().Replace("*", "I").Replace("K", "I")).ToArray());
+        public string[] GetQpfile() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => c.FramsInfo.ToString().Replace("*", "I").Replace("K", "I")).ToArray();
 
         public static void Chapter2Qpfile(string ipath, string opath, double fps, string tcfile = "")
         {
@@ -285,17 +283,17 @@ namespace ChapterTool.Util
             File.WriteAllLines(opath, olines);
         }
 
-        public void SaveCelltimes(string filename) => File.WriteAllLines(filename, Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => ((long) Math.Round(c.Time.TotalSeconds*FramesPerSecond)).ToString()).ToArray());
+        public string[] GetCelltimes() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => ((long) Math.Round(c.Time.TotalSeconds*FramesPerSecond)).ToString()).ToArray();
 
-        public void SaveTsmuxerMeta(string filename)
+        public string GetTsmuxerMeta()
         {
             string text = $"--custom-{Environment.NewLine}chapters=";
             text = Chapters.Where(c => c.Time != TimeSpan.MinValue).Aggregate(text, (current, chapter) => current + Time2String(chapter) + ";");
             text = text.Substring(0, text.Length - 1);
-            File.WriteAllText(filename, text);
+            return text;
         }
 
-        public void SaveTimecodes(string filename) => File.WriteAllLines(filename, Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(Time2String).ToArray());
+        public string[] GetTimecodes() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(Time2String).ToArray();
 
         public void SaveXml(string filename, string lang, bool autoGenName)
         {
@@ -329,7 +327,7 @@ namespace ChapterTool.Util
             xmlchap.Close();
         }
 
-        public void SaveCue(string sourceFileName, string fileName, bool autoGenName)
+        public StringBuilder GetCue(string sourceFileName, bool autoGenName)
         {
             StringBuilder cueBuilder = new StringBuilder();
             cueBuilder.AppendLine("REM Generate By ChapterTool");
@@ -344,10 +342,10 @@ namespace ChapterTool.Util
                 cueBuilder.AppendLine($"    TITLE \"{(autoGenName ? name(): chapter.Name)}\"");
                 cueBuilder.AppendLine($"    INDEX 01 {chapter.Time.ToCueTimeStamp()}");
             }
-            File.WriteAllText(fileName, cueBuilder.ToString());
+            return cueBuilder;
         }
 
-        public void SaveJsonChapter(string fileName, bool autoGenName)
+        public StringBuilder GetJson(bool autoGenName)
         {
             StringBuilder jsonBuilder = new StringBuilder();
             jsonBuilder.Append("{");
@@ -379,7 +377,7 @@ namespace ChapterTool.Util
             jsonBuilder.Remove(jsonBuilder.Length - 1, 1);
             jsonBuilder.Append("]]");
             jsonBuilder.Append("}");
-            File.WriteAllText(fileName, jsonBuilder.ToString());
+            return jsonBuilder;
         }
     }
 }
