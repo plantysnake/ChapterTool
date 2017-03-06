@@ -13,19 +13,37 @@ namespace ChapterTool.Util.ChapterData
 
         private static readonly Regex RDiskInfo = new Regex(@"(?<idx>\d)\) (?<mpls>\d+\.mpls), (?:(?:(?<dur>\d+:\d+:\d+)[\n\s\b]*(?<fn>.+\.m2ts))|(?:(?<fn2>.+\.m2ts), (?<dur2>\d+:\d+:\d+)))", RegexOptions.Compiled);
 
-        public static async Task<List<ChapterInfo>> GetChapterAsync(string location)
+        public static async Task<KeyValuePair<string, List<ChapterInfo>>> GetChapterAsync(string location)
         {
             var list = new List<ChapterInfo>();
-            string path = Path.Combine(Path.Combine(location, "BDMV"), "PLAYLIST");
+            string bdmvTitle = null;
+            string path = Path.Combine(location, "BDMV", "PLAYLIST");
             if (!Directory.Exists(path))
             {
                 throw new FileNotFoundException("Blu-Ray disc structure not found.");
             }
+
+            var metaPath = Path.Combine(location, "BDMV", "META", "DL");
+            if (Directory.Exists(metaPath))
+            {
+                var xmlFile = Directory.GetFiles(metaPath).FirstOrDefault(file => file.ToLower().EndsWith(".xml"));
+                if (xmlFile != null)
+                {
+                    var xmlText = File.ReadAllText(xmlFile);
+                    var title = Regex.Match(xmlText, @"<di:name>(?<title>[^<]*)</di:name>");
+                    if (title.Success)
+                    {
+                        bdmvTitle = title.Groups["title"].Value;
+                        OnLog?.Invoke($"Disc Title: {bdmvTitle}");
+                    }
+                }
+            }
+
             var eac3toPath = RegistryStorage.Load(name: "eac3toPath");
             if (string.IsNullOrEmpty(eac3toPath) || !File.Exists(eac3toPath))
             {
                 eac3toPath = Notification.InputBox("请输入eac3to的地址", "注意不要带上多余的引号", "C:\\eac3to\\eac3to.exe");
-                if (string.IsNullOrEmpty(eac3toPath)) return list;
+                if (string.IsNullOrEmpty(eac3toPath)) return new KeyValuePair<string, List<ChapterInfo>>(bdmvTitle, list);
                 RegistryStorage.Save(name: "eac3toPath",value: eac3toPath);
             }
             var workingPath = Directory.GetParent(location).FullName;
@@ -35,7 +53,7 @@ namespace ChapterTool.Util.ChapterData
             {
                 throw new Exception("May be the path is too complex or directory contains nonAscii characters");
             }
-            OnLog?.Invoke("Disc Info:\r\n" + text.Replace('\b', '\uFEFF'));
+            OnLog?.Invoke("\r\nDisc Info:\r\n" + text.Replace('\b', '\uFEFF'));
 
             foreach (Match match in RDiskInfo.Matches(text))
             {
@@ -79,7 +97,7 @@ namespace ChapterTool.Util.ChapterData
             toBeRemove.ForEach(item => list.Remove(item));
             if(File.Exists(chapterPath)) File.Delete(chapterPath);
             if(File.Exists(logPath)) File.Delete(logPath);
-            return list;
+            return new KeyValuePair<string, List<ChapterInfo>>(bdmvTitle, list);
         }
     }
 }

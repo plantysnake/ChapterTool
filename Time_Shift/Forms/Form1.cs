@@ -239,6 +239,7 @@ namespace ChapterTool.Forms
             _fullIfoChapter         = null;
             _xplGroup               = null;
             _bdmvGroup              = null;
+            _bdvmTitle              = null;
 
             _splitRowInsrted = false;
 
@@ -671,6 +672,8 @@ namespace ChapterTool.Forms
             tsTips.Text = Resources.Tips_Load_Success;
         }
 
+        private string _bdvmTitle;
+
         private async void LoadBDMVAsync()
         {
             SetDefault();
@@ -681,7 +684,9 @@ namespace ChapterTool.Forms
                 try
                 {
                     BDMVData.OnLog += Log;
-                    _bdmvGroup = await BDMVData.GetChapterAsync(FilePath);
+                    var ret = await BDMVData.GetChapterAsync(FilePath);
+                    _bdvmTitle = ret.Key;
+                    _bdmvGroup = ret.Value;
                     if (_bdmvGroup == null || _bdmvGroup.Count == 0)
                     {
                         _bdmvGroup = null;
@@ -803,7 +808,7 @@ namespace ChapterTool.Forms
         private string GeneRateSavePath(SaveTypeEnum saveType)
         {
             var rootPath = string.IsNullOrWhiteSpace(_customSavingPath) ? Path.GetDirectoryName(FilePath) : _customSavingPath;
-            var fileName = Path.GetFileNameWithoutExtension(FilePath);
+            var fileName = _bdvmTitle ?? Path.GetFileNameWithoutExtension(FilePath);
             Debug.Assert(rootPath != null && fileName != null);
             var savePath = Path.Combine(rootPath, fileName);
 
