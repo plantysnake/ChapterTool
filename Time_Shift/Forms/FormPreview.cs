@@ -28,19 +28,14 @@ namespace ChapterTool.Forms
     {
         private readonly Form1 _mainForm;
 
-        protected override void WndProc(ref Message m)
-        {
-            base.WndProc(ref m);
-            if (m.Msg == 0x84 && (int)m.Result == 1)
-                m.Result = (IntPtr)(-1);
-        }
+        internal const int WS_EX_TOPMOST = 8;
 
         protected override CreateParams CreateParams
         {
             get
             {
                 var p = base.CreateParams;
-                if (TopMost) p.ExStyle |= 8;
+                if (TopMost) p.ExStyle |= WS_EX_TOPMOST;
                 return p;
             }
         }
