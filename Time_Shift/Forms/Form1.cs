@@ -1042,7 +1042,7 @@ namespace ChapterTool.Forms
             _info.UpdataInfo(newInitialTime);
             if ((_rawMpls != null || _ifoGroup != null) && string.IsNullOrWhiteSpace(_chapterNameTemplate))
             {
-                var name = ChapterName.GetChapterName("Chapter");
+                var name = ChapterName.GetChapterName();
                 _info.Chapters.ForEach(item => item.Name = name());
             }
             Application.DoEvents();

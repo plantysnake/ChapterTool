@@ -203,7 +203,7 @@ namespace ChapterTool.Util
         public string GetText(bool autoGenName)
         {
             var lines = new StringBuilder();
-            var name  = ChapterName.GetChapterName("Chapter");
+            var name  = ChapterName.GetChapterName();
             foreach (var item in Chapters.Where(c => c.Time != TimeSpan.MinValue))
             {
                 lines.Append($"CHAPTER{item.Number:D2}={Time2String(item)}{Environment.NewLine}");
@@ -307,7 +307,7 @@ namespace ChapterTool.Util
                 xmlchap.WriteElementString("EditionFlagHidden", "0");
                 xmlchap.WriteElementString("EditionFlagDefault", "0");
                 xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                var name = ChapterName.GetChapterName("Chapter");
+                var name = ChapterName.GetChapterName();
                 foreach (var item in Chapters.Where(c => c.Time != TimeSpan.MinValue))
                 {
                     xmlchap.WriteStartElement("ChapterAtom");
@@ -335,7 +335,7 @@ namespace ChapterTool.Util
 
             cueBuilder.AppendLine($"FILE \"{sourceFileName}\" WAVE");
             int index = 0;
-            var name = ChapterName.GetChapterName("Chapter");
+            var name = ChapterName.GetChapterName();
             foreach (var chapter in Chapters.Where(c=>c.Time != TimeSpan.MinValue))
             {
                 cueBuilder.AppendLine($"  TRACK {++index:D2} AUDIO");
@@ -356,13 +356,13 @@ namespace ChapterTool.Util
 
             TimeSpan baseTime = TimeSpan.Zero;
             Chapter prevChapter = null;
-            var name = ChapterName.GetChapterName("Chapter");
+            var name = ChapterName.GetChapterName();
             foreach (Chapter chapter in Chapters)
             {
                 if (chapter.Time == TimeSpan.MinValue && prevChapter != null)
                 {
                     baseTime = prevChapter.Time;//update base time
-                    name = ChapterName.GetChapterName("Chapter");
+                    name = ChapterName.GetChapterName();
                     string initChapterName = autoGenName ? name() : prevChapter.Name;
                     jsonBuilder.Remove(jsonBuilder.Length - 1, 1);
                     jsonBuilder.Append("],[");

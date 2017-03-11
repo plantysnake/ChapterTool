@@ -91,7 +91,7 @@ namespace ChapterTool.Util.ChapterData
                 }
                 current.Chapters = OgmData.GetChapterInfo(File.ReadAllBytes(chapterPath).GetUTF8String()).Chapters;
                 if (current.Chapters.First().Name != "") continue;
-                var chapterName = ChapterName.GetChapterName("Chapter");
+                var chapterName = ChapterName.GetChapterName();
                 current.Chapters.ForEach(chapter => chapter.Name = chapterName());
             }
             toBeRemove.ForEach(item => list.Remove(item));

@@ -284,7 +284,7 @@ namespace SharpDvdInfo
 
             foreach (var titleInfo in Titles)
             {
-                var chapterName = ChapterName.GetChapterName("Chapter");
+                var chapterName = ChapterName.GetChapterName();
                 var index = 1;
                 var tmp = new ChapterInfo
                 {
