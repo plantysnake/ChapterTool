@@ -196,7 +196,7 @@ namespace ChapterTool.Util
 
         private static readonly Lazy<bool> IsRunningOnMonoValue = new Lazy<bool>(() => Type.GetType("Mono.Runtime") != null);
 
-        public static bool IsRunningOnMono() => IsRunningOnMonoValue.Value;
+        public static bool IsRunningOnMono => IsRunningOnMonoValue.Value;
     }
 
     public static class RegistryStorage

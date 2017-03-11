@@ -20,7 +20,7 @@ namespace ChapterTool.Util.ChapterData
                 {
                     ChapterInfo pgc = new ChapterInfo
                     {
-                        SourceName = title.Element(ns + "PrimaryAudioVideoClip")?.Attribute("src").Value,
+                        SourceName = title.Element(ns + "PrimaryAudioVideoClip")?.Attribute("src")?.Value ?? "",
                         SourceType      = "HD-DVD",
                         FramesPerSecond = 24D,
                         Chapters        = new List<Chapter>()
@@ -28,14 +28,14 @@ namespace ChapterTool.Util.ChapterData
                     int tickBaseDivisor = (int?)title.Attribute("tickBaseDivisor") ?? 1; //optional
                     pgc.Duration        = GetTimeSpan((string)title.Attribute("titleDuration"), timeBase, tickBase, tickBaseDivisor);
                     var titleName       = Path.GetFileNameWithoutExtension(location);
-                    if (title.Attribute("id") != null)          titleName = title.Attribute("id").Value; //optional
-                    if (title.Attribute("displayName") != null) titleName = title.Attribute("displayName").Value; //optional
+                    if (title.Attribute("id") != null)          titleName = title.Attribute("id")?.Value??""; //optional
+                    if (title.Attribute("displayName") != null) titleName = title.Attribute("displayName")?.Value ?? ""; //optional
                     pgc.Title           = titleName;
                     foreach (XElement chapter in title.Element(ns + "ChapterList").Elements(ns + "Chapter"))
                     {
                         var chapterName = string.Empty;
-                        if (chapter.Attribute("id") != null) chapterName = chapter.Attribute("id").Value; //optional
-                        if (chapter.Attribute("displayName") != null) chapterName = chapter.Attribute("displayName").Value; //optional
+                        if (chapter.Attribute("id") != null) chapterName = chapter.Attribute("id")?.Value ?? ""; //optional
+                        if (chapter.Attribute("displayName") != null) chapterName = chapter.Attribute("displayName")?.Value ?? ""; //optional
                         pgc.Chapters.Add(new Chapter
                         {
                             Name = chapterName,
