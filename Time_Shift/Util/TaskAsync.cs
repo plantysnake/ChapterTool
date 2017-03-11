@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ChapterTool.Util
 {
     public static class TaskAsync
     {
-        public static async Task<string> RunProcessAsync(string fileName, string args, string workingDirectory = "")
+        public static async Task<StringBuilder> RunProcessAsync(string fileName, string args, string workingDirectory = "")
         {
             using (var process = new Process
             {
@@ -27,12 +28,12 @@ namespace ChapterTool.Util
             }
         }
 
-        private static Task<string> RunProcessAsync(Process process)
+        private static Task<StringBuilder> RunProcessAsync(Process process)
         {
-            var tcs = new TaskCompletionSource<string>();
-            var ret = string.Empty;
+            var tcs = new TaskCompletionSource<StringBuilder>();
+            var ret = new StringBuilder();
             process.Exited += (sender, args) => tcs.SetResult(ret);
-            process.OutputDataReceived += (sender, args) => ret += args.Data + "\r\n";
+            process.OutputDataReceived += (sender, args) => ret.AppendLine(args.Data?.Trim('\b', ' '));
             //process.ErrorDataReceived += (s, ea) => Debug.WriteLine("ERR: " + ea.Data);
 
             if (!process.Start())

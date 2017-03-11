@@ -48,12 +48,13 @@ namespace ChapterTool.Util.ChapterData
             }
             var workingPath = Directory.GetParent(location).FullName;
             location = location.Substring(location.LastIndexOf('\\') + 1);
-            string text = await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\"", workingPath);
+            string text = (await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\"", workingPath)).ToString();
             if (text.Contains("HD DVD / Blu-Ray disc structure not found."))
             {
+                OnLog?.Invoke(text);
                 throw new Exception("May be the path is too complex or directory contains nonAscii characters");
             }
-            OnLog?.Invoke("\r\nDisc Info:\r\n" + text.Replace('\b', '\uFEFF'));
+            OnLog?.Invoke("\r\nDisc Info:\r\n" + text);
 
             foreach (Match match in RDiskInfo.Matches(text))
             {
@@ -65,28 +66,28 @@ namespace ChapterTool.Util.ChapterData
                 if (string.IsNullOrEmpty(file)) file = match.Groups["fn2"].Value;
                 OnLog?.Invoke($"+ {index}) {mpls} -> [{file}] - [{time}]");
 
-                ChapterInfo chapterInfo = new ChapterInfo
+                list.Add(new ChapterInfo
                 {
                     Duration = TimeSpan.Parse(time),
                     SourceIndex = index,
                     SourceName = file
-                };
-                list.Add(chapterInfo);
+                });
             }
-            var toBeRemove = new List<ChapterInfo>();
+            var toBeRemove  = new List<ChapterInfo>();
             var chapterPath = Path.Combine(workingPath, "chapters.txt");
-            var logPath = Path.Combine(workingPath, "chapters - Log.txt");
+            var logPath     = Path.Combine(workingPath, "chapters - Log.txt");
             foreach (ChapterInfo current in list)
             {
-                text = await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\" {current.SourceIndex})", workingPath);
+                text = (await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\" {current.SourceIndex})", workingPath)).ToString();
                 if (!text.Contains("Chapters"))
                 {
                     toBeRemove.Add(current);
                     continue;
                 }
-                text = await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\" {current.SourceIndex}) chapters.txt", workingPath);
+                text = (await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\" {current.SourceIndex}) chapters.txt", workingPath)).ToString();
                 if (!text.Contains("Creating file \"chapters.txt\"...") && !text.Contains("Done!"))
                 {
+                    OnLog?.Invoke(text);
                     throw new Exception("Error creating chapters file.");
                 }
                 current.Chapters = OgmData.GetChapterInfo(File.ReadAllBytes(chapterPath).GetUTF8String()).Chapters;
