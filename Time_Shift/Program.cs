@@ -15,8 +15,13 @@ namespace ChapterTool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            if (!IsSupportedRuntimeVersion())
+            {
+                var ret = Util.Notification.ShowInfo(Resources.Message_Need_Newer_dotNet);
+                System.Diagnostics.Process.Start("http://dotnetsocial.cloudapp.net/GetDotnet?tfm=.NETFramework,Version=v4.6");
+                if (ret == DialogResult.Yes) Util.RegistryStorage.Save("False", name: "DoVersionCheck");
+            }
 
-            CheckDotNetVersion();
             if (args.Length == 0)
             {
                 Application.Run(new Forms.Form1());
@@ -28,21 +33,20 @@ namespace ChapterTool
             }
         }
 
-        private static void CheckDotNetVersion()
+        private static bool IsSupportedRuntimeVersion()
         {
-            var doCheck = Util.RegistryStorage.Load(name: "DoVersionCheck");
-            if (doCheck == "False") return;
-            int dotNetVersion;
-            var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full");
-            if (key == null) dotNetVersion = 0;
-            else dotNetVersion = (int)(key.GetValue("Release"));
             //https://msdn.microsoft.com/en-us/library/hh925568
-            if (dotNetVersion >= 394802) return;
-            var ret = Util.Notification.ShowInfo(Resources.Message_Need_Newer_dotNet);
-            if (ret == DialogResult.Yes)
+            const int minSupportedRelease = 394802;
+            if (Util.RegistryStorage.Load(name: "DoVersionCheck") == "False") return true;
+            using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full"))
             {
-                Util.RegistryStorage.Save("False", name: "DoVersionCheck");
+                if (key?.GetValue("Release") != null)
+                {
+                    var releaseKey = (int)key.GetValue("Release");
+                    if (releaseKey >= minSupportedRelease) return true;
+                }
             }
+            return false;
         }
     }
 }
