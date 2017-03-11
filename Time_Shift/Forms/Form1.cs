@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using ChapterTool.Util.ChapterData;
 using System.Text.RegularExpressions;
-using static ChapterTool.Util.CTLogger;
+using static ChapterTool.Util.Logger;
 using static ChapterTool.Util.ToolKits;
 
 

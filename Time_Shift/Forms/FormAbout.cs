@@ -75,7 +75,7 @@ namespace ChapterTool.Forms
                 Opacity -= 0.02;
                 Thread.Sleep(20);
             }
-            CTLogger.Log("关于窗口被关闭");
+            Logger.Log("关于窗口被关闭");
             Close();
         }
 
@@ -105,7 +105,7 @@ namespace ChapterTool.Forms
         {
             //Thread.Sleep(20000);
             WindowState = FormWindowState.Minimized;
-            CTLogger.Log("关于窗口被最小化");
+            Logger.Log("关于窗口被最小化");
         }
 
         private void Form2_FormClosing(object sender, FormClosingEventArgs e)
