@@ -210,7 +210,7 @@ namespace ChapterTool.Util.ChapterData
             if (selectedTimeStamp.Count < 2) return info;
             int offset  = selectedTimeStamp.First();
             /**
-             * the begin time stamp of the chapter isn't the begin of the video
+             * the beginning time stamp of the chapter not always the beginning of the video
              * eg: Hidan no Aria AA, There are 24 black frames at the begining of each even episode
              *     Which results that the first time stamp should be the 00:00:01.001
              */
@@ -232,14 +232,14 @@ namespace ChapterTool.Util.ChapterData
 
     public class Clip
     {
-        public string Name { get; set; }
+        public string Name         { get; set; }
         public List<int> TimeStamp { get; } = new List<int>();
-        public int Fps { get; set; }
-        public int Length { get; set; }
-        public int RelativeTimeIn { get; set; }
+        public int Fps             { get; set; }
+        public int Length          { get; set; }
+        public int RelativeTimeIn  { get; set; }
         public int RelativeTimeOut { get; set; }
-        public int TimeIn { get; set; }
-        public int TimeOut { get; set; }
+        public int TimeIn          { get; set; }
+        public int TimeOut         { get; set; }
         public override string ToString() => $"{Name} - {MplsData.Pts2Time(Length)}";
     }
 
