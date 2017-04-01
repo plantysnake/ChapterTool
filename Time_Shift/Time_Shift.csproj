@@ -136,6 +136,7 @@
     <Compile Include="SharpDvdInfo\Model\VideoProperties.cs" />
     <Compile Include="SharpDvdInfo\Model\VmgmInfo.cs" />
     <Compile Include="Util\ChapterData\FlacData.cs" />
+    <Compile Include="Util\ChapterData\Serializable\MatroskaChapters.cs" />
     <Compile Include="Util\Expression.cs" />
     <Compile Include="Util\TaskAsync.cs" />
     <Compile Include="Util\Chapter.cs" />
@@ -232,7 +233,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\about.ico" />
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="app.manifest" />
     <None Include="Images\arrow_drop_down.png" />
     <None Include="Images\arrow_drop_up.png" />

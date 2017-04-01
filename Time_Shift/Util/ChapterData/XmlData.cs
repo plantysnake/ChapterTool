@@ -19,9 +19,12 @@
 // ****************************************************************************
 
 using System;
+using System.IO;
 using System.Xml;
 using System.Linq;
+using System.Xml.Serialization;
 using System.Collections.Generic;
+using ChapterTool.Util.ChapterData.Serializable;
 
 namespace ChapterTool.Util.ChapterData
 {
@@ -108,6 +111,62 @@ namespace ChapterTool.Util.ChapterData
 
             if (endChapter.Time.TotalSeconds > startChapter.Time.TotalSeconds)
             {
+                yield return endChapter;
+            }
+        }
+
+        public static Chapters Deserializer(string filePath)
+        {
+            using (var reader = new StreamReader(filePath))
+            {
+                return (Chapters)new XmlSerializer(typeof(Chapters)).Deserialize(reader);
+            }
+        }
+
+        public static IEnumerable<ChapterInfo> ToChapterInfo(this Chapters chapters)
+        {
+            var index = 0;
+            foreach (var entry in chapters.EditionEntry)
+            {
+                var info = new ChapterInfo();
+                foreach (var atom in entry.ChapterAtom)
+                {
+                    info.Chapters.AddRange(ToChapter(atom, ++index));
+                }
+                yield return info;
+            }
+        }
+
+        private static IEnumerable<Chapter> ToChapter(ChapterAtom atom, int index)
+        {
+            if (atom.ChapterTimeStart != null)
+            {
+                var startChapter = new Chapter
+                {
+                    Number = index,
+                    Time = ToolKits.RTimeFormat.Match(atom.ChapterTimeStart).Value.ToTimeSpan(),
+                    Name = atom.ChapterDisplay.ChapterString ?? ""
+                };
+                yield return startChapter;
+            }
+                
+            if (atom.SubChapterAtom != null)
+                foreach (var chapterAtom in atom.SubChapterAtom)
+                {
+                    foreach (var chapter in ToChapter(chapterAtom, index))
+                    {
+                        yield return chapter;
+                    }
+                }
+
+            if (atom.ChapterTimeEnd != null)
+            {
+                var endChapter = new Chapter
+                {
+                    Number = index,
+                    Time = ToolKits.RTimeFormat.Match(atom.ChapterTimeEnd).Value.ToTimeSpan(),
+                    Name = atom.ChapterDisplay.ChapterString ?? ""
+                };
                 yield return endChapter;
             }
         }

@@ -54,7 +54,8 @@ namespace ChapterTool.Util.ChapterData
                     mkvToolnixPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 }
             }
-            _mkvextractPath = mkvToolnixPath + "\\mkvextract.exe";
+            if (mkvToolnixPath != null)
+                _mkvextractPath = Path.Combine(mkvToolnixPath, "mkvextract.exe");
             if (!File.Exists(_mkvextractPath))
             {
                 OnLog?.Invoke($"Mkvextract Path: {_mkvextractPath}");
@@ -65,7 +66,7 @@ namespace ChapterTool.Util.ChapterData
         public XmlDocument GetXml(string path)
         {
             string arg = $"chapters \"{path}\"";
-            string xmlresult = RunMkvextract(arg, _mkvextractPath);
+            var xmlresult = RunMkvextract(arg, _mkvextractPath);
             if (string.IsNullOrEmpty(xmlresult)) throw new Exception("No Chapter Found");
             _result.LoadXml(xmlresult);
             return _result;
@@ -73,16 +74,18 @@ namespace ChapterTool.Util.ChapterData
 
         private static string RunMkvextract(string arguments, string program)
         {
-            Process process = new Process
+            var process = new Process
             {
                 StartInfo = { FileName = program, Arguments = arguments, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, StandardOutputEncoding = System.Text.Encoding.UTF8 }
             };
             process.Start();
-            string output = process.StandardOutput.ReadToEnd();
+            var output = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
             process.Close();
             return output;
         }
+
+
         /// <summary>
         /// Returns the path from MKVToolnix.
         /// It tries to find it via the registry keys.
@@ -92,13 +95,13 @@ namespace ChapterTool.Util.ChapterData
         private static string GetMkvToolnixPathViaRegistry()
         {
             RegistryKey regMkvToolnix = null;
-            string valuePath          = string.Empty;
-            bool subKeyFound          = false;
-            bool valueFound           = false;
+            var valuePath            = string.Empty;
+            var subKeyFound          = false;
+            var valueFound           = false;
 
             // First check for Installed MkvToolnix
             // First check Win32 registry
-            RegistryKey regUninstall = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
+            var regUninstall = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
             if (regUninstall == null)
             {
                 throw new Exception("Failed to create a RegistryKey variable");
@@ -112,7 +115,8 @@ namespace ChapterTool.Util.ChapterData
             // if sub key was found, try to get the executable path
             if (subKeyFound)
             {
-                foreach (string valueName in regMkvToolnix.GetValueNames().Where(valueName => valueName.ToLower().Equals("DisplayIcon".ToLower())))
+                if (regMkvToolnix == null) throw new Exception($"Failed to open key {nameof(regMkvToolnix)}");
+                foreach (var valueName in regMkvToolnix.GetValueNames().Where(valueName => valueName.ToLower().Equals("DisplayIcon".ToLower())))
                 {
                     valueFound = true;
                     valuePath = (string)regMkvToolnix.GetValue(valueName);
@@ -125,7 +129,7 @@ namespace ChapterTool.Util.ChapterData
             {
                 subKeyFound = false;
                 regUninstall = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall");
-
+                if (regUninstall == null) throw new Exception($"Failed to open key {nameof(regUninstall)}");
                 if (regUninstall.GetSubKeyNames().Any(subKeyName => subKeyName.ToLower().Equals("MKVToolNix".ToLower())))
                 {
                     subKeyFound = true;
@@ -135,7 +139,8 @@ namespace ChapterTool.Util.ChapterData
                 // if sub key was found, try to get the executable path
                 if (subKeyFound)
                 {
-                    foreach (string valueName in regMkvToolnix.GetValueNames().Where(valueName => valueName.ToLower().Equals("DisplayIcon".ToLower())))
+                    if (regMkvToolnix == null) throw new Exception($"Failed to open key {nameof(regMkvToolnix)}");
+                    foreach (var valueName in regMkvToolnix.GetValueNames().Where(valueName => valueName.ToLower().Equals("DisplayIcon".ToLower())))
                     {
                         valueFound = true;
                         valuePath = (string)regMkvToolnix.GetValue(valueName);
@@ -148,7 +153,7 @@ namespace ChapterTool.Util.ChapterData
             // let's try the CURRENT_USER registry
             if (!valueFound)
             {
-                RegistryKey regSoftware = Registry.CurrentUser.OpenSubKey("Software");
+                var regSoftware = Registry.CurrentUser.OpenSubKey("Software");
                 subKeyFound = false;
                 if (regSoftware != null && regSoftware.GetSubKeyNames().Any(subKey => subKey.ToLower().Equals("mkvmergeGUI".ToLower())))
                 {
@@ -162,7 +167,7 @@ namespace ChapterTool.Util.ChapterData
                     throw new Exception("Couldn't find MKVToolNix in your system!\r\nPlease download and install it or provide a manual path!");
                 }
                 RegistryKey regGui = null;
-                bool foundGuiKey = false;
+                var foundGuiKey = false;
                 if (regMkvToolnix != null && regMkvToolnix.GetSubKeyNames().Any(subKey => subKey.ToLower().Equals("GUI".ToLower())))
                 {
                     foundGuiKey = true;
