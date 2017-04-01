@@ -22,13 +22,15 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using System.Drawing;
+using Microsoft.Win32;
+using System.Reflection;
 using ChapterTool.Forms;
 using System.Diagnostics;
+using System.Windows.Forms;
 using System.Security.Principal;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using ChapterTool.Util.ChapterData;
-using Microsoft.Win32;
+using System.Text.RegularExpressions;
 
 namespace ChapterTool.Util
 {
@@ -131,7 +133,7 @@ namespace ChapterTool.Util
             var json = new StringBuilder("[");
             colorList.ForEach(item => json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\","));
             json[json.Length - 1] = ']';
-            var path = $"{Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)}\\{ColorProfile}";
+            var path = $"{Path.GetDirectoryName(Application.ExecutablePath)}\\{ColorProfile}";
             File.WriteAllText(path, json.ToString());
         }
 
@@ -170,7 +172,7 @@ namespace ChapterTool.Util
         public static bool RunAsAdministrator()
         {
             if (NativeMethods.IsUserAnAdmin()) return true;
-            if (!RunElevated(System.Reflection.Assembly.GetExecutingAssembly().Location)) return false;
+            if (!RunElevated(Application.ExecutablePath)) return false;
             Environment.Exit(0);
             return true;
         }
@@ -197,6 +199,53 @@ namespace ChapterTool.Util
         private static readonly Lazy<bool> IsRunningOnMonoValue = new Lazy<bool>(() => Type.GetType("Mono.Runtime") != null);
 
         public static bool IsRunningOnMono => IsRunningOnMonoValue.Value;
+
+        /// <summary>
+        /// Creates a DataReceivedEventArgs instance with the given Data.
+        /// </summary>
+        /// <param name="argData"></param>
+        /// <returns></returns>
+        public static DataReceivedEventArgs GetDataReceivedEventArgs(Object argData)
+        {
+            DataReceivedEventArgs eventArgs = (DataReceivedEventArgs)System.Runtime.Serialization.FormatterServices
+                         .GetUninitializedObject(typeof(DataReceivedEventArgs));
+
+            FieldInfo f = typeof(DataReceivedEventArgs).GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)[0];
+            f.SetValue(eventArgs, argData);
+
+            return eventArgs;
+        }
+
+        /// <summary>
+        /// Reads a Process's standard output stream character by character and calls the user defined method for each line
+        /// </summary>
+        /// <param name="argProcess"></param>
+        /// <param name="argHandler"></param>
+        public static void ReadStreamPerCharacter(Process argProcess, DataReceivedEventHandler argHandler)
+        {
+            var reader = argProcess.StandardOutput;
+            var line = new StringBuilder();
+            while (true)
+            {
+                if (reader.EndOfStream) break;
+                var c = (char) reader.Read();
+                switch (c)
+                {
+                    case '\r':
+                        if ((char) reader.Peek() == '\n') reader.Read();// consume the next character
+                        argHandler(argProcess, GetDataReceivedEventArgs(line.ToString()));
+                        line.Length = 0;
+                        break;
+                    case '\n':
+                        argHandler(argProcess, GetDataReceivedEventArgs(line.ToString()));
+                        line.Length = 0;
+                        break;
+                    default:
+                        line.Append(c);
+                        break;
+                }
+            }
+        }
     }
 
     public static class RegistryStorage
