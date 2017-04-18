@@ -27,7 +27,7 @@ namespace ChapterTool.Util.ChapterData
     public static class OgmData
     {
         private static readonly Regex RTimeCodeLine = new Regex(@"^\s*CHAPTER\d+\s*=\s*(.*)", RegexOptions.Compiled);
-        private static readonly Regex RNameLine = new Regex(@"^\s*CHAPTER\d+NAME\s*=\s*(?<chapterName>.*)", RegexOptions.Compiled);
+        private static readonly Regex RNameLine     = new Regex(@"^\s*CHAPTER\d+NAME\s*=\s*(?<chapterName>.*)", RegexOptions.Compiled);
 
         public static event Action<string> OnLog;
 
@@ -41,11 +41,11 @@ namespace ChapterTool.Util.ChapterData
 
         public static ChapterInfo GetChapterInfo(string text)
         {
-            int index = 0;
+            var index = 0;
             var info  = new ChapterInfo { SourceType = "OGM", Tag = text, TagType = text.GetType() };
             var lines = text.Trim(' ', '\t', '\r', '\n').Split('\n');
-            LineState state     = LineState.LTimeCode;
-            TimeSpan timeCode   = TimeSpan.Zero, initalTime;
+            var state = LineState.LTimeCode;
+            TimeSpan timeCode = TimeSpan.Zero, initalTime;
             if (RTimeCodeLine.Match(lines.First()).Success)
             {
                 initalTime = ToolKits.RTimeFormat.Match(lines.First()).Value.ToTimeSpan();

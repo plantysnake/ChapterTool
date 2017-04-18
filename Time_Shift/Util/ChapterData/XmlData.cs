@@ -32,7 +32,7 @@ namespace ChapterTool.Util.ChapterData
     {
         public static IEnumerable<ChapterInfo> PraseXml(XmlDocument doc)
         {
-            XmlElement root = doc.DocumentElement;
+            var root = doc.DocumentElement;
             if (root == null)
             {
                 throw new ArgumentException("Empty Xml file");
@@ -49,8 +49,8 @@ namespace ChapterTool.Util.ChapterData
                 {
                     throw new Exception($"Invalid Xml file.\nEntry Name: {editionEntry.Name}");
                 }
-                ChapterInfo buff = new ChapterInfo { SourceType = "XML", Tag = doc, TagType = doc.GetType() };
-                int index = 0;
+                var buff  = new ChapterInfo { SourceType = "XML", Tag = doc, TagType = doc.GetType() };
+                var index = 0;
                 foreach (XmlNode editionEntryChildNode in ((XmlElement)editionEntry).ChildNodes)//Get all the child nodes in current chapter
                 {
                     if (editionEntryChildNode.Name != "ChapterAtom") continue;
@@ -58,7 +58,7 @@ namespace ChapterTool.Util.ChapterData
                 }
 
                 //remove redundancy chapter node.
-                for (int i = 0; i < buff.Chapters.Count - 1; i++)
+                for (var i = 0; i < buff.Chapters.Count - 1; i++)
                 {
                     if (buff.Chapters[i].Time == buff.Chapters[i + 1].Time)
                     {
@@ -72,8 +72,8 @@ namespace ChapterTool.Util.ChapterData
 
         private static IEnumerable<Chapter> PraseChapterAtom(XmlNode chapterAtom, int index)
         {
-            Chapter startChapter = new Chapter { Number = index };
-            Chapter endChapter = new Chapter { Number = index };
+            var startChapter     = new Chapter { Number = index };
+            var endChapter       = new Chapter { Number = index };
             var innerChapterAtom = new List<Chapter>();
             foreach (XmlNode chapterAtomChildNode in ((XmlElement)chapterAtom).ChildNodes) //Get detail info for current chapter node
             {
@@ -149,7 +149,6 @@ namespace ChapterTool.Util.ChapterData
                 };
                 yield return startChapter;
             }
-                
             if (atom.SubChapterAtom != null)
                 foreach (var chapterAtom in atom.SubChapterAtom)
                 {

@@ -45,8 +45,8 @@ namespace ChapterTool.Controls
                 }
                 else if (e.Alt && e.KeyCode == Keys.A)
                 {
-                    int totalLine = GetLineFromCharIndex(Text.Length);
-                    int charIndex = GetFirstCharIndexFromLine(totalLine / 2);
+                    var totalLine = GetLineFromCharIndex(Text.Length);
+                    var charIndex = GetFirstCharIndexFromLine(totalLine / 2);
                     Select(charIndex, Text.Length);
                 }
                 e.Handled = true;

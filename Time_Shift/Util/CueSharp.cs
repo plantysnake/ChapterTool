@@ -162,9 +162,9 @@ namespace ChapterTool.Util
         /// <param name="file"></param>
         private void RemoveEmptyLines(ref string[] file)
         {
-            int itemsRemoved = 0;
+            var itemsRemoved = 0;
 
-            for (int i = 0; i < file.Length; i++)
+            for (var i = 0; i < file.Length; i++)
             {
                 if (file[i].Trim() != "")
                 {
@@ -186,10 +186,10 @@ namespace ChapterTool.Util
         {
             //-1 means still global,
             //all others are track specific
-            int trackOn = -1;
-            AudioFile currentFile = new AudioFile();
+            var trackOn = -1;
+            var currentFile = new AudioFile();
 
-            for (int i = 0; i < file.Length; i++)
+            for (var i = 0; i < file.Length; i++)
             {
                 file[i] = file[i].Trim();
 
@@ -380,7 +380,7 @@ namespace ChapterTool.Util
 
         private void ParseIndex(string line, int trackOn)
         {
-            int number = 0;
+            var number = 0;
 
             var indexType = line.Substring(0, line.IndexOf(' ')).ToUpper();
 
@@ -394,9 +394,9 @@ namespace ChapterTool.Util
             }
 
             //extract the minutes, seconds, and frames
-            int minutes = Convert.ToInt32(tempString.Substring(0, tempString.IndexOf(':')));
-            int seconds = Convert.ToInt32(tempString.Substring(tempString.IndexOf(':') + 1, tempString.LastIndexOf(':') - tempString.IndexOf(':') - 1));
-            int frames = Convert.ToInt32(tempString.Substring(tempString.LastIndexOf(':') + 1, tempString.Length - tempString.LastIndexOf(':') - 1));
+            var minutes = Convert.ToInt32(tempString.Substring(0, tempString.IndexOf(':')));
+            var seconds = Convert.ToInt32(tempString.Substring(tempString.IndexOf(':') + 1, tempString.LastIndexOf(':') - tempString.IndexOf(':') - 1));
+            var frames = Convert.ToInt32(tempString.Substring(tempString.LastIndexOf(':') + 1, tempString.Length - tempString.LastIndexOf(':') - 1));
 
             if (indexType == "INDEX")
             {
@@ -414,7 +414,7 @@ namespace ChapterTool.Util
 
         private void ParseString(string line, int trackOn)
         {
-            string category = line.Substring(0, line.IndexOf(' ')).ToUpper();
+            var category = line.Substring(0, line.IndexOf(' ')).ToUpper();
 
             line = line.Substring(line.IndexOf(' '), line.Length - line.IndexOf(' ')).Trim();
 
@@ -509,10 +509,10 @@ namespace ChapterTool.Util
         /// <remarks >Useage: int[] a = {1,2,3}; a = (int[])ResizeArray(a,5);</remarks>
         public static Array ResizeArray(Array oldArray, int newSize)
         {
-            int oldSize = oldArray.Length;
-            Type elementType = oldArray.GetType().GetElementType();
-            Array newArray = Array.CreateInstance(elementType, newSize);
-            int preserveLength = Math.Min(oldSize, newSize);
+            var oldSize = oldArray.Length;
+            var elementType = oldArray.GetType().GetElementType();
+            var newArray = Array.CreateInstance(elementType, newSize);
+            var preserveLength = Math.Min(oldSize, newSize);
             if (preserveLength > 0)
                 Array.Copy(oldArray, newArray, preserveLength);
             return newArray;
@@ -587,7 +587,7 @@ namespace ChapterTool.Util
         /// <param name="trackIndex">The index of the track you wish to remove.</param>
         public void RemoveTrack(int trackIndex)
         {
-            for (int i = trackIndex; i < Tracks.Length - 1; i++)
+            for (var i = trackIndex; i < Tracks.Length - 1; i++)
             {
                 Tracks[i] = Tracks[i + 1];
             }
@@ -649,9 +649,9 @@ namespace ChapterTool.Util
         /// <returns>The entire cuesheet formatted to specification.</returns>
         public override string ToString()
         {
-            StringBuilder output = new StringBuilder();
+            var output = new StringBuilder();
 
-            foreach (string comment in Comments)
+            foreach (var comment in Comments)
             {
                 output.Append("REM " + comment + Environment.NewLine);
             }
@@ -681,7 +681,7 @@ namespace ChapterTool.Util
                 output.Append("CDTEXTFILE \"" + CDTextFile.Trim() + "\"" + Environment.NewLine);
             }
 
-            for (int i = 0; i < Tracks.Length; i++)
+            for (var i = 0; i < Tracks.Length; i++)
             {
                 output.Append(Tracks[i].ToString());
 
@@ -706,7 +706,7 @@ namespace ChapterTool.Util
 
         public string CalculateCDDBdiscID()
         {
-            int n = 0;
+            var n = 0;
 
             /* For backward compatibility this algorithm must not change */
 
@@ -751,7 +751,7 @@ namespace ChapterTool.Util
 
         public ChapterInfo ToChapterInfo()
         {
-            ChapterInfo info = new ChapterInfo
+            var info = new ChapterInfo
             {
                 Title      = Title,
                 SourceType = "CUE",
@@ -761,7 +761,7 @@ namespace ChapterTool.Util
             foreach (var track in Tracks)
             {
                 string name = $"{track.Title} [{track.Performer}]";
-                TimeSpan time = track.Index01;
+                var time = track.Index01;
                 info.Chapters.Add(new Chapter(name, time, track.TrackNumber));
             }
             info.Duration = info.Chapters.Last().Time;
@@ -1245,7 +1245,7 @@ namespace ChapterTool.Util
 
             public void RemoveIndex(int indexIndex)
             {
-                for (int i = indexIndex; i < Indices.Length - 1; i++)
+                for (var i = indexIndex; i < Indices.Length - 1; i++)
                 {
                     Indices[i] = Indices[i + 1];
                 }
@@ -1264,7 +1264,7 @@ namespace ChapterTool.Util
 
             public override string ToString()
             {
-                StringBuilder output = new StringBuilder();
+                var output = new StringBuilder();
 
                 //write file
                 if (DataFile.Filename != null && DataFile.Filename.Trim() != "")
@@ -1275,7 +1275,7 @@ namespace ChapterTool.Util
                 output.Append("  TRACK " + TrackNumber.ToString().PadLeft(2, '0') + " " + TrackDataType.ToString().Replace('_', '/'));
 
                 //write comments
-                foreach (string comment in Comments)
+                foreach (var comment in Comments)
                 {
                     output.Append(Environment.NewLine + "    REM " + comment);
                 }
@@ -1301,7 +1301,7 @@ namespace ChapterTool.Util
                     output.Append(Environment.NewLine + "    FLAGS");
                 }
 
-                foreach (Flags flag in TrackFlags)
+                foreach (var flag in TrackFlags)
                 {
                     output.Append(" " + flag.ToString().Replace("CH4", "4CH"));
                 }
@@ -1319,7 +1319,7 @@ namespace ChapterTool.Util
                 }
 
                 //write Indices
-                for (int j = 0; j < Indices.Length; j++)
+                for (var j = 0; j < Indices.Length; j++)
                 {
                     output.Append(Environment.NewLine + "    INDEX " + this[j].Number.ToString().PadLeft(2, '0') + " " + this[j].Minutes.ToString().PadLeft(2, '0') + ":" + this[j].Seconds.ToString().PadLeft(2, '0') + ":" + this[j].Frames.ToString().PadLeft(2, '0'));
                 }

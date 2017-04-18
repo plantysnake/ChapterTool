@@ -140,7 +140,7 @@ namespace ChapterTool.Util.ChapterData
             info.Encoder            = vendor;
             OnLog?.Invoke($" | Vendor: {vendor}");
             var userCommentListLength = fs.LEInt32();
-            for (int i = 0; i < userCommentListLength; ++i)
+            for (var i = 0; i < userCommentListLength; ++i)
             {
                 var commentLength        = (int) fs.LEInt32();
                 var commentRawStringData = fs.ReadBytes(commentLength);
@@ -264,7 +264,7 @@ namespace ChapterTool.Util.ChapterData
         {
             if (_bytePosition >= _buffer.Length)
                 throw new IndexOutOfRangeException(nameof(_bytePosition));
-            bool ret = ((_buffer[_bytePosition] >> (7 - _bitPositionInByte)) & 1) == 1;
+            var ret = ((_buffer[_bytePosition] >> (7 - _bitPositionInByte)) & 1) == 1;
             Next();
             return ret;
         }
@@ -279,7 +279,7 @@ namespace ChapterTool.Util.ChapterData
 
         public void Skip(int length)
         {
-            for (int i = 0; i < length; ++i)
+            for (var i = 0; i < length; ++i)
             {
                 Next();
             }
@@ -288,7 +288,7 @@ namespace ChapterTool.Util.ChapterData
         public long GetBits(int length)
         {
             long ret = 0;
-            for (int i = 0; i < length; ++i)
+            for (var i = 0; i < length; ++i)
             {
                 ret |= ((long) (_buffer[_bytePosition] >> (7 - _bitPositionInByte)) & 1) << (length - 1 - i);
                 Next();

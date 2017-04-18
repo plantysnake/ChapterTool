@@ -141,7 +141,7 @@ namespace Knuckleball
             }
 
             object rawValue;
-            Type underlyingType = Enum.GetUnderlyingType(typeof(T));
+            var underlyingType = Enum.GetUnderlyingType(typeof(T));
             if (underlyingType == typeof(byte))
             {
                 rawValue = ReadByte(value).Value;
@@ -198,7 +198,7 @@ namespace Knuckleball
                 return null;
             }
 
-            byte[] buffer = new byte[bufferLength];
+            var buffer = new byte[bufferLength];
             Marshal.Copy(value, buffer, 0, bufferLength);
             return buffer;
         }

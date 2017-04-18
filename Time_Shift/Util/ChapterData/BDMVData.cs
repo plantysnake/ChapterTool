@@ -15,9 +15,9 @@ namespace ChapterTool.Util.ChapterData
 
         public static async Task<KeyValuePair<string, List<ChapterInfo>>> GetChapterAsync(string location)
         {
-            var list = new List<ChapterInfo>();
-            string bdmvTitle = null;
-            string path = Path.Combine(location, "BDMV", "PLAYLIST");
+            var list      = new List<ChapterInfo>();
+            var bdmvTitle = string.Empty;
+            var path      = Path.Combine(location, "BDMV", "PLAYLIST");
             if (!Directory.Exists(path))
             {
                 throw new FileNotFoundException("Blu-Ray disc structure not found.");
@@ -48,7 +48,7 @@ namespace ChapterTool.Util.ChapterData
             }
             var workingPath = Directory.GetParent(location).FullName;
             location = location.Substring(location.LastIndexOf('\\') + 1);
-            string text = (await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\"", workingPath)).ToString();
+            var text = (await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\"", workingPath)).ToString();
             if (text.Contains("HD DVD / Blu-Ray disc structure not found."))
             {
                 OnLog?.Invoke(text);
@@ -76,7 +76,7 @@ namespace ChapterTool.Util.ChapterData
             var toBeRemove  = new List<ChapterInfo>();
             var chapterPath = Path.Combine(workingPath, "chapters.txt");
             var logPath     = Path.Combine(workingPath, "chapters - Log.txt");
-            foreach (ChapterInfo current in list)
+            foreach (var current in list)
             {
                 text = (await TaskAsync.RunProcessAsync(eac3toPath, $"\"{location}\" {current.SourceIndex})", workingPath)).ToString();
                 if (!text.Contains("Chapters"))

@@ -74,7 +74,7 @@ namespace ChapterTool.Util
 
         public static string ToCueTimeStamp(this TimeSpan input)
         {
-            int frames = (int) Math.Round(input.Milliseconds*75/1000F);
+            var frames = (int) Math.Round(input.Milliseconds*75/1000F);
             if (frames > 99) frames = 99;
             return $"{input.Hours*60 + input.Minutes:D2}:{input.Seconds:D2}:{frames:D2}";
         }
@@ -102,7 +102,7 @@ namespace ChapterTool.Util
         /// <returns></returns>
         public static int ConvertFr2Index(double frame)
         {
-            for (int i = 0; i < MplsData.FrameRate.Length; ++i)
+            for (var i = 0; i < MplsData.FrameRate.Length; ++i)
             {
                 if (Math.Abs(frame - (double)MplsData.FrameRate[i]) < 1e-5)
                     return i;
@@ -249,7 +249,7 @@ namespace ChapterTool.Util
     {
         public static string Load(string subKey = @"Software\ChapterTool", string name = "SavingPath")
         {
-            string path = string.Empty;
+            var path = string.Empty;
             // HKCU_CURRENT_USER\Software\
             var registryKey = Registry.CurrentUser.OpenSubKey(subKey);
             if (registryKey == null) return path;
@@ -278,7 +278,7 @@ namespace ChapterTool.Util
         {
             Registry.ClassesRoot.CreateSubKey(extension)?.SetValue(typeName, project, RegistryValueKind.String);
 
-            RegistryKey subKey = Registry.ClassesRoot.CreateSubKey(project);
+            var subKey = Registry.ClassesRoot.CreateSubKey(project);
             subKey = subKey?.CreateSubKey("shell");
             subKey = subKey?.CreateSubKey("open");
             subKey = subKey?.CreateSubKey("command");
@@ -290,7 +290,7 @@ namespace ChapterTool.Util
         public static int RegistryAddCount(string subKey, string name, int delta = 1)
         {
             var countS = Load(subKey, name);
-            int count = string.IsNullOrEmpty(countS) ? 0 : int.Parse(countS);
+            var count = string.IsNullOrEmpty(countS) ? 0 : int.Parse(countS);
             count += delta;
             Save(count.ToString(), subKey, name);
             return count - delta;

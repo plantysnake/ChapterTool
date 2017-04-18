@@ -10,28 +10,28 @@ namespace ChapterTool.Util.ChapterData
     {
         public static IEnumerable<ChapterInfo> GetStreams(string location)
         {
-            XDocument doc = XDocument.Load(location);
+            var doc = XDocument.Load(location);
             XNamespace ns = "http://www.dvdforum.org/2005/HDDVDVideo/Playlist";
-            foreach (XElement ts in doc.Element(ns + "Playlist").Elements(ns + "TitleSet"))
+            foreach (var ts in doc.Element(ns + "Playlist").Elements(ns + "TitleSet"))
             {
                 var timeBase = GetFps((string)ts.Attribute("timeBase")) ?? 60; //required
                 var tickBase = GetFps((string)ts.Attribute("tickBase")) ?? 24; //optional
-                foreach (XElement title in ts.Elements(ns + "Title").Where(t => t.Element(ns + "ChapterList") != null))
+                foreach (var title in ts.Elements(ns + "Title").Where(t => t.Element(ns + "ChapterList") != null))
                 {
-                    ChapterInfo pgc = new ChapterInfo
+                    var pgc = new ChapterInfo
                     {
                         SourceName = title.Element(ns + "PrimaryAudioVideoClip")?.Attribute("src")?.Value ?? "",
                         SourceType      = "HD-DVD",
                         FramesPerSecond = 24D,
                         Chapters        = new List<Chapter>()
                     };
-                    int tickBaseDivisor = (int?)title.Attribute("tickBaseDivisor") ?? 1; //optional
+                    var tickBaseDivisor = (int?)title.Attribute("tickBaseDivisor") ?? 1; //optional
                     pgc.Duration        = GetTimeSpan((string)title.Attribute("titleDuration"), timeBase, tickBase, tickBaseDivisor);
                     var titleName       = Path.GetFileNameWithoutExtension(location);
                     if (title.Attribute("id") != null)          titleName = title.Attribute("id")?.Value??""; //optional
                     if (title.Attribute("displayName") != null) titleName = title.Attribute("displayName")?.Value ?? ""; //optional
                     pgc.Title           = titleName;
-                    foreach (XElement chapter in title.Element(ns + "ChapterList").Elements(ns + "Chapter"))
+                    foreach (var chapter in title.Element(ns + "ChapterList").Elements(ns + "Chapter"))
                     {
                         var chapterName = string.Empty;
                         if (chapter.Attribute("id") != null) chapterName = chapter.Attribute("id")?.Value ?? ""; //optional
@@ -70,12 +70,12 @@ namespace ChapterTool.Util.ChapterData
         private static TimeSpan GetTimeSpan(string timeSpan, double timeBase, double tickBase, int tickBaseDivisor)
         {
             var colonPosition = timeSpan.LastIndexOf(':');
-            TimeSpan ts = TimeSpan.Parse(timeSpan.Substring(0, colonPosition));
-            ts = new TimeSpan((long)(ts.TotalSeconds / 60D * timeBase) * TimeSpan.TicksPerSecond);
+            var ts = TimeSpan.Parse(timeSpan.Substring(0, colonPosition));
+            ts     = new TimeSpan((long)(ts.TotalSeconds / 60D * timeBase) * TimeSpan.TicksPerSecond);
 
             //convert ticks to ticks timebase
-            decimal newTick = TimeSpan.TicksPerSecond / ((decimal)tickBase / tickBaseDivisor);
-            decimal ticks   = decimal.Parse(timeSpan.Substring(colonPosition + 1)) * newTick;
+            var newTick = TimeSpan.TicksPerSecond / ((decimal)tickBase / tickBaseDivisor);
+            var ticks   = decimal.Parse(timeSpan.Substring(colonPosition + 1)) * newTick;
             return ts.Add(new TimeSpan((long)ticks));
         }
     }

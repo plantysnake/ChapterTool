@@ -139,7 +139,7 @@ namespace ChapterTool.Forms
 
         private void SwitchByHotKey(Keys keyData)
         {
-            Keys numKey = keyData ^ Keys.Control;
+            var numKey = keyData ^ Keys.Control;
             Debug.WriteLine(numKey);
             if (numKey < Keys.D0 || numKey > Keys.D9) return;
             if (!SwitchByHotKey((numKey - Keys.D1 + 10) % 10)) //shift D0 to 9
@@ -150,9 +150,9 @@ namespace ChapterTool.Forms
 
         private void SwitchTypeByHotKey(Keys keyData)
         {
-            Keys numKey = keyData ^ Keys.Alt;
+            var numKey = keyData ^ Keys.Alt;
             Debug.WriteLine(numKey);
-            int index = numKey - Keys.D0;
+            var index = numKey - Keys.D0;
             if (index < 0 || index > savingType.Items.Count) return;
             savingType.SelectedIndex = index - 1;
         }
@@ -167,7 +167,7 @@ namespace ChapterTool.Forms
             InitialLog();
             if (!IsRunningOnMono)
             {
-                Point saved = String2Point(RegistryStorage.Load(@"Software\ChapterTool", "location"));
+                var saved = String2Point(RegistryStorage.Load(@"Software\ChapterTool", "location"));
                 if (saved != new Point(-32000, -32000))
                 {
                     Location = saved;
@@ -279,7 +279,7 @@ namespace ChapterTool.Forms
             Log(string.Format(Resources.Log_About_Form_Click, _poi[0]));
             if (_poi[0] >= _poi[1])
             {
-                FormAbout version = new FormAbout();
+                var version = new FormAbout();
                 Log(Resources.Log_About_Form_Opened);
                 version.Show();
                 _poi[0]  = 00;
@@ -370,8 +370,8 @@ namespace ChapterTool.Forms
         private static readonly Lazy<string> MainFilter = new Lazy<string>(() =>
         {
             Func<IEnumerable<string>, string> getType = enumerable => enumerable.Aggregate(string.Empty, (current, type) => current + $"*.{type};");
-            StringBuilder ret = new StringBuilder(Resources.File_Filter_All_Support);
-            string types = getType(SupportTypes.SelectMany(supportType => supportType.Value));
+            var ret = new StringBuilder(Resources.File_Filter_All_Support);
+            var types = getType(SupportTypes.SelectMany(supportType => supportType.Value));
             ret.Append($" ({types.TrimEnd(';')})|{types}");
             foreach (var supportType in SupportTypes)
             {
@@ -521,7 +521,7 @@ namespace ChapterTool.Forms
             foreach (var item in _ifoGroup)
             {
                 comboBox2.Items.Add($"{item.SourceName}__{item.Chapters.Count}");
-                int index = 0;
+                var index = 0;
                 item.Chapters.ForEach(chapter => chapter.Number = ++index);
                 Log($" |+{item.SourceName} Duration[{item.Duration.Time2String()}]");
                 Log(string.Format(Resources.Log_TimeStamp_Count, item.Chapters.Count));
@@ -560,7 +560,7 @@ namespace ChapterTool.Forms
             foreach (var item in _xplGroup)
             {
                 comboBox2.Items.Add($"{item.Title}__{item.Chapters.Count}");
-                int index = 0;
+                var index = 0;
                 item.Chapters.ForEach(chapter => chapter.Number = ++index);
             }
             _info = _xplGroup.First();
@@ -731,11 +731,11 @@ namespace ChapterTool.Forms
         private void appendToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_rawMpls == null) return;
-            string dir = Path.GetDirectoryName(FilePath);
+            var dir = Path.GetDirectoryName(FilePath);
             openFileDialog1.Filter = @"appendable file(mpls file)|*.mpls";
             openFileDialog1.InitialDirectory = dir;
             if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
-            string newFile = openFileDialog1.FileName;
+            var newFile = openFileDialog1.FileName;
             LoadMpls(out MplsData appendMpls, false, newFile);
             _rawMpls.EntireClip.TimeStamp.AddRange(appendMpls.EntireClip.TimeStamp.Select(stamp=>stamp+ _rawMpls.EntireClip.Length));
             _rawMpls.EntireClip.Length += appendMpls.EntireClip.Length;
@@ -816,7 +816,7 @@ namespace ChapterTool.Forms
             if (ext == ".mpls" || ext == ".ifo")
                 savePath += $"__{_info.SourceName}";
 
-            int index = 1;
+            var index = 1;
             while (File.Exists($"{savePath}_{index}{SaveTypeSuffix[saveType]}")) ++index;
             savePath += $"_{index}{SaveTypeSuffix[saveType]}";
 
@@ -864,7 +864,7 @@ namespace ChapterTool.Forms
                         _info.GetText(AutoGenName).SaveAs(savePath);
                         break;
                     case SaveTypeEnum.XML:
-                        string key = RLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
+                        var key = RLang.Match(xmlLang.Items[xmlLang.SelectedIndex].ToString()).Groups["lang"].ToString();
                         _info.SaveXml(savePath, string.IsNullOrWhiteSpace(key) ? "" : LanguageSelectionContainer.Languages[key], AutoGenName);
                         break;
                     case SaveTypeEnum.QPF:
@@ -966,7 +966,7 @@ namespace ChapterTool.Forms
             if (comboBox2.Enabled)
             {
                 comboBox2.Items.Clear();
-                int i = 1;
+                var i = 1;
                 foreach (var item in _xmlGroup)
                 {
                     var name = $"Edition {i++:D2}";
@@ -1008,7 +1008,7 @@ namespace ChapterTool.Forms
             }
 
             SKIP:
-            bool clearRows = _info.Chapters.Count != dataGridView1.Rows.Count || _splitRowInsrted;
+            var clearRows = _info.Chapters.Count != dataGridView1.Rows.Count || _splitRowInsrted;
             if (clearRows) dataGridView1.Rows.Clear();
             for (var i = 0; i < _info.Chapters.Count; i++)
             {
@@ -1038,7 +1038,7 @@ namespace ChapterTool.Forms
             _info.Chapters.Remove(e.Row.Tag as Chapter);
             _info.UpdataInfo((int)numericUpDown1.Value);
             if (_info.Chapters.Count < 1 || e.Row.Index != 0) return;
-            TimeSpan newInitialTime = _info.Chapters.First().Time;
+            var newInitialTime = _info.Chapters.First().Time;
             _info.UpdataInfo(newInitialTime);
             if ((_rawMpls != null || _ifoGroup != null) && string.IsNullOrWhiteSpace(_chapterNameTemplate))
             {
@@ -1089,7 +1089,7 @@ namespace ChapterTool.Forms
                 if (Round)
                 {
                     var rounded       = Round ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
-                    bool accuracy     = Math.Abs(frams - rounded) < settingAccuracy;
+                    var accuracy     = Math.Abs(frams - rounded) < settingAccuracy;
                     chapter.FramsInfo = $"{rounded}{(accuracy ? " K" : " *")}";
                 }
                 else
@@ -1107,7 +1107,7 @@ namespace ChapterTool.Forms
                         item.IsAccuracy(fps, accuracy, _info.Expr))).ToList();
             result[0] = 0; result[5] = 0; //skip two invalid frame rate.
             result.ForEach(count => Log(string.Format(Resources.Log_FPS_Detect_Count, count)));
-            int autofpsCode = result.IndexOf(result.Max());
+            var autofpsCode = result.IndexOf(result.Max());
             _info.FramesPerSecond = (double) MplsData.FrameRate[autofpsCode];
             Log(string.Format(Resources.Log_FPS_Detect_Result, MplsData.FrameRate[autofpsCode]));
             return autofpsCode == 0 ? 1 : autofpsCode;
@@ -1126,7 +1126,7 @@ namespace ChapterTool.Forms
             if (fpsIndex < 1) return;
             var shiftFramesString = Notification.InputBox("向前平移N帧，小于0的将被删除", "请输入所需平移的帧数", "0");
             if (!int.TryParse(shiftFramesString, out int shiftFrames)) return;
-            TimeSpan shiftTime = TimeSpan.FromTicks((long) Math.Round(shiftFrames/MplsData.FrameRate[fpsIndex]*TimeSpan.TicksPerSecond));
+            var shiftTime = TimeSpan.FromTicks((long) Math.Round(shiftFrames/MplsData.FrameRate[fpsIndex]*TimeSpan.TicksPerSecond));
             _info.UpdataInfo(shiftTime);
             _info.Chapters = _info.Chapters.SkipWhile(item => item.Time < TimeSpan.Zero).ToList();
             UpdataGridView();
@@ -1277,9 +1277,9 @@ namespace ChapterTool.Forms
         {
             RegistryStorage.Save(Location.ToString(), @"Software\ChapterTool", "Location");
             if (_poi[0] <= 0 || _poi[0] >= 3 || _poi[1] != 10) return;
-            Point origin   = Location;
-            Random forward = new Random();
-            int forward2   = forward.Next(1, 5);
+            var origin   = Location;
+            var forward = new Random();
+            var forward2   = forward.Next(1, 5);
             if (forward2 % 2 == 0 || Environment.OSVersion.Version.Major == 5)
             {
                 for(var i = 0; i < 100; ++i)
@@ -1371,7 +1371,7 @@ namespace ChapterTool.Forms
             {
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 {
-                    string chapterPath = openFileDialog1.FileName;
+                    var chapterPath = openFileDialog1.FileName;
                     Log(string.Format(Resources.Log_Chapter_Name_Template, chapterPath));
 
                     return File.ReadAllBytes(chapterPath).GetUTFString();
@@ -1529,7 +1529,7 @@ namespace ChapterTool.Forms
             var fileLine = comboBox2.Text;
             foreach (var file in fileLine.Substring(0, fileLine.LastIndexOf('_') - 1).Split('&'))
             {
-                ToolStripMenuItem fMenuItem = new ToolStripMenuItem(string.Format(Resources.Menu_Open_File, $"{file}.m2ts"));
+                var fMenuItem = new ToolStripMenuItem(string.Format(Resources.Menu_Open_File, $"{file}.m2ts"));
                 fMenuItem.Click += (sender, args) =>
                 {
                     var targetFile = $"{targetPath}\\{file}.m2ts";
@@ -1544,7 +1544,7 @@ namespace ChapterTool.Forms
             combineMenuStrip.Items.Add(new ToolStripSeparator());
             var fileLine = comboBox2.Text;
             var file = fileLine.Substring(0, fileLine.LastIndexOf('_') - 1) + ".VOB";
-            ToolStripMenuItem fMenuItem = new ToolStripMenuItem(string.Format(Resources.Menu_Open_File, file));
+            var fMenuItem = new ToolStripMenuItem(string.Format(Resources.Menu_Open_File, file));
             fMenuItem.Click += (sender, args) =>
             {
                 var targetFile = Path.GetDirectoryName(FilePath) + $"\\{file}";
@@ -1562,7 +1562,7 @@ namespace ChapterTool.Forms
 
             combineMenuStrip.Items.Add(new ToolStripSeparator());
             var file = Path.GetFileName(_info.SourceName);
-            ToolStripMenuItem fMenuItem = new ToolStripMenuItem(string.Format(Resources.Menu_Open_File, file));
+            var fMenuItem = new ToolStripMenuItem(string.Format(Resources.Menu_Open_File, file));
             fMenuItem.Click += (sender, args) =>
             {
                 var targetFile = $"{targetPath}\\{file}";
@@ -1597,7 +1597,7 @@ namespace ChapterTool.Forms
             foreach (DataGridViewRow row in dataGridView1.SelectedRows)
             {
                 var rowIndex = dataGridView1.Rows.IndexOf(row);
-                int nextRowIndex = rowIndex + 1;
+                var nextRowIndex = rowIndex + 1;
                 //todo: make last time stamp use the length of clip info.
                 if (rowIndex >= dataGridView1.RowCount - 1)
                 {
@@ -1610,8 +1610,8 @@ namespace ChapterTool.Forms
                 var endFrames   = int.Parse(nextRow.Substring(0, nextRow.IndexOf(' ')));
                 zoneRange.Add(new KeyValuePair<int, int>(beginFrames, endFrames - 1));
             }
-            string zones = zoneRange.OrderBy(item => item.Key).Aggregate(string.Empty, (current, zone) => current + $"/{zone.Key},{zone.Value},");
-            string ret = "--zones " + zones.TrimStart('/');
+            var zones = zoneRange.OrderBy(item => item.Key).Aggregate(string.Empty, (current, zone) => current + $"/{zone.Key},{zone.Value},");
+            var ret = "--zones " + zones.TrimStart('/');
             var result = Notification.ShowInfo($"{ret}\n{Resources.Zones_Copy_To_Clip_Board}");
             if (result == DialogResult.Yes)
             {
@@ -1632,8 +1632,8 @@ namespace ChapterTool.Forms
         private void InsertSplitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count != 1) return;
-            DataGridViewRow row = dataGridView1.SelectedRows[0];
-            Chapter split = new Chapter("Split line", TimeSpan.MinValue, -1);
+            var row = dataGridView1.SelectedRows[0];
+            var split = new Chapter("Split line", TimeSpan.MinValue, -1);
             _info.Chapters.Insert(row.Index, split);
             _splitRowInsrted = true;
             UpdataGridView();

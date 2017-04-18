@@ -28,7 +28,7 @@ namespace ChapterTool
             }
             else
             {
-                string argsFull = string.Join(" ", args.SkipWhile(item => item.StartsWith("--")));
+                var argsFull = string.Join(" ", args.SkipWhile(item => item.StartsWith("--")));
                 Application.Run(new Forms.Form1(argsFull));
             }
         }

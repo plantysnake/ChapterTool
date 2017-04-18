@@ -49,7 +49,7 @@ namespace ChapterTool.Forms
         {
             get
             {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
                 return attributes.Length == 0 ? string.Empty : ((AssemblyProductAttribute)attributes[0]).Product;
             }
         }
@@ -96,7 +96,7 @@ namespace ChapterTool.Forms
         private void Form2_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
-            Point mousePos = MousePosition;
+            var mousePos = MousePosition;
             mousePos.Offset(_startPoint.X, _startPoint.Y);
             Location       = mousePos;
         }

@@ -78,15 +78,15 @@ namespace ChapterTool.Util.ChapterData
         internal static TimeSpan? ReadTimeSpan(byte[] playbackBytes, out double fps)
         {
             var frames    = GetFrames(playbackBytes[3]);
-            int fpsMask   = playbackBytes[3] >> 6;
+            var fpsMask   = playbackBytes[3] >> 6;
             fps = fpsMask == 0x01 ? 25D : fpsMask == 0x03 ? (30D / 1.001D) : 0;
             if (frames == null) return null;
             try
             {
-                int hours    = BcdToInt(playbackBytes[0]);
-                int minutes  = BcdToInt(playbackBytes[1]);
-                int seconds  = BcdToInt(playbackBytes[2]);
-                TimeSpan ret = new TimeSpan(hours, minutes, seconds);
+                var hours    = BcdToInt(playbackBytes[0]);
+                var minutes  = BcdToInt(playbackBytes[1]);
+                var seconds  = BcdToInt(playbackBytes[2]);
+                var ret = new TimeSpan(hours, minutes, seconds);
                 if (Math.Abs(fps) > 1e-5)
                     ret += TimeSpan.FromSeconds((double)frames/fps);
                 return ret;
@@ -101,11 +101,11 @@ namespace ChapterTool.Util.ChapterData
         /// <returns>number of PGS as an integer</returns>
         public static int GetPGCnb(string fileName)
         {
-            FileStream ifoStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            uint offset          = ToInt32(GetFileBlock(ifoStream, 0xCC, 4));    // Read PGC offset
+            var ifoStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            var offset          = ToInt32(GetFileBlock(ifoStream, 0xCC, 4));    // Read PGC offset
             ifoStream.Seek(2048 * offset + 0x01, SeekOrigin.Begin);               // Move to beginning of PGC
             //long VTS_PGCITI_start_position = ifoStream.Position - 1;
-            int nPGCs = ifoStream.ReadByte();       // Number of PGCs
+            var nPGCs = ifoStream.ReadByte();       // Number of PGCs
             ifoStream.Close();
             return nPGCs;
         }

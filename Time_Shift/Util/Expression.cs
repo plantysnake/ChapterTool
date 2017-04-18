@@ -56,7 +56,7 @@ namespace ChapterTool.Util
 
         private static Token ToToken(string token)
         {
-            Token ret = new Token {Value = token, TokenType = Token.Symbol.Variable};
+            var ret = new Token {Value = token, TokenType = Token.Symbol.Variable};
             if (token.Length == 1 && OperatorTokens.Contains(token.First()))
             {
                 if (token == "(" || token == ")")
@@ -184,7 +184,7 @@ namespace ChapterTool.Util
         private static Token GetToken(string expr, ref int pos)
         {
             var varRet = new StringBuilder();
-            int i = pos;
+            var i = pos;
             for (; i < expr.Length; i++)
             {
                 if (IsSpace(expr[i]))
@@ -255,13 +255,13 @@ namespace ChapterTool.Util
 
         public static IEnumerable<Token> BuildPostExpressionStack(string expr)
         {
-            var retStack = new Stack<Token>();
-            var stack = new Stack<Token>();
+            var retStack  = new Stack<Token>();
+            var stack     = new Stack<Token>();
             var funcStack = new Stack<Token>();
             stack.Push(Token.End);
-            int pos = 0;
-            var preToken = Token.End;
-            bool comment = false;
+            var pos       = 0;
+            var preToken  = Token.End;
+            var comment   = false;
             while (pos < expr.Length && !comment)
             {
                 var token = GetToken(expr, ref pos);

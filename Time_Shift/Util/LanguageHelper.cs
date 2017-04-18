@@ -16,12 +16,12 @@ namespace ChapterTool.Util
         {
             System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
 
-            string name = "Form1";
+            var name = "Form1";
 
             var frm = (Form)Assembly.Load("CameraTest").CreateInstance(name);
             if (frm == null) return;
 
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager();
+            var resources = new System.ComponentModel.ComponentResourceManager();
             resources.ApplyResources(frm, "$this");
             AppLang(frm, resources);
         }
@@ -38,7 +38,7 @@ namespace ChapterTool.Util
         {
             System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
             if (form == null) return;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(formType);
+            var resources = new System.ComponentModel.ComponentResourceManager(formType);
             resources.ApplyResources(form, "$this");
             AppLang(form, resources);
         }
@@ -47,7 +47,7 @@ namespace ChapterTool.Util
         {
             //System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
             if (control == null) return;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(formType);
+            var resources = new System.ComponentModel.ComponentResourceManager(formType);
             AppLang(control, resources);
         }
 

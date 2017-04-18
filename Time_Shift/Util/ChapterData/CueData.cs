@@ -44,7 +44,7 @@ namespace ChapterTool.Util.ChapterData
             switch (ext)
             {
             case ".cue":
-                cueData = File.ReadAllBytes(path).GetUTF8String();
+                cueData = File.ReadAllBytes(path).GetUTFString();
                 if (string.IsNullOrEmpty(cueData))
                     throw new InvalidDataException("Empty cue file");
                 break;
@@ -89,7 +89,7 @@ namespace ChapterTool.Util.ChapterData
         {
             var lines         = context.Split('\n');
             var cue           = new ChapterInfo {SourceType = "CUE", Tag = context, TagType = context.GetType()};
-            NextState nxState = NextState.NsStart;
+            var nxState = NextState.NsStart;
             Chapter chapter   = null;
 
             foreach (var line in lines)
@@ -201,10 +201,10 @@ namespace ChapterTool.Util.ChapterData
             {
                 throw new ArgumentException($"Invalid parameter: [{nameof(type)}], which must be 'flac' or 'tak'");
             }
-            int length = buffer.Length;
+            var length = buffer.Length;
             //查找 Cuesheet 标记,自动机模型,大小写不敏感
             int state = 0, beginPos = 0;
-            for (int i = 0; i < length; ++i)
+            for (var i = 0; i < length; ++i)
             {
                 if (buffer[i] >= 'A' && buffer[i] <= 'Z')
                     buffer[i] = (byte)(buffer[i] - 'A' + 'a');
@@ -231,11 +231,11 @@ namespace ChapterTool.Util.ChapterData
                 beginPos = i + 2;
                 break;
             }
-            int controlCount = type == "flac" ? 3 : type == "tak" ? 6 : 0;
-            int endPos = 0;
+            var controlCount = type == "flac" ? 3 : type == "tak" ? 6 : 0;
+            var endPos = 0;
             state = 0;
             //查找终止符 0D 0A ? 00 00 00 (连续 controlCount 个终止符以上) (flac为3, tak为6)
-            for (int i = beginPos; i < length; ++i)
+            for (var i = beginPos; i < length; ++i)
             {
                 switch (buffer[i])
                 {
@@ -253,7 +253,7 @@ namespace ChapterTool.Util.ChapterData
 
             var cueLength = endPos - beginPos + 1;
             if (cueLength <= 10) return string.Empty;
-            string cueSheet = Encoding.UTF8.GetString(buffer, beginPos, cueLength);
+            var cueSheet  = Encoding.UTF8.GetString(buffer, beginPos, cueLength);
             //Debug.WriteLine(cueSheet);
 
             return cueSheet;

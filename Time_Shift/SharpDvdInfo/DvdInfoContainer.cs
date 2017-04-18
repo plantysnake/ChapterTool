@@ -54,11 +54,11 @@ namespace SharpDvdInfo
             if (File.Exists(path))
             {
                 _path = Directory.GetParent(path).FullName;
-                Regex rTitle = new Regex(@"VTS_(\d{2})_0.IFO");
+                var rTitle = new Regex(@"VTS_(\d{2})_0.IFO");
                 var result = rTitle.Match(path);
                 if (!result.Success)
                     throw new Exception("Invalid file");
-                byte titleSetNumber = byte.Parse(result.Groups[1].Value);
+                var titleSetNumber = byte.Parse(result.Groups[1].Value);
                 var list = new TitleInfo
                 {
                     TitleNumber = titleSetNumber,
@@ -95,7 +95,7 @@ namespace SharpDvdInfo
             item.Chapters = new List<TimeSpan>();
 
             var buffer = new byte[192];
-            using (FileStream fs = File.OpenRead(Path.Combine(_path, $"VTS_{titleSetNumber:00}_0.IFO")))
+            using (var fs = File.OpenRead(Path.Combine(_path, $"VTS_{titleSetNumber:00}_0.IFO")))
             {
                 fs.Seek(0x00C8, SeekOrigin.Begin);
                 fs.Read(buffer, 0, 4);
@@ -125,13 +125,13 @@ namespace SharpDvdInfo
                                                    ((int)item.VideoStream.VideoStandard * 8);
 
                 fs.Read(buffer, 0, 2);
-                int numAudio = GetBits(buffer, 16, 0);
-                for (int audioNum = 0; audioNum < numAudio; audioNum++)
+                var numAudio = GetBits(buffer, 16, 0);
+                for (var audioNum = 0; audioNum < numAudio; audioNum++)
                 {
                     fs.Read(buffer, 0, 8);
-                    int langMode = GetBits(buffer, 2, 2);
-                    int codingMode = GetBits(buffer, 3, 5);
-                    AudioProperties audioStream = new AudioProperties
+                    var langMode = GetBits(buffer, 2, 2);
+                    var codingMode = GetBits(buffer, 3, 5);
+                    var audioStream = new AudioProperties
                     {
                         CodingMode   = (DvdAudioFormat) codingMode,
                         Channels     = GetBits(buffer, 3, 8) + 1,
@@ -143,8 +143,8 @@ namespace SharpDvdInfo
 
                     if (langMode == 1)
                     {
-                        char langChar1 = (char) GetBits(buffer, 8, 16);
-                        char langChar2 = (char) GetBits(buffer, 8, 24);
+                        var langChar1 = (char) GetBits(buffer, 8, 16);
+                        var langChar2 = (char) GetBits(buffer, 8, 24);
 
                         audioStream.Language = LanguageSelectionContainer.LookupISOCode($"{langChar1}{langChar2}");
                     }
@@ -158,12 +158,12 @@ namespace SharpDvdInfo
 
                 fs.Seek(0x0254, SeekOrigin.Begin);
                 fs.Read(buffer, 0, 2);
-                int numSubs = GetBits(buffer, 16, 0);
-                for (int subNum = 0; subNum < numSubs; subNum++)
+                var numSubs = GetBits(buffer, 16, 0);
+                for (var subNum = 0; subNum < numSubs; subNum++)
                 {
                     fs.Read(buffer, 0, 6);
-                    int langMode = GetBits(buffer, 2, 0);
-                    SubpictureProperties sub = new SubpictureProperties
+                    var langMode = GetBits(buffer, 2, 0);
+                    var sub = new SubpictureProperties
                     {
                         Format = (DvdSubpictureFormat) GetBits(buffer, 3, 5),
                         StreamId = 0x20 + subNum,
@@ -172,10 +172,10 @@ namespace SharpDvdInfo
 
                     if (langMode == 1)
                     {
-                        char langChar1 = (char)GetBits(buffer, 8, 16);
-                        char langChar2 = (char)GetBits(buffer, 8, 24);
+                        var langChar1 = (char)GetBits(buffer, 8, 16);
+                        var langChar2 = (char)GetBits(buffer, 8, 24);
 
-                        string langCode = langChar1.ToString(CultureInfo.InvariantCulture) +
+                        var langCode = langChar1.ToString(CultureInfo.InvariantCulture) +
                                               langChar2.ToString(CultureInfo.InvariantCulture);
 
                         sub.Language = LanguageSelectionContainer.LookupISOCode(langCode);
@@ -190,43 +190,43 @@ namespace SharpDvdInfo
 
                 fs.Seek(0xCC, SeekOrigin.Begin);
                 fs.Read(buffer, 0, 4);
-                int pgciSector = GetBits(buffer, 32, 0);
-                int pgciAdress = pgciSector * SectorLength;
+                var pgciSector = GetBits(buffer, 32, 0);
+                var pgciAdress = pgciSector * SectorLength;
 
                 fs.Seek(pgciAdress, SeekOrigin.Begin);
                 fs.Read(buffer, 0, 8);
 
                 fs.Seek(8 * (item.TitleNumberInSet - 1), SeekOrigin.Current);
                 fs.Read(buffer, 0, 8);
-                int offsetPgc = GetBits(buffer, 32, 32);
+                var offsetPgc = GetBits(buffer, 32, 32);
                 fs.Seek(pgciAdress + offsetPgc + 2, SeekOrigin.Begin);
 
                 fs.Read(buffer, 0, 6);
-                int numCells = GetBits(buffer, 8, 8);
+                var numCells = GetBits(buffer, 8, 8);
 
-                int hour = GetBits(buffer, 8, 16);
-                int minute = GetBits(buffer, 8, 24);
-                int second = GetBits(buffer, 8, 32);
-                int msec = GetBits(buffer, 8, 40);
+                var hour = GetBits(buffer, 8, 16);
+                var minute = GetBits(buffer, 8, 24);
+                var second = GetBits(buffer, 8, 32);
+                var msec = GetBits(buffer, 8, 40);
 
                 item.VideoStream.Runtime = DvdTime2TimeSpan(hour, minute, second, msec);
 
                 fs.Seek(224, SeekOrigin.Current);
                 fs.Read(buffer, 0, 2);
-                int cellmapOffset = GetBits(buffer, 16, 0);
+                var cellmapOffset = GetBits(buffer, 16, 0);
 
                 fs.Seek(pgciAdress + cellmapOffset + offsetPgc, SeekOrigin.Begin);
 
-                TimeSpan chapter = new TimeSpan();
+                var chapter = new TimeSpan();
                 item.Chapters.Add(chapter);
 
-                for (int i = 0; i < numCells; i++)
+                for (var i = 0; i < numCells; i++)
                 {
                     fs.Read(buffer, 0, 24);
-                    int chapHour   = GetBits(buffer, 8, 4*8);
-                    int chapMinute = GetBits(buffer, 8, 5*8);
-                    int chapSecond = GetBits(buffer, 8, 6*8);
-                    int chapMsec   = GetBits(buffer, 8, 7*8);
+                    var chapHour   = GetBits(buffer, 8, 4*8);
+                    var chapMinute = GetBits(buffer, 8, 5*8);
+                    var chapSecond = GetBits(buffer, 8, 6*8);
+                    var chapMsec   = GetBits(buffer, 8, 7*8);
                     chapter = chapter.Add(DvdTime2TimeSpan(chapHour, chapMinute, chapSecond, chapMsec));
 
                     item.Chapters.Add(chapter);
@@ -239,8 +239,8 @@ namespace SharpDvdInfo
         /// </summary>
         private void GetVmgmInfo()
         {
-            byte[] buffer = new byte[12];
-            using (FileStream fs = File.OpenRead(Path.Combine(_path, "VIDEO_TS.IFO")))
+            var buffer = new byte[12];
+            using (var fs = File.OpenRead(Path.Combine(_path, "VIDEO_TS.IFO")))
             {
                 fs.Seek(0x20, SeekOrigin.Begin);
                 fs.Read(buffer, 0, 2);
@@ -253,12 +253,12 @@ namespace SharpDvdInfo
 
                 fs.Seek(0xC4, SeekOrigin.Begin);
                 fs.Read(buffer, 0, 4);
-                int sector = GetBits(buffer, 32, 0);
+                var sector = GetBits(buffer, 32, 0);
                 fs.Seek(sector * SectorLength, SeekOrigin.Begin);
                 fs.Read(buffer, 0, 8);
                 Vmgm.NumTitles = GetBits(buffer, 16, 0);
 
-                for (int i = 0; i < Vmgm.NumTitles; i++)
+                for (var i = 0; i < Vmgm.NumTitles; i++)
                 {
                     fs.Read(buffer, 0, 12);
                     var info = new TitleInfo
@@ -310,12 +310,12 @@ namespace SharpDvdInfo
         /// <returns>resulting <see cref="int"/></returns>
         public static int GetBits(byte[] buffer, byte length, byte start)
         {
-            int result = 0;
+            var result = 0;
             //read bytes from left to right and every bit in byte from low to high
-            BitArray ba = new BitArray(buffer);
+            var ba = new BitArray(buffer);
 
             short j = 0;
-            int tempResult = 0;
+            var tempResult = 0;
             for (int i = start; i < start + length; i++)
             {
                 if (ba.Get(i))
@@ -342,7 +342,7 @@ namespace SharpDvdInfo
             long temp = 0;
             long mask = 0xffffffffu >> (32 - length);
             // [b1] {s} [b2] {s+l} [b3]
-            for (int i = 0; i < Math.Ceiling((start + length) / 8.0); ++i)
+            for (var i = 0; i < Math.Ceiling((start + length) / 8.0); ++i)
             {
                 temp |= (uint)buffer[i] << (24 - i*8);
             }
@@ -359,9 +359,9 @@ namespace SharpDvdInfo
         /// <returns>Converted time in milliseconds</returns>
         private static TimeSpan DvdTime2TimeSpan(int hours, int minutes, int seconds, int milliseconds)
         {
-            int fpsMask = milliseconds >> 6;
+            var fpsMask = milliseconds >> 6;
             milliseconds &= 0x3f;
-            double fps = fpsMask == 0x01 ? 25D : fpsMask == 0x03 ? (30D / 1.001D) : 0;
+            var fps = fpsMask == 0x01 ? 25D : fpsMask == 0x03 ? (30D / 1.001D) : 0;
             hours   = BcdToInt(hours);
             minutes = BcdToInt(minutes);
             seconds = BcdToInt(seconds);

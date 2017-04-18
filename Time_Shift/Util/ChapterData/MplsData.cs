@@ -55,7 +55,7 @@ namespace ChapterTool.Util.ChapterData
             {
 
                 ParsePlayItem(playItemEntries, out int lengthOfPlayItem, out int itemStartAdress, out int streamCount);
-                for (int streamOrder = 0; streamOrder < streamCount; streamOrder++)
+                for (var streamOrder = 0; streamOrder < streamCount; streamOrder++)
                 {
                     ParseStream(itemStartAdress, streamOrder, playItemOrder);
                 }
@@ -68,12 +68,12 @@ namespace ChapterTool.Util.ChapterData
 
         private void ParseHeader(out int playlistMarkSectionStartAddress, out int playItemNumber, out int playItemEntries)
         {
-            string fileType = Encoding.ASCII.GetString(_data, 0, 8);
+            var fileType = Encoding.ASCII.GetString(_data, 0, 8);
             if ((fileType != "MPLS0100" && fileType != "MPLS0200") /*|| _data[45] != 1*/)
             {
                 throw new Exception($"This Playlist has an unknown file type {fileType}.");
             }
-            int playlistSectionStartAddress = Byte2Int32(_data, 0x08);
+            var playlistSectionStartAddress = Byte2Int32(_data, 0x08);
             playlistMarkSectionStartAddress = Byte2Int32(_data, 0x0c);
             playItemNumber                  = Byte2Int16(_data, playlistSectionStartAddress + 0x06);
             playItemEntries                 = playlistSectionStartAddress + 0x0a;
@@ -81,11 +81,11 @@ namespace ChapterTool.Util.ChapterData
 
         private bool ParsePlayItem(int playItemEntries, out int lengthOfPlayItem, out int itemStartAdress, out int streamCount)
         {
-            bool mulitAngle      = false;
+            var mulitAngle      = false;
             lengthOfPlayItem     = Byte2Int16(_data, playItemEntries);
             var bytes            = new byte[lengthOfPlayItem + 2];
             Array.Copy(_data, playItemEntries, bytes, 0, lengthOfPlayItem + 2);
-            Clip streamClip      = new Clip
+            var streamClip      = new Clip
             {
                 TimeIn  = Byte2Int32(bytes, 0x0e),
                 TimeOut = Byte2Int32(bytes, 0x12)
@@ -96,15 +96,15 @@ namespace ChapterTool.Util.ChapterData
 
             itemStartAdress            = playItemEntries + 0x32;
             streamCount                = bytes[0x23] >> 4;
-            int isMultiAngle           = (bytes[0x0c] >> 4) & 0x01;
-            StringBuilder nameBuilder  = new StringBuilder(Encoding.ASCII.GetString(bytes, 0x02, 0x05));
+            var isMultiAngle           = (bytes[0x0c] >> 4) & 0x01;
+            var nameBuilder  = new StringBuilder(Encoding.ASCII.GetString(bytes, 0x02, 0x05));
 
             //todo: fps info of multi-angle has been skiped too.
             if (isMultiAngle == 1)  //skip multi-angle
             {
                 mulitAngle = true;
                 int numberOfAngles = bytes[0x22];
-                for (int i = 1; i < numberOfAngles; i++)
+                for (var i = 1; i < numberOfAngles; i++)
                 {
                     nameBuilder.Append("&" + Encoding.ASCII.GetString(bytes, 0x24 + (i - 1) * 0x0a, 0x05));
                 }
@@ -141,7 +141,7 @@ namespace ChapterTool.Util.ChapterData
         private void ParsePlaylistMark(int playlistMarkSectionStartAddress)
         {
             int playlistMarkNumber  = Byte2Int16(_data, playlistMarkSectionStartAddress + 0x04);
-            int playlistMarkEntries = playlistMarkSectionStartAddress + 0x06;
+            var playlistMarkEntries = playlistMarkSectionStartAddress + 0x06;
             var bytelist = new byte[14];    // eg. 0001 yyyy xxxxxxxx FFFF 000000
                                             // 00       mark_id
                                             // 01       mark_type
@@ -154,9 +154,9 @@ namespace ChapterTool.Util.ChapterData
                 Array.Copy(_data, playlistMarkEntries + mark * 14, bytelist, 0, 14);
                 if (0x01 != bytelist[1]) continue;// make sure the playlist mark type is an entry mark
                 int streamFileIndex = Byte2Int16(bytelist, 0x02);
-                Clip streamClip     = ChapterClips[streamFileIndex];
-                int timeStamp       = Byte2Int32(bytelist, 0x04);
-                int relativeSeconds = timeStamp - streamClip.TimeIn + streamClip.RelativeTimeIn;
+                var streamClip     = ChapterClips[streamFileIndex];
+                var timeStamp       = Byte2Int32(bytelist, 0x04);
+                var relativeSeconds = timeStamp - streamClip.TimeIn + streamClip.RelativeTimeIn;
                 streamClip.TimeStamp.Add(timeStamp);
                 EntireClip.TimeStamp.Add(relativeSeconds);
             }
@@ -186,9 +186,9 @@ namespace ChapterTool.Util.ChapterData
             {
                 throw new ArgumentOutOfRangeException($"InvalidArgument=\"{pts}\"的值对于{nameof(pts)}无效");
             }
-            decimal total = pts / 45000M;
-            decimal secondPart = Math.Floor(total);
-            decimal millisecondPart = Math.Round((total - secondPart) * 1000M, MidpointRounding.AwayFromZero);
+            var total = pts / 45000M;
+            var secondPart = Math.Floor(total);
+            var millisecondPart = Math.Round((total - secondPart) * 1000M, MidpointRounding.AwayFromZero);
             return new TimeSpan(0, 0, 0, (int)secondPart, (int)millisecondPart);
         }
 
@@ -198,8 +198,8 @@ namespace ChapterTool.Util.ChapterData
             {
                 throw new IndexOutOfRangeException("Index of Video Clip out of range");
             }
-            Clip selectedClip = combineChapter ? EntireClip : ChapterClips[index];
-            ChapterInfo info = new ChapterInfo
+            var selectedClip = combineChapter ? EntireClip : ChapterClips[index];
+            var info = new ChapterInfo
             {
                 SourceType = "MPLS",
                 SourceName = selectedClip.Name,
@@ -208,7 +208,7 @@ namespace ChapterTool.Util.ChapterData
             };
             var selectedTimeStamp = selectedClip.TimeStamp;
             if (selectedTimeStamp.Count < 2) return info;
-            int offset  = selectedTimeStamp.First();
+            var offset  = selectedTimeStamp.First();
             /**
              * the beginning time stamp of the chapter not always the beginning of the video
              * eg: Hidan no Aria AA, There are 24 black frames at the begining of each even episode
@@ -258,7 +258,7 @@ namespace ChapterTool.Util.ChapterData
             if (0x01 != streamCodingType && 0x02 != streamCodingType &&
                 0x1b != streamCodingType && 0xea != streamCodingType)
             {
-                int offset = 0x90 == streamCodingType || 0x91 == streamCodingType ? 0x0c : 0x0d;
+                var offset = 0x90 == streamCodingType || 0x91 == streamCodingType ? 0x0c : 0x0d;
                 if (0x92 == streamCodingType)
                 {
                     OnLog?.Invoke($"Stream[{clipName}] CharacterCode: {CharacterCode[stream[0x0c]]}");
@@ -268,8 +268,8 @@ namespace ChapterTool.Util.ChapterData
                 OnLog?.Invoke($"Stream[{clipName}] Language: {LanguageSelectionContainer.LookupISOCode(language)}");
                 if (0x0d == offset)
                 {
-                    int channel = stream[0x0c] >> 4;
-                    int sampleRate = stream[0x0c] & 0x0f;
+                    var channel = stream[0x0c] >> 4;
+                    var sampleRate = stream[0x0c] & 0x0f;
                     OnLog?.Invoke($"Stream[{clipName}] Channel: {Channel[channel]}");
                     OnLog?.Invoke($"Stream[{clipName}] SampleRate: {SampleRate[sampleRate]}");
                 }
