@@ -601,7 +601,7 @@ namespace ChapterTool.Forms
             try
             {
                 OgmData.OnLog += Log;
-                _info = OgmData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTF8String());
+                _info = OgmData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTFString());
                 _info.UpdataInfo((int)numericUpDown1.Value);
                 tsProgressBar1.Value = 33;
                 tsTips.Text = Resources.Tips_Load_Success;
@@ -666,7 +666,7 @@ namespace ChapterTool.Forms
 
         private void LoadWebVTT()
         {
-            _info = VTTData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTF8String());
+            _info = VTTData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTFString());
             _info.UpdataInfo((int)numericUpDown1.Value);
             tsProgressBar1.Value = 33;
             tsTips.Text = Resources.Tips_Load_Success;
@@ -1374,7 +1374,7 @@ namespace ChapterTool.Forms
                     string chapterPath = openFileDialog1.FileName;
                     Log(string.Format(Resources.Log_Chapter_Name_Template, chapterPath));
 
-                    return File.ReadAllBytes(chapterPath).GetUTF8String();
+                    return File.ReadAllBytes(chapterPath).GetUTFString();
                 }
                 cbChapterName.CheckState = CheckState.Unchecked;
                 return string.Empty;

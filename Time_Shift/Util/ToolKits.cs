@@ -20,7 +20,6 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Linq;
 using System.Drawing;
 using Microsoft.Win32;
 using System.Reflection;
@@ -66,10 +65,10 @@ namespace ChapterTool.Util
             if (string.IsNullOrWhiteSpace(input)) return TimeSpan.Zero;
             var        timeMatch = RTimeFormat.Match(input);
             if (!timeMatch.Success) return TimeSpan.Zero;
-            int        hour = int.Parse(timeMatch.Groups["Hour"].Value);
-            int      minute = int.Parse(timeMatch.Groups["Minute"].Value);
-            int      second = int.Parse(timeMatch.Groups["Second"].Value);
-            int millisecond = int.Parse(timeMatch.Groups["Millisecond"].Value);
+            var hour        = int.Parse(timeMatch.Groups["Hour"].Value);
+            var minute      = int.Parse(timeMatch.Groups["Minute"].Value);
+            var second      = int.Parse(timeMatch.Groups["Second"].Value);
+            var millisecond = int.Parse(timeMatch.Groups["Millisecond"].Value);
             return new TimeSpan(0, hour, minute, second, millisecond);
         }
 
@@ -91,8 +90,8 @@ namespace ChapterTool.Util
             var rpos = new Regex(@"{X=(?<x>.+),Y=(?<y>.+)}", RegexOptions.Compiled);
             var result = rpos.Match(input);
             if (!result.Success) return new Point(-32000, -32000);
-            int x = int.Parse(result.Groups["x"].Value);
-            int y = int.Parse(result.Groups["y"].Value);
+            var x = int.Parse(result.Groups["x"].Value);
+            var y = int.Parse(result.Groups["y"].Value);
             return new Point(x, y);
         }
 
@@ -102,14 +101,21 @@ namespace ChapterTool.Util
         /// <param name="frame"></param>
         /// <returns></returns>
         public static int ConvertFr2Index(double frame)
-            => Enumerable.Range(0, 8).First(index => Math.Abs(frame - (double)MplsData.FrameRate[index]) < 1e-5);
+        {
+            for (int i = 0; i < MplsData.FrameRate.Length; ++i)
+            {
+                if (Math.Abs(frame - (double)MplsData.FrameRate[i]) < 1e-5)
+                    return i;
+            }
+            return 0;
+        }
 
         /// <summary>
-        /// 读取带或不带BOM头的UTF-8文本
+        /// 读取带或不带BOM头的UTF文本
         /// </summary>
-        /// <param name="buffer">UTF-8文本的字节串</param>
+        /// <param name="buffer">UTF文本的字节串</param>
         /// <returns></returns>
-        public static string GetUTF8String(this byte[] buffer)
+        public static string GetUTFString(this byte[] buffer)
         {
             if (buffer == null) return null;
             if (buffer.Length <= 3) return Encoding.UTF8.GetString(buffer);
@@ -133,7 +139,7 @@ namespace ChapterTool.Util
             var json = new StringBuilder("[");
             colorList.ForEach(item => json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\","));
             json[json.Length - 1] = ']';
-            var path = $"{Path.GetDirectoryName(Application.ExecutablePath)}\\{ColorProfile}";
+            var path = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath) ?? "", ColorProfile);
             File.WriteAllText(path, json.ToString());
         }
 
@@ -144,8 +150,8 @@ namespace ChapterTool.Util
         public static void LoadColor(this Form1 window)
         {
             if (!File.Exists(ColorProfile)) return;
-            string json = File.ReadAllText(ColorProfile);
-            Regex rcolor = new Regex("\"(?<hex>.+?)\"", RegexOptions.Compiled);
+            var json   = File.ReadAllText(ColorProfile);
+            var rcolor = new Regex("\"(?<hex>.+?)\"", RegexOptions.Compiled);
             var matchesOfJson = rcolor.Matches(json);
             if (matchesOfJson.Count < 6)  return;
             window.BackChange     = ColorTranslator.FromHtml(matchesOfJson[0].Groups["hex"].Value);
@@ -162,12 +168,7 @@ namespace ChapterTool.Util
 
         public static void SaveAs(this object chapter, string path) => File.WriteAllText(path, chapter.ToString(), Encoding.UTF8);
 
-        public static bool IsAdministrator()
-        {
-            WindowsIdentity identity = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
+        public static bool IsAdministrator() => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 
         public static bool RunAsAdministrator()
         {
@@ -179,14 +180,13 @@ namespace ChapterTool.Util
 
         private static bool RunElevated(string fileName)
         {
-            ProcessStartInfo processInfo = new ProcessStartInfo
-            {
-                Verb = "runas",
-                FileName = fileName
-            };
             try
             {
-                Process.Start(processInfo);
+                Process.Start(new ProcessStartInfo
+                {
+                    Verb = "runas",
+                    FileName = fileName
+                });
                 return true;
             }
             catch (System.ComponentModel.Win32Exception)
@@ -205,13 +205,11 @@ namespace ChapterTool.Util
         /// </summary>
         /// <param name="argData"></param>
         /// <returns></returns>
-        public static DataReceivedEventArgs GetDataReceivedEventArgs(Object argData)
+        public static DataReceivedEventArgs GetDataReceivedEventArgs(object argData)
         {
-            DataReceivedEventArgs eventArgs = (DataReceivedEventArgs)System.Runtime.Serialization.FormatterServices
-                         .GetUninitializedObject(typeof(DataReceivedEventArgs));
-
-            FieldInfo f = typeof(DataReceivedEventArgs).GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)[0];
-            f.SetValue(eventArgs, argData);
+            var eventArgs = (DataReceivedEventArgs)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(DataReceivedEventArgs));
+            var fileds = typeof(DataReceivedEventArgs).GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)[0];
+            fileds.SetValue(eventArgs, argData);
 
             return eventArgs;
         }
@@ -225,20 +223,19 @@ namespace ChapterTool.Util
         {
             var reader = argProcess.StandardOutput;
             var line = new StringBuilder();
-            while (true)
+            while (!reader.EndOfStream)
             {
-                if (reader.EndOfStream) break;
                 var c = (char) reader.Read();
                 switch (c)
                 {
                     case '\r':
                         if ((char) reader.Peek() == '\n') reader.Read();// consume the next character
                         argHandler(argProcess, GetDataReceivedEventArgs(line.ToString()));
-                        line.Length = 0;
+                        line.Clear();
                         break;
                     case '\n':
                         argHandler(argProcess, GetDataReceivedEventArgs(line.ToString()));
-                        line.Length = 0;
+                        line.Clear();
                         break;
                     default:
                         line.Append(c);

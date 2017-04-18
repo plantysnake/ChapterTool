@@ -90,7 +90,7 @@ namespace ChapterTool.Util.ChapterData
                     OnLog?.Invoke(text);
                     throw new Exception("Error creating chapters file.");
                 }
-                current.Chapters = OgmData.GetChapterInfo(File.ReadAllBytes(chapterPath).GetUTF8String()).Chapters;
+                current.Chapters = OgmData.GetChapterInfo(File.ReadAllBytes(chapterPath).GetUTFString()).Chapters;
                 if (current.Chapters.First().Name != "") continue;
                 var chapterName = ChapterName.GetChapterName();
                 current.Chapters.ForEach(chapter => chapter.Name = chapterName());

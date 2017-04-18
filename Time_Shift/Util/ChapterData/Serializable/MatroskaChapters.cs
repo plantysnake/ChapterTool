@@ -17,7 +17,7 @@ namespace ChapterTool.Util.ChapterData.Serializable
         public string EditionFlagHidden        { get; set; }
         public string EditionManaged           { get; set; }
         public string EditionFlagDefault       { get; set; }
-        [XmlElement("ChapterAtom")]            
+        [XmlElement("ChapterAtom")]
         public ChapterAtom[] ChapterAtom       { get; set; }
     }
 
@@ -51,7 +51,7 @@ namespace ChapterTool.Util.ChapterData.Serializable
     {
         public string ChapterString            { get; set; }
         public string ChapterLanguage          { get; set; }
-        public string ChapterCountry           { get; set; }   
+        public string ChapterCountry           { get; set; }
     }
 
     [Serializable]
