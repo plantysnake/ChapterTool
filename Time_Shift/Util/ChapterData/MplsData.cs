@@ -38,6 +38,8 @@ namespace ChapterTool.Util.ChapterData
 
         private readonly byte[] _data;
 
+        private int _version;
+
         public static readonly decimal[] FrameRate = { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 0M, 50M, 60000M / 1001 };
 
         public static event Action<string> OnLog;
@@ -53,7 +55,6 @@ namespace ChapterTool.Util.ChapterData
             ParseHeader(out int playlistMarkSectionStartAddress, out int playItemNumber, out int playItemEntries);
             for (var playItemOrder = 0; playItemOrder < playItemNumber; playItemOrder++)
             {
-
                 ParsePlayItem(playItemEntries, out int lengthOfPlayItem, out int itemStartAdress, out int streamCount);
                 for (var streamOrder = 0; streamOrder < streamCount; streamOrder++)
                 {
@@ -69,9 +70,14 @@ namespace ChapterTool.Util.ChapterData
         private void ParseHeader(out int playlistMarkSectionStartAddress, out int playItemNumber, out int playItemEntries)
         {
             var fileType = Encoding.ASCII.GetString(_data, 0, 8);
-            if ((fileType != "MPLS0100" && fileType != "MPLS0200") /*|| _data[45] != 1*/)
+            if ((fileType != "MPLS0100" && fileType != "MPLS0200" && fileType != "MPLS0300") /*|| _data[45] != 1*/)
             {
                 throw new Exception($"This Playlist has an unknown file type {fileType}.");
+            }
+            _version = int.Parse(fileType.Substring(5, 1));
+            if (_version == 3)
+            {
+                OnLog?.Invoke("There is no complete support for UHD's playlist currently");
             }
             var playlistSectionStartAddress = Byte2Int32(_data, 0x08);
             playlistMarkSectionStartAddress = Byte2Int32(_data, 0x0c);
@@ -128,9 +134,12 @@ namespace ChapterTool.Util.ChapterData
             var streamCodingType = stream[0x0b];
             var chapterClip      = ChapterClips[playItemOrder];
             var clipName         = 0x01 == stream[01] ? chapterClip.Name : chapterClip.Name + " Sub Path";
-            StreamAttribute.OnLog += StreamAttributeLog;
-            StreamAttribute.LogStreamAttributes(stream, clipName);
-            StreamAttribute.OnLog -= StreamAttributeLog;
+            if (_version < 3)
+            {
+                StreamAttribute.OnLog += StreamAttributeLog;
+                StreamAttribute.LogStreamAttributes(stream, clipName);
+                StreamAttribute.OnLog -= StreamAttributeLog;
+            }
 
             if (0x01 != stream[01]) return; //make sure this stream is Play Item
             if (0x1b != streamCodingType && 0x02 != streamCodingType &&
