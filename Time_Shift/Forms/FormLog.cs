@@ -24,7 +24,7 @@ namespace ChapterTool.Forms
 
         private void frmLog_Activated(object sender, EventArgs e)
         {
-            txtLog.Text = CTLogger.LogText;
+            txtLog.Text = Logger.LogText;
         }
 
         private void txtLog_TextChanged(object sender, EventArgs e)
@@ -62,7 +62,7 @@ namespace ChapterTool.Forms
         {
             try
             {
-                txtLog.Text = CTLogger.LogText;
+                txtLog.Text = Logger.LogText;
             }
             catch (Exception exception)
             {

@@ -61,7 +61,7 @@ namespace Knuckleball
         /// </exception>
         public static MP4File Open(string fileName)
         {
-            MP4File file = new MP4File(fileName);
+            var file = new MP4File(fileName);
             file.Load();
             return file;
         }
@@ -71,7 +71,7 @@ namespace Knuckleball
         /// </summary>
         public void Load()
         {
-            IntPtr fileHandle = NativeMethods.MP4Read(fileName);
+            var fileHandle = NativeMethods.MP4Read(fileName);
             if (fileHandle != IntPtr.Zero)
             {
                 try

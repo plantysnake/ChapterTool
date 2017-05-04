@@ -7,19 +7,17 @@ using System.Text;
 
 namespace ChapterTool.Util
 {
-    public delegate void LogLineAddedEventHandler(string lineAdded, DateTime actionDate);
-    // ReSharper disable once InconsistentNaming
-    public static class CTLogger
+    public static class Logger
     {
         private static readonly StringBuilder LogContext = new StringBuilder();
 
         public static string LogText => LogContext.ToString();
 
-        public static event LogLineAddedEventHandler LogLineAdded;
+        public static event Action<string, DateTime> LogLineAdded;
 
         public static void Log(string message)
         {
-            DateTime actionDate = DateTime.Now;
+            var actionDate    = DateTime.Now;
             string logMessage = $"{actionDate:[yyyy-MM-dd][HH:mm:ss]} {message}";
             LogContext.AppendLine(logMessage);
             OnLogLineAdded(logMessage, actionDate);

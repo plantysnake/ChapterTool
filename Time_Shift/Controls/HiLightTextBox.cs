@@ -39,7 +39,7 @@ namespace ChapterTool.Controls
 
         protected override void OnTextChanged(EventArgs e)
         {
-            BackgroundWorker worker = new BackgroundWorker();
+            var worker = new BackgroundWorker();
             worker.DoWork += HighLight;
             worker.RunWorkerAsync(Rtf);
             worker.RunWorkerCompleted += (sender, args) => Rtf = args.Result as string;
@@ -51,7 +51,7 @@ namespace ChapterTool.Controls
         {
             try
             {
-                RichTextBox text = new RichTextBox
+                var text = new RichTextBox
                 {
                     Rtf = e.Argument as string,
                     SelectionStart = 0

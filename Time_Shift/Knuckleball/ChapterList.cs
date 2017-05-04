@@ -31,9 +31,7 @@ namespace Knuckleball
         private List<Chapter> chapters = new List<Chapter>();
         private HashSet<Guid> hashedIndex = new HashSet<Guid>();
 
-        public delegate void LogEventHandler(string message);
-
-        public static event LogEventHandler OnLog;
+        public static event Action<string> OnLog;
 
         /// <summary>
         /// Prevents a default instance of the <see cref="ChapterList"/> class from being created.
@@ -205,7 +203,7 @@ namespace Knuckleball
         /// <see langword="false"/> if <paramref name="item"/> is not found in the original<see cref="ChapterList"/>.</returns>
         public bool Remove(Chapter item)
         {
-            bool isRemoved = chapters.Remove(item);
+            var isRemoved = chapters.Remove(item);
             IsDirty = IsDirty || isRemoved;
             if (isRemoved)
             {
@@ -223,7 +221,7 @@ namespace Knuckleball
         /// or <paramref name="index"/> is greater than <see cref="Count"/>.</exception>
         public void RemoveAt(int index)
         {
-            Chapter toRemove = this[index];
+            var toRemove = this[index];
             hashedIndex.Remove(toRemove.Id);
             toRemove.Changed -= OnChapterChanged;
             chapters.RemoveAt(index);
@@ -258,19 +256,19 @@ namespace Knuckleball
         /// about the chapters for the file.</returns>
         internal static ChapterList ReadFromFile(IntPtr fileHandle)
         {
-            ChapterList list = new ChapterList();
-            IntPtr chapterListPointer = IntPtr.Zero;
-            int chapterCount = 0;
-            NativeMethods.MP4ChapterType chapterType = NativeMethods.MP4GetChapters(fileHandle, ref chapterListPointer, ref chapterCount, NativeMethods.MP4ChapterType.Any);
+            var list = new ChapterList();
+            var chapterListPointer = IntPtr.Zero;
+            var chapterCount = 0;
+            var chapterType = NativeMethods.MP4GetChapters(fileHandle, ref chapterListPointer, ref chapterCount, NativeMethods.MP4ChapterType.Any);
             OnLog?.Invoke($"Chapter type: {chapterType}");
             if (chapterType != NativeMethods.MP4ChapterType.None && chapterCount != 0)
             {
-                IntPtr currentChapterPointer = chapterListPointer;
-                for (int i = 0; i < chapterCount; ++i)
+                var currentChapterPointer = chapterListPointer;
+                for (var i = 0; i < chapterCount; ++i)
                 {
-                    NativeMethods.MP4Chapter currentChapter = currentChapterPointer.ReadStructure<NativeMethods.MP4Chapter>();
-                    TimeSpan duration = TimeSpan.FromMilliseconds(currentChapter.duration);
-                    string title = GetString(currentChapter.title);
+                    var currentChapter = currentChapterPointer.ReadStructure<NativeMethods.MP4Chapter>();
+                    var duration = TimeSpan.FromMilliseconds(currentChapter.duration);
+                    var title = GetString(currentChapter.title);
                     OnLog?.Invoke($"{title} {duration}");
                     list.AddInternal(new Chapter { Duration = duration, Title = title });
                     currentChapterPointer = IntPtr.Add(currentChapterPointer, Marshal.SizeOf(currentChapter));
@@ -297,7 +295,7 @@ namespace Knuckleball
         /// <returns></returns>
         private static string GetString(byte[] bytes)
         {
-            string title = Encoding.UTF8.GetString(bytes);
+            var title = Encoding.UTF8.GetString(bytes);
             if (bytes[0] == 0xFF && bytes[1] == 0xFE)
             {
                 title = Encoding.Unicode.GetString(bytes);

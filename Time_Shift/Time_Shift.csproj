@@ -88,6 +88,9 @@
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -133,6 +136,7 @@
     <Compile Include="SharpDvdInfo\Model\VideoProperties.cs" />
     <Compile Include="SharpDvdInfo\Model\VmgmInfo.cs" />
     <Compile Include="Util\ChapterData\FlacData.cs" />
+    <Compile Include="Util\ChapterData\Serializable\MatroskaChapters.cs" />
     <Compile Include="Util\Expression.cs" />
     <Compile Include="Util\TaskAsync.cs" />
     <Compile Include="Util\Chapter.cs" />
@@ -143,7 +147,7 @@
     <Compile Include="Controls\cTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Util\CTLogger.cs" />
+    <Compile Include="Util\Logger.cs" />
     <Compile Include="Forms\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -229,6 +233,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\about.ico" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="app.manifest" />
     <None Include="Images\arrow_drop_down.png" />
     <None Include="Images\arrow_drop_up.png" />
     <Content Include="Images\Ct.ico" />

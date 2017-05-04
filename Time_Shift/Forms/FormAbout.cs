@@ -49,7 +49,7 @@ namespace ChapterTool.Forms
         {
             get
             {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
                 return attributes.Length == 0 ? string.Empty : ((AssemblyProductAttribute)attributes[0]).Product;
             }
         }
@@ -75,7 +75,7 @@ namespace ChapterTool.Forms
                 Opacity -= 0.02;
                 Thread.Sleep(20);
             }
-            CTLogger.Log("关于窗口被关闭");
+            Logger.Log("关于窗口被关闭");
             Close();
         }
 
@@ -96,7 +96,7 @@ namespace ChapterTool.Forms
         private void Form2_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
-            Point mousePos = MousePosition;
+            var mousePos = MousePosition;
             mousePos.Offset(_startPoint.X, _startPoint.Y);
             Location       = mousePos;
         }
@@ -105,7 +105,7 @@ namespace ChapterTool.Forms
         {
             //Thread.Sleep(20000);
             WindowState = FormWindowState.Minimized;
-            CTLogger.Log("关于窗口被最小化");
+            Logger.Log("关于窗口被最小化");
         }
 
         private void Form2_FormClosing(object sender, FormClosingEventArgs e)

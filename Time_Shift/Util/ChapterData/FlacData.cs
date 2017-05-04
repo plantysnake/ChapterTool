@@ -1,21 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+﻿// ****************************************************************************
+//
+// Copyright (C) 2014-2017 TautCony (TautCony@vcb-s.com)
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// ****************************************************************************
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ChapterTool.Util.ChapterData
 {
     public class FlacInfo
     {
-        public long RawLength     { get; set; }
-        public long TrueLength    { get; }
-        public double CompressRate { get; }
-        public bool HasCover       { get; set; }
-        public string Encoder      { get; set; }
-        public Dictionary<string, string> VorbisComment { get; set; }
+        public long RawLength                           { get; set; }
+        public long TrueLength                          { get; set; }
+        public double CompressRate => TrueLength / (double)RawLength;
+        public bool HasCover                            { get; set; }
+        public string Encoder                           { get; set; }
+        public Dictionary<string, string> VorbisComment { get; }
 
         public FlacInfo()
         {
@@ -44,24 +63,24 @@ namespace ChapterTool.Util.ChapterData
 
         public static FlacInfo GetMetadataFromFlac(string flacPath)
         {
-            using (var fs = File.Open(flacPath, FileMode.Open, FileAccess.Read))
+            using (var fs = File.Open(flacPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 if (fs.Length < SizeThreshold) return new FlacInfo();
-                FlacInfo info = new FlacInfo();
-                var header = fs.ReadBytes(4);
-                if (Encoding.ASCII.GetString(header, 0, 4) != "fLaC")
-                    throw new InvalidDataException($"Except an flac but get an {Encoding.ASCII.GetString(header, 0, 4)}");
+                var info      = new FlacInfo {TrueLength = fs.Length};
+                var header    = Encoding.ASCII.GetString(fs.ReadBytes(4), 0, 4);
+                if (header != "fLaC")
+                    throw new InvalidDataException($"Except an flac but get an {header}");
                 //METADATA_BLOCK_HEADER
                 //1-bit Last-metadata-block flag
                 //7-bit BLOCK_TYPE
                 //24-bit Length
                 while (fs.Position < fs.Length)
                 {
-                    uint blockHeader = fs.ReadUInt();
-                    bool lastMetadataBlock = blockHeader >> 31 == 0x1;
-                    BlockType blockType = (BlockType)((blockHeader >> 24) & 0x7f);
-                    int length = (int) (blockHeader & 0xffffff);
-                    info.RawLength += length;
+                    var blockHeader       = fs.BEInt32();
+                    var lastMetadataBlock = blockHeader >> 31 == 0x1;
+                    var blockType         = (BlockType)((blockHeader >> 24) & 0x7f);
+                    var length            = blockHeader & 0xffffff;
+                    info.TrueLength -= length;
                     OnLog?.Invoke($"|+{blockType} with Length: {length}");
                     switch (blockType)
                     {
@@ -82,7 +101,7 @@ namespace ChapterTool.Util.ChapterData
                         fs.Seek(length, SeekOrigin.Current);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException($"Invalid BLOCK_TYPE: 0x{blockType:X}");
+                        throw new ArgumentOutOfRangeException($"Invalid BLOCK_TYPE: 0x{blockType:X2}");
                     }
                     if (lastMetadataBlock) break;
                 }
@@ -92,101 +111,136 @@ namespace ChapterTool.Util.ChapterData
 
         private static void ParseStreamInfo(Stream fs, ref FlacInfo info)
         {
-            long minBlockSize = fs.ReadUShort();
-            long maxBlockSize = fs.ReadUShort();
-            long minFrameSize = fs.ReadInt24();
-            long maxFrameSize = fs.ReadInt24();
-            var buffer = fs.ReadBytes(8);
-            BitReader br = new BitReader(buffer);
-            int sampleRate = (int) br.GetBits(20);
-            int channelCount = (int) br.GetBits(3)+1;
-            int bitPerSample = (int) br.GetBits(5)+1;
-            int totalSample = (int) br.GetBits(36);
-            var md5 = fs.ReadBytes(16);
-            info.RawLength += channelCount * bitPerSample * totalSample;
+            var minBlockSize  = fs.BEInt16();
+            var maxBlockSize  = fs.BEInt16();
+            var minFrameSize  = fs.BEInt24();
+            var maxFrameSize  = fs.BEInt24();
+            var buffer        = fs.ReadBytes(8);
+            var br            = new BitReader(buffer);
+            var sampleRate    = br.GetBits(20);
+            var channelCount  = br.GetBits(3)+1;
+            var bitPerSample  = br.GetBits(5)+1;
+            var totalSample   = br.GetBits(36);
+            var md5           = fs.ReadBytes(16);
+            info.RawLength    = channelCount * bitPerSample / 8 * totalSample;
             OnLog?.Invoke($" | minimum block size: {minBlockSize}, maximum block size: {maxBlockSize}");
             OnLog?.Invoke($" | minimum frame size: {minFrameSize}, maximum frame size: {maxFrameSize}");
             OnLog?.Invoke($" | Sample rate: {sampleRate}Hz, bits per sample: {bitPerSample}-bit");
             OnLog?.Invoke($" | Channel count: {channelCount}");
-            string md5String = md5.Aggregate("", (current, item) => current + $"{item:X2}");
+            var md5String     = md5.Aggregate("", (current, item) => current + $"{item:X2}");
             OnLog?.Invoke($" | MD5: {md5String}");
         }
 
         private static void ParseVorbisComment(Stream fs, ref FlacInfo info)
         {
             //only here in flac use little-endian
-            int vendorLength = (int) fs.ReadUInt(true);
+            var vendorLength        = (int) fs.LEInt32();
             var vendorRawStringData = fs.ReadBytes(vendorLength);
-            var vendor = Encoding.UTF8.GetString(vendorRawStringData, 0, vendorLength);
-            info.Encoder = vendor;
+            var vendor              = Encoding.UTF8.GetString(vendorRawStringData, 0, vendorLength);
+            info.Encoder            = vendor;
             OnLog?.Invoke($" | Vendor: {vendor}");
-            int userCommentListLength = (int) fs.ReadUInt(true);
-            for (int i = 0; i < userCommentListLength; ++i)
+            var userCommentListLength = fs.LEInt32();
+            for (var i = 0; i < userCommentListLength; ++i)
             {
-                int commentLength = (int) fs.ReadUInt(true);
+                var commentLength        = (int) fs.LEInt32();
                 var commentRawStringData = fs.ReadBytes(commentLength);
-                var comment = Encoding.UTF8.GetString(commentRawStringData, 0, commentLength);
-                var spilterIndex = comment.IndexOf('=');
-                var key = comment.Substring(0, spilterIndex);
-                var value = comment.Substring(spilterIndex + 1, comment.Length - 1 - spilterIndex);
-                info.VorbisComment[key] = value;
-                var summary = value.Length > 25 ? value.Substring(0, 25) + "..." : value;
+                var comment              = Encoding.UTF8.GetString(commentRawStringData, 0, commentLength);
+                var spilterIndex         = comment.IndexOf('=');
+                var key                  = comment.Substring(0, spilterIndex);
+                var value                = comment.Substring(spilterIndex + 1, comment.Length - 1 - spilterIndex);
+                info.VorbisComment[key]  = value;
+                var summary              = value.Length > 25 ? value.Substring(0, 25) + "..." : value;
                 OnLog?.Invoke($" | [{key}] = '{summary.Replace('\n', ' ')}'");
             }
         }
 
+        private static readonly string[] PictureTypeName =
+        {
+            "Other", "32x32 pixels 'file icon'", "Other file icon",
+            "Cover (front)", "Cover (back)", "Leaflet page",
+            "Media", "Lead artist/lead performer/soloist", "Artist/performer",
+            "Conductor", "Band/Orchestra", "Composer",
+            "Lyricist/text writer", "Recording Location", "During recording",
+            "During performance", "Movie/video screen capture", "A bright coloured fish",
+            "Illustration", "Band/artist logotype", "Publisher/Studio logotype",
+            "Reserved"
+        };
+
         private static void ParsePicture(Stream fs, ref FlacInfo info)
         {
-            int pictureType = (int) fs.ReadUInt();
-            int mimeStringLength = (int) fs.ReadUInt();
-            string mimeType = Encoding.ASCII.GetString(fs.ReadBytes(mimeStringLength), 0, mimeStringLength);
-            int descriptionLength = (int) fs.ReadUInt();
-            string description = Encoding.UTF8.GetString(fs.ReadBytes(descriptionLength), 0, descriptionLength);
-            int pictureWidth = (int) fs.ReadUInt();
-            int pictureHeight = (int) fs.ReadUInt();
-            int colorDepth = (int) fs.ReadUInt();
-            int indexedColorCount = (int) fs.ReadUInt();
-            int pictureDataLength = (int) fs.ReadUInt();
+            var pictureType       = fs.BEInt32();
+            var mimeStringLength  = (int) fs.BEInt32();
+            var mimeType          = Encoding.ASCII.GetString(fs.ReadBytes(mimeStringLength), 0, mimeStringLength);
+            var descriptionLength = (int) fs.BEInt32();
+            var description       = Encoding.UTF8.GetString(fs.ReadBytes(descriptionLength), 0, descriptionLength);
+            var pictureWidth      = fs.BEInt32();
+            var pictureHeight     = fs.BEInt32();
+            var colorDepth        = fs.BEInt32();
+            var indexedColorCount = fs.BEInt32();
+            var pictureDataLength = fs.BEInt32();
             fs.Seek(pictureDataLength, SeekOrigin.Current);
-            info.RawLength += pictureDataLength;
-            info.HasCover = true;
-            OnLog?.Invoke($" | picture type: {mimeType}");
+            info.TrueLength      -= pictureDataLength;
+            info.HasCover         = true;
+            if (pictureType > 20) pictureType = 21;
+            OnLog?.Invoke($" | picture type: {PictureTypeName[pictureType]}");
+            OnLog?.Invoke($" | picture format type: {mimeType}");
+            if (descriptionLength > 0)
+                OnLog?.Invoke($" | description: {description}");
             OnLog?.Invoke($" | attribute: {pictureWidth}px*{pictureHeight}px@{colorDepth}-bit");
+            if (indexedColorCount != 0)
+                OnLog?.Invoke($" | indexed-color color: {indexedColorCount}");
         }
+    }
 
-        private static ushort ReadUShort(this Stream fs)
-        {
-            var buffer = fs.ReadBytes(2).Reverse().ToArray();
-            return BitConverter.ToUInt16(buffer, 0);
-        }
-
-        private static int ReadInt24(this Stream fs)
-        {
-            var buffer = fs.ReadBytes(3);
-            int ret = 0;
-            for (int i = 0; i < 3; ++i)
-            {
-                ret |= buffer[i] << ((2 - i) * 8);
-            }
-            return ret;
-        }
-
-        private static uint ReadUInt(this Stream fs, bool littleEndian = false)
-        {
-            var buffer = fs.ReadBytes(4);
-            if (!littleEndian) buffer = buffer.Reverse().ToArray();
-            return BitConverter.ToUInt32(buffer, 0);
-        }
-        
-        private static byte[] ReadBytes(this Stream fs, int length)
+    internal static class Utils
+    {
+        public static byte[] ReadBytes(this Stream fs, int length)
         {
             var ret = new byte[length];
             fs.Read(ret, 0, length);
             return ret;
         }
+
+        #region int reader
+        public static uint BEInt32(this Stream fs)
+        {
+            var b = fs.ReadBytes(4);
+            return b[3] + ((uint)b[2] << 8) + ((uint)b[1] << 16) + ((uint)b[0] << 24);
+        }
+
+        public static uint LEInt32(this Stream fs)
+        {
+            var b = fs.ReadBytes(4);
+            return b[0] + ((uint)b[1] << 8) + ((uint)b[2] << 16) + ((uint)b[3] << 24);
+        }
+
+        public static int BEInt24(this Stream fs)
+        {
+            var b = fs.ReadBytes(3);
+            return b[2] + (b[1] << 8) + (b[0] << 16);
+        }
+
+        public static int LEInt24(this Stream fs)
+        {
+            var b = fs.ReadBytes(3);
+            return b[0] + (b[1] << 8) + (b[2] << 16);
+        }
+
+        public static int BEInt16(this Stream fs)
+        {
+            var b = fs.ReadBytes(2);
+            return b[1] + (b[0] << 8);
+        }
+
+        public static int LEInt16(this Stream fs)
+        {
+            var b = fs.ReadBytes(2);
+            return b[0] + (b[1] << 8);
+        }
+        #endregion
     }
 
-    public class BitReader
+    internal class BitReader
     {
         private readonly byte[] _buffer;
         private int _bytePosition;
@@ -210,7 +264,7 @@ namespace ChapterTool.Util.ChapterData
         {
             if (_bytePosition >= _buffer.Length)
                 throw new IndexOutOfRangeException(nameof(_bytePosition));
-            bool ret = ((_buffer[_bytePosition] >> (7 - _bitPositionInByte)) & 1) == 1;
+            var ret = ((_buffer[_bytePosition] >> (7 - _bitPositionInByte)) & 1) == 1;
             Next();
             return ret;
         }
@@ -223,12 +277,20 @@ namespace ChapterTool.Util.ChapterData
             ++_bytePosition;
         }
 
+        public void Skip(int length)
+        {
+            for (var i = 0; i < length; ++i)
+            {
+                Next();
+            }
+        }
+
         public long GetBits(int length)
         {
             long ret = 0;
-            for (int i = 0; i < length; ++i)
+            for (var i = 0; i < length; ++i)
             {
-                ret |= ((long)(_buffer[_bytePosition] >> (7 - _bitPositionInByte) & 1) << (length - 1 - i));
+                ret |= ((long) (_buffer[_bytePosition] >> (7 - _bitPositionInByte)) & 1) << (length - 1 - i);
                 Next();
             }
             return ret;

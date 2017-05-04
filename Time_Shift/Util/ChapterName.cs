@@ -28,11 +28,11 @@ namespace ChapterTool.Util
 
         private const string ChapterFormat = "Chapter";
 
-        public static readonly Func<string, Func<string>> GetChapterName = chapterFormat =>
+        public static Func<string> GetChapterName(string chapterFormat = ChapterFormat)
         {
             var index = 1;
             return () => $"{chapterFormat} {index++:D2}";
-        };
+        }
 
         public ChapterName(int index)
         {
@@ -75,7 +75,7 @@ namespace ChapterTool.Util
 
         private static IEnumerable<string> RangeIterator(int start, int count)
         {
-            for (int i = 0; i < count; i++) yield return $"{ChapterFormat} {start + i:D2}";
+            for (var i = 0; i < count; i++) yield return $"{ChapterFormat} {start + i:D2}";
         }
     }
 }

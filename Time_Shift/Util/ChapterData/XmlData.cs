@@ -19,9 +19,12 @@
 // ****************************************************************************
 
 using System;
+using System.IO;
 using System.Xml;
 using System.Linq;
+using System.Xml.Serialization;
 using System.Collections.Generic;
+using ChapterTool.Util.ChapterData.Serializable;
 
 namespace ChapterTool.Util.ChapterData
 {
@@ -29,7 +32,7 @@ namespace ChapterTool.Util.ChapterData
     {
         public static IEnumerable<ChapterInfo> PraseXml(XmlDocument doc)
         {
-            XmlElement root = doc.DocumentElement;
+            var root = doc.DocumentElement;
             if (root == null)
             {
                 throw new ArgumentException("Empty Xml file");
@@ -46,8 +49,8 @@ namespace ChapterTool.Util.ChapterData
                 {
                     throw new Exception($"Invalid Xml file.\nEntry Name: {editionEntry.Name}");
                 }
-                ChapterInfo buff = new ChapterInfo { SourceType = "XML", Tag = doc, TagType = doc.GetType() };
-                int index = 0;
+                var buff  = new ChapterInfo { SourceType = "XML", Tag = doc, TagType = doc.GetType() };
+                var index = 0;
                 foreach (XmlNode editionEntryChildNode in ((XmlElement)editionEntry).ChildNodes)//Get all the child nodes in current chapter
                 {
                     if (editionEntryChildNode.Name != "ChapterAtom") continue;
@@ -55,7 +58,7 @@ namespace ChapterTool.Util.ChapterData
                 }
 
                 //remove redundancy chapter node.
-                for (int i = 0; i < buff.Chapters.Count - 1; i++)
+                for (var i = 0; i < buff.Chapters.Count - 1; i++)
                 {
                     if (buff.Chapters[i].Time == buff.Chapters[i + 1].Time)
                     {
@@ -69,8 +72,8 @@ namespace ChapterTool.Util.ChapterData
 
         private static IEnumerable<Chapter> PraseChapterAtom(XmlNode chapterAtom, int index)
         {
-            Chapter startChapter = new Chapter { Number = index };
-            Chapter endChapter = new Chapter { Number = index };
+            var startChapter     = new Chapter { Number = index };
+            var endChapter       = new Chapter { Number = index };
             var innerChapterAtom = new List<Chapter>();
             foreach (XmlNode chapterAtomChildNode in ((XmlElement)chapterAtom).ChildNodes) //Get detail info for current chapter node
             {
@@ -108,6 +111,61 @@ namespace ChapterTool.Util.ChapterData
 
             if (endChapter.Time.TotalSeconds > startChapter.Time.TotalSeconds)
             {
+                yield return endChapter;
+            }
+        }
+
+        public static Chapters Deserializer(string filePath)
+        {
+            using (var reader = new StreamReader(filePath))
+            {
+                return (Chapters)new XmlSerializer(typeof(Chapters)).Deserialize(reader);
+            }
+        }
+
+        public static IEnumerable<ChapterInfo> ToChapterInfo(this Chapters chapters)
+        {
+            var index = 0;
+            foreach (var entry in chapters.EditionEntry)
+            {
+                var info = new ChapterInfo();
+                foreach (var atom in entry.ChapterAtom)
+                {
+                    info.Chapters.AddRange(ToChapter(atom, ++index));
+                }
+                yield return info;
+            }
+        }
+
+        private static IEnumerable<Chapter> ToChapter(ChapterAtom atom, int index)
+        {
+            if (atom.ChapterTimeStart != null)
+            {
+                var startChapter = new Chapter
+                {
+                    Number = index,
+                    Time = ToolKits.RTimeFormat.Match(atom.ChapterTimeStart).Value.ToTimeSpan(),
+                    Name = atom.ChapterDisplay.ChapterString ?? ""
+                };
+                yield return startChapter;
+            }
+            if (atom.SubChapterAtom != null)
+                foreach (var chapterAtom in atom.SubChapterAtom)
+                {
+                    foreach (var chapter in ToChapter(chapterAtom, index))
+                    {
+                        yield return chapter;
+                    }
+                }
+
+            if (atom.ChapterTimeEnd != null)
+            {
+                var endChapter = new Chapter
+                {
+                    Number = index,
+                    Time = ToolKits.RTimeFormat.Match(atom.ChapterTimeEnd).Value.ToTimeSpan(),
+                    Name = atom.ChapterDisplay.ChapterString ?? ""
+                };
                 yield return endChapter;
             }
         }

@@ -44,8 +44,6 @@ namespace ChapterTool.Util
         public double FramesPerSecond { get; set; }
         public TimeSpan Duration      { get; set; }
         public List<Chapter> Chapters { get; set; } = new List<Chapter>();
-        //public TimeSpan Offset        { get; set; } = TimeSpan.Zero;
-        //public bool Mul1K1            { get; set; }
 
         public Expression Expr { get; set; } = Expression.Empty;
 
@@ -74,6 +72,14 @@ namespace ChapterTool.Util
                 Tag = Chapters[index], //绑定对象，以便删除行时可以得知对应的 Chapter
                 DefaultCellStyle = {BackColor = (Chapters[index].Number - 1)%2 == 0 ? EVEN_COLOR : ODD_COLOR}
             };
+            if (Chapters[index].Number == -1)
+            {
+                row.DefaultCellStyle.BackColor = Color.Black;
+                row.Height = 3;
+                for (var i = 0; i < 4; ++i)
+                    row.Cells.Add(new DataGridViewTextBoxCell {Value = ""});
+                return row;
+            }
             row.Cells.Add(new DataGridViewTextBoxCell {Value = $"{Chapters[index].Number:D2}"});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = Time2String(Chapters[index])});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? ChapterName.Get(index + 1) : Chapters[index].Name});
@@ -140,15 +146,15 @@ namespace ChapterTool.Util
         {
             for (var i = 0; i < Chapters.Count; i++)
             {
-                Chapter c = Chapters[i];
-                double frames = c.Time.TotalSeconds*FramesPerSecond;
+                var c = Chapters[i];
+                var frames = c.Time.TotalSeconds*FramesPerSecond;
                 Chapters[i] = new Chapter
                 {
                     Name = c.Name,
                     Time = new TimeSpan((long) Math.Round(frames/fps*TimeSpan.TicksPerSecond))
                 };
             }
-            double totalFrames = Duration.TotalSeconds*FramesPerSecond;
+            var totalFrames = Duration.TotalSeconds*FramesPerSecond;
             Duration           = new TimeSpan((long) Math.Round(totalFrames/fps*TimeSpan.TicksPerSecond));
             FramesPerSecond    = fps;
         }
@@ -170,7 +176,7 @@ namespace ChapterTool.Util
         /// <param name="shift">位移量</param>
         public void UpdataInfo(int shift)
         {
-            int index = 0;
+            var index = 0;
             Chapters.ForEach(item => item.Number = ++index + shift);
         }
 
@@ -197,8 +203,8 @@ namespace ChapterTool.Util
         public string GetText(bool autoGenName)
         {
             var lines = new StringBuilder();
-            var name  = ChapterName.GetChapterName("Chapter");
-            foreach (var item in Chapters)
+            var name  = ChapterName.GetChapterName();
+            foreach (var item in Chapters.Where(c => c.Time != TimeSpan.MinValue))
             {
                 lines.Append($"CHAPTER{item.Number:D2}={Time2String(item)}{Environment.NewLine}");
                 lines.Append($"CHAPTER{item.Number:D2}NAME=");
@@ -208,9 +214,7 @@ namespace ChapterTool.Util
             return lines.ToString();
         }
 
-        public void SaveText(string filename, bool autoGenName) => File.WriteAllText(filename, GetText(autoGenName), Encoding.UTF8);
-
-        public void SaveQpfile(string filename) => File.WriteAllLines(filename, Chapters.Select(c => c.FramsInfo.ToString().Replace("*", "I").Replace("K", "I")).ToArray());
+        public string[] GetQpfile() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => c.FramsInfo.ToString().Replace("*", "I").Replace("K", "I")).ToArray();
 
         public static void Chapter2Qpfile(string ipath, string opath, double fps, string tcfile = "")
         {
@@ -279,23 +283,23 @@ namespace ChapterTool.Util
             File.WriteAllLines(opath, olines);
         }
 
-        public void SaveCelltimes(string filename) => File.WriteAllLines(filename, Chapters.Select(c => ((long) Math.Round(c.Time.TotalSeconds*FramesPerSecond)).ToString()).ToArray());
+        public string[] GetCelltimes() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => ((long) Math.Round(c.Time.TotalSeconds*FramesPerSecond)).ToString()).ToArray();
 
-        public void SaveTsmuxerMeta(string filename)
+        public string GetTsmuxerMeta()
         {
             string text = $"--custom-{Environment.NewLine}chapters=";
-            text = Chapters.Aggregate(text, (current, chapter) => current + Time2String(chapter) + ";");
+            text = Chapters.Where(c => c.Time != TimeSpan.MinValue).Aggregate(text, (current, chapter) => current + Time2String(chapter) + ";");
             text = text.Substring(0, text.Length - 1);
-            File.WriteAllText(filename, text);
+            return text;
         }
 
-        public void SaveTimecodes(string filename) => File.WriteAllLines(filename, Chapters.Select(Time2String).ToArray());
+        public string[] GetTimecodes() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(Time2String).ToArray();
 
         public void SaveXml(string filename, string lang, bool autoGenName)
         {
             if (string.IsNullOrWhiteSpace(lang)) lang = "und";
-            Random rndb           = new Random();
-            XmlTextWriter xmlchap = new XmlTextWriter(filename, Encoding.UTF8) {Formatting = Formatting.Indented};
+            var rndb           = new Random();
+            var xmlchap = new XmlTextWriter(filename, Encoding.UTF8) {Formatting = Formatting.Indented};
             xmlchap.WriteStartDocument();
             xmlchap.WriteComment("<!DOCTYPE Tags SYSTEM \"matroskatags.dtd\">");
             xmlchap.WriteStartElement("Chapters");
@@ -303,8 +307,8 @@ namespace ChapterTool.Util
                 xmlchap.WriteElementString("EditionFlagHidden", "0");
                 xmlchap.WriteElementString("EditionFlagDefault", "0");
                 xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                var name = ChapterName.GetChapterName("Chapter");
-                foreach (var item in Chapters)
+                var name = ChapterName.GetChapterName();
+                foreach (var item in Chapters.Where(c => c.Time != TimeSpan.MinValue))
                 {
                     xmlchap.WriteStartElement("ChapterAtom");
                       xmlchap.WriteStartElement("ChapterDisplay");
@@ -323,22 +327,57 @@ namespace ChapterTool.Util
             xmlchap.Close();
         }
 
-        public void SaveCue(string sourceFileName, string fileName, bool autoGenName)
+        public StringBuilder GetCue(string sourceFileName, bool autoGenName)
         {
-            StringBuilder cueBuilder = new StringBuilder();
+            var cueBuilder = new StringBuilder();
             cueBuilder.AppendLine("REM Generate By ChapterTool");
             cueBuilder.AppendLine($"TITLE \"{Title}\"");
 
             cueBuilder.AppendLine($"FILE \"{sourceFileName}\" WAVE");
-            int index = 0;
-            var name = ChapterName.GetChapterName("Chapter");
-            foreach (var chapter in Chapters)
+            var index = 0;
+            var name = ChapterName.GetChapterName();
+            foreach (var chapter in Chapters.Where(c=>c.Time != TimeSpan.MinValue))
             {
                 cueBuilder.AppendLine($"  TRACK {++index:D2} AUDIO");
                 cueBuilder.AppendLine($"    TITLE \"{(autoGenName ? name(): chapter.Name)}\"");
                 cueBuilder.AppendLine($"    INDEX 01 {chapter.Time.ToCueTimeStamp()}");
             }
-            File.WriteAllText(fileName, cueBuilder.ToString());
+            return cueBuilder;
+        }
+
+        public StringBuilder GetJson(bool autoGenName)
+        {
+            var jsonBuilder = new StringBuilder();
+            jsonBuilder.Append("{");
+            jsonBuilder.Append("\"sourceName\":");
+            jsonBuilder.Append(SourceType == "MPLS" ? $"\"{SourceName}.m2ts\"," : "\"undefined\",");
+            jsonBuilder.Append("\"chapter\":");
+            jsonBuilder.Append("[[");
+
+            var baseTime = TimeSpan.Zero;
+            Chapter prevChapter = null;
+            var name = ChapterName.GetChapterName();
+            foreach (var chapter in Chapters)
+            {
+                if (chapter.Time == TimeSpan.MinValue && prevChapter != null)
+                {
+                    baseTime = prevChapter.Time;//update base time
+                    name = ChapterName.GetChapterName();
+                    var initChapterName = autoGenName ? name() : prevChapter.Name;
+                    jsonBuilder.Remove(jsonBuilder.Length - 1, 1);
+                    jsonBuilder.Append("],[");
+                    jsonBuilder.Append($"{{\"name\":\"{initChapterName}\",\"time\":0}},");
+                    continue;
+                }
+                var time = chapter.Time - baseTime;
+                var chapterName = (autoGenName ? name() : chapter.Name);
+                jsonBuilder.Append($"{{\"name\":\"{chapterName}\",\"time\":{time.TotalSeconds}}},");
+                prevChapter = chapter;
+            }
+            jsonBuilder.Remove(jsonBuilder.Length - 1, 1);
+            jsonBuilder.Append("]]");
+            jsonBuilder.Append("}");
+            return jsonBuilder;
         }
     }
 }

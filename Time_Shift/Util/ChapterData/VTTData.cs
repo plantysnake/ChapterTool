@@ -35,7 +35,7 @@ namespace ChapterTool.Util.ChapterData
             {
                 throw new Exception($"ERROR: Empty or invalid file type");
             }
-            int index = 0;
+            var index = 0;
             nodes.Skip(1).ToList().ForEach(node =>
             {
                 var lines = node.Split('\n');

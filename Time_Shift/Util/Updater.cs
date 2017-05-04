@@ -34,9 +34,9 @@ namespace ChapterTool.Util
     {
         private static void OnResponse(IAsyncResult ar)
         {
-            Regex versionRegex = new Regex(@"<meta\s+name\s*=\s*'ChapterTool'\s+content\s*=\s*'(\d+\.\d+\.\d+\.\d+)'\s*>", RegexOptions.Compiled);
-            Regex baseUrlRegex = new Regex(@"<meta\s+name\s*=\s*'BaseUrl'\s+content\s*=\s*'(.+)'\s*>", RegexOptions.Compiled);
-            WebRequest webRequest = (WebRequest)ar.AsyncState;
+            var versionRegex = new Regex(@"<meta\s+name\s*=\s*'ChapterTool'\s+content\s*=\s*'(\d+\.\d+\.\d+\.\d+)'\s*>", RegexOptions.Compiled);
+            var baseUrlRegex = new Regex(@"<meta\s+name\s*=\s*'BaseUrl'\s+content\s*=\s*'(.+)'\s*>", RegexOptions.Compiled);
+            var webRequest   = (WebRequest)ar.AsyncState;
             Stream responseStream;
             try
             {
@@ -50,14 +50,14 @@ namespace ChapterTool.Util
             }
             if (responseStream == null) return;
 
-            StreamReader streamReader = new StreamReader(responseStream);
-            string context = streamReader.ReadToEnd();
-            var result = versionRegex.Match(context);
-            var urlResult = baseUrlRegex.Match(context);
+            var streamReader = new StreamReader(responseStream);
+            var context      = streamReader.ReadToEnd();
+            var result       = versionRegex.Match(context);
+            var urlResult    = baseUrlRegex.Match(context);
             if (!result.Success || !result.Success) return;
 
             var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            Version remoteVersion = Version.Parse(result.Groups[1].Value);
+            var remoteVersion  = Version.Parse(result.Groups[1].Value);
             if (currentVersion >= remoteVersion)
             {
                 MessageBox.Show($"v{currentVersion} 已是最新版", @"As Expected");
@@ -66,7 +66,7 @@ namespace ChapterTool.Util
             var dialogResult = MessageBox.Show(caption: @"Wow! Such Impressive", text: $"新车已发车 v{remoteVersion}，上车!",
                                                buttons: MessageBoxButtons.YesNo, icon: MessageBoxIcon.Asterisk);
             if (dialogResult != DialogResult.Yes) return;
-            FormUpdater formUpdater = new FormUpdater(Assembly.GetExecutingAssembly().Location, remoteVersion, urlResult.Groups[1].Value);
+            var formUpdater = new FormUpdater(Assembly.GetExecutingAssembly().Location, remoteVersion, urlResult.Groups[1].Value);
             formUpdater.ShowDialog();
         }
 
@@ -74,7 +74,7 @@ namespace ChapterTool.Util
         {
             if (!IsConnectInternet()) return;
 
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://tautcony.github.io/tcupdate.html");
+            var webRequest = (HttpWebRequest)WebRequest.Create("http://tautcony.github.io/tcupdate.html");
             #if DEBUG
             webRequest                = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:4000/tcupdate.html");
             #endif
