@@ -137,6 +137,7 @@
     <Compile Include="SharpDvdInfo\Model\VmgmInfo.cs" />
     <Compile Include="Util\ChapterData\FlacData.cs" />
     <Compile Include="Util\ChapterData\Serializable\MatroskaChapters.cs" />
+    <Compile Include="Util\ChapterData\StreamUtils.cs" />
     <Compile Include="Util\Expression.cs" />
     <Compile Include="Util\TaskAsync.cs" />
     <Compile Include="Util\Chapter.cs" />

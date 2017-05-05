@@ -39,6 +39,10 @@ namespace ChapterTool.Util.ChapterData
         public SubPath[] SubPaths   => _playList.SubPaths;
         public Mark[] Marks         => _playListMark.Marks;
 
+        public static readonly decimal[] FrameRate = { 0M, 24000M / 1001, 24M, 25M, 30000M / 1001, 0M, 50M, 60000M / 1001 };
+
+        public static event Action<string> OnLog;
+
         public MplsData(string path)
         {
             using (var stream = File.OpenRead(path))
@@ -52,6 +56,56 @@ namespace ChapterTool.Util.ChapterData
                 stream.Seek(_mplsHeader.PlayListMarkStartAddress, SeekOrigin.Begin);
                 _playListMark = new PlayListMark(stream);
             }
+            StreamAttribution.OnLog += OnLog;
+            foreach (var item in PlayItems)
+            {
+                foreach (var s in item.STNTable.StreamEntries)
+                {
+                    OnLog?.Invoke($"+{s.GetType()}");
+                    StreamAttribution.LogStreamAttributes(s, item.ClipName);
+                }
+            }
+            StreamAttribution.OnLog -= OnLog;
+        }
+
+        public ChapterInfo ToChapterInfo(int index, bool combineChapter)
+        {
+            if (index >= PlayItems.Length && !combineChapter)
+            {
+                throw new IndexOutOfRangeException("Index of Video Clip out of range");
+            }
+            var playItem = PlayItems[index];
+            var attr = playItem.STNTable.StreamEntries.First(item => item is PrimaryVideoStreamEntry);
+            var info = new ChapterInfo
+            {
+                SourceType = "MPLS",
+                SourceName = PlayItems[index].FullName,
+                FramesPerSecond = (double) FrameRate[attr.StreamAttributes.FrameRate]
+            };
+            if (!combineChapter)
+            {
+                Func<Mark, bool> filter = item => item.MarkType == 0x01 && item.RefToPlayItemID == index;
+                if (!Marks.Any(filter))
+                {
+                    return info;
+                }
+                var offset = Marks.First(filter).MarkTimeStamp;
+                if (playItem.TimeInfo.INTime < offset)
+                {
+                    OnLog?.Invoke($"first time stamp: {offset}, Time in: {playItem.TimeInfo.INTime}");
+                    offset = playItem.TimeInfo.INTime;
+                }
+                var name = new ChapterName();
+                info.Chapters = Marks.Where(filter).Select(mark => new Chapter
+                {
+                    Time = Pts2Time(mark.MarkTimeStamp - offset),
+                    Number = name.Index,
+                    Name = name.Get()
+                }).ToList();
+            }
+            info.Duration = info.Chapters.Last().Time;
+            return info;
+
         }
 
         /// <summary>
@@ -60,12 +114,8 @@ namespace ChapterTool.Util.ChapterData
         /// <param name="pts"></param>
         /// <returns></returns>
         /// <exception cref="T:System.ArgumentException"><paramref name="pts"/> 值小于 0。</exception>
-        public static TimeSpan Pts2Time(int pts)
+        public static TimeSpan Pts2Time(uint pts)
         {
-            if (pts < 0)
-            {
-                throw new ArgumentOutOfRangeException($"InvalidArgument=\"{pts}\"的值对于{nameof(pts)}无效");
-            }
             var total = pts / 45000M;
             var secondPart = Math.Floor(total);
             var millisecondPart = Math.Round((total - secondPart) * 1000M, MidpointRounding.AwayFromZero);
@@ -384,14 +434,14 @@ namespace ChapterTool.Util.ChapterData
                 NumberOfSecondaryAudioStreamEntries+
                 NumberOfSecondaryVideoStreamEntries+
                 NumberOfSecondaryPGStreamEntries];
-            int i = 0;
-            for (; i < NumberOfPrimaryVideoStreamEntries;   ++i) StreamEntries[i] = new PrimaryVideoStreamEntry(stream);
-            for (; i < NumberOfPrimaryAudioStreamEntries;   ++i) StreamEntries[i] = new PrimaryAudioStreamEntry(stream);
-            for (; i < NumberOfPrimaryPGStreamEntries;      ++i) StreamEntries[i] = new PrimaryPGStreamEntry(stream);
-            for (; i < NumberOfSecondaryPGStreamEntries;    ++i) StreamEntries[i] = new SecondaryPGStreamEntry(stream);
-            for (; i < NumberOfPrimaryIGStreamEntries;      ++i) StreamEntries[i] = new PrimaryIGStreamEntry(stream);
-            for (; i < NumberOfSecondaryAudioStreamEntries; ++i) StreamEntries[i] = new SecondaryAudioStreamEntry(stream);
-            for (; i < NumberOfSecondaryVideoStreamEntries; ++i) StreamEntries[i] = new SecondaryVideoStreamEntry(stream);
+            int index = 0;
+            for (int i = 0; i < NumberOfPrimaryVideoStreamEntries;   ++i) StreamEntries[index++] = new PrimaryVideoStreamEntry(stream);
+            for (int i = 0; i < NumberOfPrimaryAudioStreamEntries;   ++i) StreamEntries[index++] = new PrimaryAudioStreamEntry(stream);
+            for (int i = 0; i < NumberOfPrimaryPGStreamEntries;      ++i) StreamEntries[index++] = new PrimaryPGStreamEntry(stream);
+            for (int i = 0; i < NumberOfSecondaryPGStreamEntries;    ++i) StreamEntries[index++] = new SecondaryPGStreamEntry(stream);
+            for (int i = 0; i < NumberOfPrimaryIGStreamEntries;      ++i) StreamEntries[index++] = new PrimaryIGStreamEntry(stream);
+            for (int i = 0; i < NumberOfSecondaryAudioStreamEntries; ++i) StreamEntries[index++] = new SecondaryAudioStreamEntry(stream);
+            for (int i = 0; i < NumberOfSecondaryVideoStreamEntries; ++i) StreamEntries[index++] = new SecondaryVideoStreamEntry(stream);
         }
     }
 
@@ -563,9 +613,7 @@ namespace ChapterTool.Util.ChapterData
 
     internal static class StreamAttribution
     {
-        public delegate void LogEventHandler(string message);
-
-        public static event LogEventHandler OnLog;
+        public static event Action<string> OnLog;
 
         public static void LogStreamAttributes(BasicStreamEntry stream, ClipName clipName)
         {

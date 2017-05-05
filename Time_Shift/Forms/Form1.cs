@@ -482,18 +482,18 @@ namespace ChapterTool.Forms
                     customPath = FilePath;
                 rawMpls = new MplsData(customPath);
                 Log(Resources.Log_MPLS_Load_Success);
-                Log(string.Format(Resources.Log_MPLS_Clip_Count, rawMpls.ChapterClips.Count));
+                Log(string.Format(Resources.Log_MPLS_Clip_Count, rawMpls.PlayItems.Length));
                 if (display)
                 {
-                    comboBox2.Enabled = comboBox2.Visible = rawMpls.ChapterClips.Count >= 1;
+                    comboBox2.Enabled = comboBox2.Visible = rawMpls.PlayItems.Length >= 1;
                     if (!comboBox2.Enabled) return;
                     comboBox2.Items.Clear();
                 }
-                foreach (var item in rawMpls.ChapterClips)
+                foreach (var item in rawMpls.PlayItems)
                 {
-                    if (display) comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
-                    Log($" |+{item.Name} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]{{{MplsData.Pts2Time(item.Length).TotalSeconds}}}");
-                    Log(string.Format(Resources.Log_TimeStamp_Count, item.TimeStamp.Count));
+                    if (display) comboBox2.Items.Add($"{item.ClipName}");
+                    Log($" |+{item.ClipName} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]{{{MplsData.Pts2Time(item.Length).TotalSeconds}}}");
+                    //Log(string.Format(Resources.Log_TimeStamp_Count, item.TimeStamp.Count));
                 }
                 if (!display) return;
                 comboBox2.SelectedIndex = ClipSeletIndex;
@@ -736,9 +736,11 @@ namespace ChapterTool.Forms
             openFileDialog1.InitialDirectory = dir;
             if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
             var newFile = openFileDialog1.FileName;
-            LoadMpls(out MplsData appendMpls, false, newFile);
+            //LoadMpls(out MplsData appendMpls, false, newFile);
+            /*
             _rawMpls.EntireClip.TimeStamp.AddRange(appendMpls.EntireClip.TimeStamp.Select(stamp=>stamp+ _rawMpls.EntireClip.Length));
             _rawMpls.EntireClip.Length += appendMpls.EntireClip.Length;
+            */
             CombineChapter = true;
             GetChapterInfoFromMpls(ClipSeletIndex);
             UpdataGridView();
@@ -997,7 +999,7 @@ namespace ChapterTool.Forms
                     comboBox1.Enabled     = false;
                     break;
                 case "MPLS":
-                    GetFramInfo(_rawMpls.ChapterClips[ClipSeletIndex].Fps);
+                    GetFramInfo(_rawMpls.PlayItems[ClipSeletIndex].STNTable.StreamEntries.First(item=>item is PrimaryVideoStreamEntry).StreamAttributes.FrameRate);
                     comboBox1.Enabled     = false;
                     break;
                 default:
@@ -1245,17 +1247,18 @@ namespace ChapterTool.Forms
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
             if (_rawMpls == null || !IsPathValid || !FilePath.ToLower().EndsWith(".mpls")) return;
-            var streamClip = _rawMpls.ChapterClips[ClipSeletIndex];
-            if (streamClip.TimeStamp.Count != 2) return;
-            var deltaTime  = streamClip.TimeOut - streamClip.TimeIn - streamClip.TimeStamp.Last();
-            if (deltaTime > 45000*5) return;
-            toolTip1.Show($"{Resources.ToolTips_Useless_Chapter}", (IWin32Window) sender);
+            var streamClip = _rawMpls.Marks.Where(item => item.MarkType == 0x01 && item.RefToPlayItemID == ClipSeletIndex).ToList();
+            if (streamClip.Count != 2) return;
+
+            //var deltaTime  = streamClip.TimeOut - streamClip.TimeIn - streamClip.TimeStamp.Last();
+            //if (deltaTime > 45000*5) return;
+            //toolTip1.Show($"{Resources.ToolTips_Useless_Chapter}", (IWin32Window) sender);
         }
 
         private void comboBox2_MouseEnter(object sender, EventArgs e)
         {
-            var menuMpls = _rawMpls != null && _rawMpls.EntireClip.TimeStamp.Count < 5 && comboBox2.Items.Count > 20;
-            toolTip1.Show(menuMpls ? Resources.Tips_Menu_Clip : $"[{comboBox2.Text}] " + string.Format(Resources.Tips_Clip_Count, comboBox2.Items.Count), (IWin32Window)sender);
+            //var menuMpls = _rawMpls != null && _rawMpls.EntireClip.TimeStamp.Count < 5 && comboBox2.Items.Count > 20;
+            //toolTip1.Show(menuMpls ? Resources.Tips_Menu_Clip : $"[{comboBox2.Text}] " + string.Format(Resources.Tips_Clip_Count, comboBox2.Items.Count), (IWin32Window)sender);
         }
 
         private void ToolTipRemoveAll(object sender, EventArgs e)  => toolTip1.Hide((IWin32Window)sender);
