@@ -82,7 +82,8 @@ namespace ChapterTool.Util.ChapterData
                     FramesPerSecond = (double)FrameRate[attr.StreamAttributes.FrameRate]
                 };
 
-                Func<Mark, bool> filter = item => item.MarkType == 0x01 && item.RefToPlayItemID == i;
+                var index = i;
+                Func<Mark, bool> filter = item => item.MarkType == 0x01 && item.RefToPlayItemID == index;
                 if (!Marks.Any(filter))
                 {
                     ret.Add(info);
