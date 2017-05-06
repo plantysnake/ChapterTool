@@ -14,6 +14,8 @@ namespace ChapterTool.Util.ChapterData
         public static void Skip(this Stream fs, long length)
         {
             fs.Seek(length, SeekOrigin.Current);
+            if (fs.Position > fs.Length)
+                throw new System.Exception("Skip out of range");
         }
 
         #region int reader

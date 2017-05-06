@@ -105,12 +105,6 @@ namespace ChapterTool.Util.ChapterData
             return ret;
         }
 
-        /// <summary>
-        /// 将 pts 值转换为TimeSpan对象
-        /// </summary>
-        /// <param name="pts"></param>
-        /// <returns></returns>
-        /// <exception cref="T:System.ArgumentException"><paramref name="pts"/> 值小于 0。</exception>
         public static TimeSpan Pts2Time(uint pts)
         {
             var total = pts / 45000M;
@@ -242,12 +236,12 @@ namespace ChapterTool.Util.ChapterData
         }
     }
 
-    public class ClipWithRef
+    public class ClipNameWithRef
     {
         public ClipName ClipName;
         public byte RefToSTCID;
 
-        public ClipWithRef(Stream stream)
+        public ClipNameWithRef(Stream stream)
         {
             ClipName = new ClipName(stream);
             RefToSTCID = (byte) stream.ReadByte();
@@ -328,16 +322,16 @@ namespace ChapterTool.Util.ChapterData
         private readonly byte _flagField;
         public bool IsDifferentAudios => _flagField >> 2 == 1;
         public bool IsSeamlessAngleChange => ((_flagField >> 1) & 0x01) == 1;
-        public ClipWithRef[] Angles;
+        public ClipNameWithRef[] Angles;
 
         public MultiAngle(Stream stream)
         {
             NumberOfAngles = (byte) stream.ReadByte();
             _flagField     = (byte) stream.ReadByte();
-            Angles = new ClipWithRef[NumberOfAngles-1];
-            for (int i = 0; i < NumberOfAngles-1; ++i)
+            Angles = new ClipNameWithRef[NumberOfAngles - 1];
+            for (int i = 0; i < NumberOfAngles - 1; ++i)
             {
-                Angles[i] = new ClipWithRef(stream);
+                Angles[i] = new ClipNameWithRef(stream);
             }
         }
     }
@@ -384,7 +378,7 @@ namespace ChapterTool.Util.ChapterData
         public uint SyncStartPTS;
         //if IsMultiClipEntries == 1:
         public byte NumberOfMultiClipEntries;
-        public ClipWithRef[] MultiClipEntries;
+        public ClipNameWithRef[] MultiClipNameEntries;
 
         public SubPlayItem(Stream stream)
         {
@@ -401,10 +395,10 @@ namespace ChapterTool.Util.ChapterData
             if (IsMultiClipEntries)
             {
                 NumberOfMultiClipEntries = (byte) stream.ReadByte();
-                MultiClipEntries = new ClipWithRef[NumberOfMultiClipEntries-1];
-                for (int i = 0; i < NumberOfMultiClipEntries-1; ++i)
+                MultiClipNameEntries = new ClipNameWithRef[NumberOfMultiClipEntries - 1];
+                for (int i = 0; i < NumberOfMultiClipEntries - 1; ++i)
                 {
-                    MultiClipEntries[i] = new ClipWithRef(stream);
+                    MultiClipNameEntries[i] = new ClipNameWithRef(stream);
                 }
             }
             stream.Skip(Length - (stream.Position - position));
@@ -575,7 +569,7 @@ namespace ChapterTool.Util.ChapterData
                     LanguageCode = Encoding.ASCII.GetString(stream.ReadBytes(3));
                     break;
                 case 0x92:
-                    CharacterCode = (byte)stream.ReadByte();
+                    CharacterCode = (byte) stream.ReadByte();
                     LanguageCode = Encoding.ASCII.GetString(stream.ReadBytes(3));
                     break;
                 default:
