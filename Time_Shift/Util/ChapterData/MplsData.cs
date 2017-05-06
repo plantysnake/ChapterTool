@@ -706,7 +706,7 @@ namespace ChapterTool.Util.ChapterData
     {
         public uint Length;
         public uint DataBlockStartAddress;
-        //4bytes reserved
+        //3bytes reserved
         public byte NumberOfExtDataEntries;
         public ExtDataEntry[] ExtDataEntries;
 
@@ -716,7 +716,7 @@ namespace ChapterTool.Util.ChapterData
             if (Length != 0)
             {
                 DataBlockStartAddress = stream.BEInt32();
-                stream.Skip(4);
+                stream.Skip(3);
                 NumberOfExtDataEntries = (byte) stream.ReadByte();
                 ExtDataEntries = new ExtDataEntry[NumberOfExtDataEntries];
                 for (int i = 0; i < NumberOfExtDataEntries; ++i)
