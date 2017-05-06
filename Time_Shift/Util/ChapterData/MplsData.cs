@@ -176,11 +176,86 @@ namespace ChapterTool.Util.ChapterData
 
     public class UOMaskTable
     {
-        private readonly ulong _flagField;
+        private readonly byte[] _flagField;
+        public bool MenuCall;
+        public bool TitleSearch;
+        public bool ChapterSearch;
+        public bool TimeSearch;
+        public bool SkipToNextPoint;
+        public bool SkipToPrevPoint;
+        public bool Stop;
+        public bool PauseOn;
+        public bool StillOff;
+        public bool ForwardPlay;
+        public bool BackwardPlay;
+        public bool Resume;
+        public bool MoveUpSelectedButton;
+        public bool MoveDownSelectedButton;
+        public bool MoveLeftSelectedButton;
+        public bool MoveRightSelectedButton;
+        public bool SelectButton;
+        public bool ActivateButton;
+        public bool SelectAndActivateButton;
+        public bool PrimaryAudioStreamNumberChange;
+        public bool AngleNumberChange;
+        public bool PopupOn;
+        public bool PopupOff;
+        public bool PGEnableDisable;
+        public bool PGStreamNumberChange;
+        public bool SecondaryVideoEnableDisable;
+        public bool SecondaryVideoStreamNumberChange;
+        public bool SecondaryAudioEnableDisable;
+        public bool SecondaryAudioStreamNumberChange;
+        public bool SecondaryPGStreamNumberChange;
 
         public UOMaskTable(Stream stream)
         {
-            _flagField = stream.BEInt64();
+            _flagField = stream.ReadBytes(8);
+            var br                           = new BitReader(_flagField);
+            MenuCall                         = br.GetBit();
+            TitleSearch                      = br.GetBit();
+            ChapterSearch                    = br.GetBit();
+            TimeSearch                       = br.GetBit();
+            SkipToNextPoint                  = br.GetBit();
+            SkipToPrevPoint                  = br.GetBit();
+
+            br.Skip(1);
+
+            Stop                             = br.GetBit();
+            PauseOn                          = br.GetBit();
+
+            br.Skip(1);
+
+            StillOff                         = br.GetBit();
+            ForwardPlay                      = br.GetBit();
+            BackwardPlay                     = br.GetBit();
+            Resume                           = br.GetBit();
+            MoveUpSelectedButton             = br.GetBit();
+            MoveDownSelectedButton           = br.GetBit();
+            MoveLeftSelectedButton           = br.GetBit();
+            MoveRightSelectedButton          = br.GetBit();
+            SelectButton                     = br.GetBit();
+            ActivateButton                   = br.GetBit();
+            SelectAndActivateButton          = br.GetBit();
+            PrimaryAudioStreamNumberChange   = br.GetBit();
+
+            br.Skip(1);
+
+            AngleNumberChange                = br.GetBit();
+            PopupOn                          = br.GetBit();
+            PopupOff                         = br.GetBit();
+            PGEnableDisable                  = br.GetBit();
+            PGStreamNumberChange             = br.GetBit();
+            SecondaryVideoEnableDisable      = br.GetBit();
+            SecondaryVideoStreamNumberChange = br.GetBit();
+            SecondaryAudioEnableDisable      = br.GetBit();
+            SecondaryAudioStreamNumberChange = br.GetBit();
+
+            br.Skip(1);
+
+            SecondaryPGStreamNumberChange    = br.GetBit();
+
+            br.Skip(30);
         }
     }
 
