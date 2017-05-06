@@ -29,7 +29,6 @@ namespace ChapterTool.Util.ChapterData
     public class MplsData
     {
         private readonly MplsHeader _mplsHeader;
-        private readonly AppInfoPlayList _appInfoPlayList;
         private readonly PlayList _playList;
         private readonly PlayListMark _playListMark;
 
@@ -47,7 +46,6 @@ namespace ChapterTool.Util.ChapterData
             using (var stream = File.OpenRead(path))
             {
                 _mplsHeader = new MplsHeader(stream);
-                _appInfoPlayList = new AppInfoPlayList(stream);
 
                 stream.Seek(_mplsHeader.PlayListStartAddress, SeekOrigin.Begin);
                 _playList = new PlayList(stream);
@@ -135,6 +133,7 @@ namespace ChapterTool.Util.ChapterData
         public uint PlayListStartAddress;
         public uint PlayListMarkStartAddress;
         public uint ExtensionDataStartAddress;
+        public AppInfoPlayList AppInfoPlayList;
         //20bytes reserved
         public MplsHeader(Stream stream)
         {
@@ -150,6 +149,7 @@ namespace ChapterTool.Util.ChapterData
             PlayListMarkStartAddress = stream.BEInt32();
             ExtensionDataStartAddress = stream.BEInt32();
             stream.Skip(20);
+            AppInfoPlayList = new AppInfoPlayList(stream);
         }
     }
 
@@ -170,11 +170,13 @@ namespace ChapterTool.Util.ChapterData
         public AppInfoPlayList(Stream stream)
         {
             Length        = stream.BEInt32();
+            var position  = stream.Position;
             stream.Skip(1);
             PlaybackType  = (byte) stream.ReadByte();
             PlaybackCount = (ushort) stream.BEInt16();
             UOMaskTable   = new UOMaskTable(stream);
             FlagField     = (ushort) stream.BEInt16();
+            stream.Skip(Length - (stream.Position - position));
         }
     }
 
@@ -200,6 +202,7 @@ namespace ChapterTool.Util.ChapterData
         public PlayList(Stream stream)
         {
             Length            = stream.BEInt32();
+            var position      = stream.Position;
             stream.Skip(2);
             NumberOfPlayItems = (ushort)stream.BEInt16();
             NumberOfSubPaths  = (ushort)stream.BEInt16();
@@ -213,6 +216,7 @@ namespace ChapterTool.Util.ChapterData
             {
                 SubPaths[i] = new SubPath(stream);
             }
+            stream.Skip(Length - (stream.Position - position));
         }
 
         public override string ToString()
@@ -285,20 +289,22 @@ namespace ChapterTool.Util.ChapterData
 
         public PlayItem(Stream stream)
         {
-            Length      = (ushort) stream.BEInt16();
-            ClipName    = new ClipName(stream);
-            _flagField1 = (ushort) stream.BEInt16();
-            RefToSTCID  = (byte) stream.ReadByte();
-            TimeInfo    = new TimeInfo(stream);
-            UOMaskTable = new UOMaskTable(stream);
-            _flagField2 = (byte) stream.ReadByte();
-            StillMode   = (byte) stream.ReadByte();
-            StillTime   = (ushort) stream.BEInt16();
+            Length       = (ushort) stream.BEInt16();
+            var position = stream.Position;
+            ClipName     = new ClipName(stream);
+            _flagField1  = (ushort) stream.BEInt16();
+            RefToSTCID   = (byte) stream.ReadByte();
+            TimeInfo     = new TimeInfo(stream);
+            UOMaskTable  = new UOMaskTable(stream);
+            _flagField2  = (byte) stream.ReadByte();
+            StillMode    = (byte) stream.ReadByte();
+            StillTime    = (ushort) stream.BEInt16();
             if (IsMultiAngle)
             {
                 MultiAngle = new MultiAngle(stream);
             }
             STNTable = new STNTable(stream);
+            stream.Skip(Length - (stream.Position - position));
         }
 
         public string FullName
@@ -327,7 +333,7 @@ namespace ChapterTool.Util.ChapterData
         public MultiAngle(Stream stream)
         {
             NumberOfAngles = (byte) stream.ReadByte();
-            _flagField = (byte) stream.ReadByte();
+            _flagField     = (byte) stream.ReadByte();
             Angles = new ClipWithRef[NumberOfAngles-1];
             for (int i = 0; i < NumberOfAngles-1; ++i)
             {
@@ -348,7 +354,8 @@ namespace ChapterTool.Util.ChapterData
 
         public SubPath(Stream stream)
         {
-            Length = stream.BEInt32();
+            Length               = stream.BEInt32();
+            var position         = stream.Position;
             stream.Skip(2);
             SubPathType          = (byte) stream.ReadByte();
             _flagField           = (ushort) stream.BEInt16();
@@ -358,6 +365,7 @@ namespace ChapterTool.Util.ChapterData
             {
                 SubPlayItems[i] = new SubPlayItem(stream);
             }
+            stream.Skip(Length - (stream.Position - position));
         }
     }
 
@@ -379,14 +387,15 @@ namespace ChapterTool.Util.ChapterData
 
         public SubPlayItem(Stream stream)
         {
-            Length = (ushort) stream.BEInt16();
-            ClipName = new ClipName(stream);
+            Length         = (ushort) stream.BEInt16();
+            var position   = stream.Position;
+            ClipName       = new ClipName(stream);
             stream.Skip(3);
-            _flagField = (byte) stream.ReadByte();
-            RefToSTCID = (byte) stream.ReadByte();
-            TimeInfo = new TimeInfo(stream);
+            _flagField     = (byte) stream.ReadByte();
+            RefToSTCID     = (byte) stream.ReadByte();
+            TimeInfo       = new TimeInfo(stream);
             SyncPlayItemID = (ushort) stream.BEInt16();
-            SyncStartPTS = stream.BEInt32();
+            SyncStartPTS   = stream.BEInt32();
 
             if (IsMultiClipEntries)
             {
@@ -397,6 +406,7 @@ namespace ChapterTool.Util.ChapterData
                     MultiClipEntries[i] = new ClipWithRef(stream);
                 }
             }
+            stream.Skip(Length - (stream.Position - position));
         }
     }
 
@@ -416,7 +426,8 @@ namespace ChapterTool.Util.ChapterData
 
         public STNTable(Stream stream)
         {
-            Length = (ushort) stream.BEInt16();
+            Length       = (ushort) stream.BEInt16();
+            var position = stream.Position;
             stream.Skip(2);
             NumberOfPrimaryVideoStreamEntries   = (byte) stream.ReadByte();
             NumberOfPrimaryAudioStreamEntries   = (byte) stream.ReadByte();
@@ -443,6 +454,7 @@ namespace ChapterTool.Util.ChapterData
             for (int i = 0; i < NumberOfPrimaryIGStreamEntries;      ++i) StreamEntries[index++] = new PrimaryIGStreamEntry(stream);
             for (int i = 0; i < NumberOfSecondaryAudioStreamEntries; ++i) StreamEntries[index++] = new SecondaryAudioStreamEntry(stream);
             for (int i = 0; i < NumberOfSecondaryVideoStreamEntries; ++i) StreamEntries[index++] = new SecondaryVideoStreamEntry(stream);
+            stream.Skip(Length - (stream.Position - position));
         }
     }
 
@@ -452,7 +464,7 @@ namespace ChapterTool.Util.ChapterData
         public StreamAttributes StreamAttributes;
         public BasicStreamEntry(Stream stream)
         {
-            StreamEntry = new StreamEntry(stream);
+            StreamEntry      = new StreamEntry(stream);
             StreamAttributes = new StreamAttributes(stream);
         }
     }
@@ -541,7 +553,7 @@ namespace ChapterTool.Util.ChapterData
         public StreamAttributes(Stream stream)
         {
             Length           = (byte)stream.ReadByte();
-            var position = stream.Position;
+            var position     = stream.Position;
             StreamCodingType = (byte)stream.ReadByte();
             switch (StreamCodingType)
             {
@@ -601,16 +613,17 @@ namespace ChapterTool.Util.ChapterData
 
         public PlayListMark(Stream stream)
         {
-            Length = stream.BEInt32();
+            Length                = stream.BEInt32();
+            var position          = stream.Position;
             NumberOfPlayListMarks = (ushort) stream.BEInt16();
             Marks = new Mark[NumberOfPlayListMarks];
             for (int i = 0; i < NumberOfPlayListMarks; ++i)
             {
                 Marks[i] = new Mark(stream);
             }
+            stream.Skip(Length - (stream.Position - position));
         }
     }
-
 
     internal static class StreamAttribution
     {
