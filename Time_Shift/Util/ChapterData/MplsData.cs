@@ -664,7 +664,7 @@ namespace ChapterTool.Util.ChapterData
                 0x1b != streamCodingType && 0xea != streamCodingType &&
                 0x24 != streamCodingType)
             {
-                var isAudio = 0x90 == streamCodingType || 0x91 == streamCodingType;
+                var isAudio = !(0x90 == streamCodingType || 0x91 == streamCodingType);
                 if (0x92 == streamCodingType)
                 {
                     OnLog?.Invoke($"Stream[{clipName}] CharacterCode: {CharacterCode[stream.StreamAttributes.CharacterCode]}");
