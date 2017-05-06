@@ -1516,7 +1516,7 @@ namespace ChapterTool.Forms
         {
             var basePath = Path.GetDirectoryName(FilePath);
             Debug.Assert(basePath != null);
-            var targetPath = Path.Combine(basePath, "\\..\\STREAM");
+            var targetPath = Path.Combine(basePath, "..\\STREAM");
             if (!Directory.Exists(targetPath)) return;
 
             combineMenuStrip.Items.Add(new ToolStripSeparator());
@@ -1551,7 +1551,7 @@ namespace ChapterTool.Forms
         {
             var basePath = Path.GetDirectoryName(FilePath);
             Debug.Assert(basePath != null);
-            var targetPath = Path.Combine(basePath, "\\..\\HVDVD_TS");
+            var targetPath = Path.Combine(basePath, "..\\HVDVD_TS");
             if (!Directory.Exists(targetPath)) return;
 
             combineMenuStrip.Items.Add(new ToolStripSeparator());
