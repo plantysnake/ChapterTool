@@ -13,9 +13,9 @@ namespace ChapterTool.Util.ChapterData
 
         private static readonly Regex RDiskInfo = new Regex(@"(?<idx>\d)\) (?<mpls>\d+\.mpls), (?:(?:(?<dur>\d+:\d+:\d+)[\n\s\b]*(?<fn>.+\.m2ts))|(?:(?<fn2>.+\.m2ts), (?<dur2>\d+:\d+:\d+)))", RegexOptions.Compiled);
 
-        public static async Task<KeyValuePair<string, List<ChapterInfo>>> GetChapterAsync(string location)
+        public static async Task<KeyValuePair<string, BDMVGroup>> GetChapterAsync(string location)
         {
-            var list      = new List<ChapterInfo>();
+            var list      = new BDMVGroup();
             var bdmvTitle = string.Empty;
             var path      = Path.Combine(location, "BDMV", "PLAYLIST");
             if (!Directory.Exists(path))
@@ -43,7 +43,7 @@ namespace ChapterTool.Util.ChapterData
             if (string.IsNullOrEmpty(eac3toPath) || !File.Exists(eac3toPath))
             {
                 eac3toPath = Notification.InputBox("请输入eac3to的地址", "注意不要带上多余的引号", "C:\\eac3to\\eac3to.exe");
-                if (string.IsNullOrEmpty(eac3toPath)) return new KeyValuePair<string, List<ChapterInfo>>(bdmvTitle, list);
+                if (string.IsNullOrEmpty(eac3toPath)) return new KeyValuePair<string, BDMVGroup>(bdmvTitle, list);
                 RegistryStorage.Save(name: "eac3toPath",value: eac3toPath);
             }
             var workingPath = Directory.GetParent(location).FullName;
@@ -98,7 +98,7 @@ namespace ChapterTool.Util.ChapterData
             toBeRemove.ForEach(item => list.Remove(item));
             if(File.Exists(chapterPath)) File.Delete(chapterPath);
             if(File.Exists(logPath)) File.Delete(logPath);
-            return new KeyValuePair<string, List<ChapterInfo>>(bdmvTitle, list);
+            return new KeyValuePair<string, BDMVGroup>(bdmvTitle, list);
         }
     }
 }

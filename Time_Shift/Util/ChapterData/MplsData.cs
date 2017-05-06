@@ -67,9 +67,9 @@ namespace ChapterTool.Util.ChapterData
             StreamAttribution.OnLog -= OnLog;
         }
 
-        public List<ChapterInfo> GetAll()
+        public MplsGroup GetChapters()
         {
-            var ret = new List<ChapterInfo>();
+            var ret = new MplsGroup();
             for (int i = 0; i < PlayItems.Length; ++i)
             {
                 var playItem = PlayItems[i];
