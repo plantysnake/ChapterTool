@@ -107,45 +107,6 @@ namespace ChapterTool.Util.ChapterData
             return ret;
         }
 
-        public ChapterInfo ToChapterInfo(int index, bool combineChapter)
-        {
-            if (index >= PlayItems.Length && !combineChapter)
-            {
-                throw new IndexOutOfRangeException("Index of Video Clip out of range");
-            }
-            var playItem = PlayItems[index];
-            var attr = playItem.STNTable.StreamEntries.First(item => item is PrimaryVideoStreamEntry);
-            var info = new ChapterInfo
-            {
-                SourceType      = "MPLS",
-                SourceName      = PlayItems[index].FullName,
-                Duration        = Pts2Time(playItem.TimeInfo.DeltaTime),
-                FramesPerSecond = (double) FrameRate[attr.StreamAttributes.FrameRate]
-            };
-            if (!combineChapter)
-            {
-                Func<Mark, bool> filter = item => item.MarkType == 0x01 && item.RefToPlayItemID == index;
-                if (!Marks.Any(filter))
-                {
-                    return info;
-                }
-                var offset = Marks.First(filter).MarkTimeStamp;
-                if (playItem.TimeInfo.INTime < offset)
-                {
-                    OnLog?.Invoke($"first time stamp: {offset}, Time in: {playItem.TimeInfo.INTime}");
-                    offset = playItem.TimeInfo.INTime;
-                }
-                var name = new ChapterName();
-                info.Chapters = Marks.Where(filter).Select(mark => new Chapter
-                {
-                    Time = Pts2Time(mark.MarkTimeStamp - offset),
-                    Number = name.Index,
-                    Name = name.Get()
-                }).ToList();
-            }
-            return info;
-        }
-
         /// <summary>
         /// 将 pts 值转换为TimeSpan对象
         /// </summary>
