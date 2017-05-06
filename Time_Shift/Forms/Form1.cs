@@ -978,9 +978,6 @@ namespace ChapterTool.Forms
             switch (_info.SourceType)
             {
                 case "DVD":
-                    GetFramInfo(ConvertFr2Index(_info.FramesPerSecond));
-                    comboBox1.Enabled     = false;
-                    break;
                 case "MPLS":
                     GetFramInfo(ConvertFr2Index(_info.FramesPerSecond));
                     comboBox1.Enabled     = false;
