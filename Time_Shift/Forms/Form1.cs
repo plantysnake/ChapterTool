@@ -396,13 +396,6 @@ namespace ChapterTool.Forms
             }
         }
 
-
-
-        //private List<ChapterInfo> _bdmvGroup;
-        //private List<ChapterInfo> _ifoGroup;
-        //private List<ChapterInfo> _xplGroup;
-        //private List<ChapterInfo> _mplsGroup;
-        //private List<ChapterInfo> _xmlGroup;
         private ChapterInfoGroup  _infoGroup;
         private ChapterInfo       _info;
 
@@ -914,24 +907,22 @@ namespace ChapterTool.Forms
             }
         }
 
-
         private void comboBox2_SelectionChangeCommitted(object sender, EventArgs e)
         {
-                 if (_infoGroup is MplsGroup) GetChapterInfoFromMpls(ClipSeletIndex);
-            else if (_infoGroup is IfoGroup ) GetChapterInfoFromIFO (ClipSeletIndex);
-            _info = _infoGroup[ClipSeletIndex];
+            if (_infoGroup is MplsGroup) GetChapterInfoFromMpls(ClipSeletIndex);
+            else if (_infoGroup is IfoGroup) GetChapterInfoFromIFO(ClipSeletIndex);
+            else _info = _infoGroup[ClipSeletIndex];
             if (Shift) cbShift_CheckedChanged(null, null);
             UpdataGridView();
         }
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!(_infoGroup is MplsGroup) && !(_infoGroup is IfoGroup)) return;
-            CombineChapter = !CombineChapter;
-            if (_infoGroup is MplsGroup) GetChapterInfoFromMpls(ClipSeletIndex);
-            else GetChapterInfoFromIFO(ClipSeletIndex);
-            if (Shift) cbShift_CheckedChanged(null, null);
-            UpdataGridView();
+            if (_infoGroup is MplsGroup || _infoGroup is IfoGroup)
+            {
+                CombineChapter = !CombineChapter;
+                comboBox2_SelectionChangeCommitted(null, null);
+            }
         }
 
         private void refresh_Click(object sender, EventArgs e) => UpdataGridView();
@@ -948,6 +939,8 @@ namespace ChapterTool.Forms
         private void GetChapterInfoFromIFO(int index)
         {
             _info = CombineChapter ? ChapterInfo.CombineChapter(_infoGroup) : _infoGroup[index];
+            tsTips.Text = _info.Chapters.Count < 2 ? Resources.Tips_Chapter_Not_find : Resources.Tips_Load_Success;
+            _info.UpdataInfo(_chapterNameTemplate);
         }
 
         private void GetChapterInfoFromXml(XmlDocument doc)
@@ -1309,7 +1302,6 @@ namespace ChapterTool.Forms
         {
             if (!TargetHeight.Any(item => item == Height)) return;
             tsBtnExpand.Image = Resources.unfold_more;
-            //btnExpand.Text = @"#";
             if (Height == TargetHeight[0])
             {
                 while (Height < TargetHeight[1])
