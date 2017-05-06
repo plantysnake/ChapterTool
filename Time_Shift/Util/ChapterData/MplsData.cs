@@ -374,9 +374,10 @@ namespace ChapterTool.Util.ChapterData
         public ushort Length;
         public ClipName ClipName;
         //3bytes reserved
+        //3bits reserved
         private readonly byte _flagField;
-        private byte ConnectionCondition => (byte) (_flagField >> 4);
-        private bool IsMultiClipEntries =>((_flagField >> 3) & 1) == 1;
+        private byte ConnectionCondition => (byte) (_flagField >> 1);
+        private bool IsMultiClipEntries => (_flagField & 1) == 1;
         public byte RefToSTCID;
         public TimeInfo TimeInfo;
         public ushort SyncPlayItemID;
