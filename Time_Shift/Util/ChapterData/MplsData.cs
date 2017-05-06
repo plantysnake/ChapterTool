@@ -26,7 +26,6 @@ using System.Text;
 
 namespace ChapterTool.Util.ChapterData
 {
-
     public class MplsData
     {
         private readonly MplsHeader _mplsHeader;
@@ -68,6 +67,45 @@ namespace ChapterTool.Util.ChapterData
             StreamAttribution.OnLog -= OnLog;
         }
 
+        public List<ChapterInfo> GetAll()
+        {
+            var ret = new List<ChapterInfo>();
+            for (int i = 0; i < PlayItems.Length; ++i)
+            {
+                var playItem = PlayItems[i];
+                var attr = playItem.STNTable.StreamEntries.First(item => item is PrimaryVideoStreamEntry);
+                var info = new ChapterInfo
+                {
+                    SourceType      = "MPLS",
+                    SourceName      = PlayItems[i].FullName,
+                    Duration        = Pts2Time(playItem.TimeInfo.DeltaTime),
+                    FramesPerSecond = (double)FrameRate[attr.StreamAttributes.FrameRate]
+                };
+
+                Func<Mark, bool> filter = item => item.MarkType == 0x01 && item.RefToPlayItemID == i;
+                if (!Marks.Any(filter))
+                {
+                    ret.Add(info);
+                    continue;
+                }
+                var offset = Marks.First(filter).MarkTimeStamp;
+                if (playItem.TimeInfo.INTime < offset)
+                {
+                    OnLog?.Invoke($"first time stamp: {offset}, Time in: {playItem.TimeInfo.INTime}");
+                    offset = playItem.TimeInfo.INTime;
+                }
+                var name = new ChapterName();
+                info.Chapters = Marks.Where(filter).Select(mark => new Chapter
+                {
+                    Time = Pts2Time(mark.MarkTimeStamp - offset),
+                    Number = name.Index,
+                    Name = name.Get()
+                }).ToList();
+                ret.Add(info);
+            }
+            return ret;
+        }
+
         public ChapterInfo ToChapterInfo(int index, bool combineChapter)
         {
             if (index >= PlayItems.Length && !combineChapter)
@@ -78,8 +116,9 @@ namespace ChapterTool.Util.ChapterData
             var attr = playItem.STNTable.StreamEntries.First(item => item is PrimaryVideoStreamEntry);
             var info = new ChapterInfo
             {
-                SourceType = "MPLS",
-                SourceName = PlayItems[index].FullName,
+                SourceType      = "MPLS",
+                SourceName      = PlayItems[index].FullName,
+                Duration        = Pts2Time(playItem.TimeInfo.DeltaTime),
                 FramesPerSecond = (double) FrameRate[attr.StreamAttributes.FrameRate]
             };
             if (!combineChapter)
@@ -103,9 +142,7 @@ namespace ChapterTool.Util.ChapterData
                     Name = name.Get()
                 }).ToList();
             }
-            info.Duration = info.Chapters.Last().Time;
             return info;
-
         }
 
         /// <summary>
@@ -256,6 +293,8 @@ namespace ChapterTool.Util.ChapterData
         public uint INTime;
         public uint OUTTime;
 
+        public uint DeltaTime => OUTTime - INTime;
+
         public TimeInfo(Stream stream)
         {
             INTime  = stream.BEInt32();
@@ -304,11 +343,11 @@ namespace ChapterTool.Util.ChapterData
         {
             get
             {
-                if (!IsMultiAngle) return ClipName.ToString();
-                var ret = ClipName.ToString();
+                if (!IsMultiAngle) return ClipName.ClipInformationFileName;
+                var ret = ClipName.ClipInformationFileName;
                 foreach (var angle in MultiAngle.Angles)
                 {
-                    ret += $"&{angle.ClipName}";
+                    ret += $"&{angle.ClipName.ClipInformationFileName}";
                 }
                 return ret;
             }
@@ -625,15 +664,15 @@ namespace ChapterTool.Util.ChapterData
                 0x1b != streamCodingType && 0xea != streamCodingType &&
                 0x24 != streamCodingType)
             {
-                var offset = 0x90 == streamCodingType || 0x91 == streamCodingType ? 0x0c : 0x0d;
+                var isAudio = 0x90 == streamCodingType || 0x91 == streamCodingType;
                 if (0x92 == streamCodingType)
                 {
                     OnLog?.Invoke($"Stream[{clipName}] CharacterCode: {CharacterCode[stream.StreamAttributes.CharacterCode]}");
                 }
                 var language = stream.StreamAttributes.LanguageCode;
-                if (language[0] == '\0') language = "und";
+                if (language == null || language[0] == '\0') language = "und";
                 OnLog?.Invoke($"Stream[{clipName}] Language: {language}");
-                if (0x0d == offset)
+                if (isAudio)
                 {
                     OnLog?.Invoke($"Stream[{clipName}] Channel: {Channel[stream.StreamAttributes.AudioFormat]}");
                     OnLog?.Invoke($"Stream[{clipName}] SampleRate: {SampleRate[stream.StreamAttributes.SampleRate]}");
