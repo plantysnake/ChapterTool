@@ -232,11 +232,10 @@ namespace ChapterTool.Forms
 
             cbShift.Checked        = false;
 
-            _rawMpls                = null;
+            _mplsGroup              = null;
             _ifoGroup               = null;
             _xmlGroup               = null;
             _info                   = null;
-            _fullIfoChapter         = null;
             _xplGroup               = null;
             _bdmvGroup              = null;
             _bdvmTitle              = null;
@@ -404,9 +403,8 @@ namespace ChapterTool.Forms
         private List<ChapterInfo> _bdmvGroup;
         private List<ChapterInfo> _ifoGroup;
         private List<ChapterInfo> _xplGroup;
-        private MplsData          _rawMpls;
+        private List<ChapterInfo> _mplsGroup;
         private ChapterInfo       _info;
-        private ChapterInfo       _fullIfoChapter;
 
         private bool CombineChapter
         {
@@ -436,7 +434,7 @@ namespace ChapterTool.Forms
                 switch (fileType)
                 {
                     case FileType.Mpls:
-                           LoadMpls(out _rawMpls);      break;
+                           LoadMpls(out _mplsGroup);      break;
                     case FileType.Xml : LoadXml();      break;
                     case FileType.Txt : LoadOgm();      break;
                     case FileType.Ifo : LoadIfo();      break;
@@ -473,27 +471,27 @@ namespace ChapterTool.Forms
             return true;
         }
 
-        private void LoadMpls(out MplsData rawMpls, bool display = true, string customPath = "")
+        private void LoadMpls(out List<ChapterInfo> mplsGroup, bool display = true, string customPath = "")
         {
             try
             {
                 MplsData.OnLog += Log;
                 if (string.IsNullOrEmpty(customPath))
                     customPath = FilePath;
-                rawMpls = new MplsData(customPath);
+                mplsGroup = new MplsData(customPath).GetAll();
                 Log(Resources.Log_MPLS_Load_Success);
-                Log(string.Format(Resources.Log_MPLS_Clip_Count, rawMpls.ChapterClips.Count));
+                Log(string.Format(Resources.Log_MPLS_Clip_Count, mplsGroup.Count));
                 if (display)
                 {
-                    comboBox2.Enabled = comboBox2.Visible = rawMpls.ChapterClips.Count >= 1;
+                    comboBox2.Enabled = comboBox2.Visible = mplsGroup.Count >= 1;
                     if (!comboBox2.Enabled) return;
                     comboBox2.Items.Clear();
                 }
-                foreach (var item in rawMpls.ChapterClips)
+                foreach (var item in mplsGroup)
                 {
-                    if (display) comboBox2.Items.Add($"{item.Name}__{item.TimeStamp.Count}");
-                    Log($" |+{item.Name} Duration[{MplsData.Pts2Time(item.Length).Time2String()}]{{{MplsData.Pts2Time(item.Length).TotalSeconds}}}");
-                    Log(string.Format(Resources.Log_TimeStamp_Count, item.TimeStamp.Count));
+                    if (display) comboBox2.Items.Add($"{item.SourceName}__{item.Chapters.Count}");
+                    Log($" |+{item.SourceName} Duration[{item.Duration.Time2String()}]{{{item.Duration.TotalSeconds}}}");
+                    Log(string.Format(Resources.Log_TimeStamp_Count, item.Chapters.Count));
                 }
                 if (!display) return;
                 comboBox2.SelectedIndex = ClipSeletIndex;
@@ -513,8 +511,6 @@ namespace ChapterTool.Forms
                 throw new Exception("No Chapter detected in ifo file");
             }
 
-            _fullIfoChapter = ChapterInfo.CombineChapter(_ifoGroup);
-
             comboBox2.Items.Clear();
             comboBox2.Enabled = comboBox2.Visible = _ifoGroup.Count >= 1;
             Log(string.Format(Resources.Log_IFO_Clip_Count, _ifoGroup.Count));
@@ -526,7 +522,7 @@ namespace ChapterTool.Forms
                 Log($" |+{item.SourceName} Duration[{item.Duration.Time2String()}]");
                 Log(string.Format(Resources.Log_TimeStamp_Count, item.Chapters.Count));
             }
-            _info = CombineChapter ? _fullIfoChapter : _ifoGroup.First();
+            _info = CombineChapter ? ChapterInfo.CombineChapter(_ifoGroup) : _ifoGroup.First();
             comboBox2.SelectedIndex = ClipSeletIndex;
             if (_ifoGroup.Count < 1)
             {
@@ -539,7 +535,6 @@ namespace ChapterTool.Forms
             }
             else
             {
-                //cbMul1k1.Checked = true;
                 textBoxExpression.Text = @"t * 1.001 //修正DVD时间";
                 cbShift.Checked = true;
                 tsTips.Text = Resources.Tips_IFO_Waring_Fixed;
@@ -730,15 +725,23 @@ namespace ChapterTool.Forms
 
         private void appendToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_rawMpls == null) return;
+            if (_mplsGroup == null) return;
             var dir = Path.GetDirectoryName(FilePath);
             openFileDialog1.Filter = @"appendable file(mpls file)|*.mpls";
             openFileDialog1.InitialDirectory = dir;
             if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
             var newFile = openFileDialog1.FileName;
-            LoadMpls(out MplsData appendMpls, false, newFile);
-            _rawMpls.EntireClip.TimeStamp.AddRange(appendMpls.EntireClip.TimeStamp.Select(stamp=>stamp+ _rawMpls.EntireClip.Length));
-            _rawMpls.EntireClip.Length += appendMpls.EntireClip.Length;
+
+            LoadMpls(out List<ChapterInfo> mplsGroup, false, newFile);
+
+            foreach (var item in mplsGroup)
+            {
+                comboBox2.Items.Add($"{item.SourceName}__{item.Chapters.Count}");
+                Log($" |+{item.SourceName} Duration[{item.Duration.Time2String()}]{{{item.Duration.TotalSeconds}}}");
+                Log(string.Format(Resources.Log_TimeStamp_Count, item.Chapters.Count));
+            }
+            _mplsGroup.AddRange(mplsGroup);
+
             CombineChapter = true;
             GetChapterInfoFromMpls(ClipSeletIndex);
             UpdataGridView();
@@ -797,7 +800,6 @@ namespace ChapterTool.Forms
             Log(string.Format(Resources.Log_Save_Is_Use_Chapter_Name, !AutoGenName));
             Log(string.Format(Resources.Log_Save_Is_Use_Chapter_Name_Template, cbChapterName.Checked));
             Log(string.Format(Resources.Log_Save_Chapter_Order_Shift, numericUpDown1.Value));
-            //Log(string.Format(Resources.Log_Save_Time_Factor, cbMul1k1.Checked));
             Log(string.Format(Resources.Log_Save_Time_Shift, Shift));
             if (Shift)
             {
@@ -914,7 +916,7 @@ namespace ChapterTool.Forms
 
         private void comboBox2_SelectionChangeCommitted(object sender, EventArgs e)
         {
-                 if (_rawMpls   != null) GetChapterInfoFromMpls(ClipSeletIndex);
+                 if (_mplsGroup != null) GetChapterInfoFromMpls(ClipSeletIndex);
             else if (_ifoGroup  != null) GetChapterInfoFromIFO (ClipSeletIndex);
             else if (_xmlGroup  != null)     _info = _xmlGroup [ClipSeletIndex];
             else if (_xplGroup  != null)     _info = _xplGroup [ClipSeletIndex];
@@ -925,10 +927,10 @@ namespace ChapterTool.Forms
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_rawMpls == null && _ifoGroup == null) return;
+            if (_mplsGroup == null && _ifoGroup == null) return;
             CombineChapter = !CombineChapter;
-                 if (_rawMpls  != null) GetChapterInfoFromMpls(ClipSeletIndex);
-            else if (_ifoGroup != null) GetChapterInfoFromIFO(ClipSeletIndex);
+                 if (_mplsGroup != null) GetChapterInfoFromMpls(ClipSeletIndex);
+            else if (_ifoGroup  != null) GetChapterInfoFromIFO(ClipSeletIndex);
             if (Shift) cbShift_CheckedChanged(null, null);
             UpdataGridView();
         }
@@ -939,22 +941,14 @@ namespace ChapterTool.Forms
         #region GeneRate Chapter Info
         private void GetChapterInfoFromMpls(int index)
         {
-            try
-            {
-                MplsData.OnLog += Log;
-                _info = _rawMpls.ToChapterInfo(index, CombineChapter);
-                tsTips.Text = _info.Chapters.Count < 2 ? Resources.Tips_Chapter_Not_find : Resources.Tips_Load_Success;
-                _info.UpdataInfo(_chapterNameTemplate);
-            }
-            finally
-            {
-                MplsData.OnLog -= Log;
-            }
+            _info = CombineChapter ? ChapterInfo.CombineChapter(_mplsGroup, "MPLS") : _mplsGroup[index];
+            tsTips.Text = _info.Chapters.Count < 2 ? Resources.Tips_Chapter_Not_find : Resources.Tips_Load_Success;
+            _info.UpdataInfo(_chapterNameTemplate);
         }
 
         private void GetChapterInfoFromIFO(int index)
         {
-            _info = CombineChapter ? _fullIfoChapter : _ifoGroup[index];
+            _info = CombineChapter ? ChapterInfo.CombineChapter(_ifoGroup) : _ifoGroup[index];
         }
 
         private List<ChapterInfo> _xmlGroup;
@@ -997,7 +991,7 @@ namespace ChapterTool.Forms
                     comboBox1.Enabled     = false;
                     break;
                 case "MPLS":
-                    GetFramInfo(_rawMpls.ChapterClips[ClipSeletIndex].Fps);
+                    GetFramInfo(ConvertFr2Index(_info.FramesPerSecond));
                     comboBox1.Enabled     = false;
                     break;
                 default:
@@ -1040,7 +1034,7 @@ namespace ChapterTool.Forms
             if (_info.Chapters.Count < 1 || e.Row.Index != 0) return;
             var newInitialTime = _info.Chapters.First().Time;
             _info.UpdataInfo(newInitialTime);
-            if ((_rawMpls != null || _ifoGroup != null) && string.IsNullOrWhiteSpace(_chapterNameTemplate))
+            if ((_mplsGroup != null || _ifoGroup != null) && string.IsNullOrWhiteSpace(_chapterNameTemplate))
             {
                 var name = ChapterName.GetChapterName();
                 _info.Chapters.ForEach(item => item.Name = name());
@@ -1244,17 +1238,17 @@ namespace ChapterTool.Forms
 
         private void btnSave_MouseEnter(object sender, EventArgs e)
         {
-            if (_rawMpls == null || !IsPathValid || !FilePath.ToLower().EndsWith(".mpls")) return;
-            var streamClip = _rawMpls.ChapterClips[ClipSeletIndex];
-            if (streamClip.TimeStamp.Count != 2) return;
-            var deltaTime  = streamClip.TimeOut - streamClip.TimeIn - streamClip.TimeStamp.Last();
-            if (deltaTime > 45000*5) return;
+            if (_mplsGroup == null || !IsPathValid || !FilePath.ToLower().EndsWith(".mpls")) return;
+            if (_info.Chapters.Count != 2) return;
+
+            var deltaTime = _info.Duration - _info.Chapters.Last().Time;
+            if (deltaTime.Seconds > 5) return;
             toolTip1.Show($"{Resources.ToolTips_Useless_Chapter}", (IWin32Window) sender);
         }
 
         private void comboBox2_MouseEnter(object sender, EventArgs e)
         {
-            var menuMpls = _rawMpls != null && _rawMpls.EntireClip.TimeStamp.Count < 5 && comboBox2.Items.Count > 20;
+            var menuMpls = _mplsGroup != null && _mplsGroup.Sum(i=>i.Chapters.Count) < 5 && comboBox2.Items.Count > 20;
             toolTip1.Show(menuMpls ? Resources.Tips_Menu_Clip : $"[{comboBox2.Text}] " + string.Format(Resources.Tips_Clip_Count, comboBox2.Items.Count), (IWin32Window)sender);
         }
 
@@ -1522,7 +1516,7 @@ namespace ChapterTool.Forms
         {
             var basePath = Path.GetDirectoryName(FilePath);
             Debug.Assert(basePath != null);
-            var targetPath = Path.Combine(basePath, "\\..\\STREAM");
+            var targetPath = Path.Combine(basePath, "..\\STREAM");
             if (!Directory.Exists(targetPath)) return;
 
             combineMenuStrip.Items.Add(new ToolStripSeparator());
@@ -1557,7 +1551,7 @@ namespace ChapterTool.Forms
         {
             var basePath = Path.GetDirectoryName(FilePath);
             Debug.Assert(basePath != null);
-            var targetPath = Path.Combine(basePath, "\\..\\HVDVD_TS");
+            var targetPath = Path.Combine(basePath, "..\\HVDVD_TS");
             if (!Directory.Exists(targetPath)) return;
 
             combineMenuStrip.Items.Add(new ToolStripSeparator());
@@ -1573,9 +1567,9 @@ namespace ChapterTool.Forms
 
         private void contextMenuStrip2_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-                 if (_rawMpls  != null) InsertMpls();
-            else if (_ifoGroup != null) InsertIfo();
-            else if (_xplGroup != null) InsertXpl();
+                 if (_mplsGroup != null) InsertMpls();
+            else if (_ifoGroup  != null) InsertIfo();
+            else if (_xplGroup  != null) InsertXpl();
         }
 
         private void contextMenuStrip2_Closed(object sender, ToolStripDropDownClosedEventArgs e)
