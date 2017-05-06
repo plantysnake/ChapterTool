@@ -31,6 +31,7 @@ namespace ChapterTool.Util.ChapterData
         private readonly MplsHeader _mplsHeader;
         private readonly PlayList _playList;
         private readonly PlayListMark _playListMark;
+        private readonly ExtensionData _extensionData;
 
         public string Version       => _mplsHeader.TypeIndicator.ToString();
         public PlayItem[] PlayItems => _playList.PlayItems;
@@ -52,6 +53,12 @@ namespace ChapterTool.Util.ChapterData
 
                 stream.Seek(_mplsHeader.PlayListMarkStartAddress, SeekOrigin.Begin);
                 _playListMark = new PlayListMark(stream);
+
+                if (_mplsHeader.ExtensionDataStartAddress != 0)
+                {
+                    stream.Seek(_mplsHeader.ExtensionDataStartAddress, SeekOrigin.Begin);
+                    _extensionData = new ExtensionData(stream);
+                }
             }
             StreamAttribution.OnLog += OnLog;
             foreach (var item in PlayItems)
@@ -90,7 +97,7 @@ namespace ChapterTool.Util.ChapterData
                 var offset = Marks.First(filter).MarkTimeStamp;
                 if (playItem.TimeInfo.INTime < offset)
                 {
-                    OnLog?.Invoke($"first time stamp: {offset}, Time in: {playItem.TimeInfo.INTime}");
+                    OnLog?.Invoke($"{{PlayItems[{i}]: first time stamp => {offset}, in time => {playItem.TimeInfo.INTime}}}");
                     offset = playItem.TimeInfo.INTime;
                 }
                 var name = new ChapterName();
@@ -667,11 +674,11 @@ namespace ChapterTool.Util.ChapterData
         public Mark(Stream stream)
         {
             stream.Skip(1);
-            MarkType = (byte)stream.ReadByte();
+            MarkType        = (byte)stream.ReadByte();
             RefToPlayItemID = (ushort)stream.BEInt16();
-            MarkTimeStamp = stream.BEInt32();
-            EntryESPID = (ushort)stream.BEInt16();
-            Duration = stream.BEInt32();
+            MarkTimeStamp   = stream.BEInt32();
+            EntryESPID      = (ushort)stream.BEInt16();
+            Duration        = stream.BEInt32();
         }
     }
 
@@ -692,6 +699,47 @@ namespace ChapterTool.Util.ChapterData
                 Marks[i] = new Mark(stream);
             }
             stream.Skip(Length - (stream.Position - position));
+        }
+    }
+
+    internal class ExtensionData
+    {
+        public uint Length;
+        public uint DataBlockStartAddress;
+        //4bytes reserved
+        public byte NumberOfExtDataEntries;
+        public ExtDataEntry[] ExtDataEntries;
+
+        public ExtensionData(Stream stream)
+        {
+            Length = stream.BEInt32();
+            if (Length != 0)
+            {
+                DataBlockStartAddress = stream.BEInt32();
+                stream.Skip(4);
+                NumberOfExtDataEntries = (byte) stream.ReadByte();
+                ExtDataEntries = new ExtDataEntry[NumberOfExtDataEntries];
+                for (int i = 0; i < NumberOfExtDataEntries; ++i)
+                {
+                    ExtDataEntries[i] = new ExtDataEntry(stream);
+                }
+            }
+        }
+    }
+
+    internal class ExtDataEntry
+    {
+        public ushort ExtDataType;
+        public ushort ExtDataVersion;
+        public uint ExtDataStartAddres;
+        public uint ExtDataLength;
+
+        public ExtDataEntry(Stream stream)
+        {
+            ExtDataType = (ushort) stream.BEInt16();
+            ExtDataVersion = (ushort) stream.BEInt16();
+            ExtDataStartAddres = stream.BEInt32();
+            ExtDataLength = stream.BEInt32();
         }
     }
 
