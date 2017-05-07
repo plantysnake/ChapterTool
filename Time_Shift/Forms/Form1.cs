@@ -47,6 +47,7 @@ namespace ChapterTool.Forms
         {
             InitializeComponent();
             AddCommand();
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             /*
             LanguageHelper.SetLang("en-US", this, typeof(Form1));
             LanguageHelper.SetLang("en-US", deviationMenuStrip, typeof(Form1));
@@ -59,9 +60,10 @@ namespace ChapterTool.Forms
         public Form1(string args)
         {
             InitializeComponent();
+            AddCommand();
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             FilePath = args;
             Log(string.Format(Resources.Log_Load_File_Via_Args, args));
-            AddCommand();
         }
         #endregion
 
