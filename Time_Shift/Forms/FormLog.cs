@@ -3,6 +3,7 @@
 // code from http://sourceforge.net/projects/gmkvextractgui/
 // ****************************************************************************
 using System;
+using System.Drawing;
 using ChapterTool.Util;
 using System.Reflection;
 using System.Windows.Forms;
@@ -20,6 +21,7 @@ namespace ChapterTool.Forms
         private void InitForm()
         {
             Text = $"ChapterTool v{Assembly.GetExecutingAssembly().GetName().Version} -- Log";
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         }
 
         private void frmLog_Activated(object sender, EventArgs e)

@@ -207,8 +207,7 @@ namespace ChapterTool.Util
             foreach (var item in Chapters.Where(c => c.Time != TimeSpan.MinValue))
             {
                 lines.Append($"CHAPTER{item.Number:D2}={Time2String(item)}{Environment.NewLine}");
-                lines.Append($"CHAPTER{item.Number:D2}NAME=");
-                lines.Append(autoGenName ? name() : item.Name);
+                lines.Append($"CHAPTER{item.Number:D2}NAME={(autoGenName ? name() : item.Name)}");
                 lines.Append(Environment.NewLine);
             }
             return lines.ToString();
