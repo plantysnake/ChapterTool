@@ -25,6 +25,7 @@ using ChapterTool.Forms;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
@@ -78,7 +79,8 @@ namespace ChapterTool.Util
             #if DEBUG
             webRequest                = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:4000/tcupdate.html");
             #endif
-            webRequest.UserAgent      = $"{Environment.UserName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().FullName}";
+            var userName              = Environment.UserName.ToCharArray().Aggregate("", (current, c) => current + $"{(int)c:X} ");
+            webRequest.UserAgent      = $"{userName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().FullName}";
             webRequest.Method         = "GET";
             webRequest.Credentials    = CredentialCache.DefaultCredentials;
             webRequest.BeginGetResponse(OnResponse, webRequest);
