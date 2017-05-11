@@ -321,8 +321,8 @@ namespace ChapterTool.Forms
 
         private string FilePath
         {
-            get { return _paths[0]; }
-            set { _paths[0] = value; }
+            get => _paths[0];
+            set => _paths[0] = value;
         }
 
         private bool IsPathValid
@@ -366,13 +366,13 @@ namespace ChapterTool.Forms
 
         private static readonly Lazy<string> MainFilter = new Lazy<string>(() =>
         {
-            Func<IEnumerable<string>, string> getType = enumerable => enumerable.Aggregate(string.Empty, (current, type) => current + $"*.{type};");
+            string GetType(IEnumerable<string> enumerable) => enumerable.Aggregate(string.Empty, (current, type) => current + $"*.{type};");
             var ret = new StringBuilder(Resources.File_Filter_All_Support);
-            var types = getType(SupportTypes.SelectMany(supportType => supportType.Value));
+            var types = GetType(SupportTypes.SelectMany(supportType => supportType.Value));
             ret.Append($" ({types.TrimEnd(';')})|{types}");
             foreach (var supportType in SupportTypes)
             {
-                types = getType(supportType.Value);
+                types = GetType(supportType.Value);
                 ret.Append($"|{supportType.Key} ({types.TrimEnd(';')})|{types}");
             }
             return ret.ToString();
@@ -403,8 +403,8 @@ namespace ChapterTool.Forms
 
         private bool CombineChapter
         {
-            get { return combineToolStripMenuItem.Checked; }
-            set { combineToolStripMenuItem.Checked = value; }
+            get => combineToolStripMenuItem.Checked;
+            set => combineToolStripMenuItem.Checked = value;
         }
 
         private bool Loadfile()
@@ -1292,7 +1292,7 @@ namespace ChapterTool.Forms
         #region form resize
         private bool ExtensionPanelShow
         {
-            set { panel1.Visible = value; }
+            set => panel1.Visible = value;
         }
 
         private void btnExpand_Click(object sender, EventArgs e) => Form1_Resize();

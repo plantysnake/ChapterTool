@@ -50,7 +50,7 @@ namespace ChapterTool.Util
         public Type TagType { get; set; }
         public object Tag
         {
-            get { return _tag; }
+            get => _tag;
             set
             {
                 if (value == null)

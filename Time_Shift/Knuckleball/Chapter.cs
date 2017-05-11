@@ -39,10 +39,7 @@ namespace Knuckleball
         /// </summary>
         public string Title
         {
-            get
-            {
-                return title;
-            }
+            get => title;
 
             set
             {
@@ -59,10 +56,7 @@ namespace Knuckleball
         /// </summary>
         public TimeSpan Duration
         {
-            get
-            {
-                return duration;
-            }
+            get => duration;
 
             set
             {
