@@ -22,12 +22,8 @@ namespace Knuckleball
     /// </summary>
     public class Chapter
     {
-        /// <summary>
-        /// Gets the internal ID of this Chapter.
-        /// </summary>
-        internal Guid Id { get; } = Guid.NewGuid();
-        private string title = string.Empty;
-        private TimeSpan duration = TimeSpan.FromSeconds(0);
+        private string _title = string.Empty;
+        private TimeSpan _duration = TimeSpan.FromSeconds(0);
 
         /// <summary>
         /// Occurs when the value of any property is changed.
@@ -39,13 +35,13 @@ namespace Knuckleball
         /// </summary>
         public string Title
         {
-            get => title;
+            get => _title;
 
             set
             {
-                if (title != value)
+                if (_title != value)
                 {
-                    title = value;
+                    _title = value;
                     OnChanged(new EventArgs());
                 }
             }
@@ -56,13 +52,13 @@ namespace Knuckleball
         /// </summary>
         public TimeSpan Duration
         {
-            get => duration;
+            get => _duration;
 
             set
             {
-                if (duration != value)
+                if (_duration != value)
                 {
-                    duration = value;
+                    _duration = value;
                     OnChanged(new EventArgs());
                 }
             }

@@ -13,7 +13,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Knuckleball
 {
@@ -22,8 +25,9 @@ namespace Knuckleball
     /// </summary>
     public class MP4File
     {
-        private string fileName;
-        private ChapterList chapters;
+        private readonly string _fileName;
+
+        public static event Action<string> OnLog;
 
         /// <summary>
         /// Prevents a default instance of the <see cref="MP4File"/> class from being created.
@@ -43,13 +47,13 @@ namespace Knuckleball
                 throw new ArgumentException("Must specify a valid file name", nameof(fileName));
             }
 
-            this.fileName = fileName;
+            _fileName = fileName;
         }
 
         /// <summary>
         /// Gets the list of chapters for this file.
         /// </summary>
-        public ChapterList Chapters => chapters;
+        public List<Chapter> Chapters { get; private set; }
 
         /// <summary>
         /// Opens and reads the data for the specified file.
@@ -71,18 +75,75 @@ namespace Knuckleball
         /// </summary>
         public void Load()
         {
-            var fileHandle = NativeMethods.MP4Read(fileName);
-            if (fileHandle != IntPtr.Zero)
+            var fileHandle = NativeMethods.MP4Read(_fileName);
+            if (fileHandle == IntPtr.Zero) return;
+            try
             {
-                try
-                {
-                    chapters = ChapterList.ReadFromFile(fileHandle);
-                }
-                finally
-                {
-                    NativeMethods.MP4Close(fileHandle);
-                }
+                Chapters = ReadFromFile(fileHandle);
+            }
+            finally
+            {
+                NativeMethods.MP4Close(fileHandle);
             }
         }
+
+        /// <summary>
+        /// Reads the chapter information from the specified file.
+        /// </summary>
+        /// <param name="fileHandle">The handle to the file from which to read the chapter information.</param>
+        /// <returns>A new instance of a <see cref="List{Chapter}"/> object containing the information
+        /// about the chapters for the file.</returns>
+        internal static List<Chapter> ReadFromFile(IntPtr fileHandle)
+        {
+            var list = new List<Chapter>();
+            var chapterListPointer = IntPtr.Zero;
+            var chapterCount = 0;
+            var chapterType = NativeMethods.MP4GetChapters(fileHandle, ref chapterListPointer, ref chapterCount, NativeMethods.MP4ChapterType.Any);
+            OnLog?.Invoke($"Chapter type: {chapterType}");
+            if (chapterType != NativeMethods.MP4ChapterType.None && chapterCount != 0)
+            {
+                var currentChapterPointer = chapterListPointer;
+                for (var i = 0; i < chapterCount; ++i)
+                {
+                    var currentChapter = currentChapterPointer.ReadStructure<NativeMethods.MP4Chapter>();
+                    var duration = TimeSpan.FromMilliseconds(currentChapter.duration);
+                    var title = GetString(currentChapter.title);
+                    OnLog?.Invoke($"{title} {duration}");
+                    list.Add(new Chapter { Duration = duration, Title = title });
+                    currentChapterPointer = IntPtr.Add(currentChapterPointer, Marshal.SizeOf(currentChapter));
+                }
+            }
+            else
+            {
+                var timeScale = NativeMethods.MP4GetTimeScale(fileHandle);
+                var duration = NativeMethods.MP4GetDuration(fileHandle);
+                list.Add(new Chapter { Duration = TimeSpan.FromSeconds(duration / (double)timeScale), Title = "Chapter 1" });
+            }
+            if (chapterListPointer != IntPtr.Zero)
+            {
+                NativeMethods.MP4Free(chapterListPointer);
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// Decodes a C-Style string into a string, can handle UTF-8 or UTF-16 encoding.
+        /// </summary>
+        /// <param name="bytes">C-Style string</param>
+        /// <returns></returns>
+        private static string GetString(byte[] bytes)
+        {
+            if (bytes == null) return null;
+            string title = null;
+            if (bytes.Length <= 3) title = Encoding.UTF8.GetString(bytes);
+            if (bytes[0] == 0xFF && bytes[1] == 0xFE) title = Encoding.Unicode.GetString(bytes);
+            if (bytes[0] == 0xFE && bytes[1] == 0xFF) title = Encoding.BigEndianUnicode.GetString(bytes);
+            if (bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF)
+                title = new UTF8Encoding(false).GetString(bytes, 3, bytes.Length - 3);
+            else if (title == null) title = Encoding.UTF8.GetString(bytes);
+
+            return title.Substring(0, title.IndexOf('\0'));
+        }
+
     }
 }

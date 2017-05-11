@@ -122,7 +122,6 @@
       <DependentUpon>FormUpdater.cs</DependentUpon>
     </Compile>
     <Compile Include="Knuckleball\Chapter.cs" />
-    <Compile Include="Knuckleball\ChapterList.cs" />
     <Compile Include="Knuckleball\IntPtrExtensions.cs" />
     <Compile Include="Knuckleball\MP4File.cs" />
     <Compile Include="Knuckleball\NativeMethods.cs" />

@@ -581,7 +581,7 @@ namespace ChapterTool.Forms
             var linkedFile = Path.Combine(Path.GetPathRoot(FilePath) ?? "", Guid.NewGuid().ToString());
             try
             {
-                Knuckleball.ChapterList.OnLog += Log;
+                Knuckleball.MP4File.OnLog += Log;
                 NativeMethods.CreateHardLinkCMD(linkedFile, FilePath);
                 _info = new Mp4Data(linkedFile).Chapter;
             }
@@ -591,7 +591,7 @@ namespace ChapterTool.Forms
             }
             finally
             {
-                Knuckleball.ChapterList.OnLog -= Log;
+                Knuckleball.MP4File.OnLog -= Log;
                 if (File.Exists(linkedFile)) File.Delete(linkedFile);
             }
         }
