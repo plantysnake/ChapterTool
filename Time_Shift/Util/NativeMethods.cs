@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -54,6 +55,31 @@ namespace ChapterTool.Util
         public static void RefreshNotify()
         {
             SHChangeNotify(0x8000000, 0, IntPtr.Zero, IntPtr.Zero);
+        }
+
+        [DllImport("Kernel32.dll", EntryPoint = "CreateHardLinkW", CharSet = CharSet.Unicode)]
+        private static extern bool CreateHardLink(string lpFileName, string lpExistingFileName, IntPtr lpSecurityAttributes);
+
+        public static bool CreateHardLink(string lpFileName, string lpExistingFileName)
+        {
+            return CreateHardLink(lpFileName, lpExistingFileName, IntPtr.Zero);
+        }
+
+        public static void CreateHardLinkCMD(string lpFileName, string lpExistingFileName)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "fsutil",
+                    Arguments = $"hardlink create \"{lpFileName}\" \"{lpExistingFileName}\"",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            process.Start();
+            process.WaitForExit();
         }
     }
 }

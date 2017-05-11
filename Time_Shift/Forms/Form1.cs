@@ -578,11 +578,12 @@ namespace ChapterTool.Forms
                 }
                 return;
             }
+            var linkedFile = Path.Combine(Path.GetPathRoot(FilePath) ?? "", Guid.NewGuid().ToString());
             try
             {
                 Knuckleball.ChapterList.OnLog += Log;
-                var mp4 = new Mp4Data(FilePath);
-                _info = mp4.Chapter;
+                NativeMethods.CreateHardLinkCMD(linkedFile, FilePath);
+                _info = new Mp4Data(linkedFile).Chapter;
             }
             catch (Exception exception)
             {
@@ -591,6 +592,7 @@ namespace ChapterTool.Forms
             finally
             {
                 Knuckleball.ChapterList.OnLog -= Log;
+                if (File.Exists(linkedFile)) File.Delete(linkedFile);
             }
         }
 
