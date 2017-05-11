@@ -121,7 +121,7 @@
     <value>ChapterTool Error</value>
   </data>
   <data name="File_Unloaded" xml:space="preserve">
-    <value>File unloaded</value>
+    <value>No file loaded</value>
   </data>
   <data name="Tips_Load_Success" xml:space="preserve">
     <value>Load Success (≧▽≦)</value>
@@ -182,9 +182,6 @@
   </data>
   <data name="Log_Load_Position_Successful" xml:space="preserve">
     <value>+Load form position {0}</value>
-  </data>
-  <data name="Log_Wu_Zong" xml:space="preserve">
-    <value>Hello, WuZong</value>
   </data>
   <data name="Log_About_Form_Click" xml:space="preserve">
     <value>Progress bar has been clicked {0} times</value>
@@ -346,6 +343,12 @@
     <value>Load failed…</value>
   </data>
   <data name="Message_Need_Newer_dotNet" xml:space="preserve">
-    <value>Require .Net4.6 or higher to support all feature，no longer remind？</value>
+    <value>Require .Net4.6 or higher to support all feature，no longer remind?</value>
+  </data>
+  <data name="Menu_Switch_Language" xml:space="preserve">
+    <value>切换语言</value>
+  </data>
+  <data name="Expression_factor_1001" xml:space="preserve">
+    <value>t * 1.001 //Fix time of DVD</value>
   </data>
 </root>

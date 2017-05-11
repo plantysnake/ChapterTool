@@ -81,6 +81,15 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
+        ///   查找类似 t * 1.001 //修正DVD时间 的本地化字符串。
+        /// </summary>
+        internal static string Expression_factor_1001 {
+            get {
+                return ResourceManager.GetString("Expression_factor_1001", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 所有文件 的本地化字符串。
         /// </summary>
         internal static string File_Filter_All {
@@ -522,15 +531,6 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
-        ///   查找类似 武总好~ 的本地化字符串。
-        /// </summary>
-        internal static string Log_Wu_Zong {
-            get {
-                return ResourceManager.GetString("Log_Wu_Zong", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 |+XPL中共有 {0} 个片段 的本地化字符串。
         /// </summary>
         internal static string Log_XPL_Clip_Count {
@@ -545,6 +545,15 @@ namespace ChapterTool.Properties {
         internal static string Menu_Open_File {
             get {
                 return ResourceManager.GetString("Menu_Open_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Switch language 的本地化字符串。
+        /// </summary>
+        internal static string Menu_Switch_Language {
+            get {
+                return ResourceManager.GetString("Menu_Switch_Language", resourceCulture);
             }
         }
         

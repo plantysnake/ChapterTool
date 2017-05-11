@@ -45,16 +45,16 @@ namespace ChapterTool.Forms
         #region Form1
         public Form1()
         {
+            const string key = "Language";
+            var lang = RegistryStorage.Load(name: key);
+            if (!string.IsNullOrEmpty(lang))
+            {
+                LanguageHelper.SetLang(lang, this, typeof(Form1));
+            }
             InitializeComponent();
             AddCommand();
             Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-            /*
-            LanguageHelper.SetLang("en-US", this, typeof(Form1));
-            LanguageHelper.SetLang("en-US", deviationMenuStrip, typeof(Form1));
-            LanguageHelper.SetLang("en-US", combineMenuStrip, typeof(Form1));
-            LanguageHelper.SetLang("en-US", createZonestMenuStrip, typeof(Form1));
-            LanguageHelper.SetLang("en-US", loadMenuStrip, typeof(Form1));
-            */
+
         }
 
         public Form1(string args)
@@ -204,8 +204,7 @@ namespace ChapterTool.Forms
 
         private static void InitialLog()
         {
-            Log(Environment.UserName.ToLowerInvariant().IndexOf("yzy", StringComparison.Ordinal) > 0
-                ? Resources.Log_Wu_Zong : $"{Environment.UserName}{Resources.Log_Hello}");
+            Log($"{Environment.UserName}{Resources.Log_Hello}");
             Log($"{Environment.OSVersion}");
 
             if (!IsRunningOnMono) Log(NativeMethods.IsUserAnAdmin() ? Resources.Log_With_Admin : Resources.Log_Without_Admin);
@@ -253,6 +252,23 @@ namespace ChapterTool.Forms
             if (IsRunningOnMono) return;
             _systemMenu = new SystemMenu(this);
             _systemMenu.AddCommand(Resources.Update_Check, Updater.CheckUpdate, true);
+            var resPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath) ?? "", "en-US");
+            if (Directory.Exists(resPath))
+            {
+                _systemMenu.AddCommand(Resources.Menu_Switch_Language, () =>
+                {
+                    if (!File.Exists(Path.Combine(resPath, "ChapterTool.resources.dll")))
+                    {
+                        Notification.ShowInfo("No valid language resource file found");
+                        return;
+                    }
+                    const string key = "Language";
+                    var lang = RegistryStorage.Load(name: key) ?? "";
+                    RegistryStorage.Save(name: key, value: string.IsNullOrEmpty(lang) ? "en-US" : "");
+                    Process.Start(Application.ExecutablePath);
+                    Process.GetCurrentProcess().Kill();
+                }, true);
+            }
         }
 
         protected override void WndProc(ref Message msg)
@@ -537,7 +553,7 @@ namespace ChapterTool.Forms
             }
             else
             {
-                textBoxExpression.Text = @"t * 1.001 //修正DVD时间";
+                textBoxExpression.Text = Resources.Expression_factor_1001;
                 cbShift.Checked = true;
                 tsTips.Text = Resources.Tips_IFO_Waring_Fixed;
             }
