@@ -166,13 +166,13 @@
             this.comboBox1.ForeColor = System.Drawing.SystemColors.WindowText;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
-            "24000 / 1001",
-            "24000 / 1000",
-            "25000 / 1000",
-            "30000 / 1001",
-            "RESER / VED",
-            "50000 / 1000",
-            "60000 / 1001"});
+            resources.GetString("comboBox1.Items"),
+            resources.GetString("comboBox1.Items1"),
+            resources.GetString("comboBox1.Items2"),
+            resources.GetString("comboBox1.Items3"),
+            resources.GetString("comboBox1.Items4"),
+            resources.GetString("comboBox1.Items5"),
+            resources.GetString("comboBox1.Items6")});
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.TabStop = false;
             this.comboBox1.SelectionChangeCommitted += new System.EventHandler(this.comboBox1_SelectionChangeCommitted);
@@ -374,7 +374,6 @@
             this.btnPreview.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(207)))), ((int)(((byte)(207)))), ((int)(((byte)(207)))));
             resources.ApplyResources(this.btnPreview, "btnPreview");
             this.btnPreview.Name = "btnPreview";
-            this.btnPreview.Text = "P";
             this.btnPreview.TabStop = false;
             this.btnPreview.UseVisualStyleBackColor = true;
             this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
