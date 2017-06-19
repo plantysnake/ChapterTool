@@ -244,8 +244,7 @@ namespace ChapterTool.Util
                 var segments = line.Substring(7).Split('=');
                 if (segments.Length < 2) continue;
                 if (!segments[0].All(char.IsDigit)) continue;
-                int index;
-                if (int.TryParse(segments[0], out index)) continue;
+                if (int.TryParse(segments[0], out _)) continue;
                 var times = segments[1].Split(':');
                 if (times.Length > 3) continue;
                 var time = 0.0;

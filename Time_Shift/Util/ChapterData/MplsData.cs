@@ -26,11 +26,12 @@ using System.Text;
 
 namespace ChapterTool.Util.ChapterData
 {
+    //https://github.com/lerks/BluRay/wiki/MPLS
     public class MplsData
     {
-        private readonly MplsHeader _mplsHeader;
-        private readonly PlayList _playList;
-        private readonly PlayListMark _playListMark;
+        private readonly MplsHeader    _mplsHeader;
+        private readonly PlayList      _playList;
+        private readonly PlayListMark  _playListMark;
         private readonly ExtensionData _extensionData;
 
         public string Version       => _mplsHeader.TypeIndicator.ToString();
@@ -75,7 +76,7 @@ namespace ChapterTool.Util.ChapterData
         public MplsGroup GetChapters()
         {
             var ret = new MplsGroup();
-            for (int i = 0; i < PlayItems.Length; ++i)
+            for (var i = 0; i < PlayItems.Length; ++i)
             {
                 var playItem = PlayItems[i];
                 var attr = playItem.STNTable.StreamEntries.First(item => item is PrimaryVideoStreamEntry);
@@ -284,11 +285,11 @@ namespace ChapterTool.Util.ChapterData
             NumberOfSubPaths  = (ushort)stream.BEInt16();
             PlayItems         = new PlayItem[NumberOfPlayItems];
             SubPaths          = new SubPath[NumberOfSubPaths];
-            for (int i = 0; i < NumberOfPlayItems; ++i)
+            for (var i = 0; i < NumberOfPlayItems; ++i)
             {
                 PlayItems[i] = new PlayItem(stream);
             }
-            for (int i = 0; i < NumberOfSubPaths; ++i)
+            for (var i = 0; i < NumberOfSubPaths; ++i)
             {
                 SubPaths[i] = new SubPath(stream);
             }
@@ -411,7 +412,7 @@ namespace ChapterTool.Util.ChapterData
             NumberOfAngles = (byte) stream.ReadByte();
             _flagField     = (byte) stream.ReadByte();
             Angles = new ClipNameWithRef[NumberOfAngles - 1];
-            for (int i = 0; i < NumberOfAngles - 1; ++i)
+            for (var i = 0; i < NumberOfAngles - 1; ++i)
             {
                 Angles[i] = new ClipNameWithRef(stream);
             }
@@ -437,7 +438,7 @@ namespace ChapterTool.Util.ChapterData
             _flagField           = (ushort) stream.BEInt16();
             NumberOfSubPlayItems = (byte) stream.ReadByte();
             SubPlayItems         = new SubPlayItem[NumberOfSubPlayItems];
-            for (int i = 1; i < NumberOfSubPlayItems; ++i)
+            for (var i = 1; i < NumberOfSubPlayItems; ++i)
             {
                 SubPlayItems[i] = new SubPlayItem(stream);
             }
@@ -478,7 +479,7 @@ namespace ChapterTool.Util.ChapterData
             {
                 NumberOfMultiClipEntries = (byte) stream.ReadByte();
                 MultiClipNameEntries = new ClipNameWithRef[NumberOfMultiClipEntries - 1];
-                for (int i = 0; i < NumberOfMultiClipEntries - 1; ++i)
+                for (var i = 0; i < NumberOfMultiClipEntries - 1; ++i)
                 {
                     MultiClipNameEntries[i] = new ClipNameWithRef(stream);
                 }
@@ -523,14 +524,14 @@ namespace ChapterTool.Util.ChapterData
                 NumberOfSecondaryAudioStreamEntries+
                 NumberOfSecondaryVideoStreamEntries+
                 NumberOfSecondaryPGStreamEntries];
-            int index = 0;
-            for (int i = 0; i < NumberOfPrimaryVideoStreamEntries;   ++i) StreamEntries[index++] = new PrimaryVideoStreamEntry(stream);
-            for (int i = 0; i < NumberOfPrimaryAudioStreamEntries;   ++i) StreamEntries[index++] = new PrimaryAudioStreamEntry(stream);
-            for (int i = 0; i < NumberOfPrimaryPGStreamEntries;      ++i) StreamEntries[index++] = new PrimaryPGStreamEntry(stream);
-            for (int i = 0; i < NumberOfSecondaryPGStreamEntries;    ++i) StreamEntries[index++] = new SecondaryPGStreamEntry(stream);
-            for (int i = 0; i < NumberOfPrimaryIGStreamEntries;      ++i) StreamEntries[index++] = new PrimaryIGStreamEntry(stream);
-            for (int i = 0; i < NumberOfSecondaryAudioStreamEntries; ++i) StreamEntries[index++] = new SecondaryAudioStreamEntry(stream);
-            for (int i = 0; i < NumberOfSecondaryVideoStreamEntries; ++i) StreamEntries[index++] = new SecondaryVideoStreamEntry(stream);
+            var index = 0;
+            for (var i = 0; i < NumberOfPrimaryVideoStreamEntries;   ++i) StreamEntries[index++] = new PrimaryVideoStreamEntry(stream);
+            for (var i = 0; i < NumberOfPrimaryAudioStreamEntries;   ++i) StreamEntries[index++] = new PrimaryAudioStreamEntry(stream);
+            for (var i = 0; i < NumberOfPrimaryPGStreamEntries;      ++i) StreamEntries[index++] = new PrimaryPGStreamEntry(stream);
+            for (var i = 0; i < NumberOfSecondaryPGStreamEntries;    ++i) StreamEntries[index++] = new SecondaryPGStreamEntry(stream);
+            for (var i = 0; i < NumberOfPrimaryIGStreamEntries;      ++i) StreamEntries[index++] = new PrimaryIGStreamEntry(stream);
+            for (var i = 0; i < NumberOfSecondaryAudioStreamEntries; ++i) StreamEntries[index++] = new SecondaryAudioStreamEntry(stream);
+            for (var i = 0; i < NumberOfSecondaryVideoStreamEntries; ++i) StreamEntries[index++] = new SecondaryVideoStreamEntry(stream);
             stream.Skip(Length - (stream.Position - position));
         }
     }
@@ -694,7 +695,7 @@ namespace ChapterTool.Util.ChapterData
             var position          = stream.Position;
             NumberOfPlayListMarks = (ushort) stream.BEInt16();
             Marks = new Mark[NumberOfPlayListMarks];
-            for (int i = 0; i < NumberOfPlayListMarks; ++i)
+            for (var i = 0; i < NumberOfPlayListMarks; ++i)
             {
                 Marks[i] = new Mark(stream);
             }
@@ -713,16 +714,14 @@ namespace ChapterTool.Util.ChapterData
         public ExtensionData(Stream stream)
         {
             Length = stream.BEInt32();
-            if (Length != 0)
+            if (Length == 0) return;
+            DataBlockStartAddress = stream.BEInt32();
+            stream.Skip(3);
+            NumberOfExtDataEntries = (byte) stream.ReadByte();
+            ExtDataEntries = new ExtDataEntry[NumberOfExtDataEntries];
+            for (var i = 0; i < NumberOfExtDataEntries; ++i)
             {
-                DataBlockStartAddress = stream.BEInt32();
-                stream.Skip(3);
-                NumberOfExtDataEntries = (byte) stream.ReadByte();
-                ExtDataEntries = new ExtDataEntry[NumberOfExtDataEntries];
-                for (int i = 0; i < NumberOfExtDataEntries; ++i)
-                {
-                    ExtDataEntries[i] = new ExtDataEntry(stream);
-                }
+                ExtDataEntries[i] = new ExtDataEntry(stream);
             }
         }
     }
