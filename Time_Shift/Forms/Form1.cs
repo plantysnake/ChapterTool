@@ -1117,7 +1117,7 @@ namespace ChapterTool.Forms
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex != 3) return;
+            if (e.ColumnIndex != 3 || e.RowIndex < 0) return;
             Clipboard.SetText((dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string ?? "").TrimEnd('K', '*', ' '));
         }
 
