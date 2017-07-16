@@ -121,6 +121,18 @@
     <value>1058, 20</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="reloadToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>124, 22</value>
+  </data>
+  <data name="reloadToolStripMenuItem.Text" xml:space="preserve">
+    <value>重新载入</value>
+  </data>
+  <data name="appendToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>124, 22</value>
+  </data>
+  <data name="appendToolStripMenuItem.Text" xml:space="preserve">
+    <value>追加合并</value>
+  </data>
   <data name="loadMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
     <value>125, 48</value>
   </data>
@@ -162,18 +174,6 @@
   <data name="&gt;&gt;btnLoad.ZOrder" xml:space="preserve">
     <value>14</value>
   </data>
-  <data name="reloadToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>124, 22</value>
-  </data>
-  <data name="reloadToolStripMenuItem.Text" xml:space="preserve">
-    <value>重新载入</value>
-  </data>
-  <data name="appendToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>124, 22</value>
-  </data>
-  <data name="appendToolStripMenuItem.Text" xml:space="preserve">
-    <value>追加合并</value>
-  </data>
   <data name="btnSave.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
@@ -208,7 +208,7 @@
     <value>NoControl</value>
   </data>
   <data name="lbPath.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 9</value>
+    <value>12, 7</value>
   </data>
   <data name="lbPath.Size" type="System.Drawing.Size, System.Drawing">
     <value>374, 23</value>
@@ -255,9 +255,6 @@
   <data name="&gt;&gt;btnTrans.ZOrder" xml:space="preserve">
     <value>11</value>
   </data>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>489, 18</value>
-  </metadata>
   <data name="cbAutoGenName.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
@@ -276,6 +273,9 @@
   <data name="cbAutoGenName.Text" xml:space="preserve">
     <value>不使用章节名</value>
   </data>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>489, 18</value>
+  </metadata>
   <data name="cbAutoGenName.ToolTip" xml:space="preserve">
     <value>将章节名重新从Chapter 01开始标记</value>
   </data>
@@ -342,6 +342,12 @@
   <metadata name="deviationMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>10, 15</value>
   </metadata>
+  <data name="tsmAccuracy.Size" type="System.Drawing.Size, System.Drawing">
+    <value>124, 22</value>
+  </data>
+  <data name="tsmAccuracy.Text" xml:space="preserve">
+    <value>误差范围</value>
+  </data>
   <data name="deviationMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
     <value>125, 26</value>
   </data>
@@ -366,9 +372,6 @@
   <data name="cbRound.Text" xml:space="preserve">
     <value>帧数取整 </value>
   </data>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>489, 18</value>
-  </metadata>
   <data name="cbRound.ToolTip" xml:space="preserve">
     <value>右键菜单可设置误差范围</value>
   </data>
@@ -383,12 +386,6 @@
   </data>
   <data name="&gt;&gt;cbRound.ZOrder" xml:space="preserve">
     <value>9</value>
-  </data>
-  <data name="tsmAccuracy.Size" type="System.Drawing.Size, System.Drawing">
-    <value>124, 22</value>
-  </data>
-  <data name="tsmAccuracy.Text" xml:space="preserve">
-    <value>误差范围</value>
   </data>
   <data name="numericUpDown1.Location" type="System.Drawing.Point, System.Drawing">
     <value>501, 7</value>
@@ -507,6 +504,12 @@
   <metadata name="combineMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>590, 18</value>
   </metadata>
+  <data name="combineToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>124, 22</value>
+  </data>
+  <data name="combineToolStripMenuItem.Text" xml:space="preserve">
+    <value>合并章节</value>
+  </data>
   <data name="combineMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
     <value>125, 26</value>
   </data>
@@ -539,12 +542,6 @@
   </data>
   <data name="&gt;&gt;comboBox2.ZOrder" xml:space="preserve">
     <value>8</value>
-  </data>
-  <data name="combineToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>124, 22</value>
-  </data>
-  <data name="combineToolStripMenuItem.Text" xml:space="preserve">
-    <value>合并章节</value>
   </data>
   <metadata name="folderBrowserDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>175, 15</value>
@@ -618,39 +615,6 @@
   <metadata name="cOrder.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="cTimeCode.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="cChapterName.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="cFrams.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="dataGridView1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 83</value>
-  </data>
-  <data name="dataGridView1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>556, 351</value>
-  </data>
-  <data name="dataGridView1.TabIndex" type="System.Int32, mscorlib">
-    <value>25</value>
-  </data>
-  <data name="&gt;&gt;dataGridView1.Name" xml:space="preserve">
-    <value>dataGridView1</value>
-  </data>
-  <data name="&gt;&gt;dataGridView1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DataGridView, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;dataGridView1.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;dataGridView1.ZOrder" xml:space="preserve">
-    <value>7</value>
-  </data>
-  <metadata name="cOrder.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="cOrder.HeaderText" xml:space="preserve">
     <value> # </value>
   </data>
@@ -683,6 +647,27 @@
   </data>
   <data name="cFrams.Width" type="System.Int32, mscorlib">
     <value>45</value>
+  </data>
+  <data name="dataGridView1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 83</value>
+  </data>
+  <data name="dataGridView1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>556, 351</value>
+  </data>
+  <data name="dataGridView1.TabIndex" type="System.Int32, mscorlib">
+    <value>25</value>
+  </data>
+  <data name="&gt;&gt;dataGridView1.Name" xml:space="preserve">
+    <value>dataGridView1</value>
+  </data>
+  <data name="&gt;&gt;dataGridView1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridView, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;dataGridView1.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;dataGridView1.ZOrder" xml:space="preserve">
+    <value>7</value>
   </data>
   <data name="savingType.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -819,15 +804,6 @@
   <metadata name="createZonestMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>755, 18</value>
   </metadata>
-  <data name="createZonestMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>137, 70</value>
-  </data>
-  <data name="&gt;&gt;createZonestMenuStrip.Name" xml:space="preserve">
-    <value>createZonestMenuStrip</value>
-  </data>
-  <data name="&gt;&gt;createZonestMenuStrip.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="creatZonesToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>136, 22</value>
   </data>
@@ -845,6 +821,24 @@
   </data>
   <data name="InsertSplitToolStripMenuItem.Text" xml:space="preserve">
     <value>插入分隔条</value>
+  </data>
+  <data name="createZonestMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>137, 70</value>
+  </data>
+  <data name="&gt;&gt;createZonestMenuStrip.Name" xml:space="preserve">
+    <value>createZonestMenuStrip</value>
+  </data>
+  <data name="&gt;&gt;createZonestMenuStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="textBoxExpression.Location" type="System.Drawing.Point, System.Drawing">
+    <value>303, 37</value>
+  </data>
+  <data name="textBoxExpression.Size" type="System.Drawing.Size, System.Drawing">
+    <value>178, 23</value>
+  </data>
+  <data name="textBoxExpression.TabIndex" type="System.Int32, mscorlib">
+    <value>31</value>
   </data>
   <data name="&gt;&gt;textBoxExpression.Name" xml:space="preserve">
     <value>textBoxExpression</value>
@@ -879,51 +873,9 @@
   <data name="&gt;&gt;panel1.ZOrder" xml:space="preserve">
     <value>5</value>
   </data>
-  <data name="textBoxExpression.Location" type="System.Drawing.Point, System.Drawing">
-    <value>303, 37</value>
-  </data>
-  <data name="textBoxExpression.Size" type="System.Drawing.Size, System.Drawing">
-    <value>178, 23</value>
-  </data>
-  <data name="textBoxExpression.TabIndex" type="System.Int32, mscorlib">
-    <value>31</value>
-  </data>
-  <data name="&gt;&gt;textBoxExpression.Name" xml:space="preserve">
-    <value>textBoxExpression</value>
-  </data>
-  <data name="&gt;&gt;textBoxExpression.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;textBoxExpression.Parent" xml:space="preserve">
-    <value>panel1</value>
-  </data>
-  <data name="&gt;&gt;textBoxExpression.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
   <metadata name="statusStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>937, 20</value>
   </metadata>
-  <data name="statusStrip1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 511</value>
-  </data>
-  <data name="statusStrip1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>580, 22</value>
-  </data>
-  <data name="statusStrip1.TabIndex" type="System.Int32, mscorlib">
-    <value>33</value>
-  </data>
-  <data name="&gt;&gt;statusStrip1.Name" xml:space="preserve">
-    <value>statusStrip1</value>
-  </data>
-  <data name="&gt;&gt;statusStrip1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.StatusStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;statusStrip1.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;statusStrip1.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
   <data name="tsTips.Size" type="System.Drawing.Size, System.Drawing">
     <value>443, 17</value>
   </data>
@@ -946,6 +898,27 @@
   </data>
   <data name="tsBtnExpand.Size" type="System.Drawing.Size, System.Drawing">
     <value>20, 20</value>
+  </data>
+  <data name="statusStrip1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 511</value>
+  </data>
+  <data name="statusStrip1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>580, 22</value>
+  </data>
+  <data name="statusStrip1.TabIndex" type="System.Int32, mscorlib">
+    <value>33</value>
+  </data>
+  <data name="&gt;&gt;statusStrip1.Name" xml:space="preserve">
+    <value>statusStrip1</value>
+  </data>
+  <data name="&gt;&gt;statusStrip1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.StatusStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;statusStrip1.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;statusStrip1.ZOrder" xml:space="preserve">
+    <value>4</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
