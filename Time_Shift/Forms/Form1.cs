@@ -54,7 +54,6 @@ namespace ChapterTool.Forms
             InitializeComponent();
             AddCommand();
             Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-
         }
 
         public Form1(string args)
@@ -163,7 +162,10 @@ namespace ChapterTool.Forms
         #region Inital
         private void Form1_Load(object sender, EventArgs e)
         {
-            TargetHeight[0] = Height - 66;
+            Screen.PrimaryScreen.GetDpi(NativeMethods.DpiType.MDT_DEFAULT, out uint x, out _);
+            double factor = x / 96.0;
+            dataGridView1.ColumnHeadersHeight = (int) (dataGridView1.ColumnHeadersHeight * factor);
+            TargetHeight[0] = (int) (Height - 66 * factor);
             TargetHeight[1] = Height;
             Text = $@"[VCB-Studio] ChapterTool v{Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
@@ -1326,6 +1328,7 @@ namespace ChapterTool.Forms
                     Height += 2;
                     Application.DoEvents();
                 }
+                Height = TargetHeight[1];
             }
             else if (Height == TargetHeight[1])
             {
@@ -1334,6 +1337,7 @@ namespace ChapterTool.Forms
                     Height -= 2;
                     Application.DoEvents();
                 }
+                Height = TargetHeight[0];
             }
             ExtensionPanelShow = Height == TargetHeight[1];
             tsBtnExpand.Image = Height == TargetHeight[0] ? Resources.arrow_drop_down : Resources.arrow_drop_up;

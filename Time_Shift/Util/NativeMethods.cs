@@ -35,6 +35,27 @@ namespace ChapterTool.Util
         [DllImport("shell32.dll", EntryPoint = "#680", CharSet = CharSet.Unicode)]
         public static extern bool IsUserAnAdmin();
 
+        public enum DpiType
+        {
+            MDT_EFFECTIVE_DPI = 0,
+            MDT_ANGULAR_DPI,
+            MDT_RAW_DPI,
+            MDT_DEFAULT = MDT_EFFECTIVE_DPI
+        }
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromPoint([In] System.Drawing.Point pt, [In] uint dwFlags);
+
+        [DllImport("shcore.dll")]
+        private static extern IntPtr GetDpiForMonitor([In] IntPtr hmonitor, [In] DpiType dpiType, [Out] out uint dpiX, [Out] out uint dpiY);
+
+        public static void GetDpi(this Screen screen, DpiType dpiType, out uint dpiX, out uint dpiY)
+        {
+            var pnt = new System.Drawing.Point(screen.Bounds.Left + 1, screen.Bounds.Top + 1);
+            var mon = MonitorFromPoint(pnt, 2);
+            GetDpiForMonitor(mon, dpiType, out dpiX, out dpiY);
+        }
+
         /// <summary>
         /// 为按钮设置UAC盾牌图标
         /// </summary>
