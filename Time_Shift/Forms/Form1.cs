@@ -167,6 +167,9 @@ namespace ChapterTool.Forms
             dataGridView1.ColumnHeadersHeight = (int) (dataGridView1.ColumnHeadersHeight * factor);
             TargetHeight[0] = (int) (Height - 66 * factor);
             TargetHeight[1] = Height;
+            lbPath.Height = (int) (lbPath.Height / factor);
+            lbPath.Width = (int) (lbPath.Width / factor);
+
             Text = $@"[VCB-Studio] ChapterTool v{Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
             if (!IsRunningOnMono)
