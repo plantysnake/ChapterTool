@@ -889,13 +889,13 @@ namespace ChapterTool.Forms
                         _info.SaveXml(savePath, string.IsNullOrWhiteSpace(key) ? "" : LanguageSelectionContainer.Languages[key], AutoGenName);
                         break;
                     case SaveTypeEnum.QPF:
-                        _info.GetTimecodes().SaveAs(savePath);
+                        _info.GetQpfile().SaveAs(savePath);
                         break;
                     case SaveTypeEnum.TimeCodes:
                         _info.GetTimecodes().SaveAs(savePath);
                         break;
                     case SaveTypeEnum.TsmuxerMeta:
-                        _info.GetTimecodes().SaveAs(savePath);
+                        _info.GetTsmuxerMeta().SaveAs(savePath);
                         break;
                     case SaveTypeEnum.CUE:
                         _info.GetCue(Path.GetFileName(FilePath), AutoGenName).SaveAs(savePath);
