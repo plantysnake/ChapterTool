@@ -21,6 +21,7 @@ using System;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace ChapterTool.Util
 {
@@ -96,7 +97,7 @@ namespace ChapterTool.Util
             ["cos"]  = 1, ["sin"]   = 1, ["tan"]   = 1,
             ["cosh"] = 1, ["sinh"]  = 1, ["tanh"]  = 1,
             ["exp"]  = 1, ["log"]   = 1, ["log10"] = 1, ["sqrt"] = 1,
-            ["ceil"] = 1, ["floor"] = 1,
+            ["ceil"] = 1, ["floor"] = 1, ["round"] = 1,
             ["rand"] = 0, ["dup"]   = 0, ["int"]   = 1, ["sign"] = 1,
             ["pow"]  = 2, ["max"]   = 2, ["min"]   = 2
         };
@@ -144,6 +145,7 @@ namespace ChapterTool.Util
             case "sqrt" : ret.Number = (decimal)Math.Sqrt ((double)value.Number); break;
             case "ceil" : ret.Number = Math.Ceiling(value.Number); break;
             case "floor": ret.Number = Math.Floor(value.Number); break;
+            case "round": ret.Number = Math.Round(value.Number); break;
             case "rand" : ret.Number = (decimal)Rnd.NextDouble(); break;
             case "int"  : ret.Number = Math.Truncate(value.Number); break;
             case "sign" : ret.Number = Math.Sign(value.Number); break;

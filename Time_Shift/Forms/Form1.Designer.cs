@@ -69,7 +69,7 @@
             this.ShiftForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InsertSplitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.textBoxExpression = new System.Windows.Forms.TextBox();
+            this.comboBoxExpression = new System.Windows.Forms.ComboBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsTips = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
@@ -423,8 +423,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.comboBoxExpression);
             this.panel1.Controls.Add(this.cbPostFix);
-            this.panel1.Controls.Add(this.textBoxExpression);
             this.panel1.Controls.Add(this.lbFormat);
             this.panel1.Controls.Add(this.savingType);
             this.panel1.Controls.Add(this.lbXmlLang);
@@ -438,11 +438,16 @@
             resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Name = "panel1";
             // 
-            // textBoxExpression
+            // comboBoxExpression
             // 
-            resources.ApplyResources(this.textBoxExpression, "textBoxExpression");
-            this.textBoxExpression.Name = "textBoxExpression";
-            this.textBoxExpression.TextChanged += new System.EventHandler(this.textBoxExpression_TextChanged);
+            this.comboBoxExpression.FormattingEnabled = true;
+            this.comboBoxExpression.Items.AddRange(new object[] {
+            resources.GetString("comboBoxExpression.Items"),
+            resources.GetString("comboBoxExpression.Items1")});
+            resources.ApplyResources(this.comboBoxExpression, "comboBoxExpression");
+            this.comboBoxExpression.Name = "comboBoxExpression";
+            this.comboBoxExpression.SelectedIndexChanged += new System.EventHandler(this.comboBoxExpression_SelectedIndexChanged);
+            this.comboBoxExpression.TextChanged += new System.EventHandler(this.comboBoxExpression_TextChanged);
             // 
             // statusStrip1
             // 
@@ -556,12 +561,12 @@
         private System.Windows.Forms.ToolStripProgressBar tsProgressBar1;
         private System.Windows.Forms.ToolStripDropDownButton tsBtnExpand;
         private System.Windows.Forms.ToolStripMenuItem ShiftForwardToolStripMenuItem;
-        private System.Windows.Forms.TextBox textBoxExpression;
         private System.Windows.Forms.CheckBox cbPostFix;
         private System.Windows.Forms.ContextMenuStrip loadMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem appendToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem InsertSplitToolStripMenuItem;
+        private System.Windows.Forms.ComboBox comboBoxExpression;
     }
 }
 

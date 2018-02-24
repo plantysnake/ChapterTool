@@ -120,6 +120,15 @@ namespace ChapterTool.Forms
                 case Keys.Control | Keys.L:
                     btnLog_Click(null, EventArgs.Empty);
                     return true;
+                case Keys.Control | Keys.PageUp:
+                    comboBoxExpression.SelectedIndex =
+                        (comboBoxExpression.SelectedIndex + 1) % comboBoxExpression.Items.Count;
+                    break;
+                case Keys.Control | Keys.PageDown:
+                    comboBoxExpression.SelectedIndex =
+                        (comboBoxExpression.SelectedIndex + comboBoxExpression.Items.Count - 1) %
+                        comboBoxExpression.Items.Count;
+                    break;
                 case Keys.F11:
                     Form1_Resize();
                     return true;
@@ -558,7 +567,7 @@ namespace ChapterTool.Forms
             }
             else
             {
-                textBoxExpression.Text = Resources.Expression_factor_1001;
+                comboBoxExpression.Text = Resources.Expression_factor_1001;
                 cbShift.Checked = true;
                 tsTips.Text = Resources.Tips_IFO_Waring_Fixed;
             }
@@ -1184,7 +1193,7 @@ namespace ChapterTool.Forms
             {
                 dataGridView1.BackgroundColor                = value;
                 numericUpDown1.BackColor                     = value;
-                textBoxExpression.BackColor                  = value;
+                comboBoxExpression.BackColor                  = value;
                 comboBox1.BackColor                          = value;
                 comboBox2.BackColor                          = value;
                 xmlLang.BackColor                            = value;
@@ -1235,7 +1244,7 @@ namespace ChapterTool.Forms
             {
                 ForeColor                                    = value;
                 numericUpDown1.ForeColor                     = value;
-                textBoxExpression.ForeColor                  = value;
+                comboBoxExpression.ForeColor                  = value;
                 comboBox1.ForeColor                          = value;
                 comboBox2.ForeColor                          = value;
                 xmlLang.ForeColor                            = value;
@@ -1439,11 +1448,11 @@ namespace ChapterTool.Forms
             if (!IsPathValid)
             {
                 if(Shift)
-                    ParseExpression(textBoxExpression.Text);
+                    ParseExpression(comboBoxExpression.Text);
                 return;
             }
             if (_info == null) return;
-            _info.Expr = Shift ? ParseExpression(textBoxExpression.Text) : Expression.Empty;
+            _info.Expr = Shift ? ParseExpression(comboBoxExpression.Text) : Expression.Empty;
             UpdataGridView();
         }
 
@@ -1458,11 +1467,11 @@ namespace ChapterTool.Forms
         private readonly Regex _invalidVariable = new Regex(@"(?:^|[+\-*/\^%\s])\d+[a-zA-Z_]+", RegexOptions.Compiled);
         private readonly Regex _balanceBrackets = new Regex(@"^[^\(\)]*(((?'Open'\()[^\(\)]*)+((?'Close-Open'\))[^\(\)]*)+)*(?(Open)(?!))(?:$|(?://.*))", RegexOptions.Compiled);
 
-        private void textBoxExpression_TextChanged(object sender, EventArgs e)
+        private void comboBoxExpression_TextChanged(object sender, EventArgs e)
         {
-            var isValid = _vaildExpression.IsMatch(textBoxExpression.Text) &&
-                          _balanceBrackets.IsMatch(textBoxExpression.Text) &&
-                         !_invalidVariable.IsMatch(textBoxExpression.Text);
+            var isValid = _vaildExpression.IsMatch(comboBoxExpression.Text) &&
+                          _balanceBrackets.IsMatch(comboBoxExpression.Text) &&
+                         !_invalidVariable.IsMatch(comboBoxExpression.Text);
             tsTips.Text = isValid ? "Valid expression" : "Invalid expression";
         }
 
@@ -1645,6 +1654,11 @@ namespace ChapterTool.Forms
             _info.Chapters.Insert(row.Index, split);
             _splitRowInsrted = true;
             UpdataGridView();
+        }
+
+        private void comboBoxExpression_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            cbShift_CheckedChanged(sender, e);
         }
     }
 }
