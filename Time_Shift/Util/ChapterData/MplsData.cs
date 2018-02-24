@@ -85,7 +85,7 @@ namespace ChapterTool.Util.ChapterData
                     SourceType      = "MPLS",
                     SourceName      = PlayItems[i].FullName,
                     Duration        = Pts2Time(playItem.TimeInfo.DeltaTime),
-                    FramesPerSecond = (double)FrameRate[attr.StreamAttributes.FrameRate]
+                    FramesPerSecond = FrameRate[attr.StreamAttributes.FrameRate]
                 };
 
                 var index = i;

@@ -56,7 +56,7 @@ namespace ChapterTool.Util.ChapterData
                 pgc.Title = pgc.SourceName = $"{fileName.Substring(0, barIndex)}_{titleSetNum}";
             }
 
-            pgc.Chapters        = GetChapters(location, titleSetNum, out TimeSpan duration, out double fps);
+            pgc.Chapters        = GetChapters(location, titleSetNum, out TimeSpan duration, out decimal fps);
             pgc.Duration        = duration;
             pgc.FramesPerSecond = fps;
 
@@ -66,7 +66,7 @@ namespace ChapterTool.Util.ChapterData
             return pgc;
         }
 
-        private static List<Chapter> GetChapters(string ifoFile, int programChain, out TimeSpan duration, out double fps)
+        private static List<Chapter> GetChapters(string ifoFile, int programChain, out TimeSpan duration, out decimal fps)
         {
             var chapters = new List<Chapter>();
             duration     = TimeSpan.Zero;
@@ -77,7 +77,7 @@ namespace ChapterTool.Util.ChapterData
             var pcgItPosition = stream.GetPCGIP_Position();
             var programChainPrograms = -1;
             var programTime   = TimeSpan.Zero;
-            double fpsLocal;
+            decimal fpsLocal;
             if (programChain >= 0)
             {
                 var chainOffset      = stream.GetChainOffset(pcgItPosition, programChain);

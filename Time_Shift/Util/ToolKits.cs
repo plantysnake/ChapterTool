@@ -104,11 +104,11 @@ namespace ChapterTool.Util
         /// </summary>
         /// <param name="frame"></param>
         /// <returns></returns>
-        public static int ConvertFr2Index(double frame)
+        public static int ConvertFr2Index(decimal frame)
         {
             for (var i = 0; i < MplsData.FrameRate.Length; ++i)
             {
-                if (Math.Abs(frame - (double)MplsData.FrameRate[i]) < 1e-5)
+                if (Math.Abs(frame - MplsData.FrameRate[i]) < 1e-5M)
                     return i;
             }
             return 0;

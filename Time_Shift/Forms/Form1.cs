@@ -561,7 +561,7 @@ namespace ChapterTool.Forms
                 tsTips.Text = Resources.Tips_Chapter_Not_find;
                 return;
             }
-            if (Math.Abs(_infoGroup.First().FramesPerSecond - 25.0) < 1e-5)
+            if (Math.Abs(_infoGroup.First().FramesPerSecond - 25) < 1e-5M)
             {
                 tsTips.Text = Resources.Tips_IFO_Waring_Unfix;
             }
@@ -1018,7 +1018,7 @@ namespace ChapterTool.Forms
                     break;
                 default:
                     GetFramInfo(fpsIndex);
-                    _info.FramesPerSecond = (double)MplsData.FrameRate[comboBox1.SelectedIndex];
+                    _info.FramesPerSecond = MplsData.FrameRate[comboBox1.SelectedIndex];
                     comboBox1.Enabled     = true;
                     break;
             }
@@ -1124,7 +1124,7 @@ namespace ChapterTool.Forms
             result[0] = 0; result[5] = 0; //skip two invalid frame rate.
             result.ForEach(count => Log(string.Format(Resources.Log_FPS_Detect_Count, count)));
             var autofpsCode = result.IndexOf(result.Max());
-            _info.FramesPerSecond = (double) MplsData.FrameRate[autofpsCode];
+            _info.FramesPerSecond = MplsData.FrameRate[autofpsCode];
             Log(string.Format(Resources.Log_FPS_Detect_Result, MplsData.FrameRate[autofpsCode]));
             return autofpsCode == 0 ? 1 : autofpsCode;
         }

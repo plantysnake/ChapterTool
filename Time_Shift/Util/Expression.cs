@@ -405,12 +405,12 @@ namespace ChapterTool.Util
 
         public decimal Eval(Dictionary<string, decimal> values) => Eval(PostExpression, values);
 
-        public decimal Eval(double time, double fps)
+        public decimal Eval(double time, decimal fps)
         {
             if (!EvalAble) return (decimal)time;
             try
             {
-                if (fps < 1e-5)
+                if (fps < 1e-5M)
                 {
                     return Eval(new Dictionary<string, decimal>
                     {
@@ -420,7 +420,7 @@ namespace ChapterTool.Util
                 return Eval(new Dictionary<string, decimal>
                 {
                     ["t"] = (decimal)time,
-                    ["fps"] = (decimal)fps
+                    ["fps"] = fps
                 });
             }
             catch (Exception exception)

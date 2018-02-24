@@ -63,7 +63,7 @@ namespace ChapterTool.Util.ChapterData
             return ifoStream.GetFileBlock((pcgitPosition + chainOffset) + 2, 1)[0];
         }
 
-        internal static TimeSpan? ReadTimeSpan(this FileStream ifoStream, long pcgitPosition, uint chainOffset, out double fps)
+        internal static TimeSpan? ReadTimeSpan(this FileStream ifoStream, long pcgitPosition, uint chainOffset, out decimal fps)
         {
             return ReadTimeSpan(ifoStream.GetFileBlock((pcgitPosition + chainOffset) + 4, 4), out fps);
         }
@@ -75,11 +75,11 @@ namespace ChapterTool.Util.ChapterData
         /// byte[3] milliseconds in bcd format (2 high bits are the frame rate)
         /// </param>
         /// <param name="fps">fps of the chapter</param>
-        internal static TimeSpan? ReadTimeSpan(byte[] playbackBytes, out double fps)
+        internal static TimeSpan? ReadTimeSpan(byte[] playbackBytes, out decimal fps)
         {
             var frames    = GetFrames(playbackBytes[3]);
             var fpsMask   = playbackBytes[3] >> 6;
-            fps = fpsMask == 0x01 ? 25D : fpsMask == 0x03 ? (30D / 1.001D) : 0;
+            fps = fpsMask == 0x01 ? 25M : fpsMask == 0x03 ? (30M / 1.001M) : 0;
             if (frames == null) return null;
             try
             {
@@ -87,8 +87,8 @@ namespace ChapterTool.Util.ChapterData
                 var minutes  = BcdToInt(playbackBytes[1]);
                 var seconds  = BcdToInt(playbackBytes[2]);
                 var ret = new TimeSpan(hours, minutes, seconds);
-                if (Math.Abs(fps) > 1e-5)
-                    ret += TimeSpan.FromSeconds((double)frames/fps);
+                if (Math.Abs(fps) > 1e-5M)
+                    ret += TimeSpan.FromSeconds((double)(frames / fps));
                 return ret;
             }
             catch { return null; }

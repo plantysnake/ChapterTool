@@ -22,7 +22,7 @@ namespace ChapterTool.Util.ChapterData
                     {
                         SourceName = title.Element(ns + "PrimaryAudioVideoClip")?.Attribute("src")?.Value ?? "",
                         SourceType      = "HD-DVD",
-                        FramesPerSecond = 24D,
+                        FramesPerSecond = 24M,
                         Chapters        = new List<Chapter>()
                     };
                     var tickBaseDivisor = (int?)title.Attribute("tickBaseDivisor") ?? 1; //optional
