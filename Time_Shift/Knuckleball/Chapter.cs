@@ -91,8 +91,7 @@ namespace Knuckleball
         /// is the same as this instance; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object obj)
         {
-            var other = obj as Chapter;
-            if (other == null)
+            if (!(obj is Chapter other))
             {
                 return false;
             }

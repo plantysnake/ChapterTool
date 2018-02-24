@@ -1331,7 +1331,7 @@ namespace ChapterTool.Forms
 
         private void Form1_Resize()
         {
-            if (!TargetHeight.Any(item => item == Height)) return;
+            if (TargetHeight.All(item => item != Height)) return;
             tsBtnExpand.Image = Resources.unfold_more;
             if (Height == TargetHeight[0])
             {
