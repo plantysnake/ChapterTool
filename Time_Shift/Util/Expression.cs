@@ -403,12 +403,23 @@ namespace ChapterTool.Util
 
         public decimal Eval(Dictionary<string, decimal> values) => Eval(PostExpression, values);
 
-        public decimal Eval(double time)
+        public decimal Eval(double time, double fps)
         {
             if (!EvalAble) return (decimal)time;
             try
             {
-                return Eval(new Dictionary<string, decimal> { ["t"] = (decimal)time });
+                if (fps < 1e-5)
+                {
+                    return Eval(new Dictionary<string, decimal>
+                    {
+                        ["t"] = (decimal)time,
+                    });
+                }
+                return Eval(new Dictionary<string, decimal>
+                {
+                    ["t"] = (decimal)time,
+                    ["fps"] = (decimal)fps
+                });
             }
             catch (Exception exception)
             {

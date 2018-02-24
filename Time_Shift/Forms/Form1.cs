@@ -1092,7 +1092,7 @@ namespace ChapterTool.Forms
 
             foreach (var chapter in _info.Chapters)
             {
-                var frams = _info.Expr.Eval(chapter.Time.TotalSeconds) * MplsData.FrameRate[index];
+                var frams = _info.Expr.Eval(chapter.Time.TotalSeconds, _info.FramesPerSecond) * MplsData.FrameRate[index];
                 if (Round)
                 {
                     var rounded       = Round ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
