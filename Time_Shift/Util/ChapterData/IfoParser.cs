@@ -86,10 +86,11 @@ namespace ChapterTool.Util.ChapterData
                 var hours    = BcdToInt(playbackBytes[0]);
                 var minutes  = BcdToInt(playbackBytes[1]);
                 var seconds  = BcdToInt(playbackBytes[2]);
-                var ret = new TimeSpan(hours, minutes, seconds);
+                var milliPart = 0M;
                 if (Math.Abs(fps) > 1e-5M)
-                    ret += TimeSpan.FromSeconds((double)(frames / fps));
-                return ret;
+                    milliPart = (decimal) frames / fps;
+                var ticks = (long) (hours * 3600 + minutes * 60 + seconds + milliPart) * TimeSpan.TicksPerSecond;
+                return TimeSpan.FromTicks(ticks);
             }
             catch { return null; }
         }
