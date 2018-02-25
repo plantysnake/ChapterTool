@@ -1,7 +1,6 @@
 # ChapterTool [![Build status](https://ci.appveyor.com/api/projects/status/rtc76h5ulveafj5f?svg=true)](https://ci.appveyor.com/project/tautcony/chaptertool)
 
 - ChapterTool is made for extracting chapter from various types of files and edit it.
-- It's only in Chinese currently.
 
 ## Feature
 
@@ -36,10 +35,11 @@
  - [Knuckleball](https://github.com/jimevans/knuckleball)
  - [mp4v2](https://code.google.com/archive/p/mp4v2/)
  - [BluRay](https://github.com/lerks/BluRay)
+ - [IfoEdit](http://www.ifoedit.com/index.html)
 
 ## Requirements
 
-- You must have `.NET Framework 4.6` available from Windows Update.
+- You must have `.NET Framework 4.7` available from Windows Update.
 - The matroska file's support is powerd by [`MKVToolNix`](https://mkvtoolnix.download/downloads.html#windows).
 - The mp4 file's support is powerd by `libmp4v2`, you need get the dll before using this feature.
 
