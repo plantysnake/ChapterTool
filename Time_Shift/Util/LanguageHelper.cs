@@ -61,33 +61,28 @@ namespace ChapterTool.Util
         /// <param name="resources"></param>
         private static void AppLang(Control control, System.ComponentModel.ComponentResourceManager resources)
         {
-            var menuStrip = control as MenuStrip;
-            if (menuStrip != null)
+            switch (control)
             {
-                resources.ApplyResources(menuStrip, menuStrip.Name);
-                foreach (ToolStripMenuItem c in menuStrip.Items)
-                {
-                    AppLang(c, resources);
-                }
-            }
-
-            var contextMenuStrip = control as ContextMenuStrip;
-            if (contextMenuStrip != null)
-            {
-                resources.ApplyResources(contextMenuStrip, contextMenuStrip.Name);
-                foreach (ToolStripMenuItem c in contextMenuStrip.Items)
-                {
-                    AppLang(c, resources);
-                }
-            }
-
-            var gridView = control as DataGridView;
-            if (gridView != null)
-            {
-                foreach (DataGridViewColumn c in gridView.Columns)
-                {
-                    resources.ApplyResources(c, c.Name);
-                }
+                case MenuStrip menuStrip:
+                    resources.ApplyResources(menuStrip, menuStrip.Name);
+                    foreach (ToolStripMenuItem c in menuStrip.Items)
+                    {
+                        AppLang(c, resources);
+                    }
+                    break;
+                case ContextMenuStrip contextMenuStrip:
+                    resources.ApplyResources(contextMenuStrip, contextMenuStrip.Name);
+                    foreach (ToolStripMenuItem c in contextMenuStrip.Items)
+                    {
+                        AppLang(c, resources);
+                    }
+                    break;
+                case DataGridView gridView:
+                    foreach (DataGridViewColumn c in gridView.Columns)
+                    {
+                        resources.ApplyResources(c, c.Name);
+                    }
+                    break;
             }
 
             foreach (Control c in control.Controls)

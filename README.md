@@ -1,25 +1,27 @@
 # ChapterTool [![Build status](https://ci.appveyor.com/api/projects/status/rtc76h5ulveafj5f?svg=true)](https://ci.appveyor.com/project/tautcony/chaptertool)
 
-- ChapterTool is made for extracting chapter from DVD, HDDVD, BluRay discs, matroska file and many other type of files and edit it.
-- It's only in Chinese currently
-
+- ChapterTool is made for extracting chapter from various types of files and edit it.
 
 ## Feature
 
-- Extract chapter file from various files
-- Adjust first chapter's begining time to zero
-- Revise chapter time which extract by DVD Decrypter manually
-- Move all time backward optionally e.g. 00:23:23.233
-- Move all chapter number backward optionally
+- Extract chapter file from various types of file
+- Freely time adjustment(expression in Infix notation or Reverse Polish notation)
+- Move all chapter number backward optionally(for OGM format)
 - Load chapter name from a text file as template
-- Calculate frames by chapter file
-- Save in multiple formats: txt, xml, and more
+- Calculate frames from chapter time
+- Supported save formats: `.txt`, `.xml`, `.qpf`, `.json`
 
+### Supported file type
 
-## Install
-
-- You must have .NET Framework 4.6 available from Windows Update.
-
+- OGM(`.txt`)
+- XML(`.xml`)
+- MPLS from BluRay(`.mpls`)
+- IFO from DVD(`.ifo`)
+- XPL from HDDVD(`.xpl`)
+- CUE plain text or embedded(`.cue`, `.flac`, `.tak`)
+- Matroska file(`.mkv`, `.mka`)
+- Mp4 file(`.mp4`, `.m4a`, `.m4v`)
+- WebVTT(`.vtt`)
 
 ## Thanks to
 
@@ -31,7 +33,15 @@
  - [libbluray](http://www.videolan.org/developers/libbluray.html)
  - [BDedit](http://pel.hu/bdedit/)
  - [Knuckleball](https://github.com/jimevans/knuckleball)
+ - [mp4v2](https://code.google.com/archive/p/mp4v2/)
+ - [BluRay](https://github.com/lerks/BluRay)
+ - [IfoEdit](http://www.ifoedit.com/index.html)
 
+## Requirements
+
+- You must have `.NET Framework 4.7` available from Windows Update.
+- The matroska file's support is powerd by [`MKVToolNix`](https://mkvtoolnix.download/downloads.html#windows).
+- The mp4 file's support is powerd by `libmp4v2`, you need get the dll before using this feature.
 
 ## Source Code
 

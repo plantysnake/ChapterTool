@@ -45,7 +45,7 @@ namespace ChapterTool.Util
         public int IsAccuracy(decimal fps, decimal accuracy, Expression expr = null)
         {
             var frams   = (decimal)Time.TotalMilliseconds * fps / 1000M;
-            if (expr != null) frams = expr.Eval(Time.TotalSeconds) * fps;
+            if (expr != null) frams = expr.Eval(Time.TotalSeconds, fps) * fps;
             var rounded = Math.Round(frams, MidpointRounding.AwayFromZero);
             return Math.Abs(frams - rounded) < accuracy ? 1 : 0;
         }

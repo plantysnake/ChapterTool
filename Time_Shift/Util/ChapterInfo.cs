@@ -41,7 +41,7 @@ namespace ChapterTool.Util
         public string SourceName      { get; set; }
         public string SourceIndex     { get; set; }
         public string SourceType      { get; set; }
-        public double FramesPerSecond { get; set; }
+        public decimal FramesPerSecond { get; set; }
         public TimeSpan Duration      { get; set; }
         public List<Chapter> Chapters { get; set; } = new List<Chapter>();
 
@@ -50,7 +50,7 @@ namespace ChapterTool.Util
         public Type TagType { get; set; }
         public object Tag
         {
-            get { return _tag; }
+            get => _tag;
             set
             {
                 if (value == null)
@@ -142,19 +142,20 @@ namespace ChapterTool.Util
             return item.Time2String(this);
         }
 
-        public void ChangeFps(double fps)
+        public void ChangeFps(decimal fps)
         {
             for (var i = 0; i < Chapters.Count; i++)
             {
                 var c = Chapters[i];
-                var frames = c.Time.TotalSeconds*FramesPerSecond;
+                var frames = (decimal) c.Time.TotalSeconds * FramesPerSecond;
                 Chapters[i] = new Chapter
                 {
                     Name = c.Name,
                     Time = new TimeSpan((long) Math.Round(frames/fps*TimeSpan.TicksPerSecond))
                 };
             }
-            var totalFrames = Duration.TotalSeconds*FramesPerSecond;
+
+            var totalFrames = (decimal) Duration.TotalSeconds * FramesPerSecond;
             Duration           = new TimeSpan((long) Math.Round(totalFrames/fps*TimeSpan.TicksPerSecond));
             FramesPerSecond    = fps;
         }
@@ -244,8 +245,7 @@ namespace ChapterTool.Util
                 var segments = line.Substring(7).Split('=');
                 if (segments.Length < 2) continue;
                 if (!segments[0].All(char.IsDigit)) continue;
-                int index;
-                if (int.TryParse(segments[0], out index)) continue;
+                if (int.TryParse(segments[0], out _)) continue;
                 var times = segments[1].Split(':');
                 if (times.Length > 3) continue;
                 var time = 0.0;
@@ -282,7 +282,7 @@ namespace ChapterTool.Util
             File.WriteAllLines(opath, olines);
         }
 
-        public string[] GetCelltimes() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => ((long) Math.Round(c.Time.TotalSeconds*FramesPerSecond)).ToString()).ToArray();
+        public string[] GetCelltimes() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => ((long) Math.Round((decimal) c.Time.TotalSeconds * FramesPerSecond)).ToString()).ToArray();
 
         public string GetTsmuxerMeta()
         {

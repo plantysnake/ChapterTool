@@ -45,16 +45,15 @@ namespace ChapterTool.Forms
         #region Form1
         public Form1()
         {
+            const string key = "Language";
+            var lang = RegistryStorage.Load(name: key);
+            if (!string.IsNullOrEmpty(lang))
+            {
+                LanguageHelper.SetLang(lang, this, typeof(Form1));
+            }
             InitializeComponent();
             AddCommand();
             Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-            /*
-            LanguageHelper.SetLang("en-US", this, typeof(Form1));
-            LanguageHelper.SetLang("en-US", deviationMenuStrip, typeof(Form1));
-            LanguageHelper.SetLang("en-US", combineMenuStrip, typeof(Form1));
-            LanguageHelper.SetLang("en-US", createZonestMenuStrip, typeof(Form1));
-            LanguageHelper.SetLang("en-US", loadMenuStrip, typeof(Form1));
-            */
         }
 
         public Form1(string args)
@@ -121,6 +120,15 @@ namespace ChapterTool.Forms
                 case Keys.Control | Keys.L:
                     btnLog_Click(null, EventArgs.Empty);
                     return true;
+                case Keys.Control | Keys.PageUp:
+                    comboBoxExpression.SelectedIndex =
+                        (comboBoxExpression.SelectedIndex + 1) % comboBoxExpression.Items.Count;
+                    break;
+                case Keys.Control | Keys.PageDown:
+                    comboBoxExpression.SelectedIndex =
+                        (comboBoxExpression.SelectedIndex + comboBoxExpression.Items.Count - 1) %
+                        comboBoxExpression.Items.Count;
+                    break;
                 case Keys.F11:
                     Form1_Resize();
                     return true;
@@ -163,8 +171,14 @@ namespace ChapterTool.Forms
         #region Inital
         private void Form1_Load(object sender, EventArgs e)
         {
-            TargetHeight[0] = Height - 66;
+            Screen.PrimaryScreen.GetDpi(NativeMethods.DpiType.MDT_DEFAULT, out uint x, out _);
+            double factor = x / 96.0;
+            dataGridView1.ColumnHeadersHeight = (int) (dataGridView1.ColumnHeadersHeight * factor);
+            TargetHeight[0] = (int) (Height - 66 * factor);
             TargetHeight[1] = Height;
+            lbPath.Height = (int) (lbPath.Height / factor);
+            lbPath.Width = (int) (lbPath.Width / factor);
+
             Text = $@"[VCB-Studio] ChapterTool v{Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
             if (!IsRunningOnMono)
@@ -204,8 +218,7 @@ namespace ChapterTool.Forms
 
         private static void InitialLog()
         {
-            Log(Environment.UserName.ToLowerInvariant().IndexOf("yzy", StringComparison.Ordinal) > 0
-                ? Resources.Log_Wu_Zong : $"{Environment.UserName}{Resources.Log_Hello}");
+            Log($"{Environment.UserName}{Resources.Log_Hello}");
             Log($"{Environment.OSVersion}");
 
             if (!IsRunningOnMono) Log(NativeMethods.IsUserAnAdmin() ? Resources.Log_With_Admin : Resources.Log_Without_Admin);
@@ -253,6 +266,23 @@ namespace ChapterTool.Forms
             if (IsRunningOnMono) return;
             _systemMenu = new SystemMenu(this);
             _systemMenu.AddCommand(Resources.Update_Check, Updater.CheckUpdate, true);
+            var resPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath) ?? "", "en-US");
+            if (Directory.Exists(resPath))
+            {
+                _systemMenu.AddCommand(Resources.Menu_Switch_Language, () =>
+                {
+                    if (!File.Exists(Path.Combine(resPath, "ChapterTool.resources.dll")))
+                    {
+                        Notification.ShowInfo("No valid language resource file found");
+                        return;
+                    }
+                    const string key = "Language";
+                    var lang = RegistryStorage.Load(name: key) ?? "";
+                    RegistryStorage.Save(name: key, value: string.IsNullOrEmpty(lang) ? "en-US" : "");
+                    Process.Start(Application.ExecutablePath);
+                    Process.GetCurrentProcess().Kill();
+                }, true);
+            }
         }
 
         protected override void WndProc(ref Message msg)
@@ -321,8 +351,8 @@ namespace ChapterTool.Forms
 
         private string FilePath
         {
-            get { return _paths[0]; }
-            set { _paths[0] = value; }
+            get => _paths[0];
+            set => _paths[0] = value;
         }
 
         private bool IsPathValid
@@ -366,13 +396,13 @@ namespace ChapterTool.Forms
 
         private static readonly Lazy<string> MainFilter = new Lazy<string>(() =>
         {
-            Func<IEnumerable<string>, string> getType = enumerable => enumerable.Aggregate(string.Empty, (current, type) => current + $"*.{type};");
+            string GetType(IEnumerable<string> enumerable) => enumerable.Aggregate(string.Empty, (current, type) => current + $"*.{type};");
             var ret = new StringBuilder(Resources.File_Filter_All_Support);
-            var types = getType(SupportTypes.SelectMany(supportType => supportType.Value));
+            var types = GetType(SupportTypes.SelectMany(supportType => supportType.Value));
             ret.Append($" ({types.TrimEnd(';')})|{types}");
             foreach (var supportType in SupportTypes)
             {
-                types = getType(supportType.Value);
+                types = GetType(supportType.Value);
                 ret.Append($"|{supportType.Key} ({types.TrimEnd(';')})|{types}");
             }
             return ret.ToString();
@@ -403,8 +433,8 @@ namespace ChapterTool.Forms
 
         private bool CombineChapter
         {
-            get { return combineToolStripMenuItem.Checked; }
-            set { combineToolStripMenuItem.Checked = value; }
+            get => combineToolStripMenuItem.Checked;
+            set => combineToolStripMenuItem.Checked = value;
         }
 
         private bool Loadfile()
@@ -531,16 +561,18 @@ namespace ChapterTool.Forms
                 tsTips.Text = Resources.Tips_Chapter_Not_find;
                 return;
             }
-            if (Math.Abs(_infoGroup.First().FramesPerSecond - 25.0) < 1e-5)
+#if false
+            if (Math.Abs(_infoGroup.First().FramesPerSecond - 25) < 1e-5M)
             {
                 tsTips.Text = Resources.Tips_IFO_Waring_Unfix;
             }
             else
             {
-                textBoxExpression.Text = @"t * 1.001 //修正DVD时间";
+                comboBoxExpression.Text = Resources.Expression_factor_1001;
                 cbShift.Checked = true;
                 tsTips.Text = Resources.Tips_IFO_Waring_Fixed;
             }
+#endif
         }
 
         private void LoadXpl()
@@ -578,11 +610,12 @@ namespace ChapterTool.Forms
                 }
                 return;
             }
+            var linkedFile = Path.Combine(Path.GetPathRoot(FilePath) ?? "", Guid.NewGuid().ToString());
             try
             {
-                Knuckleball.ChapterList.OnLog += Log;
-                var mp4 = new Mp4Data(FilePath);
-                _info = mp4.Chapter;
+                Knuckleball.MP4File.OnLog += Log;
+                NativeMethods.CreateHardLinkCMD(linkedFile, FilePath);
+                _info = new Mp4Data(linkedFile).Chapter;
             }
             catch (Exception exception)
             {
@@ -590,7 +623,8 @@ namespace ChapterTool.Forms
             }
             finally
             {
-                Knuckleball.ChapterList.OnLog -= Log;
+                Knuckleball.MP4File.OnLog -= Log;
+                if (File.Exists(linkedFile)) File.Delete(linkedFile);
             }
         }
 
@@ -716,9 +750,9 @@ namespace ChapterTool.Forms
             UpdataGridView();
         }
 
-        #endregion
+#endregion
 
-        #region AppendFile
+#region AppendFile
         private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(FilePath)) return;
@@ -742,15 +776,15 @@ namespace ChapterTool.Forms
             GetChapterInfoFromMpls(ClipSeletIndex);
             UpdataGridView();
         }
-        #endregion
+#endregion
 
-        #region Global status
+#region Global status
         private bool AutoGenName => cbAutoGenName.Checked;
         private bool Shift => cbShift.Checked;
         private bool Round => cbRound.Checked;
-        #endregion
+#endregion
 
-        #region Save File
+#region Save File
         private void btnSave_Click(object sender, EventArgs e) => SaveFile((SaveTypeEnum)savingType.SelectedIndex);
 
         private string _customSavingPath = string.Empty;
@@ -866,13 +900,13 @@ namespace ChapterTool.Forms
                         _info.SaveXml(savePath, string.IsNullOrWhiteSpace(key) ? "" : LanguageSelectionContainer.Languages[key], AutoGenName);
                         break;
                     case SaveTypeEnum.QPF:
-                        _info.GetTimecodes().SaveAs(savePath);
+                        _info.GetQpfile().SaveAs(savePath);
                         break;
                     case SaveTypeEnum.TimeCodes:
                         _info.GetTimecodes().SaveAs(savePath);
                         break;
                     case SaveTypeEnum.TsmuxerMeta:
-                        _info.GetTimecodes().SaveAs(savePath);
+                        _info.GetTsmuxerMeta().SaveAs(savePath);
                         break;
                     case SaveTypeEnum.CUE:
                         _info.GetCue(Path.GetFileName(FilePath), AutoGenName).SaveAs(savePath);
@@ -892,9 +926,9 @@ namespace ChapterTool.Forms
                 tsTips.Text = Resources.Tips_Save_Fail;
             }
         }
-        #endregion
+#endregion
 
-        #region Contorl Panel
+#region Contorl Panel
         private int ClipSeletIndex => comboBox2.SelectedIndex < 0 ? 0 : comboBox2.SelectedIndex;
 
         private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
@@ -928,9 +962,9 @@ namespace ChapterTool.Forms
         }
 
         private void refresh_Click(object sender, EventArgs e) => UpdataGridView();
-        #endregion
+#endregion
 
-        #region GeneRate Chapter Info
+#region GeneRate Chapter Info
         private void GetChapterInfoFromMpls(int index)
         {
             _info = CombineChapter ? ChapterInfo.CombineChapter(_infoGroup, "MPLS") : _infoGroup[index];
@@ -966,9 +1000,9 @@ namespace ChapterTool.Forms
             comboBox2.SelectedIndex = ClipSeletIndex;
             tsTips.Text = Resources.Tips_Load_Success;
         }
-        #endregion
+#endregion
 
-        #region Grid View
+#region Grid View
 
         private bool _splitRowInsrted;
 
@@ -986,7 +1020,7 @@ namespace ChapterTool.Forms
                     break;
                 default:
                     GetFramInfo(fpsIndex);
-                    _info.FramesPerSecond = (double)MplsData.FrameRate[comboBox1.SelectedIndex];
+                    _info.FramesPerSecond = MplsData.FrameRate[comboBox1.SelectedIndex];
                     comboBox1.Enabled     = true;
                     break;
             }
@@ -1036,9 +1070,9 @@ namespace ChapterTool.Forms
         {
             Log(string.Format(Resources.Log_Row_Delete, e.RowCount, e.RowIndex));
         }
-        #endregion
+#endregion
 
-        #region Frame Info
+#region Frame Info
 
         private decimal CostumeAccuracy => decimal.Parse(tsmAccuracy.DropDownItems.OfType<ToolStripMenuItem>().First(item => item.Checked).Tag.ToString());
 
@@ -1069,7 +1103,7 @@ namespace ChapterTool.Forms
 
             foreach (var chapter in _info.Chapters)
             {
-                var frams = _info.Expr.Eval(chapter.Time.TotalSeconds) * MplsData.FrameRate[index];
+                var frams = _info.Expr.Eval(chapter.Time.TotalSeconds, _info.FramesPerSecond) * MplsData.FrameRate[index];
                 if (Round)
                 {
                     var rounded       = Round ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
@@ -1092,14 +1126,14 @@ namespace ChapterTool.Forms
             result[0] = 0; result[5] = 0; //skip two invalid frame rate.
             result.ForEach(count => Log(string.Format(Resources.Log_FPS_Detect_Count, count)));
             var autofpsCode = result.IndexOf(result.Max());
-            _info.FramesPerSecond = (double) MplsData.FrameRate[autofpsCode];
+            _info.FramesPerSecond = MplsData.FrameRate[autofpsCode];
             Log(string.Format(Resources.Log_FPS_Detect_Result, MplsData.FrameRate[autofpsCode]));
             return autofpsCode == 0 ? 1 : autofpsCode;
         }
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex != 3) return;
+            if (e.ColumnIndex != 3 || e.RowIndex < 0) return;
             Clipboard.SetText((dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string ?? "").TrimEnd('K', '*', ' '));
         }
 
@@ -1118,9 +1152,9 @@ namespace ChapterTool.Forms
 
         private void ShiftForwardToolStripMenuItem_Click(object sender, EventArgs e) => FrameShiftForward();
 
-        #endregion
+#endregion
 
-        #region Form Color
+#region Form Color
         private FormColor _fcolor;
 
         private void Color_MouseUp(object sender, MouseEventArgs e)
@@ -1161,7 +1195,7 @@ namespace ChapterTool.Forms
             {
                 dataGridView1.BackgroundColor                = value;
                 numericUpDown1.BackColor                     = value;
-                textBoxExpression.BackColor                  = value;
+                comboBoxExpression.BackColor                  = value;
                 comboBox1.BackColor                          = value;
                 comboBox2.BackColor                          = value;
                 xmlLang.BackColor                            = value;
@@ -1212,7 +1246,7 @@ namespace ChapterTool.Forms
             {
                 ForeColor                                    = value;
                 numericUpDown1.ForeColor                     = value;
-                textBoxExpression.ForeColor                  = value;
+                comboBoxExpression.ForeColor                  = value;
                 comboBox1.ForeColor                          = value;
                 comboBox2.ForeColor                          = value;
                 xmlLang.ForeColor                            = value;
@@ -1221,9 +1255,9 @@ namespace ChapterTool.Forms
             }
             private get { return ForeColor; }
         }
-        #endregion
+#endregion
 
-        #region Tips
+#region Tips
         private void lbPath_MouseEnter(object sender, EventArgs e) => toolTip1.Show(FilePath ?? "", (IWin32Window)sender);
 
         private void btnSave_MouseEnter(object sender, EventArgs e)
@@ -1243,9 +1277,9 @@ namespace ChapterTool.Forms
         }
 
         private void ToolTipRemoveAll(object sender, EventArgs e)  => toolTip1.Hide((IWin32Window)sender);
-        #endregion
+#endregion
 
-        #region Close Form
+#region Close Form
         private static void FormMove(int forward, ref Point p)
         {
             switch (forward)
@@ -1284,13 +1318,13 @@ namespace ChapterTool.Forms
                 Thread.Sleep(5);
             }
         }
-        #endregion
+#endregion
 
-        #region Extension Panel
-        #region form resize
+#region Extension Panel
+#region form resize
         private bool ExtensionPanelShow
         {
-            set { panel1.Visible = value; }
+            set => panel1.Visible = value;
         }
 
         private void btnExpand_Click(object sender, EventArgs e) => Form1_Resize();
@@ -1299,7 +1333,7 @@ namespace ChapterTool.Forms
 
         private void Form1_Resize()
         {
-            if (!TargetHeight.Any(item => item == Height)) return;
+            if (TargetHeight.All(item => item != Height)) return;
             tsBtnExpand.Image = Resources.unfold_more;
             if (Height == TargetHeight[0])
             {
@@ -1308,6 +1342,7 @@ namespace ChapterTool.Forms
                     Height += 2;
                     Application.DoEvents();
                 }
+                Height = TargetHeight[1];
             }
             else if (Height == TargetHeight[1])
             {
@@ -1316,11 +1351,12 @@ namespace ChapterTool.Forms
                     Height -= 2;
                     Application.DoEvents();
                 }
+                Height = TargetHeight[0];
             }
             ExtensionPanelShow = Height == TargetHeight[1];
             tsBtnExpand.Image = Height == TargetHeight[0] ? Resources.arrow_drop_down : Resources.arrow_drop_up;
         }
-        #endregion
+#endregion
 
         private void savingType_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1344,7 +1380,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        #region ChapterNameTemplate
+#region ChapterNameTemplate
         private string LoadChapterName()
         {
             openFileDialog1.Filter = Resources.File_Filter_Text + @"(*.txt)|*.txt|" +
@@ -1380,7 +1416,7 @@ namespace ChapterTool.Forms
             UpdataGridView(0, false);
         }
 
-        #endregion
+#endregion
 
         private void cbAutoGenName_CheckedChanged(object sender, EventArgs e) => UpdataGridView(0, false);
 
@@ -1414,11 +1450,11 @@ namespace ChapterTool.Forms
             if (!IsPathValid)
             {
                 if(Shift)
-                    ParseExpression(textBoxExpression.Text);
+                    ParseExpression(comboBoxExpression.Text);
                 return;
             }
             if (_info == null) return;
-            _info.Expr = Shift ? ParseExpression(textBoxExpression.Text) : Expression.Empty;
+            _info.Expr = Shift ? ParseExpression(comboBoxExpression.Text) : Expression.Empty;
             UpdataGridView();
         }
 
@@ -1433,17 +1469,17 @@ namespace ChapterTool.Forms
         private readonly Regex _invalidVariable = new Regex(@"(?:^|[+\-*/\^%\s])\d+[a-zA-Z_]+", RegexOptions.Compiled);
         private readonly Regex _balanceBrackets = new Regex(@"^[^\(\)]*(((?'Open'\()[^\(\)]*)+((?'Close-Open'\))[^\(\)]*)+)*(?(Open)(?!))(?:$|(?://.*))", RegexOptions.Compiled);
 
-        private void textBoxExpression_TextChanged(object sender, EventArgs e)
+        private void comboBoxExpression_TextChanged(object sender, EventArgs e)
         {
-            var isValid = _vaildExpression.IsMatch(textBoxExpression.Text) &&
-                          _balanceBrackets.IsMatch(textBoxExpression.Text) &&
-                         !_invalidVariable.IsMatch(textBoxExpression.Text);
+            var isValid = _vaildExpression.IsMatch(comboBoxExpression.Text) &&
+                          _balanceBrackets.IsMatch(comboBoxExpression.Text) &&
+                         !_invalidVariable.IsMatch(comboBoxExpression.Text);
             tsTips.Text = isValid ? "Valid expression" : "Invalid expression";
         }
 
-        #endregion
+#endregion
 
-        #region LogForm
+#region LogForm
         private FormLog _logForm;
         private void btnLog_Click(object sender, EventArgs e)
         {
@@ -1456,9 +1492,9 @@ namespace ChapterTool.Forms
             _logForm.Select();
         }
 
-        #endregion
+#endregion
 
-        #region PreviewForm
+#region PreviewForm
         private FormPreview _previewForm;
         private void btnPreview_Click(object sender, EventArgs e)
         {
@@ -1484,9 +1520,9 @@ namespace ChapterTool.Forms
                 RegistryStorage.SetOpenMethod(Assembly.GetExecutingAssembly().Location, ".mpls", "ChapterTool.Mpls", "ChapterTool");
             }
         }
-        #endregion
+#endregion
 
-        #region Open Video
+#region Open Video
 
         private static void OpenFile(string path)
         {
@@ -1568,9 +1604,9 @@ namespace ChapterTool.Forms
             combineMenuStrip.Items.Clear();
             combineMenuStrip.Items.Add(combine);
         }
-        #endregion
+#endregion
 
-        #region Zones
+#region Zones
         private void creatZonesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count < 1) return;
@@ -1610,7 +1646,7 @@ namespace ChapterTool.Forms
                 createZonestMenuStrip.Show(MousePosition);
             }
         }
-        #endregion
+#endregion
 
         private void InsertSplitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1620,6 +1656,11 @@ namespace ChapterTool.Forms
             _info.Chapters.Insert(row.Index, split);
             _splitRowInsrted = true;
             UpdataGridView();
+        }
+
+        private void comboBoxExpression_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            cbShift_CheckedChanged(sender, e);
         }
     }
 }

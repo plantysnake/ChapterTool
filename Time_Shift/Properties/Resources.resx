@@ -186,9 +186,6 @@
   <data name="Log_Load_Position_Successful" xml:space="preserve">
     <value>+成功载入保存的窗体位置 {0}</value>
   </data>
-  <data name="Log_Wu_Zong" xml:space="preserve">
-    <value>武总好~</value>
-  </data>
   <data name="Log_About_Form_Click" xml:space="preserve">
     <value>点击了 {0} 次进度条</value>
   </data>
@@ -357,5 +354,11 @@
   </data>
   <data name="Message_Need_Newer_dotNet" xml:space="preserve">
     <value>需要 .Net4.6 或以上版本以保证所有功能正常运作，是否不再提示？</value>
+  </data>
+  <data name="Menu_Switch_Language" xml:space="preserve">
+    <value>Switch language</value>
+  </data>
+  <data name="Expression_factor_1001" xml:space="preserve">
+    <value>t * 1.001 //修正DVD时间</value>
   </data>
 </root>

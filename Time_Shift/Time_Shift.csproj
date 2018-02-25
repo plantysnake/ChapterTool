@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ChapterTool</RootNamespace>
     <AssemblyName>ChapterTool</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -122,7 +122,6 @@
       <DependentUpon>FormUpdater.cs</DependentUpon>
     </Compile>
     <Compile Include="Knuckleball\Chapter.cs" />
-    <Compile Include="Knuckleball\ChapterList.cs" />
     <Compile Include="Knuckleball\IntPtrExtensions.cs" />
     <Compile Include="Knuckleball\MP4File.cs" />
     <Compile Include="Knuckleball\NativeMethods.cs" />

@@ -56,7 +56,7 @@ namespace ChapterTool.Util.ChapterData
                 pgc.Title = pgc.SourceName = $"{fileName.Substring(0, barIndex)}_{titleSetNum}";
             }
 
-            pgc.Chapters        = GetChapters(location, titleSetNum, out TimeSpan duration, out double fps);
+            pgc.Chapters        = GetChapters(location, titleSetNum, out IfoTimeSpan duration, out decimal fps);
             pgc.Duration        = duration;
             pgc.FramesPerSecond = fps;
 
@@ -66,10 +66,10 @@ namespace ChapterTool.Util.ChapterData
             return pgc;
         }
 
-        private static List<Chapter> GetChapters(string ifoFile, int programChain, out TimeSpan duration, out double fps)
+        private static List<Chapter> GetChapters(string ifoFile, int programChain, out IfoTimeSpan duration, out decimal fps)
         {
             var chapters = new List<Chapter>();
-            duration     = TimeSpan.Zero;
+            duration     = IfoTimeSpan.Zero;
             fps          = 0;
 
             var stream = new FileStream(ifoFile, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -77,7 +77,7 @@ namespace ChapterTool.Util.ChapterData
             var pcgItPosition = stream.GetPCGIP_Position();
             var programChainPrograms = -1;
             var programTime   = TimeSpan.Zero;
-            double fpsLocal;
+            decimal fpsLocal;
             if (programChain >= 0)
             {
                 var chainOffset      = stream.GetChainOffset(pcgItPosition, programChain);
@@ -113,7 +113,7 @@ namespace ChapterTool.Util.ChapterData
                 if (currentProgram < (programChainPrograms - 1))
                     exitCell         = stream.GetFileBlock(((pcgItPosition + longestChainOffset) + programMapOffset) + (currentProgram + 1), 1)[0] - 1;
 
-                var totalTime = TimeSpan.Zero;
+                var totalTime = IfoTimeSpan.Zero;
                 for (var currentCell = entryCell; currentCell <= exitCell; currentCell++)
                 {
                     var cellStart = cellTableOffset + ((currentCell - 1) * 0x18);
@@ -122,20 +122,105 @@ namespace ChapterTool.Util.ChapterData
                     if (cellType == 0x00 || cellType == 0x01)
                     {
                         bytes = stream.GetFileBlock(((pcgItPosition + longestChainOffset) + cellStart) + 4, 4);
-                        var time = IfoParser.ReadTimeSpan(bytes, out fps) ?? TimeSpan.Zero;
-                        totalTime    += time;
+                        var ret = IfoParser.ReadTimeSpan(bytes, out fps) ?? IfoTimeSpan.Zero;
+                        totalTime.IsNTSC = ret.IsNTSC;
+                        totalTime += ret;
                     }
                 }
 
-                //add a constant amount of time for each chapter?
-                //totalTime += TimeSpan.FromMilliseconds(fps != 0 ? (double)1000 / fps / 8D : 0);
-
+                duration.IsNTSC = totalTime.IsNTSC;
                 duration += totalTime;
                 if (currentProgram + 1 < programChainPrograms)
                     chapters.Add(new Chapter { Name = $"Chapter {currentProgram + 2:D2}", Time = duration });
             }
             stream.Dispose();
             return chapters;
+        }
+    }
+
+    public struct IfoTimeSpan
+    {
+        public int TotalSeconds { get; set; }
+        public int Frames { get; set; }
+        public bool IsNTSC { get; set; }
+
+        public int RawFrameRate => IsNTSC ? 30 : 25;
+        private decimal TimeFrameRate => IsNTSC ? 30000M / 1001 : 25;
+
+        public int TotalFrames => TotalSeconds * RawFrameRate + Frames;
+        public int Hours => (int) Math.Round((TotalSeconds + Frames / TimeFrameRate) / 3600);
+        public int Minutes => (int)Math.Round((TotalSeconds + Frames / TimeFrameRate) / 60) % 60;
+        public int Second => (int)Math.Round(TotalSeconds + Frames / TimeFrameRate) % 60;
+
+        public static readonly IfoTimeSpan Zero = new IfoTimeSpan(true);
+
+        public IfoTimeSpan(bool isNTSC)
+        {
+            TotalSeconds = 0;
+            Frames = 0;
+            IsNTSC = isNTSC;
+        }
+
+        public IfoTimeSpan(int seconds, int frames, bool isNTSC)
+        {
+            TotalSeconds = seconds;
+            Frames = frames;
+            IsNTSC = isNTSC;
+        }
+
+        public IfoTimeSpan(int hour, int minute, int second, int frames, bool isNTSC)
+        {
+            TotalSeconds = hour * 3600 + minute * 60 + second;
+            Frames = frames;
+            IsNTSC = isNTSC;
+        }
+
+        public IfoTimeSpan(TimeSpan time, bool isNTSC)
+        {
+            IsNTSC = isNTSC;
+            TotalSeconds = (int) Math.Floor(time.TotalSeconds);
+            Frames = 0;
+            Frames = (int) Math.Round((decimal) (time.TotalSeconds - TotalSeconds) / TimeFrameRate);
+        }
+
+        public static implicit operator TimeSpan(IfoTimeSpan time)
+        {
+            return new TimeSpan(
+                (long) ((time.TotalSeconds*time.RawFrameRate + time.Frames) / time.TimeFrameRate * TimeSpan.TicksPerSecond));
+        }
+
+        public static IfoTimeSpan operator +(IfoTimeSpan t1, IfoTimeSpan t2)
+        {
+            if (t1.IsNTSC ^ t2.IsNTSC)
+                throw new InvalidOperationException("Unmatch frames rate mode");
+            return new IfoTimeSpan(t1.TotalSeconds + t2.TotalSeconds, t1.Frames + t2.Frames, t1.IsNTSC);
+        }
+
+        public static IfoTimeSpan operator -(IfoTimeSpan t1, IfoTimeSpan t2)
+        {
+            if (t1.IsNTSC ^ t2.IsNTSC)
+                throw new InvalidOperationException("Unmatch frames rate mode");
+            return new IfoTimeSpan(t1.TotalSeconds - t2.TotalSeconds, t1.Frames - t2.Frames, t1.IsNTSC);
+        }
+
+        public override int GetHashCode()
+        {
+            return (((long) TotalSeconds << 32) | ((long) Frames << 1) | (IsNTSC ? 1L : 0L)).GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            if (obj.GetType() != GetType())
+                return false;
+            var time = (IfoTimeSpan)obj;
+            return TotalSeconds == time.TotalSeconds && TotalFrames == time.TotalFrames && IsNTSC == time.IsNTSC;
+        }
+
+        public override string ToString()
+        {
+            return $"{Hours:D2}:{Minutes:D2}:{Second:D2}.{Frames} [{(IsNTSC?'N':'P')}]";
         }
     }
 }

@@ -19,7 +19,7 @@ namespace ChapterTool.Properties {
     // 类通过类似于 ResGen 或 Visual Studio 的工具自动生成的。
     // 若要添加或移除成员，请编辑 .ResX 文件，然后重新运行 ResGen
     // (以 /str 作为命令选项)，或重新生成 VS 项目。
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -77,6 +77,15 @@ namespace ChapterTool.Properties {
             get {
                 object obj = ResourceManager.GetObject("arrow_drop_up", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 t * 1.001 //修正DVD时间 的本地化字符串。
+        /// </summary>
+        internal static string Expression_factor_1001 {
+            get {
+                return ResourceManager.GetString("Expression_factor_1001", resourceCulture);
             }
         }
         
@@ -522,15 +531,6 @@ namespace ChapterTool.Properties {
         }
         
         /// <summary>
-        ///   查找类似 武总好~ 的本地化字符串。
-        /// </summary>
-        internal static string Log_Wu_Zong {
-            get {
-                return ResourceManager.GetString("Log_Wu_Zong", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 |+XPL中共有 {0} 个片段 的本地化字符串。
         /// </summary>
         internal static string Log_XPL_Clip_Count {
@@ -545,6 +545,15 @@ namespace ChapterTool.Properties {
         internal static string Menu_Open_File {
             get {
                 return ResourceManager.GetString("Menu_Open_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Switch language 的本地化字符串。
+        /// </summary>
+        internal static string Menu_Switch_Language {
+            get {
+                return ResourceManager.GetString("Menu_Switch_Language", resourceCulture);
             }
         }
         

@@ -37,14 +37,8 @@ namespace ChapterTool.Util
         /// <returns>Track at the tracknumber.</returns>
         public Track this[int tracknumber]
         {
-            get
-            {
-                return Tracks[tracknumber];
-            }
-            set
-            {
-                Tracks[tracknumber] = value;
-            }
+            get => Tracks[tracknumber];
+            set => Tracks[tracknumber] = value;
         }
 
         /// <summary>
@@ -831,7 +825,7 @@ namespace ChapterTool.Util
             /// </summary>
             public int Number
             {
-                get { return _number; }
+                get => _number;
                 set
                 {
                     if (value > 99)
@@ -854,7 +848,7 @@ namespace ChapterTool.Util
             /// </summary>
             public int Minutes
             {
-                get { return _minutes; }
+                get => _minutes;
                 set
                 {
                     if (value > 99)
@@ -878,7 +872,7 @@ namespace ChapterTool.Util
             /// </summary>
             public int Seconds
             {
-                get { return _seconds; }
+                get => _seconds;
                 set
                 {
                     if (value >= 60)
@@ -902,7 +896,7 @@ namespace ChapterTool.Util
             /// </summary>
             public int Frames
             {
-                get { return _frames; }
+                get => _frames;
                 set
                 {
                     if (value >= 75)
@@ -1030,14 +1024,8 @@ namespace ChapterTool.Util
             /// <returns>Index at indexnumber.</returns>
             public Index this[int indexnumber]
             {
-                get
-                {
-                    return Indices[indexnumber];
-                }
-                set
-                {
-                    Indices[indexnumber] = value;
-                }
+                get => Indices[indexnumber];
+                set => Indices[indexnumber] = value;
             }
 
             public string[] Comments { get; set; }
