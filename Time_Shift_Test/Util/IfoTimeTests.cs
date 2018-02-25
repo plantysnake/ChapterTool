@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using ChapterTool.Util.ChapterData;
 using FluentAssertions;
@@ -12,24 +10,23 @@ namespace Time_Shift_Test.Util
     [TestClass]
     public class IfoTimeTests
     {
-
         [TestMethod]
         public void TestMethod1()
         {
             var times = new[]
             {
-                new[] {0, 0, 5, 0},   new[] {0, 0, 15, 0},
-                new[] {0, 1, 29, 28}, new[] {0, 0, 10, 0},
+                new[] {0, 0,  5,  0}, new[] {0, 0, 15,  0},
+                new[] {0, 1, 29, 28}, new[] {0, 0, 10,  0},
                 new[] {0, 7, 54, 16}, new[] {0, 6, 40, 16},
-                new[] {0, 5, 8, 22},  new[] {0, 1, 19, 28},
-                new[] {0, 0, 14, 28}, new[] {0, 0, 10, 2},
-                new[] {0, 0, 6, 0},   new[] {0, 0, 5, 0},
+                new[] {0, 5,  8, 22}, new[] {0, 1, 19, 28},
+                new[] {0, 0, 14, 28}, new[] {0, 0, 10,  2},
+                new[] {0, 0,  6,  0}, new[] {0, 0,  5,  0},
                 new[] {0, 2, 44, 26}, new[] {0, 1, 29, 26},
-                new[] {0, 0, 10, 0},  new[] {0, 5, 35, 20},
+                new[] {0, 0, 10,  0}, new[] {0, 5, 35, 20},
                 new[] {0, 5, 21, 20}, new[] {0, 6, 16, 18},
                 new[] {0, 1, 19, 28}, new[] {0, 0, 14, 28},
-                new[] {0, 0, 10, 0},  new[] {0, 0, 6, 0}
-            }.Select(time => new IfoTimeSpan(time[0], time[1], time[2], time[3], true)).ToList();
+                new[] {0, 0, 10,  0}, new[] {0, 0,  6,  0}
+            }.Select(time => new IfoTimeSpan(time[0], time[1], time[2], time[3], true));
             var exceptedFrames = new[]
             {
                   150,   600,  3298,  3598, 17834,
@@ -39,7 +36,7 @@ namespace Time_Shift_Test.Util
                 84696, 84876
             };
             var total = new IfoTimeSpan(true);
-            var frames = new List<int>();
+            var frames = new List<long>();
             foreach (var time in times)
             {
                 total += time;
