@@ -75,22 +75,19 @@ namespace ChapterTool.Util.ChapterData
         /// byte[3] milliseconds in bcd format (2 high bits are the frame rate)
         /// </param>
         /// <param name="fps">fps of the chapter</param>
-        internal static TimeSpan? ReadTimeSpan(byte[] playbackBytes, out decimal fps)
+        internal static IfoTimeSpan? ReadTimeSpan(byte[] playbackBytes, out decimal fps)
         {
             var frames    = GetFrames(playbackBytes[3]);
             var fpsMask   = playbackBytes[3] >> 6;
             fps = fpsMask == 0x01 ? 25M : fpsMask == 0x03 ? (30M / 1.001M) : 0;
+            var isNTSC = fpsMask == 0x03;
             if (frames == null) return null;
             try
             {
                 var hours    = BcdToInt(playbackBytes[0]);
                 var minutes  = BcdToInt(playbackBytes[1]);
                 var seconds  = BcdToInt(playbackBytes[2]);
-                var milliPart = 0M;
-                if (Math.Abs(fps) > 1e-5M)
-                    milliPart = (decimal) frames / fps;
-                var ticks = (long) (hours * 3600 + minutes * 60 + seconds + milliPart) * TimeSpan.TicksPerSecond;
-                return TimeSpan.FromTicks(ticks);
+                return new IfoTimeSpan(hours, minutes, seconds, (int) frames, isNTSC);
             }
             catch { return null; }
         }

@@ -561,6 +561,7 @@ namespace ChapterTool.Forms
                 tsTips.Text = Resources.Tips_Chapter_Not_find;
                 return;
             }
+#if false
             if (Math.Abs(_infoGroup.First().FramesPerSecond - 25) < 1e-5M)
             {
                 tsTips.Text = Resources.Tips_IFO_Waring_Unfix;
@@ -571,6 +572,7 @@ namespace ChapterTool.Forms
                 cbShift.Checked = true;
                 tsTips.Text = Resources.Tips_IFO_Waring_Fixed;
             }
+#endif
         }
 
         private void LoadXpl()
@@ -748,9 +750,9 @@ namespace ChapterTool.Forms
             UpdataGridView();
         }
 
-        #endregion
+#endregion
 
-        #region AppendFile
+#region AppendFile
         private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(FilePath)) return;
@@ -774,15 +776,15 @@ namespace ChapterTool.Forms
             GetChapterInfoFromMpls(ClipSeletIndex);
             UpdataGridView();
         }
-        #endregion
+#endregion
 
-        #region Global status
+#region Global status
         private bool AutoGenName => cbAutoGenName.Checked;
         private bool Shift => cbShift.Checked;
         private bool Round => cbRound.Checked;
-        #endregion
+#endregion
 
-        #region Save File
+#region Save File
         private void btnSave_Click(object sender, EventArgs e) => SaveFile((SaveTypeEnum)savingType.SelectedIndex);
 
         private string _customSavingPath = string.Empty;
@@ -924,9 +926,9 @@ namespace ChapterTool.Forms
                 tsTips.Text = Resources.Tips_Save_Fail;
             }
         }
-        #endregion
+#endregion
 
-        #region Contorl Panel
+#region Contorl Panel
         private int ClipSeletIndex => comboBox2.SelectedIndex < 0 ? 0 : comboBox2.SelectedIndex;
 
         private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
@@ -960,9 +962,9 @@ namespace ChapterTool.Forms
         }
 
         private void refresh_Click(object sender, EventArgs e) => UpdataGridView();
-        #endregion
+#endregion
 
-        #region GeneRate Chapter Info
+#region GeneRate Chapter Info
         private void GetChapterInfoFromMpls(int index)
         {
             _info = CombineChapter ? ChapterInfo.CombineChapter(_infoGroup, "MPLS") : _infoGroup[index];
@@ -998,9 +1000,9 @@ namespace ChapterTool.Forms
             comboBox2.SelectedIndex = ClipSeletIndex;
             tsTips.Text = Resources.Tips_Load_Success;
         }
-        #endregion
+#endregion
 
-        #region Grid View
+#region Grid View
 
         private bool _splitRowInsrted;
 
@@ -1068,9 +1070,9 @@ namespace ChapterTool.Forms
         {
             Log(string.Format(Resources.Log_Row_Delete, e.RowCount, e.RowIndex));
         }
-        #endregion
+#endregion
 
-        #region Frame Info
+#region Frame Info
 
         private decimal CostumeAccuracy => decimal.Parse(tsmAccuracy.DropDownItems.OfType<ToolStripMenuItem>().First(item => item.Checked).Tag.ToString());
 
@@ -1150,9 +1152,9 @@ namespace ChapterTool.Forms
 
         private void ShiftForwardToolStripMenuItem_Click(object sender, EventArgs e) => FrameShiftForward();
 
-        #endregion
+#endregion
 
-        #region Form Color
+#region Form Color
         private FormColor _fcolor;
 
         private void Color_MouseUp(object sender, MouseEventArgs e)
@@ -1253,9 +1255,9 @@ namespace ChapterTool.Forms
             }
             private get { return ForeColor; }
         }
-        #endregion
+#endregion
 
-        #region Tips
+#region Tips
         private void lbPath_MouseEnter(object sender, EventArgs e) => toolTip1.Show(FilePath ?? "", (IWin32Window)sender);
 
         private void btnSave_MouseEnter(object sender, EventArgs e)
@@ -1275,9 +1277,9 @@ namespace ChapterTool.Forms
         }
 
         private void ToolTipRemoveAll(object sender, EventArgs e)  => toolTip1.Hide((IWin32Window)sender);
-        #endregion
+#endregion
 
-        #region Close Form
+#region Close Form
         private static void FormMove(int forward, ref Point p)
         {
             switch (forward)
@@ -1316,10 +1318,10 @@ namespace ChapterTool.Forms
                 Thread.Sleep(5);
             }
         }
-        #endregion
+#endregion
 
-        #region Extension Panel
-        #region form resize
+#region Extension Panel
+#region form resize
         private bool ExtensionPanelShow
         {
             set => panel1.Visible = value;
@@ -1354,7 +1356,7 @@ namespace ChapterTool.Forms
             ExtensionPanelShow = Height == TargetHeight[1];
             tsBtnExpand.Image = Height == TargetHeight[0] ? Resources.arrow_drop_down : Resources.arrow_drop_up;
         }
-        #endregion
+#endregion
 
         private void savingType_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1378,7 +1380,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        #region ChapterNameTemplate
+#region ChapterNameTemplate
         private string LoadChapterName()
         {
             openFileDialog1.Filter = Resources.File_Filter_Text + @"(*.txt)|*.txt|" +
@@ -1414,7 +1416,7 @@ namespace ChapterTool.Forms
             UpdataGridView(0, false);
         }
 
-        #endregion
+#endregion
 
         private void cbAutoGenName_CheckedChanged(object sender, EventArgs e) => UpdataGridView(0, false);
 
@@ -1475,9 +1477,9 @@ namespace ChapterTool.Forms
             tsTips.Text = isValid ? "Valid expression" : "Invalid expression";
         }
 
-        #endregion
+#endregion
 
-        #region LogForm
+#region LogForm
         private FormLog _logForm;
         private void btnLog_Click(object sender, EventArgs e)
         {
@@ -1490,9 +1492,9 @@ namespace ChapterTool.Forms
             _logForm.Select();
         }
 
-        #endregion
+#endregion
 
-        #region PreviewForm
+#region PreviewForm
         private FormPreview _previewForm;
         private void btnPreview_Click(object sender, EventArgs e)
         {
@@ -1518,9 +1520,9 @@ namespace ChapterTool.Forms
                 RegistryStorage.SetOpenMethod(Assembly.GetExecutingAssembly().Location, ".mpls", "ChapterTool.Mpls", "ChapterTool");
             }
         }
-        #endregion
+#endregion
 
-        #region Open Video
+#region Open Video
 
         private static void OpenFile(string path)
         {
@@ -1602,9 +1604,9 @@ namespace ChapterTool.Forms
             combineMenuStrip.Items.Clear();
             combineMenuStrip.Items.Add(combine);
         }
-        #endregion
+#endregion
 
-        #region Zones
+#region Zones
         private void creatZonesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count < 1) return;
@@ -1644,7 +1646,7 @@ namespace ChapterTool.Forms
                 createZonestMenuStrip.Show(MousePosition);
             }
         }
-        #endregion
+#endregion
 
         private void InsertSplitToolStripMenuItem_Click(object sender, EventArgs e)
         {
