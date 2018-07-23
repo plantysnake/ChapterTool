@@ -214,7 +214,7 @@ namespace ChapterTool.Util
             return lines.ToString();
         }
 
-        public string[] GetQpfile() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => c.FramsInfo.ToString().Replace("*", "I").Replace("K", "I")).ToArray();
+        public string[] GetQpfile() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => c.FramsInfo.TrimEnd('K', '*') + "I").ToArray();
 
         public static void Chapter2Qpfile(string ipath, string opath, double fps, string tcfile = "")
         {

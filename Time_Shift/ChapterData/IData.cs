@@ -1,5 +1,4 @@
-﻿using System;
-using ChapterTool.Util;
+﻿using ChapterTool.Util;
 
 namespace ChapterTool.ChapterData
 {
