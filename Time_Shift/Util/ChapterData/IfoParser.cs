@@ -19,6 +19,7 @@
 // ****************************************************************************
 
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace ChapterTool.Util.ChapterData
@@ -63,9 +64,9 @@ namespace ChapterTool.Util.ChapterData
             return ifoStream.GetFileBlock((pcgitPosition + chainOffset) + 2, 1)[0];
         }
 
-        internal static TimeSpan? ReadTimeSpan(this FileStream ifoStream, long pcgitPosition, uint chainOffset, out decimal fps)
+        internal static IfoTimeSpan? ReadTimeSpan(this FileStream ifoStream, long pcgitPosition, uint chainOffset, out bool isNTSC)
         {
-            return ReadTimeSpan(ifoStream.GetFileBlock((pcgitPosition + chainOffset) + 4, 4), out fps);
+            return ReadTimeSpan(ifoStream.GetFileBlock((pcgitPosition + chainOffset) + 4, 4), out isNTSC);
         }
 
         /// <param name="playbackBytes">
@@ -74,22 +75,27 @@ namespace ChapterTool.Util.ChapterData
         /// byte[2] seconds in bcd format<br/>
         /// byte[3] milliseconds in bcd format (2 high bits are the frame rate)
         /// </param>
-        /// <param name="fps">fps of the chapter</param>
-        internal static IfoTimeSpan? ReadTimeSpan(byte[] playbackBytes, out decimal fps)
+        /// <param name="isNTSC">frame rate mode of the chapter</param>
+        internal static IfoTimeSpan? ReadTimeSpan(byte[] playbackBytes, out bool isNTSC)
         {
             var frames    = GetFrames(playbackBytes[3]);
             var fpsMask   = playbackBytes[3] >> 6;
-            fps = fpsMask == 0x01 ? 25M : fpsMask == 0x03 ? (30M / 1.001M) : 0;
-            var isNTSC = fpsMask == 0x03;
+            Debug.Assert(fpsMask == 0x01 || fpsMask == 0x03);
+            //var fps = fpsMask == 0x01 ? 25M : fpsMask == 0x03 ? (30M / 1.001M) : 0;
+            isNTSC = fpsMask == 0x03;
             if (frames == null) return null;
             try
             {
-                var hours    = BcdToInt(playbackBytes[0]);
-                var minutes  = BcdToInt(playbackBytes[1]);
-                var seconds  = BcdToInt(playbackBytes[2]);
+                var hours = BcdToInt(playbackBytes[0]);
+                var minutes = BcdToInt(playbackBytes[1]);
+                var seconds = BcdToInt(playbackBytes[2]);
                 return new IfoTimeSpan(hours, minutes, seconds, (int) frames, isNTSC);
             }
-            catch { return null; }
+            catch (Exception exception)
+            {
+                Logger.Log(exception.Message);
+                return null;
+            }
         }
 
         /// <summary>

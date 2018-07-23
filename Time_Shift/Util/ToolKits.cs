@@ -166,11 +166,11 @@ namespace ChapterTool.Util
             window.TextFrontColor = ColorTranslator.FromHtml(matchesOfJson[5].Groups["hex"].Value);
         }
 
-        public static void SaveAs(this string[] chapter, string path) => File.WriteAllLines(path, chapter, Encoding.UTF8);
+        public static void SaveAs(this string[] chapter, string path, bool bom = true) => File.WriteAllLines(path, chapter, new UTF8Encoding(bom));
 
-        public static void SaveAs(this string chapter, string path) => File.WriteAllText(path, chapter, Encoding.UTF8);
+        public static void SaveAs(this string chapter, string path, bool bom = true) => File.WriteAllText(path, chapter, new UTF8Encoding(bom));
 
-        public static void SaveAs(this object chapter, string path) => File.WriteAllText(path, chapter.ToString(), Encoding.UTF8);
+        public static void SaveAs(this object chapter, string path, bool bom = true) => File.WriteAllText(path, chapter.ToString(), new UTF8Encoding(bom));
 
         public static bool IsAdministrator() => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 

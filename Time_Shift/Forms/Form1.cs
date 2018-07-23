@@ -900,7 +900,8 @@ namespace ChapterTool.Forms
                         _info.SaveXml(savePath, string.IsNullOrWhiteSpace(key) ? "" : LanguageSelectionContainer.Languages[key], AutoGenName);
                         break;
                     case SaveTypeEnum.QPF:
-                        _info.GetQpfile().SaveAs(savePath);
+                        // Write qpf file without bom
+                        _info.GetQpfile().SaveAs(savePath, false);
                         break;
                     case SaveTypeEnum.TimeCodes:
                         _info.GetTimecodes().SaveAs(savePath);

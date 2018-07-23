@@ -22,12 +22,12 @@ namespace ChapterTool.Util.Tests
             var expectResult = new[]
             {
                 new { Name = "Chapter 01", Time = "00:00:00.000" },
-                new { Name = "Chapter 02", Time = "00:17:42.500" },
-                new { Name = "Chapter 03", Time = "00:37:14.767" },
-                new { Name = "Chapter 04", Time = "00:56:24.167" },
-                new { Name = "Chapter 05", Time = "01:12:36.701" },
-                new { Name = "Chapter 06", Time = "01:32:26.268" },
-                new { Name = "Chapter 07", Time = "01:49:06.136" }
+                new { Name = "Chapter 02", Time = "00:17:43.562" },
+                new { Name = "Chapter 03", Time = "00:37:17.001" },
+                new { Name = "Chapter 04", Time = "00:56:27.551" },
+                new { Name = "Chapter 05", Time = "01:12:41.057" },
+                new { Name = "Chapter 06", Time = "01:32:31.813" },
+                new { Name = "Chapter 07", Time = "01:49:12.679" }
             };
 
             Console.WriteLine(result[0]);
