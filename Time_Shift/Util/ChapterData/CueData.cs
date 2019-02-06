@@ -62,7 +62,7 @@ namespace ChapterTool.Util.ChapterData
             }
             if (string.IsNullOrEmpty(cueData))
                 throw new Exception($"No Cue detected in {ext} file");
-            Chapter = PraseCue(cueData);
+            Chapter = ParseCue(cueData);
         }
 
         private enum NextState
@@ -85,7 +85,7 @@ namespace ChapterTool.Util.ChapterData
         /// </summary>
         /// <param name="context">未分行的cue字符串</param>
         /// <returns></returns>
-        public static ChapterInfo PraseCue(string context)
+        public static ChapterInfo ParseCue(string context)
         {
             var lines         = context.Split('\n');
             var cue           = new ChapterInfo {SourceType = "CUE", Tag = context, TagType = context.GetType()};
@@ -169,7 +169,7 @@ namespace ChapterTool.Util.ChapterData
                     break;
 
                 case NextState.NsError:
-                    throw new Exception("Unable to Prase this cue file");
+                    throw new Exception("Unable to Parse this cue file");
                 case NextState.NsFin:
                     goto EXIT_1;
                 default:

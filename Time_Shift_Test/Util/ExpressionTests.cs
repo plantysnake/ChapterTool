@@ -18,7 +18,7 @@ namespace ChapterTool.Util.Tests
         }
 
         [TestMethod()]
-        public void ExpressionConverTest()
+        public void ExpressionConvertTest()
         {
             new Expression("2^10%10   + 6 \t///comment sample").ToString().Should().Be("2 10 ^ 10 % 6 +");
             new Expression("((a+b)*(c+d))/(((e)))").ToString().Should().Be("a b + c d + * e /");

@@ -10,7 +10,7 @@ namespace ChapterTool.Util.Tests
     public class CueDataTests
     {
         [TestMethod()]
-        public void PraseCueTest()
+        public void ParseCueTest()
         {
             string path = @"..\..\[cue_Sample]\ARCHIVES 2.cue";
             if (!File.Exists(path)) path = @"..\" + path;
@@ -22,7 +22,7 @@ namespace ChapterTool.Util.Tests
                 new { Name = "ナミダ御免のGirls Beat [佐天涙子(伊藤かな恵)]", Time = "00:32:12.173"}
             };
 
-            var result = CueData.PraseCue(File.ReadAllText(path));
+            var result = CueData.ParseCue(File.ReadAllText(path));
 
             Assert.IsTrue(result.Chapters.Count == 4);
 

@@ -407,7 +407,7 @@
             // 
             this.creatZonesToolStripMenuItem.Name = "creatZonesToolStripMenuItem";
             resources.ApplyResources(this.creatZonesToolStripMenuItem, "creatZonesToolStripMenuItem");
-            this.creatZonesToolStripMenuItem.Click += new System.EventHandler(this.creatZonesToolStripMenuItem_Click);
+            this.creatZonesToolStripMenuItem.Click += new System.EventHandler(this.createZonesToolStripMenuItem_Click);
             // 
             // ShiftForwardToolStripMenuItem
             // 

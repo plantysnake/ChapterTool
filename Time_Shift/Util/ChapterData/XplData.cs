@@ -60,7 +60,7 @@ namespace ChapterTool.Util.ChapterData
         }
 
         /// <summary>
-        /// Constructs a TimeSpan from a string formated as "HH:MM:SS:TT"
+        /// Constructs a TimeSpan from a string formatted as "HH:MM:SS:TT"
         /// </summary>
         /// <param name="timeSpan"></param>
         /// <param name="timeBase"></param>

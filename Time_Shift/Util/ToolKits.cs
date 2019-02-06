@@ -162,7 +162,7 @@ namespace ChapterTool.Util
             window.TextBack       = ColorTranslator.FromHtml(matchesOfJson[1].Groups["hex"].Value);
             window.MouseOverColor = ColorTranslator.FromHtml(matchesOfJson[2].Groups["hex"].Value);
             window.MouseDownColor = ColorTranslator.FromHtml(matchesOfJson[3].Groups["hex"].Value);
-            window.BordBackColor  = ColorTranslator.FromHtml(matchesOfJson[4].Groups["hex"].Value);
+            window.BorderBackColor  = ColorTranslator.FromHtml(matchesOfJson[4].Groups["hex"].Value);
             window.TextFrontColor = ColorTranslator.FromHtml(matchesOfJson[5].Groups["hex"].Value);
         }
 

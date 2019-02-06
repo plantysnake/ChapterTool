@@ -55,7 +55,7 @@ namespace ChapterTool.Util
 
         #region AppLang for control
         /// <summary>
-        ///  loop set the propery of the control
+        ///  loop set the property of the control
         /// </summary>
         /// <param name="control"></param>
         /// <param name="resources"></param>

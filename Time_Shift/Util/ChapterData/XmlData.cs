@@ -30,7 +30,7 @@ namespace ChapterTool.Util.ChapterData
 {
     public static class XmlData
     {
-        public static IEnumerable<ChapterInfo> PraseXml(XmlDocument doc)
+        public static IEnumerable<ChapterInfo> ParseXml(XmlDocument doc)
         {
             var root = doc.DocumentElement;
             if (root == null)
@@ -54,7 +54,7 @@ namespace ChapterTool.Util.ChapterData
                 foreach (XmlNode editionEntryChildNode in ((XmlElement)editionEntry).ChildNodes)//Get all the child nodes in current chapter
                 {
                     if (editionEntryChildNode.Name != "ChapterAtom") continue;
-                    buff.Chapters.AddRange(PraseChapterAtom(editionEntryChildNode, ++index));
+                    buff.Chapters.AddRange(ParseChapterAtom(editionEntryChildNode, ++index));
                 }
 
                 //remove redundancy chapter node.
@@ -70,7 +70,7 @@ namespace ChapterTool.Util.ChapterData
             }
         }
 
-        private static IEnumerable<Chapter> PraseChapterAtom(XmlNode chapterAtom, int index)
+        private static IEnumerable<Chapter> ParseChapterAtom(XmlNode chapterAtom, int index)
         {
             var startChapter     = new Chapter { Number = index };
             var endChapter       = new Chapter { Number = index };
@@ -97,11 +97,11 @@ namespace ChapterTool.Util.ChapterData
                         endChapter.Name = startChapter.Name;
                         break;
                     case "ChapterAtom"://Handling sub chapters.
-                        innerChapterAtom.AddRange(PraseChapterAtom(chapterAtomChildNode, index));
+                        innerChapterAtom.AddRange(ParseChapterAtom(chapterAtomChildNode, index));
                         break;
                 }
             }
-            //make sure the sub chapters outputed in corrent orrder.
+            //make sure the sub chapters outputted in correct order.
             yield return startChapter;
 
             foreach (var chapter in innerChapterAtom)

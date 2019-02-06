@@ -101,7 +101,7 @@ namespace ChapterTool.Forms
                     return true;
                 case Keys.Control | Keys.R:
                 case Keys.F5:
-                    UpdataGridView();
+                    UpdateGridView();
                     return true;
                 case Keys.PageDown:
                     if (comboBox2.SelectedIndex + 1 < comboBox2.Items.Count)
@@ -202,7 +202,7 @@ namespace ChapterTool.Forms
             if (!IsRunningOnMono) folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
             Log(Updater.CheckUpdateWeekly("ChapterTool") ? Resources.Log_Update_Checked : Resources.Log_Update_Skiped);
             if (string.IsNullOrEmpty(FilePath)) return;
-            if (Loadfile()) UpdataGridView();
+            if (LoadFile()) UpdateGridView();
             if (!IsRunningOnMono) RegistryStorage.Save(Resources.Message_How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
 
         }
@@ -249,7 +249,7 @@ namespace ChapterTool.Forms
 
             _infoGroup              = null;
             _info                   = null;
-            _bdvmTitle              = null;
+            _bdmvTitle              = null;
 
             _newRowInserted = false;
 
@@ -336,7 +336,7 @@ namespace ChapterTool.Forms
             if (!IsPathValid) return;
             Log(string.Format(Resources.Log_Load_File_Via_Dragging, FilePath));
             comboBox2.Items.Clear();
-            if (Loadfile()) UpdataGridView();
+            if (LoadFile()) UpdateGridView();
         }
 
         private bool _isUrl;
@@ -418,11 +418,11 @@ namespace ChapterTool.Forms
                 FilePath = openFileDialog1.FileName;
                 Log(string.Format(Resources.Log_Load_File_Via_Button, FilePath));
                 comboBox2.Items.Clear();
-                if (Loadfile()) UpdataGridView();
+                if (LoadFile()) UpdateGridView();
             }
             catch (Exception exception)
             {
-                Notification.ShowError($"Exception catched in loading file: {FilePath}", exception);
+                Notification.ShowError($"Exception caught in loading file: {FilePath}", exception);
                 Log($"ERROR(btnLoad_Click) {FilePath} {exception.Message}");
                 FilePath = string.Empty;
             }
@@ -437,7 +437,7 @@ namespace ChapterTool.Forms
             set => combineToolStripMenuItem.Checked = value;
         }
 
-        private bool Loadfile()
+        private bool LoadFile()
         {
             if (!IsPathValid) return false;
             var fileName = Path.GetFileName(FilePath);
@@ -475,11 +475,11 @@ namespace ChapterTool.Forms
                     default : throw new Exception("Invalid File Format");
                 }
                 if (_info == null) return false;
-                _info.UpdataInfo(_chapterNameTemplate);
+                _info.UpdateInfo(_chapterNameTemplate);
             }
             catch (Exception exception)
             {
-                Notification.ShowError(@"Exception catched in Function LoadFile", exception);
+                Notification.ShowError(@"Exception caught in Function LoadFile", exception);
                 Log($"ERROR(LoadFile) {exception.Message}");
                 FilePath = string.Empty;
                 tsProgressBar1.Value = 0;
@@ -523,8 +523,8 @@ namespace ChapterTool.Forms
                 }
                 if (setGlobal)
                 {
-                    comboBox2.SelectedIndex = ClipSeletIndex;
-                    GetChapterInfoFromMpls(ClipSeletIndex);
+                    comboBox2.SelectedIndex = ClipSelectIndex;
+                    GetChapterInfoFromMpls(ClipSelectIndex);
                 }
                 return mplsGroup;
             }
@@ -555,7 +555,7 @@ namespace ChapterTool.Forms
                 Log(string.Format(Resources.Log_TimeStamp_Count, item.Chapters.Count));
             }
             _info = CombineChapter ? ChapterInfo.CombineChapter(_infoGroup) : _infoGroup.First();
-            comboBox2.SelectedIndex = ClipSeletIndex;
+            comboBox2.SelectedIndex = ClipSelectIndex;
             if (_infoGroup.Count < 1)
             {
                 tsTips.Text = Resources.Tips_Chapter_Not_find;
@@ -594,7 +594,7 @@ namespace ChapterTool.Forms
                 item.Chapters.ForEach(chapter => chapter.Number = ++index);
             }
             _info = _infoGroup.First();
-            comboBox2.SelectedIndex = ClipSeletIndex;
+            comboBox2.SelectedIndex = ClipSelectIndex;
             tsTips.Text = comboBox2.SelectedIndex == -1 ? Resources.Tips_Chapter_Not_find : Resources.Tips_Load_Success;
         }
 
@@ -634,7 +634,7 @@ namespace ChapterTool.Forms
             {
                 OgmData.OnLog += Log;
                 _info = OgmData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTFString());
-                _info.UpdataInfo((int)numericUpDown1.Value);
+                _info.UpdateInfo((int)numericUpDown1.Value);
                 tsProgressBar1.Value = 33;
                 tsTips.Text = Resources.Tips_Load_Success;
             }
@@ -667,7 +667,7 @@ namespace ChapterTool.Forms
                 }
                 else
                 {
-                    Notification.ShowError(@"Exception catched in fuction LoadMatroska", exception);
+                    Notification.ShowError(@"Exception caught in function LoadMatroska", exception);
                     Log($"ERROR(LoadMatroska) {exception.Message}");
                 }
                 FilePath = string.Empty;
@@ -690,7 +690,7 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
 
-                Notification.ShowError(@"Exception catched in fuction LoadCue", exception);
+                Notification.ShowError(@"Exception caught in function LoadCue", exception);
                 Log($"ERROR(LoadCue) {exception.Message}");
                 FilePath = string.Empty;
             }
@@ -699,12 +699,12 @@ namespace ChapterTool.Forms
         private void LoadWebVTT()
         {
             _info = VTTData.GetChapterInfo(File.ReadAllBytes(FilePath).GetUTFString());
-            _info.UpdataInfo((int)numericUpDown1.Value);
+            _info.UpdateInfo((int)numericUpDown1.Value);
             tsProgressBar1.Value = 33;
             tsTips.Text = Resources.Tips_Load_Success;
         }
 
-        private string _bdvmTitle;
+        private string _bdmvTitle;
 
         private async void LoadBDMVAsync()
         {
@@ -717,7 +717,7 @@ namespace ChapterTool.Forms
                 {
                     BDMVData.OnLog += Log;
                     var ret = await BDMVData.GetChapterAsync(FilePath);
-                    _bdvmTitle = ret.Key;
+                    _bdmvTitle = ret.Key;
                     _infoGroup = ret.Value;
                     if (_infoGroup == null || _infoGroup.Count == 0)
                     {
@@ -734,7 +734,7 @@ namespace ChapterTool.Forms
             }
             catch (Exception exception)
             {
-                Notification.ShowError("Exception throwed while loading BluRay disc", exception);
+                Notification.ShowError("Exception thrown while loading BluRay disc", exception);
                 return;
             }
             tsTips.Text = Resources.Tips_Load_Success;
@@ -746,8 +746,8 @@ namespace ChapterTool.Forms
             {
                 comboBox2.Items.Add($"{item.SourceName}__{item.Chapters.Count}");
             });
-            comboBox2.SelectedIndex = ClipSeletIndex;
-            UpdataGridView();
+            comboBox2.SelectedIndex = ClipSelectIndex;
+            UpdateGridView();
         }
 
 #endregion
@@ -757,14 +757,14 @@ namespace ChapterTool.Forms
         {
             if (string.IsNullOrEmpty(FilePath)) return;
             if (_isUrl) LoadBDMVAsync();
-            else if (Loadfile()) UpdataGridView();
+            else if (LoadFile()) UpdateGridView();
         }
 
         private void appendToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!(_infoGroup is MplsGroup)) return;
             var dir = Path.GetDirectoryName(FilePath);
-            openFileDialog1.Filter = @"appendable file(mpls file)|*.mpls";
+            openFileDialog1.Filter = @"Appendable file(mpls file)|*.mpls";
             openFileDialog1.InitialDirectory = dir;
             if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
             var newFile = openFileDialog1.FileName;
@@ -773,8 +773,8 @@ namespace ChapterTool.Forms
             _infoGroup.AddRange(mplsGroup);
 
             CombineChapter = true;
-            GetChapterInfoFromMpls(ClipSeletIndex);
-            UpdataGridView();
+            GetChapterInfoFromMpls(ClipSelectIndex);
+            UpdateGridView();
         }
 #endregion
 
@@ -804,7 +804,7 @@ namespace ChapterTool.Forms
             catch (Exception exception)
             {
 
-                Notification.ShowError($"Exception catched while saving Path: {_customSavingPath}", exception);
+                Notification.ShowError($"Exception caught while saving Path: {_customSavingPath}", exception);
                 Log($"ERROR(btnSave_MouseUp) {_customSavingPath}: {exception.Message}");
                 _customSavingPath = string.Empty;
             }
@@ -840,7 +840,7 @@ namespace ChapterTool.Forms
         private string GeneRateSavePath(SaveTypeEnum saveType)
         {
             var rootPath = string.IsNullOrWhiteSpace(_customSavingPath) ? Path.GetDirectoryName(FilePath) : _customSavingPath;
-            var fileName = _bdvmTitle ?? Path.GetFileNameWithoutExtension(FilePath);
+            var fileName = _bdmvTitle ?? Path.GetFileNameWithoutExtension(FilePath);
             Debug.Assert(rootPath != null && fileName != null);
             var savePath = Path.Combine(rootPath, fileName);
 
@@ -883,7 +883,7 @@ namespace ChapterTool.Forms
         private void SaveFile(SaveTypeEnum saveType)
         {
             if (!IsPathValid) return;//防止保存先于载入
-            UpdataGridView();
+            UpdateGridView();
             var savePath = GeneRateSavePath(saveType);
 
             SaveInfoLog(savePath);
@@ -921,7 +921,7 @@ namespace ChapterTool.Forms
             }
             catch (Exception exception)
             {
-                Notification.ShowError(@"Exception catched while saving file", exception);
+                Notification.ShowError(@"Exception caught while saving file", exception);
                 Log($"ERROR(SaveFile) {exception.Message}");
                 tsProgressBar1.Value = 60;
                 tsTips.Text = Resources.Tips_Save_Fail;
@@ -930,27 +930,27 @@ namespace ChapterTool.Forms
 #endregion
 
 #region Contorl Panel
-        private int ClipSeletIndex => comboBox2.SelectedIndex < 0 ? 0 : comboBox2.SelectedIndex;
+        private int ClipSelectIndex => comboBox2.SelectedIndex < 0 ? 0 : comboBox2.SelectedIndex;
 
         private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
         {
             if (comboBox1.SelectedIndex == 4)//reserved fps
             {
-                UpdataGridView(comboBox1.SelectedIndex);//exactly is 29.970fps
+                UpdateGridView(comboBox1.SelectedIndex);//exactly is 29.970fps
             }
             else
             {
-                UpdataGridView(comboBox1.SelectedIndex + 1);
+                UpdateGridView(comboBox1.SelectedIndex + 1);
             }
         }
 
         private void comboBox2_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            if (_infoGroup is MplsGroup) GetChapterInfoFromMpls(ClipSeletIndex);
-            else if (_infoGroup is IfoGroup) GetChapterInfoFromIFO(ClipSeletIndex);
-            else _info = _infoGroup[ClipSeletIndex];
+            if (_infoGroup is MplsGroup) GetChapterInfoFromMpls(ClipSelectIndex);
+            else if (_infoGroup is IfoGroup) GetChapterInfoFromIFO(ClipSelectIndex);
+            else _info = _infoGroup[ClipSelectIndex];
             if (Shift) cbShift_CheckedChanged(null, null);
-            UpdataGridView();
+            UpdateGridView();
         }
 
         private void combineToolStripMenuItem_Click(object sender, EventArgs e)
@@ -962,7 +962,7 @@ namespace ChapterTool.Forms
             }
         }
 
-        private void refresh_Click(object sender, EventArgs e) => UpdataGridView();
+        private void refresh_Click(object sender, EventArgs e) => UpdateGridView();
 #endregion
 
 #region GeneRate Chapter Info
@@ -970,20 +970,20 @@ namespace ChapterTool.Forms
         {
             _info = CombineChapter ? ChapterInfo.CombineChapter(_infoGroup, "MPLS") : _infoGroup[index];
             tsTips.Text = _info.Chapters.Count < 2 ? Resources.Tips_Chapter_Not_find : Resources.Tips_Load_Success;
-            _info.UpdataInfo(_chapterNameTemplate);
+            _info.UpdateInfo(_chapterNameTemplate);
         }
 
         private void GetChapterInfoFromIFO(int index)
         {
             _info = CombineChapter ? ChapterInfo.CombineChapter(_infoGroup) : _infoGroup[index];
             tsTips.Text = _info.Chapters.Count < 2 ? Resources.Tips_Chapter_Not_find : Resources.Tips_Load_Success;
-            _info.UpdataInfo(_chapterNameTemplate);
+            _info.UpdateInfo(_chapterNameTemplate);
         }
 
         private void GetChapterInfoFromXml(XmlDocument doc)
         {
             _infoGroup = new XmlGroup();
-            _infoGroup.AddRange(XmlData.PraseXml(doc));
+            _infoGroup.AddRange(XmlData.ParseXml(doc));
             comboBox2.Enabled = comboBox2.Visible = _infoGroup.Count >= 1;
             if (comboBox2.Enabled)
             {
@@ -998,7 +998,7 @@ namespace ChapterTool.Forms
                 }
             }
             _info = _infoGroup.First();
-            comboBox2.SelectedIndex = ClipSeletIndex;
+            comboBox2.SelectedIndex = ClipSelectIndex;
             tsTips.Text = Resources.Tips_Load_Success;
         }
 #endregion
@@ -1007,7 +1007,7 @@ namespace ChapterTool.Forms
 
         private bool _newRowInserted;
 
-        private void UpdataGridView(int fpsIndex = 0, bool updateFrameInfo = true)
+        private void UpdateGridView(int fpsIndex = 0, bool updateFrameInfo = true)
         {
             if (!IsPathValid || _info == null) return;
             if (!updateFrameInfo) goto SKIP;
@@ -1016,11 +1016,11 @@ namespace ChapterTool.Forms
             {
                 case "DVD":
                 case "MPLS":
-                    GetFramInfo(ConvertFr2Index(_info.FramesPerSecond));
+                    GetFrameInfo(ConvertFr2Index(_info.FramesPerSecond));
                     comboBox1.Enabled     = false;
                     break;
                 default:
-                    GetFramInfo(fpsIndex);
+                    GetFrameInfo(fpsIndex);
                     _info.FramesPerSecond = MplsData.FrameRate[comboBox1.SelectedIndex];
                     comboBox1.Enabled     = true;
                     break;
@@ -1055,10 +1055,10 @@ namespace ChapterTool.Forms
         private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
             _info.Chapters.Remove(e.Row.Tag as Chapter);
-            _info.UpdataInfo((int)numericUpDown1.Value);
+            _info.UpdateInfo((int)numericUpDown1.Value);
             if (_info.Chapters.Count < 1 || e.Row.Index != 0) return;
             var newInitialTime = _info.Chapters.First().Time;
-            _info.UpdataInfo(newInitialTime);
+            _info.UpdateInfo(newInitialTime);
             if ((_infoGroup is MplsGroup || _infoGroup is IfoGroup) && string.IsNullOrWhiteSpace(_chapterNameTemplate))
             {
                 var name = ChapterName.GetChapterName();
@@ -1086,7 +1086,7 @@ namespace ChapterTool.Forms
             ((ToolStripMenuItem)e.ClickedItem).Checked = true;
         }
 
-        private void GetFramInfo(int index = 0)
+        private void GetFrameInfo(int index = 0)
         {
             var settingAccuracy = CostumeAccuracy;
 
@@ -1104,16 +1104,16 @@ namespace ChapterTool.Forms
 
             foreach (var chapter in _info.Chapters)
             {
-                var frams = _info.Expr.Eval(chapter.Time.TotalSeconds, _info.FramesPerSecond) * MplsData.FrameRate[index];
+                var frames = _info.Expr.Eval(chapter.Time.TotalSeconds, _info.FramesPerSecond) * MplsData.FrameRate[index];
                 if (Round)
                 {
-                    var rounded       = Round ? Math.Round(frams, MidpointRounding.AwayFromZero) : frams;
-                    var accuracy     = Math.Abs(frams - rounded) < settingAccuracy;
-                    chapter.FramsInfo = $"{rounded}{(accuracy ? " K" : " *")}";
+                    var rounded       = Round ? Math.Round(frames, MidpointRounding.AwayFromZero) : frames;
+                    var accuracy      = Math.Abs(frames - rounded) < settingAccuracy;
+                    chapter.FramesInfo = $"{rounded}{(accuracy ? " K" : " *")}";
                 }
                 else
                 {
-                    chapter.FramsInfo = $"{frams}";
+                    chapter.FramesInfo = $"{frames}";
                 }
             }
         }
@@ -1146,9 +1146,9 @@ namespace ChapterTool.Forms
             var shiftFramesString = Notification.InputBox("向前平移N帧，小于0的将被删除", "请输入所需平移的帧数", "0");
             if (!int.TryParse(shiftFramesString, out int shiftFrames)) return;
             var shiftTime = TimeSpan.FromTicks((long) Math.Round(shiftFrames/MplsData.FrameRate[fpsIndex]*TimeSpan.TicksPerSecond));
-            _info.UpdataInfo(shiftTime);
+            _info.UpdateInfo(shiftTime);
             _info.Chapters = _info.Chapters.SkipWhile(item => item.Time < TimeSpan.Zero).ToList();
-            UpdataGridView();
+            UpdateGridView();
         }
 
         private void ShiftForwardToolStripMenuItem_Click(object sender, EventArgs e) => FrameShiftForward();
@@ -1177,7 +1177,7 @@ namespace ChapterTool.Forms
             TextBack,
             MouseOverColor,
             MouseDownColor,
-            BordBackColor,
+            BorderBackColor,
             TextFrontColor
         };
 
@@ -1228,7 +1228,7 @@ namespace ChapterTool.Forms
             }
             private get { return btnLoad.FlatAppearance.MouseDownBackColor; }
         }
-        public Color BordBackColor
+        public Color BorderBackColor
         {
             set
             {
@@ -1401,7 +1401,7 @@ namespace ChapterTool.Forms
             }
             catch (Exception exception)
             {
-                Notification.ShowError($"Exception catched while opening file {FilePath}", exception);
+                Notification.ShowError($"Exception caught while opening file {FilePath}", exception);
                 Log($"ERROR(LoadChapterName) {exception.Message}");
                 return string.Empty;
             }
@@ -1413,13 +1413,13 @@ namespace ChapterTool.Forms
         {
             _chapterNameTemplate = cbChapterName.Checked ? LoadChapterName() : string.Empty;
             if (!IsPathValid) return;
-            _info.UpdataInfo(_chapterNameTemplate);
-            UpdataGridView(0, false);
+            _info.UpdateInfo(_chapterNameTemplate);
+            UpdateGridView(0, false);
         }
 
 #endregion
 
-        private void cbAutoGenName_CheckedChanged(object sender, EventArgs e) => UpdataGridView(0, false);
+        private void cbAutoGenName_CheckedChanged(object sender, EventArgs e) => UpdateGridView(0, false);
 
         private Expression ParseExpression(string expr)
         {
@@ -1456,23 +1456,23 @@ namespace ChapterTool.Forms
             }
             if (_info == null) return;
             _info.Expr = Shift ? ParseExpression(comboBoxExpression.Text) : Expression.Empty;
-            UpdataGridView();
+            UpdateGridView();
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
             if (!IsPathValid) return;
-            _info.UpdataInfo((int)numericUpDown1.Value);
-            UpdataGridView(0, false);
+            _info.UpdateInfo((int)numericUpDown1.Value);
+            UpdateGridView(0, false);
         }
 
-        private readonly Regex _vaildExpression = new Regex(@"^[+\-*/\^%\.,\(\)\s\da-zA-Z_]*(?:$|(?://.*))", RegexOptions.Compiled);
+        private readonly Regex _validExpression = new Regex(@"^[+\-*/\^%\.,\(\)\s\da-zA-Z_]*(?:$|(?://.*))", RegexOptions.Compiled);
         private readonly Regex _invalidVariable = new Regex(@"(?:^|[+\-*/\^%\s])\d+[a-zA-Z_]+", RegexOptions.Compiled);
         private readonly Regex _balanceBrackets = new Regex(@"^[^\(\)]*(((?'Open'\()[^\(\)]*)+((?'Close-Open'\))[^\(\)]*)+)*(?(Open)(?!))(?:$|(?://.*))", RegexOptions.Compiled);
 
         private void comboBoxExpression_TextChanged(object sender, EventArgs e)
         {
-            var isValid = _vaildExpression.IsMatch(comboBoxExpression.Text) &&
+            var isValid = _validExpression.IsMatch(comboBoxExpression.Text) &&
                           _balanceBrackets.IsMatch(comboBoxExpression.Text) &&
                          !_invalidVariable.IsMatch(comboBoxExpression.Text);
             tsTips.Text = isValid ? "Valid expression" : "Invalid expression";
@@ -1533,8 +1533,8 @@ namespace ChapterTool.Forms
             }
             catch (Exception exception)
             {
-                Notification.ShowError($"Exception catched while trying to open {Path.GetFullPath(path)}", exception);
-                Log($"Exception catched while trying to open {Path.GetFullPath(path)}");
+                Notification.ShowError($"Exception caught while trying to open {Path.GetFullPath(path)}", exception);
+                Log($"Exception caught while trying to open {Path.GetFullPath(path)}");
             }
         }
 
@@ -1608,7 +1608,7 @@ namespace ChapterTool.Forms
 #endregion
 
 #region Zones
-        private void creatZonesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void createZonesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count < 1) return;
 
@@ -1623,8 +1623,8 @@ namespace ChapterTool.Forms
                 {
                     --nextRowIndex;
                 }
-                var currRow = _info.Chapters[rowIndex].FramsInfo;
-                var nextRow = _info.Chapters[nextRowIndex].FramsInfo;
+                var currRow = _info.Chapters[rowIndex].FramesInfo;
+                var nextRow = _info.Chapters[nextRowIndex].FramesInfo;
 
                 var beginFrames = int.Parse(currRow.Substring(0, currRow.IndexOf(' ')));
                 var endFrames   = int.Parse(nextRow.Substring(0, nextRow.IndexOf(' ')));
@@ -1655,9 +1655,9 @@ namespace ChapterTool.Forms
             var row = dataGridView1.SelectedRows[0];
             var split = new Chapter("New Chapter", TimeSpan.Zero, 0);
             _info.Chapters.Insert(row.Index, split);
-            _info.UpdataInfo((int)numericUpDown1.Value);
+            _info.UpdateInfo((int)numericUpDown1.Value);
             _newRowInserted = true;
-            UpdataGridView();
+            UpdateGridView();
         }
 
         private void comboBoxExpression_SelectedIndexChanged(object sender, EventArgs e)

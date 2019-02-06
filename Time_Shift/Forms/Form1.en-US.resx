@@ -210,7 +210,7 @@
     <value>98</value>
   </data>
   <data name="cFrams.HeaderText" xml:space="preserve">
-    <value>Frams</value>
+    <value>Frames</value>
   </data>
   <data name="cFrams.Width" type="System.Int32, mscorlib">
     <value>48</value>

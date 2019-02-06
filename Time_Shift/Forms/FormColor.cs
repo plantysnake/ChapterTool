@@ -96,11 +96,11 @@ namespace ChapterTool.Forms
                 _mainWindow.MouseDownColor = downBack.BackColor = colorDialog1.Color;
             }
         }
-        private void bordBack_Click(object sender, EventArgs e)
+        private void borderBack_Click(object sender, EventArgs e)
         {
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
-                _mainWindow.BordBackColor = bordBack.BackColor = colorDialog1.Color;
+                _mainWindow.BorderBackColor = bordBack.BackColor = colorDialog1.Color;
             }
         }
         private void textFront_Click(object sender, EventArgs e)

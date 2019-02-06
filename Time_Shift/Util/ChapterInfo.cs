@@ -83,7 +83,7 @@ namespace ChapterTool.Util
             row.Cells.Add(new DataGridViewTextBoxCell {Value = $"{Chapters[index].Number:D2}"});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = Time2String(Chapters[index])});
             row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? ChapterName.Get(index + 1) : Chapters[index].Name});
-            row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].FramsInfo});
+            row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].FramesInfo});
             return row;
         }
 
@@ -101,7 +101,7 @@ namespace ChapterTool.Util
             row.Cells[0].Value = $"{item.Number:D2}";
             row.Cells[1].Value = item.Time2String(this);
             row.Cells[2].Value = autoGenName ? ChapterName.Get(row.Index + 1) : item.Name;
-            row.Cells[3].Value = item.FramsInfo;
+            row.Cells[3].Value = item.FramesInfo;
         }
 
         /// <summary>
@@ -160,13 +160,13 @@ namespace ChapterTool.Util
             FramesPerSecond    = fps;
         }
 
-        #region updataInfo
+        #region UpdateInfo
 
         /// <summary>
         /// 以新的时间基准更新剩余章节
         /// </summary>
         /// <param name="shift">剩余章节的首个章节点的时间</param>
-        public void UpdataInfo(TimeSpan shift)
+        public void UpdateInfo(TimeSpan shift)
         {
             Chapters.ForEach(item => item.Time -= shift);
         }
@@ -175,7 +175,7 @@ namespace ChapterTool.Util
         /// 根据输入的数值向后位移章节序号
         /// </summary>
         /// <param name="shift">位移量</param>
-        public void UpdataInfo(int shift)
+        public void UpdateInfo(int shift)
         {
             var index = 0;
             Chapters.ForEach(item => item.Number = ++index + shift);
@@ -185,7 +185,7 @@ namespace ChapterTool.Util
         /// 根据给定的章节名模板更新章节
         /// </summary>
         /// <param name="chapterNameTemplate"></param>
-        public void UpdataInfo(string chapterNameTemplate)
+        public void UpdateInfo(string chapterNameTemplate)
         {
             if (string.IsNullOrWhiteSpace(chapterNameTemplate)) return;
             using (var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator()) //移除首尾多余空行
@@ -214,7 +214,7 @@ namespace ChapterTool.Util
             return lines.ToString();
         }
 
-        public string[] GetQpfile() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => c.FramsInfo.TrimEnd('K', '*') + "I").ToArray();
+        public string[] GetQpfile() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => c.FramesInfo.TrimEnd('K', '*') + "I").ToArray();
 
         public static void Chapter2Qpfile(string ipath, string opath, double fps, string tcfile = "")
         {
