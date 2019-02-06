@@ -251,7 +251,7 @@ namespace ChapterTool.Forms
             _info                   = null;
             _bdvmTitle              = null;
 
-            _splitRowInsrted = false;
+            _newRowInserted = false;
 
             dataGridView1.Rows.Clear();
         }
@@ -1005,7 +1005,7 @@ namespace ChapterTool.Forms
 
 #region Grid View
 
-        private bool _splitRowInsrted;
+        private bool _newRowInserted;
 
         private void UpdataGridView(int fpsIndex = 0, bool updateFrameInfo = true)
         {
@@ -1027,7 +1027,7 @@ namespace ChapterTool.Forms
             }
 
             SKIP:
-            var clearRows = _info.Chapters.Count != dataGridView1.Rows.Count || _splitRowInsrted;
+            var clearRows = _info.Chapters.Count != dataGridView1.Rows.Count || _newRowInserted;
             if (clearRows) dataGridView1.Rows.Clear();
             for (var i = 0; i < _info.Chapters.Count; i++)
             {
@@ -1649,13 +1649,14 @@ namespace ChapterTool.Forms
         }
 #endregion
 
-        private void InsertSplitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void InsertChapterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count != 1) return;
             var row = dataGridView1.SelectedRows[0];
-            var split = new Chapter("Split line", TimeSpan.MinValue, -1);
+            var split = new Chapter("New Chapter", TimeSpan.Zero, 0);
             _info.Chapters.Insert(row.Index, split);
-            _splitRowInsrted = true;
+            _info.UpdataInfo((int)numericUpDown1.Value);
+            _newRowInserted = true;
             UpdataGridView();
         }
 

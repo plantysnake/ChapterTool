@@ -67,7 +67,7 @@
             this.createZonestMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.creatZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ShiftForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.InsertSplitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.InsertChapterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.comboBoxExpression = new System.Windows.Forms.ComboBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -399,7 +399,7 @@
             this.createZonestMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.creatZonesToolStripMenuItem,
             this.ShiftForwardToolStripMenuItem,
-            this.InsertSplitToolStripMenuItem});
+            this.InsertChapterToolStripMenuItem});
             this.createZonestMenuStrip.Name = "createZonestMenuStrip";
             resources.ApplyResources(this.createZonestMenuStrip, "createZonestMenuStrip");
             // 
@@ -415,11 +415,11 @@
             resources.ApplyResources(this.ShiftForwardToolStripMenuItem, "ShiftForwardToolStripMenuItem");
             this.ShiftForwardToolStripMenuItem.Click += new System.EventHandler(this.ShiftForwardToolStripMenuItem_Click);
             // 
-            // InsertSplitToolStripMenuItem
+            // InsertChapterToolStripMenuItem
             // 
-            this.InsertSplitToolStripMenuItem.Name = "InsertSplitToolStripMenuItem";
-            resources.ApplyResources(this.InsertSplitToolStripMenuItem, "InsertSplitToolStripMenuItem");
-            this.InsertSplitToolStripMenuItem.Click += new System.EventHandler(this.InsertSplitToolStripMenuItem_Click);
+            this.InsertChapterToolStripMenuItem.Name = "InsertChapterToolStripMenuItem";
+            resources.ApplyResources(this.InsertChapterToolStripMenuItem, "InsertChapterToolStripMenuItem");
+            this.InsertChapterToolStripMenuItem.Click += new System.EventHandler(this.InsertChapterToolStripMenuItem_Click);
             // 
             // panel1
             // 
@@ -565,7 +565,7 @@
         private System.Windows.Forms.ContextMenuStrip loadMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem appendToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem InsertSplitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem InsertChapterToolStripMenuItem;
         private System.Windows.Forms.ComboBox comboBoxExpression;
     }
 }
