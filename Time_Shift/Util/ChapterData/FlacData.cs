@@ -42,7 +42,7 @@ namespace ChapterTool.Util.ChapterData
         }
     }
 
-    //https://xiph.org/flac/format.html
+    // https://xiph.org/flac/format.html
     public static class FlacData
     {
         private const long SizeThreshold = 1 << 20;
@@ -70,10 +70,10 @@ namespace ChapterTool.Util.ChapterData
                 var header    = Encoding.ASCII.GetString(fs.ReadBytes(4), 0, 4);
                 if (header != "fLaC")
                     throw new InvalidDataException($"Except an flac but get an {header}");
-                //METADATA_BLOCK_HEADER
-                //1-bit Last-metadata-block flag
-                //7-bit BLOCK_TYPE
-                //24-bit Length
+                // METADATA_BLOCK_HEADER
+                // 1-bit Last-metadata-block flag
+                // 7-bit BLOCK_TYPE
+                // 24-bit Length
                 while (fs.Position < fs.Length)
                 {
                     var blockHeader       = fs.BEInt32();
@@ -133,7 +133,7 @@ namespace ChapterTool.Util.ChapterData
 
         private static void ParseVorbisComment(Stream fs, ref FlacInfo info)
         {
-            //only here in flac use little-endian
+            // only here in flac use little-endian
             var vendorLength        = (int) fs.LEInt32();
             var vendorRawStringData = fs.ReadBytes(vendorLength);
             var vendor              = Encoding.UTF8.GetString(vendorRawStringData, 0, vendorLength);

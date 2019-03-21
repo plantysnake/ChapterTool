@@ -35,7 +35,7 @@ namespace ChapterTool
 
         private static bool IsSupportedRuntimeVersion()
         {
-            //https://msdn.microsoft.com/en-us/library/hh925568
+            // https://msdn.microsoft.com/en-us/library/hh925568
             const int minSupportedRelease = 394802;
             if (Util.RegistryStorage.Load(name: "DoVersionCheck") == "False") return true;
             using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full"))

@@ -37,9 +37,9 @@ namespace ChapterTool.Util.ChapterData
 
         private static byte? GetFrames(byte value)
         {
-            if (((value >> 6) & 0x01) == 1) //check whether the second bit of value is 1
+            if (((value >> 6) & 0x01) == 1) // check whether the second bit of value is 1
             {
-                return (byte)BcdToInt((byte)(value & 0x3F)); //only last 6 bits is in use, show as BCD code
+                return (byte)BcdToInt((byte)(value & 0x3F)); // only last 6 bits is in use, show as BCD code
             }
             return null;
         }
@@ -81,7 +81,7 @@ namespace ChapterTool.Util.ChapterData
             var frames    = GetFrames(playbackBytes[3]);
             var fpsMask   = playbackBytes[3] >> 6;
             Debug.Assert(fpsMask == 0x01 || fpsMask == 0x03);
-            //var fps = fpsMask == 0x01 ? 25M : fpsMask == 0x03 ? (30M / 1.001M) : 0;
+            // var fps = fpsMask == 0x01 ? 25M : fpsMask == 0x03 ? (30M / 1.001M) : 0;
             isNTSC = fpsMask == 0x03;
             if (frames == null) return null;
             try
@@ -108,7 +108,7 @@ namespace ChapterTool.Util.ChapterData
             var ifoStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             var offset          = ToInt32(GetFileBlock(ifoStream, 0xCC, 4));    // Read PGC offset
             ifoStream.Seek(2048 * offset + 0x01, SeekOrigin.Begin);               // Move to beginning of PGC
-            //long VTS_PGCITI_start_position = ifoStream.Position - 1;
+            // long VTS_PGCITI_start_position = ifoStream.Position - 1;
             var nPGCs = ifoStream.ReadByte();       // Number of PGCs
             ifoStream.Close();
             return nPGCs;

@@ -110,9 +110,8 @@ namespace ChapterTool.Util
             };
             edInput.SelectAll();
 
-
             var buttonTop = MulDiv(41, dialogUnits.Height, 8);
-            //Command buttons should be 50x14 dlus
+            // Command buttons should be 50x14 dlus
             var buttonSize = ScaleSize(new Size(50, 14), dialogUnits.Width / 4, dialogUnits.Height / 8);
 
             var bbOk = new Button

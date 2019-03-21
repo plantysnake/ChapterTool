@@ -195,7 +195,7 @@ namespace ChapterTool.Util
             }
             catch (System.ComponentModel.Win32Exception)
             {
-                //Do nothing. Probably the user canceled the UAC window
+                // Do nothing. Probably the user canceled the UAC window
             }
             return false;
         }
@@ -233,7 +233,7 @@ namespace ChapterTool.Util
                 switch (c)
                 {
                     case '\r':
-                        if ((char) reader.Peek() == '\n') reader.Read();// consume the next character
+                        if ((char) reader.Peek() == '\n') reader.Read(); // consume the next character
                         argHandler(argProcess, GetDataReceivedEventArgs(line.ToString()));
                         line.Clear();
                         break;

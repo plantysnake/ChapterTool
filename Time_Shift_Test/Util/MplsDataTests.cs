@@ -17,7 +17,7 @@ namespace ChapterTool.Util.Tests
             string mplsPath = @"..\..\[mpls_Sample]\00011_eva.mpls";
             if (!File.Exists(mplsPath)) mplsPath = @"..\" + mplsPath;
             var mplsRaw = new MplsData(mplsPath);
-            //mplsRaw.EntireTimeStamp.ForEach(item=>Console.Write($"{item}, "));
+            // mplsRaw.EntireTimeStamp.ForEach(item=>Console.Write($"{item}, "));
             Console.WriteLine(mplsRaw.ToString());
 
             mplsRaw.PlayItems[0].ClipName.ToString().Should().Be("00002.M2TS");

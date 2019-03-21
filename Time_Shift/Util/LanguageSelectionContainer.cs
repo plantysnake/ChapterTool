@@ -30,7 +30,7 @@ namespace ChapterTool.Util
         // used by MP4box
         private static readonly Dictionary<string, string> LanguagesReverseTerminology;
 
-        //private static readonly Dictionary<string, string> languagesISO2;
+        // private static readonly Dictionary<string, string> languagesISO2;
         private static readonly Dictionary<string, string> LanguagesReverseISO2;
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace ChapterTool.Util
 
             if (!string.IsNullOrEmpty(iso2))
             {
-                //languagesISO2.Add(name, iso2);
+                // languagesISO2.Add(name, iso2);
                 LanguagesReverseISO2.Add(iso2, name);
             }
         }
@@ -78,7 +78,7 @@ namespace ChapterTool.Util
             LanguagesTerminology = new Dictionary<string, string>();
             LanguagesReverseTerminology = new Dictionary<string, string>();
 
-            //languagesISO2 = new Dictionary<string, string>();
+            // languagesISO2 = new Dictionary<string, string>();
             LanguagesReverseISO2 = new Dictionary<string, string>();
 
             AddLanguage("Not Specified", "   ", "", "  ");
@@ -453,7 +453,6 @@ namespace ChapterTool.Util
             AddLanguage("Zulu", "zul", "", "zu");
             AddLanguage("Zuni", "zun", "", "");
         }
-
 
         ///<summary>
         ///Convert the 2 or 3 char string to the full language name

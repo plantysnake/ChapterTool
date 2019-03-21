@@ -69,7 +69,7 @@ namespace ChapterTool.Util
         {
             var row = new DataGridViewRow
             {
-                Tag = Chapters[index], //绑定对象，以便删除行时可以得知对应的 Chapter
+                Tag = Chapters[index], // 绑定对象，以便删除行时可以得知对应的 Chapter
                 DefaultCellStyle = {BackColor = (Chapters[index].Number - 1)%2 == 0 ? EVEN_COLOR : ODD_COLOR}
             };
             if (Chapters[index].Number == -1)
@@ -131,7 +131,7 @@ namespace ChapterTool.Util
                         Name   = name.Get()
                     });
                 }
-                duration += chapterClip.Duration; //每次加上当前段的总时长作为下一段位移的基准
+                duration += chapterClip.Duration; // 每次加上当前段的总时长作为下一段位移的基准
             }
             fullChapter.Duration = duration;
             return fullChapter;
@@ -156,8 +156,8 @@ namespace ChapterTool.Util
             }
 
             var totalFrames = (decimal) Duration.TotalSeconds * FramesPerSecond;
-            Duration           = new TimeSpan((long) Math.Round(totalFrames/fps*TimeSpan.TicksPerSecond));
-            FramesPerSecond    = fps;
+            Duration        = new TimeSpan((long) Math.Round(totalFrames/fps*TimeSpan.TicksPerSecond));
+            FramesPerSecond = fps;
         }
 
         #region UpdateInfo
@@ -188,9 +188,9 @@ namespace ChapterTool.Util
         public void UpdateInfo(string chapterNameTemplate)
         {
             if (string.IsNullOrWhiteSpace(chapterNameTemplate)) return;
-            using (var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator()) //移除首尾多余空行
+            using (var cn = chapterNameTemplate.Trim(' ', '\r', '\n').Split('\n').ToList().GetEnumerator()) // 移除首尾多余空行
             {
-                Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name.Trim('\r')); //确保无多余换行符
+                Chapters.ForEach(item => item.Name = cn.MoveNext() ? cn.Current : item.Name.Trim('\r')); // 确保无多余换行符
             }
         }
 
@@ -360,7 +360,7 @@ namespace ChapterTool.Util
             {
                 if (chapter.Time == TimeSpan.MinValue && prevChapter != null)
                 {
-                    baseTime = prevChapter.Time;//update base time
+                    baseTime = prevChapter.Time; // update base time
                     name = ChapterName.GetChapterName();
                     var initChapterName = autoGenName ? name() : prevChapter.Name;
                     jsonBuilder.Remove(jsonBuilder.Length - 1, 1);

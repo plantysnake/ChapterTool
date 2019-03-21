@@ -144,6 +144,5 @@ namespace Knuckleball
 
             return title.Substring(0, title.IndexOf('\0'));
         }
-
     }
 }

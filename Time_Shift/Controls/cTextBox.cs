@@ -57,7 +57,4 @@ namespace ChapterTool.Controls
             }
         }
     }
-
-
-
 }

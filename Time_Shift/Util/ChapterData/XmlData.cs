@@ -57,7 +57,7 @@ namespace ChapterTool.Util.ChapterData
                     buff.Chapters.AddRange(ParseChapterAtom(editionEntryChildNode, ++index));
                 }
 
-                //remove redundancy chapter node.
+                // remove redundancy chapter node.
                 for (var i = 0; i < buff.Chapters.Count - 1; i++)
                 {
                     if (buff.Chapters[i].Time == buff.Chapters[i + 1].Time)
@@ -65,7 +65,7 @@ namespace ChapterTool.Util.ChapterData
                         buff.Chapters.Remove(buff.Chapters[i--]);
                     }
                 }
-                //buff.Chapters = buff.Chapters.Distinct().ToList();
+                // buff.Chapters = buff.Chapters.Distinct().ToList();
                 yield return buff;
             }
         }
@@ -75,7 +75,7 @@ namespace ChapterTool.Util.ChapterData
             var startChapter     = new Chapter { Number = index };
             var endChapter       = new Chapter { Number = index };
             var innerChapterAtom = new List<Chapter>();
-            foreach (XmlNode chapterAtomChildNode in ((XmlElement)chapterAtom).ChildNodes) //Get detail info for current chapter node
+            foreach (XmlNode chapterAtomChildNode in ((XmlElement)chapterAtom).ChildNodes) // Get detail info for current chapter node
             {
                 switch (chapterAtomChildNode.Name)
                 {
@@ -101,7 +101,7 @@ namespace ChapterTool.Util.ChapterData
                         break;
                 }
             }
-            //make sure the sub chapters outputted in correct order.
+            // make sure the sub chapters outputted in correct order.
             yield return startChapter;
 
             foreach (var chapter in innerChapterAtom)

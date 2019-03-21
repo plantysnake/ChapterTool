@@ -300,7 +300,6 @@ namespace SharpDvdInfo
             return ret;
         }
 
-
         /// <summary>
         /// Reads up to 32 bits from a byte array and outputs an integer
         /// </summary>
@@ -311,7 +310,7 @@ namespace SharpDvdInfo
         public static int GetBits(byte[] buffer, byte length, byte start)
         {
             var result = 0;
-            //read bytes from left to right and every bit in byte from low to high
+            // read bytes from left to right and every bit in byte from low to high
             var ba = new BitArray(buffer);
 
             short j = 0;

@@ -37,7 +37,6 @@ using System.Text.RegularExpressions;
 using static ChapterTool.Util.Logger;
 using static ChapterTool.Util.ToolKits;
 
-
 namespace ChapterTool.Forms
 {
     public partial class Form1 : Form
@@ -152,7 +151,7 @@ namespace ChapterTool.Forms
             var numKey = keyData ^ Keys.Control;
             Debug.WriteLine(numKey);
             if (numKey < Keys.D0 || numKey > Keys.D9) return;
-            if (!SwitchByHotKey((numKey - Keys.D1 + 10) % 10)) //shift D0 to 9
+            if (!SwitchByHotKey((numKey - Keys.D1 + 10) % 10)) // shift D0 to 9
             {
                 tsTips.Text = Resources.Tips_Out_Of_Range;
             }
@@ -204,7 +203,6 @@ namespace ChapterTool.Forms
             if (string.IsNullOrEmpty(FilePath)) return;
             if (LoadFile()) UpdateGridView();
             if (!IsRunningOnMono) RegistryStorage.Save(Resources.Message_How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
-
         }
 
         private void InsertAccuracyItems()
@@ -803,7 +801,6 @@ namespace ChapterTool.Forms
             }
             catch (Exception exception)
             {
-
                 Notification.ShowError($"Exception caught while saving Path: {_customSavingPath}", exception);
                 Log($"ERROR(btnSave_MouseUp) {_customSavingPath}: {exception.Message}");
                 _customSavingPath = string.Empty;
@@ -882,7 +879,7 @@ namespace ChapterTool.Forms
 
         private void SaveFile(SaveTypeEnum saveType)
         {
-            if (!IsPathValid) return;//防止保存先于载入
+            if (!IsPathValid) return; // 防止保存先于载入
             UpdateGridView();
             var savePath = GeneRateSavePath(saveType);
 
@@ -934,9 +931,9 @@ namespace ChapterTool.Forms
 
         private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            if (comboBox1.SelectedIndex == 4)//reserved fps
+            if (comboBox1.SelectedIndex == 4) // reserved fps
             {
-                UpdateGridView(comboBox1.SelectedIndex);//exactly is 29.970fps
+                UpdateGridView(comboBox1.SelectedIndex); // exactly is 29.970fps
             }
             else
             {
@@ -1092,14 +1089,14 @@ namespace ChapterTool.Forms
 
             if (Round)
             {
-                //当未手动提供帧率[del]并且不是mpls或ifo这种已知帧率的，[/del]才进行蒙帧率操作
+                // 当未手动提供帧率[del]并且不是mpls或ifo这种已知帧率的，[/del]才进行蒙帧率操作
                 index = index == 0/* && _rawMpls == null && _ifoGroup == null */? GetAutofps(settingAccuracy) : index;
-                //if (index > 5) { --index; }// 跳过在30与50中间的空项
+                // if (index > 5) { --index; } // 跳过在30与50中间的空项
                 comboBox1.SelectedIndex = index - 1;
             }
             else
             {
-                index = comboBox1.SelectedIndex + 1;    //未勾选舍入时将帧率直接设置为下拉框当前帧率
+                index = comboBox1.SelectedIndex + 1; // 未勾选舍入时将帧率直接设置为下拉框当前帧率
             }
 
             foreach (var chapter in _info.Chapters)
@@ -1124,7 +1121,7 @@ namespace ChapterTool.Forms
             var result = MplsData.FrameRate.Select(fps  =>
                         _info.Chapters.Sum(item =>
                         item.IsAccuracy(fps, accuracy, _info.Expr))).ToList();
-            result[0] = 0; result[5] = 0; //skip two invalid frame rate.
+            result[0] = 0; result[5] = 0; // skip two invalid frame rate.
             result.ForEach(count => Log(string.Format(Resources.Log_FPS_Detect_Count, count)));
             var autofpsCode = result.IndexOf(result.Max());
             _info.FramesPerSecond = MplsData.FrameRate[autofpsCode];
@@ -1196,7 +1193,7 @@ namespace ChapterTool.Forms
             {
                 dataGridView1.BackgroundColor                = value;
                 numericUpDown1.BackColor                     = value;
-                comboBoxExpression.BackColor                  = value;
+                comboBoxExpression.BackColor                 = value;
                 comboBox1.BackColor                          = value;
                 comboBox2.BackColor                          = value;
                 xmlLang.BackColor                            = value;
@@ -1247,7 +1244,7 @@ namespace ChapterTool.Forms
             {
                 ForeColor                                    = value;
                 numericUpDown1.ForeColor                     = value;
-                comboBoxExpression.ForeColor                  = value;
+                comboBoxExpression.ForeColor                 = value;
                 comboBox1.ForeColor                          = value;
                 comboBox2.ForeColor                          = value;
                 xmlLang.ForeColor                            = value;
@@ -1618,7 +1615,7 @@ namespace ChapterTool.Forms
             {
                 var rowIndex = dataGridView1.Rows.IndexOf(row);
                 var nextRowIndex = rowIndex + 1;
-                //todo: make last time stamp use the length of clip info.
+                // todo: make last time stamp use the length of clip info.
                 if (rowIndex >= dataGridView1.RowCount - 1)
                 {
                     --nextRowIndex;

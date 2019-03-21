@@ -135,7 +135,7 @@ namespace ChapterTool.Util
 
             // read in the full cue file
             TextReader tr = new StreamReader(filename, encoding);
-            //read in file
+            // read in file
             _cueLines = tr.ReadToEnd().Split(delimiters);
 
             // close the stream
@@ -178,8 +178,8 @@ namespace ChapterTool.Util
 
         private void ParseCue(string[] file)
         {
-            //-1 means still global,
-            //all others are track specific
+            // -1 means still global,
+            // all others are track specific
             var trackOn = -1;
             var currentFile = new AudioFile();
 
@@ -240,7 +240,7 @@ namespace ChapterTool.Util
                 case "TRACK":
                     trackOn++;
                     ParseTrack(file[i], trackOn);
-                    if (currentFile.Filename != "") //if there's a file
+                    if (currentFile.Filename != "") // if there's a file
                     {
                         Tracks[trackOn].DataFile = currentFile;
                         currentFile = new AudioFile();
@@ -249,7 +249,7 @@ namespace ChapterTool.Util
 
                 default:
                     ParseGarbage(file[i], trackOn);
-                    //save discarded junk and place string[] with track it was found in
+                    // save discarded junk and place string[] with track it was found in
                     break;
                 }
             }
@@ -257,7 +257,7 @@ namespace ChapterTool.Util
 
         private void ParseComment(string line, int trackOn)
         {
-            //remove "REM" (we know the line has already been .Trim()'ed)
+            // remove "REM" (we know the line has already been .Trim()'ed)
             line = line.Substring(line.IndexOf(' '), line.Length - line.IndexOf(' ')).Trim();
 
             if (trackOn == -1)
@@ -282,7 +282,7 @@ namespace ChapterTool.Util
 
             line = line.Substring(0, line.LastIndexOf(' ')).Trim();
 
-            //if quotes around it, remove them.
+            // if quotes around it, remove them.
             if (line[0] == '"')
             {
                 line = line.Substring(1, line.LastIndexOf('"') - 1);
@@ -335,9 +335,9 @@ namespace ChapterTool.Util
                         break;
                     }
 
-                    //processing for a case when there isn't any more spaces
-                    //i.e. avoiding the "index cannot be less than zero" error
-                    //when calling line.IndexOf(' ')
+                    // processing for a case when there isn't any more spaces
+                    // i.e. avoiding the "index cannot be less than zero" error
+                    // when calling line.IndexOf(' ')
                     try
                     {
                         temp = line.Substring(line.IndexOf(' '), line.Length - line.IndexOf(' '));
@@ -347,7 +347,7 @@ namespace ChapterTool.Util
                         temp = line.Substring(0, line.Length);
                     }
 
-                    //if the flag hasn't already been processed
+                    // if the flag hasn't already been processed
                     if (temp.ToUpper().Trim() != line.ToUpper().Trim())
                     {
                         ParseFlags(temp, trackOn);
@@ -382,12 +382,12 @@ namespace ChapterTool.Util
 
             if (indexType == "INDEX")
             {
-                //read the index number
+                // read the index number
                 number = Convert.ToInt32(tempString.Substring(0, tempString.IndexOf(' ')));
                 tempString = tempString.Substring(tempString.IndexOf(' '), tempString.Length - tempString.IndexOf(' ')).Trim();
             }
 
-            //extract the minutes, seconds, and frames
+            // extract the minutes, seconds, and frames
             var minutes = Convert.ToInt32(tempString.Substring(0, tempString.IndexOf(':')));
             var seconds = Convert.ToInt32(tempString.Substring(tempString.IndexOf(':') + 1, tempString.LastIndexOf(':') - tempString.IndexOf(':') - 1));
             var frames = Convert.ToInt32(tempString.Substring(tempString.LastIndexOf(':') + 1, tempString.Length - tempString.LastIndexOf(':') - 1));
@@ -412,7 +412,7 @@ namespace ChapterTool.Util
 
             line = line.Substring(line.IndexOf(' '), line.Length - line.IndexOf(' ')).Trim();
 
-            //get rid of the quotes
+            // get rid of the quotes
             if (line[0] == '"')
             {
                 line = line.Substring(1, line.LastIndexOf('"') - 1);
@@ -487,7 +487,7 @@ namespace ChapterTool.Util
 
             var trackNumber = Convert.ToInt32(tempString.Substring(0, tempString.IndexOf(' ')));
 
-            //find the data type.
+            // find the data type.
             tempString = tempString.Substring(tempString.IndexOf(' '), tempString.Length - tempString.IndexOf(' ')).Trim();
 
             AddTrack(trackNumber, tempString);
@@ -608,8 +608,8 @@ namespace ChapterTool.Util
         /// <param name="indexIndex">The index of the Index you wish to remove.</param>
         public void RemoveIndex(int trackIndex, int indexIndex)
         {
-            //Note it is the index of the Index you want to delete,
-            //which may or may not correspond to the number of the index.
+            // Note it is the index of the Index you want to delete,
+            // which may or may not correspond to the number of the index.
             Tracks[trackIndex].RemoveIndex(indexIndex);
         }
 
@@ -633,7 +633,7 @@ namespace ChapterTool.Util
 
             tw.WriteLine(ToString());
 
-            //close the writer stream
+            // close the writer stream
             tw.Close();
         }
 
@@ -681,7 +681,7 @@ namespace ChapterTool.Util
 
                 if (i != Tracks.Length - 1)
                 {
-                    //add line break for each track except last
+                    // add line break for each track except last
                     output.Append(Environment.NewLine);
                 }
             }
@@ -691,12 +691,12 @@ namespace ChapterTool.Util
 
         #endregion Methods
 
-        //TODO: Fix calculation bugs; currently generates erroneous IDs.
+        // TODO: Fix calculation bugs; currently generates erroneous IDs.
 
         #region CalculateDiscIDs
 
-        //For complete CDDB/freedb discID calculation, see:
-        //http://www.freedb.org/modules.php?name=Sections&sop=viewarticle&artid=6
+        // For complete CDDB/freedb discID calculation, see:
+        // http://www.freedb.org/modules.php?name=Sections&sop=viewarticle&artid=6
 
         public string CalculateCDDBdiscID()
         {
@@ -813,7 +813,7 @@ namespace ChapterTool.Util
         /// </summary>
         public struct Index
         {
-            //0-99
+            // 0-99
             private int _number;
 
             private int _minutes;
@@ -1144,8 +1144,8 @@ namespace ChapterTool.Util
 
             public void AddFlag(Flags flag)
             {
-                //if it's not a none tag
-                //and if the tags hasn't already been added
+                // if it's not a none tag
+                // and if the tags hasn't already been added
                 if (flag != Flags.NONE && NewFlag(flag))
                 {
                     TrackFlags = (Flags[])CueSheet.ResizeArray(TrackFlags, TrackFlags.Length + 1);
@@ -1254,7 +1254,7 @@ namespace ChapterTool.Util
             {
                 var output = new StringBuilder();
 
-                //write file
+                // write file
                 if (DataFile.Filename != null && DataFile.Filename.Trim() != "")
                 {
                     output.Append("FILE \"" + DataFile.Filename.Trim() + "\" " + DataFile.Filetype.ToString() + Environment.NewLine);
@@ -1262,7 +1262,7 @@ namespace ChapterTool.Util
 
                 output.Append("  TRACK " + TrackNumber.ToString().PadLeft(2, '0') + " " + TrackDataType.ToString().Replace('_', '/'));
 
-                //write comments
+                // write comments
                 foreach (var comment in Comments)
                 {
                     output.Append(Environment.NewLine + "    REM " + comment);
@@ -1283,7 +1283,7 @@ namespace ChapterTool.Util
                     output.Append(Environment.NewLine + "    TITLE \"" + Title + "\"");
                 }
 
-                //write flags
+                // write flags
                 if (TrackFlags.Length > 0)
                 {
                     output.Append(Environment.NewLine + "    FLAGS");
@@ -1294,25 +1294,25 @@ namespace ChapterTool.Util
                     output.Append(" " + flag.ToString().Replace("CH4", "4CH"));
                 }
 
-                //write isrc
+                // write isrc
                 if (ISRC.Trim() != "")
                 {
                     output.Append(Environment.NewLine + "    ISRC " + ISRC.Trim());
                 }
 
-                //write pregap
+                // write pregap
                 if (PreGap.Number != -1)
                 {
                     output.Append(Environment.NewLine + "    PREGAP " + PreGap.Minutes.ToString().PadLeft(2, '0') + ":" + PreGap.Seconds.ToString().PadLeft(2, '0') + ":" + PreGap.Frames.ToString().PadLeft(2, '0'));
                 }
 
-                //write Indices
+                // write Indices
                 for (var j = 0; j < Indices.Length; j++)
                 {
                     output.Append(Environment.NewLine + "    INDEX " + this[j].Number.ToString().PadLeft(2, '0') + " " + this[j].Minutes.ToString().PadLeft(2, '0') + ":" + this[j].Seconds.ToString().PadLeft(2, '0') + ":" + this[j].Frames.ToString().PadLeft(2, '0'));
                 }
 
-                //write postgap
+                // write postgap
                 if (PostGap.Number != -1)
                 {
                     output.Append(Environment.NewLine + "    POSTGAP " + PostGap.Minutes.ToString().PadLeft(2, '0') + ":" + PostGap.Seconds.ToString().PadLeft(2, '0') + ":" + PostGap.Frames.ToString().PadLeft(2, '0'));

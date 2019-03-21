@@ -79,13 +79,13 @@ namespace SharpDvdInfo.Tests
                 for(byte i = 1; i < 16; ++i)
                     Console.WriteLine($"{DvdInfoContainer.GetBits(bt, i, 0) :X}");
                 Console.WriteLine();
-                //for (byte i = 7; i < 10; ++i)
-                //{
+                // for (byte i = 7; i < 10; ++i)
+                // {
                 //    int res1 = DvdInfoContainer.GetBits(bt, i, 0);
                 //    int res2 = DvdInfoContainer.GetBits_Effi(bt, i, 0);
                 //    Console.WriteLine($"{(bt[0] << 8) | bt[1]:X} {res1:X} {res2:X}");
                 //    Assert.IsTrue(res1 == res2);
-                //}
+                // }
             }
         }
         */

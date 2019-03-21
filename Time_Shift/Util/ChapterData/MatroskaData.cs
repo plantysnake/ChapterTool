@@ -38,18 +38,18 @@ namespace ChapterTool.Util.ChapterData
         public MatroskaData()
         {
             var mkvToolnixPath = RegistryStorage.Load(@"Software\ChapterTool", "mkvToolnixPath");
-            if (string.IsNullOrEmpty(mkvToolnixPath)) //saved path not found.
+            if (string.IsNullOrEmpty(mkvToolnixPath)) // saved path not found.
             {
                 try
                 {
                     mkvToolnixPath = GetMkvToolnixPathViaRegistry();
                     RegistryStorage.Save(mkvToolnixPath, @"Software\ChapterTool", "mkvToolnixPath");
                 }
-                catch (Exception exception) //no valid path found in Registry
+                catch (Exception exception) // no valid path found in Registry
                 {
                     OnLog?.Invoke($"Warning: {exception.Message}");
                 }
-                if (string.IsNullOrEmpty(mkvToolnixPath)) //Installed path not found.
+                if (string.IsNullOrEmpty(mkvToolnixPath)) // Installed path not found.
                 {
                     mkvToolnixPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 }
@@ -84,7 +84,6 @@ namespace ChapterTool.Util.ChapterData
             process.Close();
             return output;
         }
-
 
         /// <summary>
         /// Returns the path from MKVToolnix.

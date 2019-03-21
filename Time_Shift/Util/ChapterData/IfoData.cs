@@ -80,7 +80,7 @@ namespace ChapterTool.Util.ChapterData
             if (programChain >= 0)
             {
                 var chainOffset      = stream.GetChainOffset(pcgItPosition, programChain);
-                //programTime          = stream.ReadTimeSpan(pcgItPosition, chainOffset, out _) ?? TimeSpan.Zero;
+                // programTime          = stream.ReadTimeSpan(pcgItPosition, chainOffset, out _) ?? TimeSpan.Zero;
                 programChainPrograms = stream.GetNumberOfPrograms(pcgItPosition, chainOffset);
             }
             else

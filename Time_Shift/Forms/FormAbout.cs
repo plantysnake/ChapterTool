@@ -33,8 +33,8 @@ namespace ChapterTool.Forms
         public FormAbout()
         {
             InitializeComponent();
-            //this.SizeChanged += new System.EventHandler(this.Form2_SizeChanged);
-            //this.BackColor = Color.DimGray;// "#252525";
+            // this.SizeChanged += new System.EventHandler(this.Form2_SizeChanged);
+            // this.BackColor = Color.DimGray; // "#252525";
             _poi                 = new Random().Next(1, 5);
             FormBorderStyle      = FormBorderStyle.None;
             linkLabel1.Text      = AssemblyProduct;
@@ -85,12 +85,12 @@ namespace ChapterTool.Forms
         private void button4_Click(object sender, EventArgs e) { if(_poi == 4) { CloseForm(); } }
 
 
-        //from http://www.sukitech.com/?p=948
+        // from http://www.sukitech.com/?p=948
         private Point _startPoint;
         private void Form2_MouseDown(object sender, MouseEventArgs e)
         {
             _startPoint = new Point(-e.X , -e.Y);
-            //startPoint = new Point(-e.X + SystemInformation.FrameBorderSize.Width, -e.Y - SystemInformation.FrameBorderSize.Height);
+            // startPoint = new Point(-e.X + SystemInformation.FrameBorderSize.Width, -e.Y - SystemInformation.FrameBorderSize.Height);
         }
 
         private void Form2_MouseMove(object sender, MouseEventArgs e)
@@ -103,7 +103,7 @@ namespace ChapterTool.Forms
 
         private void button5_Click(object sender, EventArgs e)
         {
-            //Thread.Sleep(20000);
+            // Thread.Sleep(20000);
             WindowState = FormWindowState.Minimized;
             Logger.Log("关于窗口被最小化");
         }

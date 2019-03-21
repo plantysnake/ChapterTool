@@ -34,7 +34,7 @@ namespace ChapterTool.Util
             var ret = new StringBuilder();
             process.Exited += (sender, args) => tcs.SetResult(ret);
             process.OutputDataReceived += (sender, args) => ret.AppendLine(args.Data?.Trim('\b', ' '));
-            //process.ErrorDataReceived += (s, ea) => Debug.WriteLine("ERR: " + ea.Data);
+            // process.ErrorDataReceived += (s, ea) => Debug.WriteLine("ERR: " + ea.Data);
 
             if (!process.Start())
             {

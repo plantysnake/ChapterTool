@@ -45,7 +45,7 @@ namespace ChapterTool.Util
 
         public static void SetLang(string lang, Control control, Type formType)
         {
-            //System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
+            // System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
             if (control == null) return;
             var resources = new System.ComponentModel.ComponentResourceManager(formType);
             AppLang(control, resources);

@@ -130,25 +130,25 @@ namespace ChapterTool.Util
             switch (func.Value)
             {
             case "abs"  : ret.Number = Math.Abs(value.Number); break;
-            case "acos" : ret.Number = (decimal)Math.Acos ((double)value.Number); break;
-            case "asin" : ret.Number = (decimal)Math.Asin ((double)value.Number); break;
-            case "atan" : ret.Number = (decimal)Math.Atan ((double)value.Number); break;
-            case "cos"  : ret.Number = (decimal)Math.Cos  ((double)value.Number); break;
-            case "sin"  : ret.Number = (decimal)Math.Sin  ((double)value.Number); break;
-            case "tan"  : ret.Number = (decimal)Math.Tan  ((double)value.Number); break;
-            case "cosh" : ret.Number = (decimal)Math.Cosh ((double)value.Number); break;
-            case "sinh" : ret.Number = (decimal)Math.Sinh ((double)value.Number); break;
-            case "tanh" : ret.Number = (decimal)Math.Tanh ((double)value.Number); break;
-            case "exp"  : ret.Number = (decimal)Math.Exp  ((double)value.Number); break;
-            case "log"  : ret.Number = (decimal)Math.Log  ((double)value.Number); break;
-            case "log10": ret.Number = (decimal)Math.Log10((double)value.Number); break;
-            case "sqrt" : ret.Number = (decimal)Math.Sqrt ((double)value.Number); break;
-            case "ceil" : ret.Number = Math.Ceiling(value.Number); break;
-            case "floor": ret.Number = Math.Floor(value.Number); break;
-            case "round": ret.Number = Math.Round(value.Number); break;
+            case "acos" : ret.Number = (decimal)Math.Acos   ((double)value.Number); break;
+            case "asin" : ret.Number = (decimal)Math.Asin   ((double)value.Number); break;
+            case "atan" : ret.Number = (decimal)Math.Atan   ((double)value.Number); break;
+            case "cos"  : ret.Number = (decimal)Math.Cos    ((double)value.Number); break;
+            case "sin"  : ret.Number = (decimal)Math.Sin    ((double)value.Number); break;
+            case "tan"  : ret.Number = (decimal)Math.Tan    ((double)value.Number); break;
+            case "cosh" : ret.Number = (decimal)Math.Cosh   ((double)value.Number); break;
+            case "sinh" : ret.Number = (decimal)Math.Sinh   ((double)value.Number); break;
+            case "tanh" : ret.Number = (decimal)Math.Tanh   ((double)value.Number); break;
+            case "exp"  : ret.Number = (decimal)Math.Exp    ((double)value.Number); break;
+            case "log"  : ret.Number = (decimal)Math.Log    ((double)value.Number); break;
+            case "log10": ret.Number = (decimal)Math.Log10  ((double)value.Number); break;
+            case "sqrt" : ret.Number = (decimal)Math.Sqrt   ((double)value.Number); break;
+            case "ceil" : ret.Number =          Math.Ceiling(        value.Number); break;
+            case "floor": ret.Number =          Math.Floor  (        value.Number); break;
+            case "round": ret.Number =          Math.Round  (        value.Number); break;
             case "rand" : ret.Number = (decimal)Rnd.NextDouble(); break;
-            case "int"  : ret.Number = Math.Truncate(value.Number); break;
-            case "sign" : ret.Number = Math.Sign(value.Number); break;
+            case "int"  : ret.Number =          Math.Truncate(value.Number); break;
+            case "sign" : ret.Number =          Math.Sign(value.Number); break;
             }
             return ret;
         }
@@ -552,7 +552,6 @@ namespace ChapterTool.Util
 
             public static Token End => new Token("", Symbol.Blank);
             public static Token Zero => new Token("0", Symbol.Number);
-
 
             public Token()
             {

@@ -26,7 +26,7 @@ using System.Text;
 
 namespace ChapterTool.Util.ChapterData
 {
-    //https://github.com/lerks/BluRay/wiki/MPLS
+    // https://github.com/lerks/BluRay/wiki/MPLS
     public class MplsData
     {
         private readonly MplsHeader    _mplsHeader;
@@ -124,8 +124,8 @@ namespace ChapterTool.Util.ChapterData
 
     internal struct TypeIndicator
     {
-        public string Header;//4
-        public string Version;//4
+        public string Header; // 4
+        public string Version; // 4
         public override string ToString() => Header + Version;
     }
 
@@ -136,7 +136,7 @@ namespace ChapterTool.Util.ChapterData
         public uint PlayListMarkStartAddress;
         public uint ExtensionDataStartAddress;
         public AppInfoPlayList AppInfoPlayList;
-        //20bytes reserved
+        // 20bytes reserved
         public MplsHeader(Stream stream)
         {
             TypeIndicator.Header = Encoding.ASCII.GetString(stream.ReadBytes(4));
@@ -158,9 +158,9 @@ namespace ChapterTool.Util.ChapterData
     internal class AppInfoPlayList
     {
         public uint Length;
-        //1byte reserved
+        // 1byte reserved
         public byte PlaybackType;
-        //if PlaybackType == 0x02 || PlaybackType == 0x03:
+        // if PlaybackType == 0x02 || PlaybackType == 0x03:
         public ushort PlaybackCount;
         public UOMaskTable UOMaskTable;
 
@@ -270,7 +270,7 @@ namespace ChapterTool.Util.ChapterData
     internal class PlayList
     {
         public uint Length;
-        //2bytes reserved
+        // 2bytes reserved
         public ushort NumberOfPlayItems;
         public ushort NumberOfSubPaths;
         public PlayItem[] PlayItems;
@@ -304,8 +304,8 @@ namespace ChapterTool.Util.ChapterData
 
     public class ClipName
     {
-        public string ClipInformationFileName;//5
-        public string ClipCodecIdentifier;//4
+        public string ClipInformationFileName; // 5
+        public string ClipCodecIdentifier; // 4
 
         public ClipName(Stream stream)
         {
@@ -358,9 +358,9 @@ namespace ChapterTool.Util.ChapterData
         private readonly byte _flagField2;
         public bool PlayItemRandomAccessFlag => (_flagField2 >> 7) == 1;
         public byte StillMode;
-        //if StillMode == 0x01:
+        // if StillMode == 0x01:
         public ushort StillTime;
-        //if IsMultiAngle:
+        // if IsMultiAngle:
         public MultiAngle MultiAngle;
         public STNTable STNTable;
 
@@ -422,7 +422,7 @@ namespace ChapterTool.Util.ChapterData
     public class SubPath
     {
         public uint Length;
-        //1byte reserved
+        // 1byte reserved
         public byte SubPathType;
         private readonly ushort _flagField;
         public bool IsRepeatSubPath => (_flagField & 1) == 1;
@@ -450,8 +450,8 @@ namespace ChapterTool.Util.ChapterData
     {
         public ushort Length;
         public ClipName ClipName;
-        //3bytes reserved
-        //3bits reserved
+        // 3bytes reserved
+        // 3bits reserved
         private readonly byte _flagField;
         private byte ConnectionCondition => (byte) (_flagField >> 1);
         private bool IsMultiClipEntries => (_flagField & 1) == 1;
@@ -459,7 +459,7 @@ namespace ChapterTool.Util.ChapterData
         public TimeInfo TimeInfo;
         public ushort SyncPlayItemID;
         public uint SyncStartPTS;
-        //if IsMultiClipEntries == 1:
+        // if IsMultiClipEntries == 1:
         public byte NumberOfMultiClipEntries;
         public ClipNameWithRef[] MultiClipNameEntries;
 
@@ -491,7 +491,7 @@ namespace ChapterTool.Util.ChapterData
     public class STNTable
     {
         public ushort Length;
-        //2bytes reserve
+        // 2bytes reserve
         public byte NumberOfPrimaryVideoStreamEntries;
         public byte NumberOfPrimaryAudioStreamEntries;
         public byte NumberOfPrimaryPGStreamEntries;
@@ -626,7 +626,7 @@ namespace ChapterTool.Util.ChapterData
         public byte AudioFormat => (byte)(_audioInfo >> 4);
         public byte SampleRate => (byte)(_audioInfo & 0xf);
         public byte CharacterCode;
-        public string LanguageCode;//3
+        public string LanguageCode; // 3
 
         public StreamAttributes(Stream stream)
         {
@@ -665,7 +665,7 @@ namespace ChapterTool.Util.ChapterData
 
     public class Mark
     {
-        //1byte reserved
+        // 1byte reserved
         public byte MarkType;
         public ushort RefToPlayItemID;
         public uint MarkTimeStamp;
@@ -707,7 +707,7 @@ namespace ChapterTool.Util.ChapterData
     {
         public uint Length;
         public uint DataBlockStartAddress;
-        //3bytes reserved
+        // 3bytes reserved
         public byte NumberOfExtDataEntries;
         public ExtDataEntry[] ExtDataEntries;
 
