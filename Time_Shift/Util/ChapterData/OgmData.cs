@@ -18,16 +18,16 @@
 //
 // ****************************************************************************
 
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-
 namespace ChapterTool.Util.ChapterData
 {
+    using System;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+
     public static class OgmData
     {
         private static readonly Regex RTimeCodeLine = new Regex(@"^\s*CHAPTER\d+\s*=\s*(.*)", RegexOptions.Compiled);
-        private static readonly Regex RNameLine     = new Regex(@"^\s*CHAPTER\d+NAME\s*=\s*(?<chapterName>.*)", RegexOptions.Compiled);
+        private static readonly Regex RNameLine = new Regex(@"^\s*CHAPTER\d+NAME\s*=\s*(?<chapterName>.*)", RegexOptions.Compiled);
 
         public static event Action<string> OnLog;
 
@@ -42,7 +42,7 @@ namespace ChapterTool.Util.ChapterData
         public static ChapterInfo GetChapterInfo(string text)
         {
             var index = 0;
-            var info  = new ChapterInfo { SourceType = "OGM", Tag = text, TagType = text.GetType() };
+            var info = new ChapterInfo { SourceType = "OGM", Tag = text, TagType = text.GetType() };
             var lines = text.Trim(' ', '\t', '\r', '\n').Split('\n');
             var state = LineState.LTimeCode;
             TimeSpan timeCode = TimeSpan.Zero, initialTime;
@@ -63,7 +63,7 @@ namespace ChapterTool.Util.ChapterData
                         if (RTimeCodeLine.Match(line).Success)
                         {
                             timeCode = ToolKits.RTimeFormat.Match(line).Value.ToTimeSpan() - initialTime;
-                            state    = LineState.LName;
+                            state = LineState.LName;
                             break;
                         }
                         state = LineState.LError;   // 未获得预期的时间信息，中断解析
@@ -91,7 +91,7 @@ namespace ChapterTool.Util.ChapterData
                         break;
                 }
             }
-            EXIT_1:
+        EXIT_1:
             info.Duration = info.Chapters.Last().Time;
             return info;
         }

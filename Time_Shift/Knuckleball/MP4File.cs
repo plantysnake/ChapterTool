@@ -12,14 +12,14 @@
 //
 // </copyright>
 // -----------------------------------------------------------------------
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
-
 namespace Knuckleball
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Runtime.InteropServices;
+    using System.Text;
+
     /// <summary>
     /// Represents an instance of an MP4 file.
     /// </summary>

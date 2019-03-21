@@ -2,11 +2,11 @@
 // Public Domain
 // code from http://sourceforge.net/projects/gmkvextractgui/
 // ****************************************************************************
-using System;
-using System.Text;
-
 namespace ChapterTool.Util
 {
+    using System;
+    using System.Text;
+
     public static class Logger
     {
         private static readonly StringBuilder LogContext = new StringBuilder();
@@ -17,7 +17,7 @@ namespace ChapterTool.Util
 
         public static void Log(string message)
         {
-            var actionDate    = DateTime.Now;
+            var actionDate = DateTime.Now;
             string logMessage = $"{actionDate:[yyyy-MM-dd][HH:mm:ss]} {message}";
             LogContext.AppendLine(logMessage);
             OnLogLineAdded(logMessage, actionDate);

@@ -18,10 +18,11 @@
 //
 // ****************************************************************************
 
-using Knuckleball;
-
 namespace ChapterTool.Util.ChapterData
 {
+    using ChapterTool.Util;
+    using Knuckleball;
+
     public class Mp4Data
     {
         public ChapterInfo Chapter { get; private set; }
@@ -34,7 +35,7 @@ namespace ChapterTool.Util.ChapterData
             var index = 0;
             foreach (var chapterClip in file.Chapters)
             {
-                Chapter.Chapters.Add(new Chapter(chapterClip.Title, Chapter.Duration, ++index));
+                Chapter.Chapters.Add(new Util.Chapter(chapterClip.Title, Chapter.Duration, ++index));
                 Chapter.Duration += chapterClip.Duration;
             }
         }

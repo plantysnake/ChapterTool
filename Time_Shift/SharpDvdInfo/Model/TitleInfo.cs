@@ -65,7 +65,7 @@ namespace SharpDvdInfo.Model
         /// <summary>
         /// List of audio streams
         /// </summary>
-        public List<AudioProperties> AudioStreams { get; set; } 
+        public List<AudioProperties> AudioStreams { get; set; }
 
         /// <summary>
         /// List of subpicture streams
@@ -75,6 +75,6 @@ namespace SharpDvdInfo.Model
         /// <summary>
         /// List of chapters
         /// </summary>
-        public List<TimeSpan> Chapters { get; set; } 
+        public List<TimeSpan> Chapters { get; set; }
     }
 }

@@ -18,12 +18,12 @@
 //
 // ****************************************************************************
 
-using System;
-using System.Diagnostics;
-using System.IO;
-
 namespace ChapterTool.Util.ChapterData
 {
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+
     public static class IfoParser
     {
         internal static byte[] GetFileBlock(this FileStream ifoStream, long position, int count)
@@ -37,7 +37,8 @@ namespace ChapterTool.Util.ChapterData
 
         private static byte? GetFrames(byte value)
         {
-            if (((value >> 6) & 0x01) == 1) // check whether the second bit of value is 1
+            // check whether the second bit of value is 1
+            if (((value >> 6) & 0x01) == 1)
             {
                 return (byte)BcdToInt((byte)(value & 0x3F)); // only last 6 bits is in use, show as BCD code
             }
@@ -78,9 +79,10 @@ namespace ChapterTool.Util.ChapterData
         /// <param name="isNTSC">frame rate mode of the chapter</param>
         internal static IfoTimeSpan? ReadTimeSpan(byte[] playbackBytes, out bool isNTSC)
         {
-            var frames    = GetFrames(playbackBytes[3]);
-            var fpsMask   = playbackBytes[3] >> 6;
-            Debug.Assert(fpsMask == 0x01 || fpsMask == 0x03);
+            var frames = GetFrames(playbackBytes[3]);
+            var fpsMask = playbackBytes[3] >> 6;
+            Debug.Assert(fpsMask == 0x01 || fpsMask == 0x03, "only 25fps or 30fps is supported");
+
             // var fps = fpsMask == 0x01 ? 25M : fpsMask == 0x03 ? (30M / 1.001M) : 0;
             isNTSC = fpsMask == 0x03;
             if (frames == null) return null;
@@ -89,7 +91,7 @@ namespace ChapterTool.Util.ChapterData
                 var hours = BcdToInt(playbackBytes[0]);
                 var minutes = BcdToInt(playbackBytes[1]);
                 var seconds = BcdToInt(playbackBytes[2]);
-                return new IfoTimeSpan(hours, minutes, seconds, (int) frames, isNTSC);
+                return new IfoTimeSpan(hours, minutes, seconds, (int)frames, isNTSC);
             }
             catch (Exception exception)
             {
@@ -106,8 +108,8 @@ namespace ChapterTool.Util.ChapterData
         public static int GetPGCnb(string fileName)
         {
             var ifoStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            var offset          = ToInt32(GetFileBlock(ifoStream, 0xCC, 4));    // Read PGC offset
-            ifoStream.Seek(2048 * offset + 0x01, SeekOrigin.Begin);               // Move to beginning of PGC
+            var offset = ToInt32(GetFileBlock(ifoStream, 0xCC, 4));    // Read PGC offset
+            ifoStream.Seek((2048 * offset) + 0x01, SeekOrigin.Begin);               // Move to beginning of PGC
             // long VTS_PGCITI_start_position = ifoStream.Position - 1;
             var nPGCs = ifoStream.ReadByte();       // Number of PGCs
             ifoStream.Close();
@@ -115,8 +117,10 @@ namespace ChapterTool.Util.ChapterData
         }
 
         internal static short ToInt16(byte[] bytes) => (short)((bytes[0] << 8) + bytes[1]);
-        private static uint ToInt32(byte[] bytes)   => (uint)((bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3]);
-        public static int BcdToInt(byte value)      => (0xFF & (value >> 4)) * 10 + (value & 0x0F);
+
+        private static uint ToInt32(byte[] bytes) => (uint)((bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3]);
+
+        public static int BcdToInt(byte value) => ((0xFF & (value >> 4)) * 10) + (value & 0x0F);
 
         private static long ToFilePosition(byte[] bytes) => ToInt32(bytes) * 0x800L;
     }

@@ -18,16 +18,16 @@
 //
 // ****************************************************************************
 
-using System;
-using System.IO;
-using System.Xml;
-using System.Linq;
-using System.Xml.Serialization;
-using System.Collections.Generic;
-using ChapterTool.Util.ChapterData.Serializable;
-
 namespace ChapterTool.Util.ChapterData
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Xml;
+    using System.Xml.Serialization;
+    using ChapterTool.Util.ChapterData.Serializable;
+
     public static class XmlData
     {
         public static IEnumerable<ChapterInfo> ParseXml(XmlDocument doc)
@@ -42,16 +42,19 @@ namespace ChapterTool.Util.ChapterData
                 throw new Exception($"Invalid Xml file.\nroot node Name: {root.Name}");
             }
 
-            foreach (XmlNode editionEntry in root.ChildNodes)//Get Entrance for each chapter
+            // Get Entrance for each chapter
+            foreach (XmlNode editionEntry in root.ChildNodes)
             {
                 if (editionEntry.NodeType == XmlNodeType.Comment) continue;
                 if (editionEntry.Name != "EditionEntry")
                 {
                     throw new Exception($"Invalid Xml file.\nEntry Name: {editionEntry.Name}");
                 }
-                var buff  = new ChapterInfo { SourceType = "XML", Tag = doc, TagType = doc.GetType() };
+                var buff = new ChapterInfo { SourceType = "XML", Tag = doc, TagType = doc.GetType() };
                 var index = 0;
-                foreach (XmlNode editionEntryChildNode in ((XmlElement)editionEntry).ChildNodes)//Get all the child nodes in current chapter
+
+                // Get all the child nodes in current chapter
+                foreach (XmlNode editionEntryChildNode in ((XmlElement)editionEntry).ChildNodes)
                 {
                     if (editionEntryChildNode.Name != "ChapterAtom") continue;
                     buff.Chapters.AddRange(ParseChapterAtom(editionEntryChildNode, ++index));
@@ -65,6 +68,7 @@ namespace ChapterTool.Util.ChapterData
                         buff.Chapters.Remove(buff.Chapters[i--]);
                     }
                 }
+
                 // buff.Chapters = buff.Chapters.Distinct().ToList();
                 yield return buff;
             }
@@ -72,10 +76,12 @@ namespace ChapterTool.Util.ChapterData
 
         private static IEnumerable<Chapter> ParseChapterAtom(XmlNode chapterAtom, int index)
         {
-            var startChapter     = new Chapter { Number = index };
-            var endChapter       = new Chapter { Number = index };
+            var startChapter = new Chapter { Number = index };
+            var endChapter = new Chapter { Number = index };
             var innerChapterAtom = new List<Chapter>();
-            foreach (XmlNode chapterAtomChildNode in ((XmlElement)chapterAtom).ChildNodes) // Get detail info for current chapter node
+
+            // Get detail info for current chapter node
+            foreach (XmlNode chapterAtomChildNode in ((XmlElement)chapterAtom).ChildNodes)
             {
                 switch (chapterAtomChildNode.Name)
                 {
@@ -96,11 +102,12 @@ namespace ChapterTool.Util.ChapterData
                         }
                         endChapter.Name = startChapter.Name;
                         break;
-                    case "ChapterAtom"://Handling sub chapters.
+                    case "ChapterAtom": // Handling sub chapters.
                         innerChapterAtom.AddRange(ParseChapterAtom(chapterAtomChildNode, index));
                         break;
                 }
             }
+
             // make sure the sub chapters outputted in correct order.
             yield return startChapter;
 
@@ -145,11 +152,12 @@ namespace ChapterTool.Util.ChapterData
                 {
                     Number = index,
                     Time = ToolKits.RTimeFormat.Match(atom.ChapterTimeStart).Value.ToTimeSpan(),
-                    Name = atom.ChapterDisplay.ChapterString ?? ""
+                    Name = atom.ChapterDisplay.ChapterString ?? string.Empty
                 };
                 yield return startChapter;
             }
             if (atom.SubChapterAtom != null)
+            {
                 foreach (var chapterAtom in atom.SubChapterAtom)
                 {
                     foreach (var chapter in ToChapter(chapterAtom, index))
@@ -157,6 +165,7 @@ namespace ChapterTool.Util.ChapterData
                         yield return chapter;
                     }
                 }
+            }
 
             if (atom.ChapterTimeEnd != null)
             {
@@ -164,7 +173,7 @@ namespace ChapterTool.Util.ChapterData
                 {
                     Number = index,
                     Time = ToolKits.RTimeFormat.Match(atom.ChapterTimeEnd).Value.ToTimeSpan(),
-                    Name = atom.ChapterDisplay.ChapterString ?? ""
+                    Name = atom.ChapterDisplay.ChapterString ?? string.Empty
                 };
                 yield return endChapter;
             }

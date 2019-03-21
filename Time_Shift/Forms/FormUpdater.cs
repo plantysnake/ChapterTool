@@ -1,12 +1,12 @@
-using System;
-using System.IO;
-using System.Net;
-using System.Drawing;
-using System.Windows.Forms;
-using System.ComponentModel;
-
 namespace ChapterTool.Forms
 {
+    using System;
+    using System.ComponentModel;
+    using System.Drawing;
+    using System.IO;
+    using System.Net;
+    using System.Windows.Forms;
+
     public partial class FormUpdater : Form
     {
         private readonly string _newPath;
@@ -24,10 +24,10 @@ namespace ChapterTool.Forms
         public FormUpdater(string currentProgram, Version version, string baseUrl)
         {
             InitializeComponent();
-            Icon              = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-            _newPath          = currentProgram + ".new";
-            _exePath          = currentProgram;
-            _backupPath       = currentProgram + ".bak";
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            _newPath = currentProgram + ".new";
+            _exePath = currentProgram;
+            _backupPath = currentProgram + ".bak";
             labelVersion.Text = version.ToString();
             _baseUrl = baseUrl;
             _version = version;
@@ -36,7 +36,7 @@ namespace ChapterTool.Forms
         private void FormUpdater_Load(object sender, EventArgs e)
         {
             _client = new WebClient();
-            _client.DownloadFileCompleted   += client_DownloadFileCompleted;
+            _client.DownloadFileCompleted += client_DownloadFileCompleted;
             _client.DownloadProgressChanged += client_DownloadProgressChanged;
             _client.DownloadFileAsync(new Uri($"http://{_baseUrl}/bin/ChapterTool.v{_version}.exe"), _newPath);
         }

@@ -18,36 +18,43 @@
 //
 // ****************************************************************************
 
-using System;
-using System.IO;
-using System.Xml;
-using System.Text;
-using System.Linq;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Collections.Generic;
-
 namespace ChapterTool.Util
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Windows.Forms;
+    using System.Xml;
+
     public class ChapterInfo
     {
         /// <summary>
         /// The title of Chapter
         /// </summary>
-        public string Title           { get; set; }
+        public string Title { get; set; }
+
         /// <summary>
         /// Corresponding Video file
         /// </summary>
-        public string SourceName      { get; set; }
-        public string SourceIndex     { get; set; }
-        public string SourceType      { get; set; }
+        public string SourceName { get; set; }
+
+        public string SourceIndex { get; set; }
+
+        public string SourceType { get; set; }
+
         public decimal FramesPerSecond { get; set; }
-        public TimeSpan Duration      { get; set; }
+
+        public TimeSpan Duration { get; set; }
+
         public List<Chapter> Chapters { get; set; } = new List<Chapter>();
 
         public Expression Expr { get; set; } = Expression.Empty;
 
         public Type TagType { get; set; }
+
         public object Tag
         {
             get => _tag;
@@ -58,32 +65,33 @@ namespace ChapterTool.Util
                 _tag = value;
             }
         }
+
         private object _tag;
 
         public override string ToString() => $"{Title} - {SourceType} - {Duration.Time2String()} - [{Chapters.Count} Chapters]";
 
         private static readonly Color EVEN_COLOR = Color.FromArgb(0xFF, 0x92, 0xAA, 0xF3);
-        private static readonly Color ODD_COLOR  = Color.FromArgb(0xFF, 0xF3, 0xF7, 0xF7);
+        private static readonly Color ODD_COLOR = Color.FromArgb(0xFF, 0xF3, 0xF7, 0xF7);
 
         public DataGridViewRow GetRow(int index, bool autoGenName)
         {
             var row = new DataGridViewRow
             {
                 Tag = Chapters[index], // 绑定对象，以便删除行时可以得知对应的 Chapter
-                DefaultCellStyle = {BackColor = (Chapters[index].Number - 1)%2 == 0 ? EVEN_COLOR : ODD_COLOR}
+                DefaultCellStyle = { BackColor = (Chapters[index].Number - 1) % 2 == 0 ? EVEN_COLOR : ODD_COLOR }
             };
             if (Chapters[index].Number == -1)
             {
                 row.DefaultCellStyle.BackColor = Color.Black;
                 row.Height = 3;
                 for (var i = 0; i < 4; ++i)
-                    row.Cells.Add(new DataGridViewTextBoxCell {Value = ""});
+                    row.Cells.Add(new DataGridViewTextBoxCell { Value = string.Empty });
                 return row;
             }
-            row.Cells.Add(new DataGridViewTextBoxCell {Value = $"{Chapters[index].Number:D2}"});
-            row.Cells.Add(new DataGridViewTextBoxCell {Value = Time2String(Chapters[index])});
-            row.Cells.Add(new DataGridViewTextBoxCell {Value = autoGenName ? ChapterName.Get(index + 1) : Chapters[index].Name});
-            row.Cells.Add(new DataGridViewTextBoxCell {Value = Chapters[index].FramesInfo});
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = $"{Chapters[index].Number:D2}" });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = Time2String(Chapters[index]) });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = autoGenName ? ChapterName.Get(index + 1) : Chapters[index].Name });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = Chapters[index].FramesInfo });
             return row;
         }
 
@@ -96,8 +104,8 @@ namespace ChapterTool.Util
         public void EditRow(DataGridViewRow row, bool autoGenName)
         {
             var item = Chapters[row.Index];
-            row.Tag  = item;
-            row.DefaultCellStyle.BackColor = (item.Number-1)%2 == 0 ? EVEN_COLOR : ODD_COLOR;
+            row.Tag = item;
+            row.DefaultCellStyle.BackColor = (item.Number - 1) % 2 == 0 ? EVEN_COLOR : ODD_COLOR;
             row.Cells[0].Value = $"{item.Number:D2}";
             row.Cells[1].Value = item.Time2String(this);
             row.Cells[2].Value = autoGenName ? ChapterName.Get(row.Index + 1) : item.Name;
@@ -114,21 +122,21 @@ namespace ChapterTool.Util
         {
             var fullChapter = new ChapterInfo
             {
-                Title           = "FULL Chapter",
-                SourceType      = type,
+                Title = "FULL Chapter",
+                SourceType = type,
                 FramesPerSecond = source.First().FramesPerSecond
             };
             var duration = TimeSpan.Zero;
-            var name     = new ChapterName();
+            var name = new ChapterName();
             foreach (var chapterClip in source)
             {
                 foreach (var item in chapterClip.Chapters)
                 {
                     fullChapter.Chapters.Add(new Chapter
                     {
-                        Time   = duration + item.Time,
+                        Time = duration + item.Time,
                         Number = name.Index,
-                        Name   = name.Get()
+                        Name = name.Get()
                     });
                 }
                 duration += chapterClip.Duration; // 每次加上当前段的总时长作为下一段位移的基准
@@ -147,16 +155,16 @@ namespace ChapterTool.Util
             for (var i = 0; i < Chapters.Count; i++)
             {
                 var c = Chapters[i];
-                var frames = (decimal) c.Time.TotalSeconds * FramesPerSecond;
+                var frames = (decimal)c.Time.TotalSeconds * FramesPerSecond;
                 Chapters[i] = new Chapter
                 {
                     Name = c.Name,
-                    Time = new TimeSpan((long) Math.Round(frames/fps*TimeSpan.TicksPerSecond))
+                    Time = new TimeSpan((long)Math.Round(frames / fps * TimeSpan.TicksPerSecond))
                 };
             }
 
-            var totalFrames = (decimal) Duration.TotalSeconds * FramesPerSecond;
-            Duration        = new TimeSpan((long) Math.Round(totalFrames/fps*TimeSpan.TicksPerSecond));
+            var totalFrames = (decimal)Duration.TotalSeconds * FramesPerSecond;
+            Duration = new TimeSpan((long)Math.Round(totalFrames / fps * TimeSpan.TicksPerSecond));
             FramesPerSecond = fps;
         }
 
@@ -204,7 +212,7 @@ namespace ChapterTool.Util
         public string GetText(bool autoGenName)
         {
             var lines = new StringBuilder();
-            var name  = ChapterName.GetChapterName();
+            var name = ChapterName.GetChapterName();
             foreach (var item in Chapters.Where(c => c.Time != TimeSpan.MinValue))
             {
                 lines.Append($"CHAPTER{item.Number:D2}={Time2String(item)}{Environment.NewLine}");
@@ -251,17 +259,20 @@ namespace ChapterTool.Util
                 var time = 0.0;
                 try
                 {
-                    time = times.Aggregate(time, (current, t) => current*60 + double.Parse(t));
+                    time = times.Aggregate(time, (current, t) => (current * 60) + double.Parse(t));
                 }
                 catch (Exception)
                 {
                     continue;
                 }
                 int frame;
-                if (string.IsNullOrEmpty(tcfile)) frame = (int) (time + 0.001*fps);
+                if (string.IsNullOrEmpty(tcfile))
+                {
+                    frame = (int)(time + (0.001 * fps));
+                }
                 else
                 {
-                    var timeLower = (time - 0.0005)*1000;
+                    var timeLower = (time - 0.0005) * 1000;
                     while (true)
                     {
                         if (tclines != null && double.Parse(tclines[tcindex]) >= timeLower) break;
@@ -269,8 +280,11 @@ namespace ChapterTool.Util
                         {
                             ++tcindex;
                             if (tclines != null && tcindex >= tclines.Length)
+                            {
                                 throw new IndexOutOfRangeException(
                                     "TC index out of range! TC file and Chapter file mismatch?");
+                            }
+
                             if (tclines != null && char.IsDigit(tclines[tcindex].Trim().First())) break;
                         }
                         ++tcframe;
@@ -282,7 +296,7 @@ namespace ChapterTool.Util
             File.WriteAllLines(opath, olines);
         }
 
-        public string[] GetCelltimes() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => ((long) Math.Round((decimal) c.Time.TotalSeconds * FramesPerSecond)).ToString()).ToArray();
+        public string[] GetCelltimes() => Chapters.Where(c => c.Time != TimeSpan.MinValue).Select(c => ((long)Math.Round((decimal)c.Time.TotalSeconds * FramesPerSecond)).ToString()).ToArray();
 
         public string GetTsmuxerMeta()
         {
@@ -297,30 +311,30 @@ namespace ChapterTool.Util
         public void SaveXml(string filename, string lang, bool autoGenName)
         {
             if (string.IsNullOrWhiteSpace(lang)) lang = "und";
-            var rndb           = new Random();
-            var xmlchap = new XmlTextWriter(filename, Encoding.UTF8) {Formatting = Formatting.Indented};
+            var rndb = new Random();
+            var xmlchap = new XmlTextWriter(filename, Encoding.UTF8) { Formatting = Formatting.Indented };
             xmlchap.WriteStartDocument();
             xmlchap.WriteComment("<!DOCTYPE Tags SYSTEM \"matroskatags.dtd\">");
             xmlchap.WriteStartElement("Chapters");
-              xmlchap.WriteStartElement("EditionEntry");
-                xmlchap.WriteElementString("EditionFlagHidden", "0");
-                xmlchap.WriteElementString("EditionFlagDefault", "0");
-                xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                var name = ChapterName.GetChapterName();
-                foreach (var item in Chapters.Where(c => c.Time != TimeSpan.MinValue))
-                {
-                    xmlchap.WriteStartElement("ChapterAtom");
-                      xmlchap.WriteStartElement("ChapterDisplay");
-                        xmlchap.WriteElementString("ChapterString", autoGenName ? name() : item.Name);
-                        xmlchap.WriteElementString("ChapterLanguage", lang);
-                      xmlchap.WriteEndElement();
-                    xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
-                    xmlchap.WriteElementString("ChapterTimeStart", Time2String(item) + "000");
-                    xmlchap.WriteElementString("ChapterFlagHidden", "0");
-                    xmlchap.WriteElementString("ChapterFlagEnabled", "1");
-                    xmlchap.WriteEndElement();
-                }
-              xmlchap.WriteEndElement();
+            xmlchap.WriteStartElement("EditionEntry");
+            xmlchap.WriteElementString("EditionFlagHidden", "0");
+            xmlchap.WriteElementString("EditionFlagDefault", "0");
+            xmlchap.WriteElementString("EditionUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
+            var name = ChapterName.GetChapterName();
+            foreach (var item in Chapters.Where(c => c.Time != TimeSpan.MinValue))
+            {
+                xmlchap.WriteStartElement("ChapterAtom");
+                xmlchap.WriteStartElement("ChapterDisplay");
+                xmlchap.WriteElementString("ChapterString", autoGenName ? name() : item.Name);
+                xmlchap.WriteElementString("ChapterLanguage", lang);
+                xmlchap.WriteEndElement();
+                xmlchap.WriteElementString("ChapterUID", Convert.ToString(rndb.Next(1, int.MaxValue)));
+                xmlchap.WriteElementString("ChapterTimeStart", Time2String(item) + "000");
+                xmlchap.WriteElementString("ChapterFlagHidden", "0");
+                xmlchap.WriteElementString("ChapterFlagEnabled", "1");
+                xmlchap.WriteEndElement();
+            }
+            xmlchap.WriteEndElement();
             xmlchap.WriteEndElement();
             xmlchap.Flush();
             xmlchap.Close();
@@ -335,10 +349,10 @@ namespace ChapterTool.Util
             cueBuilder.AppendLine($"FILE \"{sourceFileName}\" WAVE");
             var index = 0;
             var name = ChapterName.GetChapterName();
-            foreach (var chapter in Chapters.Where(c=>c.Time != TimeSpan.MinValue))
+            foreach (var chapter in Chapters.Where(c => c.Time != TimeSpan.MinValue))
             {
                 cueBuilder.AppendLine($"  TRACK {++index:D2} AUDIO");
-                cueBuilder.AppendLine($"    TITLE \"{(autoGenName ? name(): chapter.Name)}\"");
+                cueBuilder.AppendLine($"    TITLE \"{(autoGenName ? name() : chapter.Name)}\"");
                 cueBuilder.AppendLine($"    INDEX 01 {chapter.Time.ToCueTimeStamp()}");
             }
             return cueBuilder;

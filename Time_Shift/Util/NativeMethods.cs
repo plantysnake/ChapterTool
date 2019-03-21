@@ -1,19 +1,18 @@
-﻿using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
-
-namespace ChapterTool.Util
+﻿namespace ChapterTool.Util
 {
+    using System;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices;
+    using System.Windows.Forms;
+
     public static class NativeMethods
     {
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
+
         // 1 = normal (green);
         // 2 = error (red);
         // 3 = warning (yellow);
-        // 
-
         public static void SetState(this ProgressBar pBar, int state)
         {
             SendMessage(pBar.Handle, 1040, (IntPtr)state, IntPtr.Zero);

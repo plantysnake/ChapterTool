@@ -97,7 +97,7 @@ namespace ChapterTool.Util.Tests
 
             var timer = new System.Diagnostics.Stopwatch();
             timer.Start();
-            var input  = File.ReadAllLines(path + "expression.in");
+            var input = File.ReadAllLines(path + "expression.in");
             var output = File.ReadAllLines(path + "expression.out");
             for (int i = 0; i < input.Length; ++i)
             {

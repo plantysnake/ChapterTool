@@ -1,8 +1,8 @@
-﻿using System;
-using System.IO;
-
-namespace ChapterTool.Util.ChapterData
+﻿namespace ChapterTool.Util.ChapterData
 {
+    using System;
+    using System.IO;
+
     internal static class StreamUtils
     {
         public static byte[] ReadBytes(this Stream fs, int length)
@@ -72,7 +72,7 @@ namespace ChapterTool.Util.ChapterData
         private int _bytePosition;
         private int _bitPositionInByte;
 
-        public int Position => _bytePosition * 8 + _bitPositionInByte;
+        public int Position => (_bytePosition * 8) + _bitPositionInByte;
 
         public BitReader(byte[] source)
         {

@@ -12,11 +12,11 @@
 //
 // </copyright>
 // -----------------------------------------------------------------------
-using System;
-using System.Globalization;
-
 namespace Knuckleball
 {
+    using System;
+    using System.Globalization;
+
     /// <summary>
     /// Represents a chapter in an MP4 file.
     /// </summary>

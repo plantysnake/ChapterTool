@@ -1,11 +1,11 @@
-﻿using System;
-using System.Windows.Forms;
-using System.Linq;
-using ChapterTool.Properties;
-using Microsoft.Win32;
-
-namespace ChapterTool
+﻿namespace ChapterTool
 {
+    using System;
+    using System.Linq;
+    using System.Windows.Forms;
+    using ChapterTool.Properties;
+    using Microsoft.Win32;
+
     static class Program
     {
         [STAThread]

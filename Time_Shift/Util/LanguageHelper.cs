@@ -1,13 +1,13 @@
-﻿using System;
-using System.Reflection;
-using System.Windows.Forms;
-
-namespace ChapterTool.Util
+﻿namespace ChapterTool.Util
 {
+    using System;
+    using System.Reflection;
+    using System.Windows.Forms;
+
     public class LanguageHelper
     {
-
         #region SetAllLang
+
         /// <summary>
         /// Set language
         /// </summary>
@@ -28,6 +28,7 @@ namespace ChapterTool.Util
         #endregion
 
         #region SetLang
+
         /// <summary>
         ///
         /// </summary>
@@ -54,6 +55,7 @@ namespace ChapterTool.Util
         #endregion
 
         #region AppLang for control
+
         /// <summary>
         ///  loop set the property of the control
         /// </summary>
@@ -94,6 +96,7 @@ namespace ChapterTool.Util
         #endregion
 
         #region AppLang for menuitem
+
         /// <summary>
         /// set the toolscript
         /// </summary>

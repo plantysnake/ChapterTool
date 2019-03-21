@@ -18,18 +18,23 @@
 //
 // ****************************************************************************
 
-using System;
-using System.Drawing;
-using System.Windows.Forms;
-using ChapterTool.Properties;
-
 namespace ChapterTool.Util
 {
+    using System;
+    using System.Drawing;
+    using System.Windows.Forms;
+    using ChapterTool.Properties;
+
     public static class Notification
     {
         public static DialogResult ShowError(string argMessage, Exception exception)
         {
-            var ret = MessageBox.Show(caption: Resources.Message_ChapterTool_Error,
+#pragma warning disable SA1113 // Comma must be on the same line as previous parameter
+#pragma warning disable SA1001 // Commas must be spaced correctly
+#pragma warning disable SA1115 // Parameter must follow comma
+#pragma warning disable SA1118 // Parameter must not span multiple lines
+            var ret = MessageBox.Show(
+                caption: Resources.Message_ChapterTool_Error,
                 text: $"{argMessage}:{Environment.NewLine}{exception.Message}"
 #if DEBUG
                 + $"{Environment.NewLine}{exception.StackTrace}", buttons: MessageBoxButtons.OK
@@ -37,6 +42,10 @@ namespace ChapterTool.Util
                 ,buttons: MessageBoxButtons.YesNo
 #endif
                 , icon: MessageBoxIcon.Hand);
+#pragma warning restore SA1118 // Parameter must not span multiple lines
+#pragma warning restore SA1115 // Parameter must follow comma
+#pragma warning restore SA1001 // Commas must be spaced correctly
+#pragma warning restore SA1113 // Comma must be on the same line as previous parameter
             if (ret != DialogResult.No) return ret;
             if (ShowInfo(Resources.Message_Stack) == DialogResult.Yes)
             {
@@ -47,7 +56,8 @@ namespace ChapterTool.Util
 
         public static DialogResult ShowInfo(string argMessage, MessageBoxButtons buttons = MessageBoxButtons.YesNo)
         {
-            return MessageBox.Show(caption: Resources.Message_ChapterTool_Info,
+            return MessageBox.Show(
+                caption: Resources.Message_ChapterTool_Info,
                 text: argMessage,
                 buttons: buttons, icon: MessageBoxIcon.Information);
         }
@@ -55,7 +65,7 @@ namespace ChapterTool.Util
         public static string InputBox(string caption, string prompt, string defaultText)
         {
             var localInputText = defaultText;
-            return InputQuery(caption, prompt, ref localInputText) ? localInputText : "";
+            return InputQuery(caption, prompt, ref localInputText) ? localInputText : string.Empty;
         }
 
         private static int MulDiv(int number, float numerator, int denominator)
@@ -65,8 +75,8 @@ namespace ChapterTool.Util
 
         private static Size ScaleSize(Size size, float width, float height)
         {
-            size.Height = (int)(size.Height*height);
-            size.Width = (int) (size.Width* width);
+            size.Height = (int)(size.Height * height);
+            size.Width = (int)(size.Width * width);
             return size;
         }
 
@@ -111,6 +121,7 @@ namespace ChapterTool.Util
             edInput.SelectAll();
 
             var buttonTop = MulDiv(41, dialogUnits.Height, 8);
+
             // Command buttons should be 50x14 dlus
             var buttonSize = ScaleSize(new Size(50, 14), dialogUnits.Width / 4, dialogUnits.Height / 8);
 

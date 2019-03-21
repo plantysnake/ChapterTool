@@ -2,14 +2,14 @@
 // Public Domain
 // code from http://sourceforge.net/projects/gmkvextractgui/
 // ****************************************************************************
-using System;
-using System.Drawing;
-using ChapterTool.Util;
-using System.Reflection;
-using System.Windows.Forms;
-
 namespace ChapterTool.Forms
 {
+    using System;
+    using System.Drawing;
+    using System.Reflection;
+    using System.Windows.Forms;
+    using ChapterTool.Util;
+
     public partial class FormLog : Form
     {
         public FormLog()
