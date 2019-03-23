@@ -1051,7 +1051,7 @@ namespace ChapterTool.Forms
             tsProgressBar1.Value = dataGridView1.RowCount > 1 ? 66 : 33;
         }
 
-        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             var rowIndex = e.RowIndex;
             if (rowIndex < 0)
@@ -1063,7 +1063,7 @@ namespace ChapterTool.Forms
 
             var chapter = row.Tag as Chapter;
             Debug.Assert(chapter != null, "Chapter should not be empty");
-            var newValue = row.Cells[columnIndex].Value.ToString();
+            var newValue = row.Cells[columnIndex].Value?.ToString() ?? string.Empty;
 
             TimeSpan newTime;
             var fpsIndex = comboBox1.SelectedIndex + 1;
@@ -1092,7 +1092,15 @@ namespace ChapterTool.Forms
                 default:
                     break;
             }
-            UpdateGridView(fpsIndex);
+            try
+            {
+                UpdateGridView(fpsIndex);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Log(ex.Message);
+            }
+
             void UpdateTime(TimeSpan time)
             {
                 if (time > TimeSpan.FromDays(1))
