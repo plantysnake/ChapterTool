@@ -51,9 +51,18 @@
 
         public static void GetDpi(this Screen screen, DpiType dpiType, out uint dpiX, out uint dpiY)
         {
-            var pnt = new System.Drawing.Point(screen.Bounds.Left + 1, screen.Bounds.Top + 1);
-            var mon = MonitorFromPoint(pnt, 2);
-            GetDpiForMonitor(mon, dpiType, out dpiX, out dpiY);
+            try
+            {
+                var pnt = new System.Drawing.Point(screen.Bounds.Left + 1, screen.Bounds.Top + 1);
+                var mon = MonitorFromPoint(pnt, 2);
+                GetDpiForMonitor(mon, dpiType, out dpiX, out dpiY);
+            }
+            catch (DllNotFoundException ex)
+            {
+                Logger.Log(ex.Message);
+                dpiX = 96;
+                dpiY = 96;
+            }
         }
 
         /// <summary>

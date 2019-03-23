@@ -1,4 +1,5 @@
 # ChapterTool [![Build status](https://ci.appveyor.com/api/projects/status/rtc76h5ulveafj5f?svg=true)](https://ci.appveyor.com/project/tautcony/chaptertool)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftautcony%2FChapterTool.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftautcony%2FChapterTool?ref=badge_shield)
 
 - ChapterTool is made for extracting chapter from various types of files and edit it.
 
@@ -50,3 +51,6 @@
 
  ![](https://img.shields.io/github/downloads/tautcony/chaptertool/total.svg)
  ![](https://img.shields.io/github/license/tautcony/chaptertool.svg)
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftautcony%2FChapterTool.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftautcony%2FChapterTool?ref=badge_large)
