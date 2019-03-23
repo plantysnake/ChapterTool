@@ -1049,12 +1049,59 @@ namespace ChapterTool.Forms
             tsProgressBar1.Value = dataGridView1.RowCount > 1 ? 66 : 33;
         }
 
-        private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            var chapter = dataGridView1.Rows[e.RowIndex].Tag as Chapter;
+            var rowIndex = e.RowIndex;
+            if (rowIndex < 0)
+            {
+                return;
+            }
+            var columnIndex = e.ColumnIndex;
+            var row = dataGridView1.Rows[rowIndex];
+
+            var chapter = row.Tag as Chapter;
             Debug.Assert(chapter != null, "Chapter should not be empty");
-            Log(string.Format(Resources.Log_Rename, chapter.Name, dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value));
-            chapter.Name = dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
+            var newValue = row.Cells[columnIndex].Value.ToString();
+
+            TimeSpan newTime;
+            var fpsIndex = comboBox1.SelectedIndex + 1;
+            switch (columnIndex)
+            {
+                case 1: // Time edited
+                    chapter.Time = TimeSpan.Zero;
+                    if (TimeSpan.TryParse(newValue, out newTime))
+                    {
+                        UpdateTime(newTime);
+                    }
+                    break;
+                case 2: // Chapter Name edited
+                    Log(string.Format(Resources.Log_Rename, chapter.Name, row.Cells[columnIndex].Value));
+                    chapter.Name = newValue;
+                    break;
+                case 3: // Frame edited
+                    chapter.Time = TimeSpan.Zero;
+                    int newFrame;
+                    if (int.TryParse(Regex.Match(newValue, @"\d+").Value, out newFrame))
+                    {
+                        newTime = TimeSpan.FromTicks((long)Math.Round(newFrame / MplsData.FrameRate[fpsIndex] * TimeSpan.TicksPerSecond));
+                        UpdateTime(newTime);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            UpdateGridView(fpsIndex);
+            void UpdateTime(TimeSpan time)
+            {
+                if (time > TimeSpan.FromDays(1))
+                {
+                    chapter.Time = TimeSpan.Zero;
+                }
+                else
+                {
+                    chapter.Time = time;
+                }
+            }
         }
 
         private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
@@ -1137,12 +1184,6 @@ namespace ChapterTool.Forms
             _info.FramesPerSecond = MplsData.FrameRate[autofpsCode];
             Log(string.Format(Resources.Log_FPS_Detect_Result, MplsData.FrameRate[autofpsCode]));
             return autofpsCode == 0 ? 1 : autofpsCode;
-        }
-
-        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.ColumnIndex != 3 || e.RowIndex < 0) return;
-            Clipboard.SetText((dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string ?? string.Empty).TrimEnd('K', '*', ' '));
         }
 
         private void FrameShiftForward()
