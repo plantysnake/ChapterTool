@@ -201,7 +201,8 @@ namespace ChapterTool.Forms
             savingType.SelectedIndex = 0;
             btnTrans.Text = Environment.TickCount % 2 == 0 ? "↺" : "↻";
             if (!IsRunningOnMono) folderBrowserDialog1.SelectedPath = RegistryStorage.Load();
-            Log(Updater.CheckUpdateWeekly("ChapterTool") ? Resources.Log_Update_Checked : Resources.Log_Update_Skiped);
+
+            // Log(Updater.CheckUpdateWeekly("ChapterTool") ? Resources.Log_Update_Checked : Resources.Log_Update_Skiped);
             if (string.IsNullOrEmpty(FilePath)) return;
             if (LoadFile()) UpdateGridView();
             if (!IsRunningOnMono) RegistryStorage.Save(Resources.Message_How_Can_You_Find_Here, @"Software\ChapterTool", string.Empty);
@@ -268,7 +269,8 @@ namespace ChapterTool.Forms
         {
             if (IsRunningOnMono) return;
             _systemMenu = new SystemMenu(this);
-            _systemMenu.AddCommand(Resources.Update_Check, Updater.CheckUpdate, true);
+
+            // _systemMenu.AddCommand(Resources.Update_Check, Updater.CheckUpdate, true);
             var resPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath) ?? string.Empty, "en-US");
             if (Directory.Exists(resPath))
             {
