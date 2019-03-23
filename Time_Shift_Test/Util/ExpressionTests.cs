@@ -18,7 +18,7 @@ namespace ChapterTool.Util.Tests
         }
 
         [TestMethod()]
-        public void ExpressionConverTest()
+        public void ExpressionConvertTest()
         {
             new Expression("2^10%10   + 6 \t///comment sample").ToString().Should().Be("2 10 ^ 10 % 6 +");
             new Expression("((a+b)*(c+d))/(((e)))").ToString().Should().Be("a b + c d + * e /");
@@ -97,7 +97,7 @@ namespace ChapterTool.Util.Tests
 
             var timer = new System.Diagnostics.Stopwatch();
             timer.Start();
-            var input  = File.ReadAllLines(path + "expression.in");
+            var input = File.ReadAllLines(path + "expression.in");
             var output = File.ReadAllLines(path + "expression.out");
             for (int i = 0; i < input.Length; ++i)
             {
@@ -120,14 +120,14 @@ namespace ChapterTool.Util.Tests
         [TestMethod()]
         public void TernaryOperatorTest()
         {
-            //x>22 ? x<96 ? 4*(x-16)^2+40000 : 65536:0
-            //x 22 > x 96 < x 16 - dup * 4 * 40000 + 65536 ? 0 ?
+            // x>22 ? x<96 ? 4*(x-16)^2+40000 : 65536:0
+            // x 22 > x 96 < x 16 - dup * 4 * 40000 + 65536 ? 0 ?
 
-            //a 20 < 65535 a 40 < x a 80 < y z ? ? ?
-            //a<20 ? 65535 : a < 40? x : a < 80 ? y : z
+            // a 20 < 65535 a 40 < x a 80 < y z ? ? ?
+            // a<20 ? 65535 : a < 40? x : a < 80 ? y : z
 
-            //x 32768 - -512 > 32768 32768 32768 x - 256 / sqrt 4 min 256 * - ?
-            //32768-x < 512 ? 32768 : 32768 - 256*min{sqrt[|32768-x|/256],4}
+            // x 32768 - -512 > 32768 32768 32768 x - 256 / sqrt 4 min 256 * - ?
+            // 32768-x < 512 ? 32768 : 32768 - 256*min{sqrt[|32768-x|/256],4}
         }
         */
     }

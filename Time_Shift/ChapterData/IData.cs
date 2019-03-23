@@ -1,7 +1,7 @@
-﻿using ChapterTool.Util;
-
-namespace ChapterTool.ChapterData
+﻿namespace ChapterTool.ChapterData
 {
+    using ChapterTool.Util;
+
     public interface IData// : IEnumerable<ChapterInfo>
     {
         int Count { get; }
@@ -10,6 +10,6 @@ namespace ChapterTool.ChapterData
 
         string ChapterType { get; }
 
-        //event Action<string> OnLog;
+        // event Action<string> OnLog;
     }
 }

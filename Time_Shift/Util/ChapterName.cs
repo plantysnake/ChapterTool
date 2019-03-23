@@ -17,11 +17,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
-using System;
-using System.Collections.Generic;
-
 namespace ChapterTool.Util
 {
+    using System;
+    using System.Collections.Generic;
+
     public class ChapterName
     {
         public int Index { get; private set; }
@@ -31,7 +31,7 @@ namespace ChapterTool.Util
         public static Func<string> GetChapterName(string chapterFormat = ChapterFormat)
         {
             var index = 1;
-            return () => $"{chapterFormat} {index++:D2}";
+            return () => $"{chapterFormat} {index++ :D2}";
         }
 
         public ChapterName(int index)
@@ -51,7 +51,7 @@ namespace ChapterTool.Util
 
         public string Get()
         {
-            return $"{ChapterFormat} {Index++:D2}";
+            return $"{ChapterFormat} {Index++ :D2}";
         }
 
         public static string Get(int index)

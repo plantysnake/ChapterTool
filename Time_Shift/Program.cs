@@ -1,11 +1,11 @@
-﻿using System;
-using System.Windows.Forms;
-using System.Linq;
-using ChapterTool.Properties;
-using Microsoft.Win32;
-
-namespace ChapterTool
+﻿namespace ChapterTool
 {
+    using System;
+    using System.Linq;
+    using System.Windows.Forms;
+    using ChapterTool.Properties;
+    using Microsoft.Win32;
+
     static class Program
     {
         [STAThread]
@@ -35,7 +35,7 @@ namespace ChapterTool
 
         private static bool IsSupportedRuntimeVersion()
         {
-            //https://msdn.microsoft.com/en-us/library/hh925568
+            // https://msdn.microsoft.com/en-us/library/hh925568
             const int minSupportedRelease = 394802;
             if (Util.RegistryStorage.Load(name: "DoVersionCheck") == "False") return true;
             using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full"))

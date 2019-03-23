@@ -102,7 +102,7 @@
             this.bordBack.TabIndex = 4;
             this.bordBack.Text = " ";
             this.bordBack.UseVisualStyleBackColor = false;
-            this.bordBack.Click += new System.EventHandler(this.bordBack_Click);
+            this.bordBack.Click += new System.EventHandler(this.borderBack_Click);
             // 
             // textFront
             // 

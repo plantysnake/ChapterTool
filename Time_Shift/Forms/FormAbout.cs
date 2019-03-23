@@ -17,30 +17,32 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
-using System;
-using System.Drawing;
-using System.Threading;
-using ChapterTool.Util;
-using System.Reflection;
-using System.Globalization;
-using System.Windows.Forms;
-
 namespace ChapterTool.Forms
 {
+    using System;
+    using System.Drawing;
+    using System.Globalization;
+    using System.Reflection;
+    using System.Threading;
+    using System.Windows.Forms;
+    using ChapterTool.Util;
+
     public partial class FormAbout : Form
     {
         private readonly int _poi;
+
         public FormAbout()
         {
             InitializeComponent();
-            //this.SizeChanged += new System.EventHandler(this.Form2_SizeChanged);
-            //this.BackColor = Color.DimGray;// "#252525";
-            _poi                 = new Random().Next(1, 5);
-            FormBorderStyle      = FormBorderStyle.None;
-            linkLabel1.Text      = AssemblyProduct;
-            label2.Text          = $"Version {AssemblyVersion}";
-            label3.Text          = System.IO.File.GetLastWriteTime(Application.ExecutablePath).ToString(CultureInfo.InvariantCulture);
-            notifyIcon1.Visible  = false;
+
+            // this.SizeChanged += new System.EventHandler(this.Form2_SizeChanged);
+            // this.BackColor = Color.DimGray; // "#252525";
+            _poi = new Random().Next(1, 5);
+            FormBorderStyle = FormBorderStyle.None;
+            linkLabel1.Text = AssemblyProduct;
+            label2.Text = $"Version {AssemblyVersion}";
+            label3.Text = System.IO.File.GetLastWriteTime(Application.ExecutablePath).ToString(CultureInfo.InvariantCulture);
+            notifyIcon1.Visible = false;
         }
 
         private static string AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -53,6 +55,7 @@ namespace ChapterTool.Forms
                 return attributes.Length == 0 ? string.Empty : ((AssemblyProductAttribute)attributes[0]).Product;
             }
         }
+
         private void Form2_SizeChanged(object sender, EventArgs e)
         {
             if (WindowState != FormWindowState.Minimized) return;
@@ -63,8 +66,8 @@ namespace ChapterTool.Forms
 
         private void notifyIcon1_Click(object sender, EventArgs e)
         {
-            Visible             = true;
-            WindowState         = FormWindowState.Normal;
+            Visible = true;
+            WindowState = FormWindowState.Normal;
             notifyIcon1.Visible = false;
         }
 
@@ -79,18 +82,34 @@ namespace ChapterTool.Forms
             Close();
         }
 
-        private void button1_Click(object sender, EventArgs e) { if(_poi == 1) { CloseForm(); } }
-        private void button2_Click(object sender, EventArgs e) { if(_poi == 2) { CloseForm(); } }
-        private void button3_Click(object sender, EventArgs e) { if(_poi == 3) { CloseForm(); } }
-        private void button4_Click(object sender, EventArgs e) { if(_poi == 4) { CloseForm(); } }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (_poi == 1) { CloseForm(); }
+        }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (_poi == 2) { CloseForm(); }
+        }
 
-        //from http://www.sukitech.com/?p=948
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (_poi == 3) { CloseForm(); }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (_poi == 4) { CloseForm(); }
+        }
+
+        // from http://www.sukitech.com/?p=948
         private Point _startPoint;
+
         private void Form2_MouseDown(object sender, MouseEventArgs e)
         {
-            _startPoint = new Point(-e.X , -e.Y);
-            //startPoint = new Point(-e.X + SystemInformation.FrameBorderSize.Width, -e.Y - SystemInformation.FrameBorderSize.Height);
+            _startPoint = new Point(-e.X, -e.Y);
+
+            // startPoint = new Point(-e.X + SystemInformation.FrameBorderSize.Width, -e.Y - SystemInformation.FrameBorderSize.Height);
         }
 
         private void Form2_MouseMove(object sender, MouseEventArgs e)
@@ -98,12 +117,12 @@ namespace ChapterTool.Forms
             if (e.Button != MouseButtons.Left) return;
             var mousePos = MousePosition;
             mousePos.Offset(_startPoint.X, _startPoint.Y);
-            Location       = mousePos;
+            Location = mousePos;
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            //Thread.Sleep(20000);
+            // Thread.Sleep(20000);
             WindowState = FormWindowState.Minimized;
             Logger.Log("关于窗口被最小化");
         }

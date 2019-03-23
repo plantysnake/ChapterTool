@@ -18,26 +18,26 @@
 //
 // ****************************************************************************
 
-using System;
-using System.IO;
-using System.Net;
-using ChapterTool.Forms;
-using System.Reflection;
-using System.Windows.Forms;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-
 namespace ChapterTool.Util
 {
+    using System;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
+    using System.Reflection;
+    using System.Runtime.InteropServices;
+    using System.Text.RegularExpressions;
+    using System.Windows.Forms;
+    using ChapterTool.Forms;
+
     public static class Updater
     {
         private static void OnResponse(IAsyncResult ar)
         {
             var versionRegex = new Regex(@"<meta\s+name\s*=\s*'ChapterTool'\s+content\s*=\s*'(\d+\.\d+\.\d+\.\d+)'\s*>", RegexOptions.Compiled);
             var baseUrlRegex = new Regex(@"<meta\s+name\s*=\s*'BaseUrl'\s+content\s*=\s*'(.+)'\s*>", RegexOptions.Compiled);
-            var webRequest   = (WebRequest)ar.AsyncState;
+            var webRequest = (WebRequest)ar.AsyncState;
             Stream responseStream;
             try
             {
@@ -45,27 +45,32 @@ namespace ChapterTool.Util
             }
             catch (Exception exception)
             {
-                MessageBox.Show(string.Format("检查更新失败, 错误信息:{0}{1}{0}请联系TC以了解详情",
+                MessageBox.Show(
+                    string.Format(
+                    "检查更新失败, 错误信息:{0}{1}{0}请联系TC以了解详情",
                     Environment.NewLine, exception.Message), @"Update Check Fail");
                 responseStream = null;
             }
             if (responseStream == null) return;
 
             var streamReader = new StreamReader(responseStream);
-            var context      = streamReader.ReadToEnd();
-            var result       = versionRegex.Match(context);
-            var urlResult    = baseUrlRegex.Match(context);
+            var context = streamReader.ReadToEnd();
+            var result = versionRegex.Match(context);
+            var urlResult = baseUrlRegex.Match(context);
             if (!result.Success || !result.Success) return;
 
             var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            var remoteVersion  = Version.Parse(result.Groups[1].Value);
+            var remoteVersion = Version.Parse(result.Groups[1].Value);
             if (currentVersion >= remoteVersion)
             {
                 MessageBox.Show($"v{currentVersion} 已是最新版", @"As Expected");
                 return;
             }
-            var dialogResult = MessageBox.Show(caption: @"Wow! Such Impressive", text: $"新车已发车 v{remoteVersion}，上车!",
-                                               buttons: MessageBoxButtons.YesNo, icon: MessageBoxIcon.Asterisk);
+            var dialogResult = MessageBox.Show(
+                caption: @"Wow! Such Impressive",
+                text: $"新车已发车 v{remoteVersion}，上车!",
+                buttons: MessageBoxButtons.YesNo,
+                icon: MessageBoxIcon.Asterisk);
             if (dialogResult != DialogResult.Yes) return;
             var formUpdater = new FormUpdater(Assembly.GetExecutingAssembly().Location, remoteVersion, urlResult.Groups[1].Value);
             formUpdater.ShowDialog();
@@ -76,13 +81,13 @@ namespace ChapterTool.Util
             if (!IsConnectInternet()) return;
 
             var webRequest = (HttpWebRequest)WebRequest.Create("http://tautcony.github.io/tcupdate.html");
-            #if DEBUG
-            webRequest                = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:4000/tcupdate.html");
-            #endif
-            var userName              = Environment.UserName.ToCharArray().Aggregate("", (current, c) => current + $"{(int)c:X} ");
-            webRequest.UserAgent      = $"{userName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().FullName}";
-            webRequest.Method         = "GET";
-            webRequest.Credentials    = CredentialCache.DefaultCredentials;
+#if DEBUG
+            webRequest = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:4000/tcupdate.html");
+#endif
+            var userName = Environment.UserName.ToCharArray().Aggregate(string.Empty, (current, c) => current + $"{(int)c:X} ");
+            webRequest.UserAgent = $"{userName}({Environment.OSVersion}) / {Assembly.GetExecutingAssembly().GetName().FullName}";
+            webRequest.Method = "GET";
+            webRequest.Credentials = CredentialCache.DefaultCredentials;
             webRequest.BeginGetResponse(OnResponse, webRequest);
         }
 

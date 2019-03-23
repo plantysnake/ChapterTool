@@ -37,7 +37,7 @@ namespace ChapterTool.Util.Tests
         public void ConvertFr2IndexTest()
         {
             var frameRate = new List<decimal> { 0, 24000M / 1001, 24M, 25M, 30000M / 1001, 50M, 60000M / 1001 };
-            var expected = new List<int> {0, 1, 2, 3, 4, 6, 7};
+            var expected = new List<int> { 0, 1, 2, 3, 4, 6, 7 };
             frameRate.Select(ToolKits.ConvertFr2Index).ToList().ForEach(Console.Write);
             frameRate.Select(ToolKits.ConvertFr2Index).Should().Equal(expected);
         }

@@ -17,13 +17,13 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
-using System;
-using System.Linq;
-using System.Drawing;
-using System.Windows.Forms;
-
 namespace ChapterTool.Forms
 {
+    using System;
+    using System.Drawing;
+    using System.Linq;
+    using System.Windows.Forms;
+
     public partial class FormPreview : Form
     {
         private readonly Form1 _mainForm;
@@ -43,9 +43,9 @@ namespace ChapterTool.Forms
         public FormPreview(Form1 mainForm)
         {
             InitializeComponent();
-            _mainForm       = mainForm;
+            _mainForm = mainForm;
             _mainForm.Move += Form1_Move;
-            Icon            = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         }
 
         private void ScrollBarSet()

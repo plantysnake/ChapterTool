@@ -7,14 +7,14 @@ Author:   Wyatt O'Day
 Website:  wyday.com/cuesharp
 */
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using ChapterTool.Util.Cue.Types;
-
 namespace ChapterTool.Util
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using ChapterTool.Util.Cue.Types;
+
     /// <summary>
     /// A CueSheet class used to create, open, edit, and save cuesheets.
     /// </summary>
@@ -25,7 +25,6 @@ namespace ChapterTool.Util
         private string[] _cueLines;
 
         // strings that don't belong or were mistyped in the global part of the cue
-
         #endregion Private Variables
 
         #region Properties
@@ -45,12 +44,12 @@ namespace ChapterTool.Util
         /// The catalog number must be 13 digits long and is encoded according to UPC/EAN rules.
         /// Example: CATALOG 1234567890123
         /// </summary>
-        public string Catalog { get; set; } = "";
+        public string Catalog { get; set; } = string.Empty;
 
         /// <summary>
         /// This command is used to specify the name of the file that contains the encoded CD-TEXT information for the disc. This command is only used with files that were either created with the graphical CD-TEXT editor or generated automatically by the software when copying a CD-TEXT enhanced disc.
         /// </summary>
-        public string CDTextFile { get; set; } = "";
+        public string CDTextFile { get; set; } = string.Empty;
 
         /// <summary>
         /// This command is used to put comments in your CUE SHEET file.
@@ -65,17 +64,17 @@ namespace ChapterTool.Util
         /// <summary>
         /// This command is used to specify the name of a perfomer for a CD-TEXT enhanced disc.
         /// </summary>
-        public string Performer { get; set; } = "";
+        public string Performer { get; set; } = string.Empty;
 
         /// <summary>
         /// This command is used to specify the name of a songwriter for a CD-TEXT enhanced disc.
         /// </summary>
-        public string Songwriter { get; set; } = "";
+        public string Songwriter { get; set; } = string.Empty;
 
         /// <summary>
         /// The title of the entire disc as a whole.
         /// </summary>
-        public string Title { get; set; } = "";
+        public string Title { get; set; } = string.Empty;
 
         /// <summary>
         /// The array of tracks on the cuesheet.
@@ -90,7 +89,8 @@ namespace ChapterTool.Util
         /// Create a cue sheet from scratch.
         /// </summary>
         public CueSheet()
-        { }
+        {
+        }
 
         /// <summary>
         /// Parse a cue sheet string.
@@ -135,7 +135,8 @@ namespace ChapterTool.Util
 
             // read in the full cue file
             TextReader tr = new StreamReader(filename, encoding);
-            //read in file
+
+            // read in file
             _cueLines = tr.ReadToEnd().Split(delimiters);
 
             // close the stream
@@ -160,11 +161,11 @@ namespace ChapterTool.Util
 
             for (var i = 0; i < file.Length; i++)
             {
-                if (file[i].Trim() != "")
+                if (file[i].Trim() != string.Empty)
                 {
                     file[i - itemsRemoved] = file[i];
                 }
-                else if (file[i].Trim() == "")
+                else if (file[i].Trim() == string.Empty)
                 {
                     itemsRemoved++;
                 }
@@ -178,10 +179,10 @@ namespace ChapterTool.Util
 
         private void ParseCue(string[] file)
         {
-            //-1 means still global,
-            //all others are track specific
+            // -1 means still global,
+            // all others are track specific
             var trackOn = -1;
-            var currentFile = new AudioFile();
+            var currentFile = default(AudioFile);
 
             for (var i = 0; i < file.Length; i++)
             {
@@ -189,80 +190,83 @@ namespace ChapterTool.Util
 
                 switch (file[i].Substring(0, file[i].IndexOf(' ')).ToUpper())
                 {
-                case "CATALOG":
-                    ParseString(file[i], trackOn);
-                    break;
+                    case "CATALOG":
+                        ParseString(file[i], trackOn);
+                        break;
 
-                case "CDTEXTFILE":
-                    ParseString(file[i], trackOn);
-                    break;
+                    case "CDTEXTFILE":
+                        ParseString(file[i], trackOn);
+                        break;
 
-                case "FILE":
-                    currentFile = ParseFile(file[i], trackOn);
-                    break;
+                    case "FILE":
+                        currentFile = ParseFile(file[i], trackOn);
+                        break;
 
-                case "FLAGS":
-                    ParseFlags(file[i], trackOn);
-                    break;
+                    case "FLAGS":
+                        ParseFlags(file[i], trackOn);
+                        break;
 
-                case "INDEX":
-                    ParseIndex(file[i], trackOn);
-                    break;
+                    case "INDEX":
+                        ParseIndex(file[i], trackOn);
+                        break;
 
-                case "ISRC":
-                    ParseString(file[i], trackOn);
-                    break;
+                    case "ISRC":
+                        ParseString(file[i], trackOn);
+                        break;
 
-                case "PERFORMER":
-                    ParseString(file[i], trackOn);
-                    break;
+                    case "PERFORMER":
+                        ParseString(file[i], trackOn);
+                        break;
 
-                case "POSTGAP":
-                    ParseIndex(file[i], trackOn);
-                    break;
+                    case "POSTGAP":
+                        ParseIndex(file[i], trackOn);
+                        break;
 
-                case "PREGAP":
-                    ParseIndex(file[i], trackOn);
-                    break;
+                    case "PREGAP":
+                        ParseIndex(file[i], trackOn);
+                        break;
 
-                case "REM":
-                    ParseComment(file[i], trackOn);
-                    break;
+                    case "REM":
+                        ParseComment(file[i], trackOn);
+                        break;
 
-                case "SONGWRITER":
-                    ParseString(file[i], trackOn);
-                    break;
+                    case "SONGWRITER":
+                        ParseString(file[i], trackOn);
+                        break;
 
-                case "TITLE":
-                    ParseString(file[i], trackOn);
-                    break;
+                    case "TITLE":
+                        ParseString(file[i], trackOn);
+                        break;
 
-                case "TRACK":
-                    trackOn++;
-                    ParseTrack(file[i], trackOn);
-                    if (currentFile.Filename != "") //if there's a file
-                    {
-                        Tracks[trackOn].DataFile = currentFile;
-                        currentFile = new AudioFile();
-                    }
-                    break;
+                    case "TRACK":
+                        trackOn++;
+                        ParseTrack(file[i], trackOn);
 
-                default:
-                    ParseGarbage(file[i], trackOn);
-                    //save discarded junk and place string[] with track it was found in
-                    break;
+                        // if there's a file
+                        if (currentFile.Filename != string.Empty)
+                        {
+                            Tracks[trackOn].DataFile = currentFile;
+                            currentFile = default(AudioFile);
+                        }
+                        break;
+
+                    default:
+                        ParseGarbage(file[i], trackOn);
+
+                        // save discarded junk and place string[] with track it was found in
+                        break;
                 }
             }
         }
 
         private void ParseComment(string line, int trackOn)
         {
-            //remove "REM" (we know the line has already been .Trim()'ed)
+            // remove "REM" (we know the line has already been .Trim()'ed)
             line = line.Substring(line.IndexOf(' '), line.Length - line.IndexOf(' ')).Trim();
 
             if (trackOn == -1)
             {
-                if (line.Trim() != "")
+                if (line.Trim() != string.Empty)
                 {
                     Comments = (string[])ResizeArray(Comments, Comments.Length + 1);
                     Comments[Comments.Length - 1] = line;
@@ -282,7 +286,7 @@ namespace ChapterTool.Util
 
             line = line.Substring(0, line.LastIndexOf(' ')).Trim();
 
-            //if quotes around it, remove them.
+            // if quotes around it, remove them.
             if (line[0] == '"')
             {
                 line = line.Substring(1, line.LastIndexOf('"') - 1);
@@ -296,7 +300,7 @@ namespace ChapterTool.Util
             if (trackOn != -1)
             {
                 line = line.Trim();
-                if (line != "")
+                if (line != string.Empty)
                 {
                     string temp;
                     try
@@ -310,34 +314,34 @@ namespace ChapterTool.Util
 
                     switch (temp)
                     {
-                    case "FLAGS":
-                        Tracks[trackOn].AddFlag(temp);
-                        break;
+                        case "FLAGS":
+                            Tracks[trackOn].AddFlag(temp);
+                            break;
 
-                    case "DATA":
-                        Tracks[trackOn].AddFlag(temp);
-                        break;
+                        case "DATA":
+                            Tracks[trackOn].AddFlag(temp);
+                            break;
 
-                    case "DCP":
-                        Tracks[trackOn].AddFlag(temp);
-                        break;
+                        case "DCP":
+                            Tracks[trackOn].AddFlag(temp);
+                            break;
 
-                    case "4CH":
-                        Tracks[trackOn].AddFlag(temp);
-                        break;
+                        case "4CH":
+                            Tracks[trackOn].AddFlag(temp);
+                            break;
 
-                    case "PRE":
-                        Tracks[trackOn].AddFlag(temp);
-                        break;
+                        case "PRE":
+                            Tracks[trackOn].AddFlag(temp);
+                            break;
 
-                    case "SCMS":
-                        Tracks[trackOn].AddFlag(temp);
-                        break;
+                        case "SCMS":
+                            Tracks[trackOn].AddFlag(temp);
+                            break;
                     }
 
-                    //processing for a case when there isn't any more spaces
-                    //i.e. avoiding the "index cannot be less than zero" error
-                    //when calling line.IndexOf(' ')
+                    // processing for a case when there isn't any more spaces
+                    // i.e. avoiding the "index cannot be less than zero" error
+                    // when calling line.IndexOf(' ')
                     try
                     {
                         temp = line.Substring(line.IndexOf(' '), line.Length - line.IndexOf(' '));
@@ -347,7 +351,7 @@ namespace ChapterTool.Util
                         temp = line.Substring(0, line.Length);
                     }
 
-                    //if the flag hasn't already been processed
+                    // if the flag hasn't already been processed
                     if (temp.ToUpper().Trim() != line.ToUpper().Trim())
                     {
                         ParseFlags(temp, trackOn);
@@ -360,7 +364,7 @@ namespace ChapterTool.Util
         {
             if (trackOn == -1)
             {
-                if (line.Trim() != "")
+                if (line.Trim() != string.Empty)
                 {
                     Garbage = (string[])ResizeArray(Garbage, Garbage.Length + 1);
                     Garbage[Garbage.Length - 1] = line;
@@ -382,12 +386,12 @@ namespace ChapterTool.Util
 
             if (indexType == "INDEX")
             {
-                //read the index number
+                // read the index number
                 number = Convert.ToInt32(tempString.Substring(0, tempString.IndexOf(' ')));
                 tempString = tempString.Substring(tempString.IndexOf(' '), tempString.Length - tempString.IndexOf(' ')).Trim();
             }
 
-            //extract the minutes, seconds, and frames
+            // extract the minutes, seconds, and frames
             var minutes = Convert.ToInt32(tempString.Substring(0, tempString.IndexOf(':')));
             var seconds = Convert.ToInt32(tempString.Substring(tempString.IndexOf(':') + 1, tempString.LastIndexOf(':') - tempString.IndexOf(':') - 1));
             var frames = Convert.ToInt32(tempString.Substring(tempString.LastIndexOf(':') + 1, tempString.Length - tempString.LastIndexOf(':') - 1));
@@ -412,7 +416,7 @@ namespace ChapterTool.Util
 
             line = line.Substring(line.IndexOf(' '), line.Length - line.IndexOf(' ')).Trim();
 
-            //get rid of the quotes
+            // get rid of the quotes
             if (line[0] == '"')
             {
                 line = line.Substring(1, line.LastIndexOf('"') - 1);
@@ -420,59 +424,59 @@ namespace ChapterTool.Util
 
             switch (category)
             {
-            case "CATALOG":
-                if (trackOn == -1)
-                {
-                    Catalog = line;
-                }
-                break;
+                case "CATALOG":
+                    if (trackOn == -1)
+                    {
+                        Catalog = line;
+                    }
+                    break;
 
-            case "CDTEXTFILE":
-                if (trackOn == -1)
-                {
-                    CDTextFile = line;
-                }
-                break;
+                case "CDTEXTFILE":
+                    if (trackOn == -1)
+                    {
+                        CDTextFile = line;
+                    }
+                    break;
 
-            case "ISRC":
-                if (trackOn != -1)
-                {
-                    Tracks[trackOn].ISRC = line;
-                }
-                break;
+                case "ISRC":
+                    if (trackOn != -1)
+                    {
+                        Tracks[trackOn].ISRC = line;
+                    }
+                    break;
 
-            case "PERFORMER":
-                if (trackOn == -1)
-                {
-                    Performer = line;
-                }
-                else
-                {
-                    Tracks[trackOn].Performer = line;
-                }
-                break;
+                case "PERFORMER":
+                    if (trackOn == -1)
+                    {
+                        Performer = line;
+                    }
+                    else
+                    {
+                        Tracks[trackOn].Performer = line;
+                    }
+                    break;
 
-            case "SONGWRITER":
-                if (trackOn == -1)
-                {
-                    Songwriter = line;
-                }
-                else
-                {
-                    Tracks[trackOn].Songwriter = line;
-                }
-                break;
+                case "SONGWRITER":
+                    if (trackOn == -1)
+                    {
+                        Songwriter = line;
+                    }
+                    else
+                    {
+                        Tracks[trackOn].Songwriter = line;
+                    }
+                    break;
 
-            case "TITLE":
-                if (trackOn == -1)
-                {
-                    Title = line;
-                }
-                else
-                {
-                    Tracks[trackOn].Title = line;
-                }
-                break;
+                case "TITLE":
+                    if (trackOn == -1)
+                    {
+                        Title = line;
+                    }
+                    else
+                    {
+                        Tracks[trackOn].Title = line;
+                    }
+                    break;
             }
         }
 
@@ -487,7 +491,7 @@ namespace ChapterTool.Util
 
             var trackNumber = Convert.ToInt32(tempString.Substring(0, tempString.IndexOf(' ')));
 
-            //find the data type.
+            // find the data type.
             tempString = tempString.Substring(tempString.IndexOf(' '), tempString.Length - tempString.IndexOf(' ')).Trim();
 
             AddTrack(trackNumber, tempString);
@@ -531,7 +535,7 @@ namespace ChapterTool.Util
         public void AddTrack(string title, string performer)
         {
             Tracks = (Track[])ResizeArray(Tracks, Tracks.Length + 1);
-            Tracks[Tracks.Length - 1] = new Track(Tracks.Length, "")
+            Tracks[Tracks.Length - 1] = new Track(Tracks.Length, string.Empty)
             {
                 Performer = performer,
                 Title = title
@@ -541,7 +545,7 @@ namespace ChapterTool.Util
         public void AddTrack(string title, string performer, string filename, FileType fType)
         {
             Tracks = (Track[])ResizeArray(Tracks, Tracks.Length + 1);
-            Tracks[Tracks.Length - 1] = new Track(Tracks.Length, "")
+            Tracks[Tracks.Length - 1] = new Track(Tracks.Length, string.Empty)
             {
                 Performer = performer,
                 Title = title,
@@ -608,8 +612,8 @@ namespace ChapterTool.Util
         /// <param name="indexIndex">The index of the Index you wish to remove.</param>
         public void RemoveIndex(int trackIndex, int indexIndex)
         {
-            //Note it is the index of the Index you want to delete,
-            //which may or may not correspond to the number of the index.
+            // Note it is the index of the Index you want to delete,
+            // which may or may not correspond to the number of the index.
             Tracks[trackIndex].RemoveIndex(indexIndex);
         }
 
@@ -633,7 +637,7 @@ namespace ChapterTool.Util
 
             tw.WriteLine(ToString());
 
-            //close the writer stream
+            // close the writer stream
             tw.Close();
         }
 
@@ -650,27 +654,27 @@ namespace ChapterTool.Util
                 output.Append("REM " + comment + Environment.NewLine);
             }
 
-            if (Catalog.Trim() != "")
+            if (Catalog.Trim() != string.Empty)
             {
                 output.Append("CATALOG " + Catalog + Environment.NewLine);
             }
 
-            if (Performer.Trim() != "")
+            if (Performer.Trim() != string.Empty)
             {
                 output.Append("PERFORMER \"" + Performer + "\"" + Environment.NewLine);
             }
 
-            if (Songwriter.Trim() != "")
+            if (Songwriter.Trim() != string.Empty)
             {
                 output.Append("SONGWRITER \"" + Songwriter + "\"" + Environment.NewLine);
             }
 
-            if (Title.Trim() != "")
+            if (Title.Trim() != string.Empty)
             {
                 output.Append("TITLE \"" + Title + "\"" + Environment.NewLine);
             }
 
-            if (CDTextFile.Trim() != "")
+            if (CDTextFile.Trim() != string.Empty)
             {
                 output.Append("CDTEXTFILE \"" + CDTextFile.Trim() + "\"" + Environment.NewLine);
             }
@@ -681,7 +685,7 @@ namespace ChapterTool.Util
 
                 if (i != Tracks.Length - 1)
                 {
-                    //add line break for each track except last
+                    // add line break for each track except last
                     output.Append(Environment.NewLine);
                 }
             }
@@ -691,13 +695,11 @@ namespace ChapterTool.Util
 
         #endregion Methods
 
-        //TODO: Fix calculation bugs; currently generates erroneous IDs.
-
+        // TODO: Fix calculation bugs; currently generates erroneous IDs.
         #region CalculateDiscIDs
 
-        //For complete CDDB/freedb discID calculation, see:
-        //http://www.freedb.org/modules.php?name=Sections&sop=viewarticle&artid=6
-
+        // For complete CDDB/freedb discID calculation, see:
+        // http://www.freedb.org/modules.php?name=Sections&sop=viewarticle&artid=6
         public string CalculateCDDBdiscID()
         {
             var n = 0;
@@ -717,7 +719,7 @@ namespace ChapterTool.Util
             var t = ((LastTrackIndex(Tracks[Tracks.Length - 1]).Minutes * 60) + LastTrackIndex(Tracks[Tracks.Length - 1]).Seconds) -
                     ((LastTrackIndex(Tracks[0]).Minutes * 60) + LastTrackIndex(Tracks[0]).Seconds);
 
-            ulong lDiscId = (((uint)n % 0xff) << 24 | (uint)t << 8 | (uint)Tracks.Length);
+            ulong lDiscId = ((((uint)n % 0xff) << 24) | ((uint)t << 8) | (uint)Tracks.Length);
             return $"{lDiscId:x8}";
         }
 
@@ -747,10 +749,10 @@ namespace ChapterTool.Util
         {
             var info = new ChapterInfo
             {
-                Title      = Title,
+                Title = Title,
                 SourceType = "CUE",
-                Tag        = this,
-                TagType    = typeof (CueSheet)
+                Tag = this,
+                TagType = typeof(CueSheet)
             };
             foreach (var track in Tracks)
             {
@@ -766,11 +768,11 @@ namespace ChapterTool.Util
     namespace Cue.Types
     {
         /// <summary>
-        ///DCP - Digital copy permitted
-        ///4CH - Four channel audio
-        ///PRE - Pre-emphasis enabled (audio tracks only)
-        ///SCMS - Serial copy management system (not supported by all recorders)
-        ///There is a fourth subcode flag called "DATA" which is set for all non-audio tracks. This flag is set automatically based on the datatype of the track.
+        /// DCP - Digital copy permitted
+        /// 4CH - Four channel audio
+        /// PRE - Pre-emphasis enabled (audio tracks only)
+        /// SCMS - Serial copy management system (not supported by all recorders)
+        /// There is a fourth subcode flag called "DATA" which is set for all non-audio tracks. This flag is set automatically based on the datatype of the track.
         /// </summary>
         public enum Flags
         {
@@ -813,7 +815,7 @@ namespace ChapterTool.Util
         /// </summary>
         public struct Index
         {
-            //0-99
+            // 0-99
             private int _number;
 
             private int _minutes;
@@ -940,9 +942,10 @@ namespace ChapterTool.Util
                     var milliseconds = (int)Math.Round(_frames * (1000F / 75));
                     return new TimeSpan(0, 0, _minutes, _seconds, milliseconds);
                 }
+
                 set
                 {
-                    Minutes = value.Hours * 60 + value.Minutes;
+                    Minutes = (value.Hours * 60) + value.Minutes;
                     Seconds = value.Seconds;
                     Frames = (int)Math.Round(value.Milliseconds * 75 / 1000F);
                 }
@@ -971,29 +974,29 @@ namespace ChapterTool.Util
 
                 switch (filetype.Trim().ToUpper())
                 {
-                case "BINARY":
-                    Filetype = FileType.BINARY;
-                    break;
+                    case "BINARY":
+                        Filetype = FileType.BINARY;
+                        break;
 
-                case "MOTOROLA":
-                    Filetype = FileType.MOTOROLA;
-                    break;
+                    case "MOTOROLA":
+                        Filetype = FileType.MOTOROLA;
+                        break;
 
-                case "AIFF":
-                    Filetype = FileType.AIFF;
-                    break;
+                    case "AIFF":
+                        Filetype = FileType.AIFF;
+                        break;
 
-                case "WAVE":
-                    Filetype = FileType.WAVE;
-                    break;
+                    case "WAVE":
+                        Filetype = FileType.WAVE;
+                        break;
 
-                case "MP3":
-                    Filetype = FileType.MP3;
-                    break;
+                    case "MP3":
+                        Filetype = FileType.MP3;
+                        break;
 
-                default:
-                    Filetype = FileType.BINARY;
-                    break;
+                    default:
+                        Filetype = FileType.BINARY;
+                        break;
                 }
             }
 
@@ -1012,7 +1015,6 @@ namespace ChapterTool.Util
             #region Private Variables
 
             // strings that don't belong or were mistyped in the global part of the cue
-
             #endregion Private Variables
 
             #region Properties
@@ -1070,54 +1072,54 @@ namespace ChapterTool.Util
 
                 switch (datatype.Trim().ToUpper())
                 {
-                case "AUDIO":
-                    TrackDataType = DataType.AUDIO;
-                    break;
+                    case "AUDIO":
+                        TrackDataType = DataType.AUDIO;
+                        break;
 
-                case "CDG":
-                    TrackDataType = DataType.CDG;
-                    break;
+                    case "CDG":
+                        TrackDataType = DataType.CDG;
+                        break;
 
-                case "MODE1/2048":
-                    TrackDataType = DataType.MODE1_2048;
-                    break;
+                    case "MODE1/2048":
+                        TrackDataType = DataType.MODE1_2048;
+                        break;
 
-                case "MODE1/2352":
-                    TrackDataType = DataType.MODE1_2352;
-                    break;
+                    case "MODE1/2352":
+                        TrackDataType = DataType.MODE1_2352;
+                        break;
 
-                case "MODE2/2336":
-                    TrackDataType = DataType.MODE2_2336;
-                    break;
+                    case "MODE2/2336":
+                        TrackDataType = DataType.MODE2_2336;
+                        break;
 
-                case "MODE2/2352":
-                    TrackDataType = DataType.MODE2_2352;
-                    break;
+                    case "MODE2/2352":
+                        TrackDataType = DataType.MODE2_2352;
+                        break;
 
-                case "CDI/2336":
-                    TrackDataType = DataType.CDI_2336;
-                    break;
+                    case "CDI/2336":
+                        TrackDataType = DataType.CDI_2336;
+                        break;
 
-                case "CDI/2352":
-                    TrackDataType = DataType.CDI_2352;
-                    break;
+                    case "CDI/2352":
+                        TrackDataType = DataType.CDI_2352;
+                        break;
 
-                default:
-                    TrackDataType = DataType.AUDIO;
-                    break;
+                    default:
+                        TrackDataType = DataType.AUDIO;
+                        break;
                 }
 
                 TrackFlags = new Flags[0];
-                Songwriter = "";
-                Title = "";
-                ISRC = "";
-                Performer = "";
+                Songwriter = string.Empty;
+                Title = string.Empty;
+                ISRC = string.Empty;
+                Performer = string.Empty;
                 Indices = new Index[0];
                 Garbage = new string[0];
                 Comments = new string[0];
                 PreGap = new Index(-1, 0, 0, 0);
                 PostGap = new Index(-1, 0, 0, 0);
-                DataFile = new AudioFile();
+                DataFile = default(AudioFile);
             }
 
             public Track(int tracknumber, DataType datatype)
@@ -1126,16 +1128,16 @@ namespace ChapterTool.Util
                 TrackDataType = datatype;
 
                 TrackFlags = new Flags[0];
-                Songwriter = "";
-                Title = "";
-                ISRC = "";
-                Performer = "";
+                Songwriter = string.Empty;
+                Title = string.Empty;
+                ISRC = string.Empty;
+                Performer = string.Empty;
                 Indices = new Index[0];
                 Garbage = new string[0];
                 Comments = new string[0];
                 PreGap = new Index(-1, 0, 0, 0);
                 PostGap = new Index(-1, 0, 0, 0);
-                DataFile = new AudioFile();
+                DataFile = default(AudioFile);
             }
 
             #endregion Contructors
@@ -1144,8 +1146,8 @@ namespace ChapterTool.Util
 
             public void AddFlag(Flags flag)
             {
-                //if it's not a none tag
-                //and if the tags hasn't already been added
+                // if it's not a none tag
+                // and if the tags hasn't already been added
                 if (flag != Flags.NONE && NewFlag(flag))
                 {
                     TrackFlags = (Flags[])CueSheet.ResizeArray(TrackFlags, TrackFlags.Length + 1);
@@ -1157,28 +1159,28 @@ namespace ChapterTool.Util
             {
                 switch (flag.Trim().ToUpper())
                 {
-                case "DATA":
-                    AddFlag(Flags.DATA);
-                    break;
+                    case "DATA":
+                        AddFlag(Flags.DATA);
+                        break;
 
-                case "DCP":
-                    AddFlag(Flags.DCP);
-                    break;
+                    case "DCP":
+                        AddFlag(Flags.DCP);
+                        break;
 
-                case "4CH":
-                    AddFlag(Flags.CH4);
-                    break;
+                    case "4CH":
+                        AddFlag(Flags.CH4);
+                        break;
 
-                case "PRE":
-                    AddFlag(Flags.PRE);
-                    break;
+                    case "PRE":
+                        AddFlag(Flags.PRE);
+                        break;
 
-                case "SCMS":
-                    AddFlag(Flags.SCMS);
-                    break;
+                    case "SCMS":
+                        AddFlag(Flags.SCMS);
+                        break;
 
-                default:
-                    return;
+                    default:
+                        return;
                 }
             }
 
@@ -1208,7 +1210,7 @@ namespace ChapterTool.Util
 
             public void AddGarbage(string garbage)
             {
-                if (garbage.Trim() != "")
+                if (garbage.Trim() != string.Empty)
                 {
                     Garbage = (string[])CueSheet.ResizeArray(Garbage, Garbage.Length + 1);
                     Garbage[Garbage.Length - 1] = garbage;
@@ -1217,7 +1219,7 @@ namespace ChapterTool.Util
 
             public void AddComment(string comment)
             {
-                if (comment.Trim() != "")
+                if (comment.Trim() != string.Empty)
                 {
                     Comments = (string[])CueSheet.ResizeArray(Comments, Comments.Length + 1);
                     Comments[Comments.Length - 1] = comment;
@@ -1254,36 +1256,36 @@ namespace ChapterTool.Util
             {
                 var output = new StringBuilder();
 
-                //write file
-                if (DataFile.Filename != null && DataFile.Filename.Trim() != "")
+                // write file
+                if (DataFile.Filename != null && DataFile.Filename.Trim() != string.Empty)
                 {
                     output.Append("FILE \"" + DataFile.Filename.Trim() + "\" " + DataFile.Filetype.ToString() + Environment.NewLine);
                 }
 
                 output.Append("  TRACK " + TrackNumber.ToString().PadLeft(2, '0') + " " + TrackDataType.ToString().Replace('_', '/'));
 
-                //write comments
+                // write comments
                 foreach (var comment in Comments)
                 {
                     output.Append(Environment.NewLine + "    REM " + comment);
                 }
 
-                if (Performer.Trim() != "")
+                if (Performer.Trim() != string.Empty)
                 {
                     output.Append(Environment.NewLine + "    PERFORMER \"" + Performer + "\"");
                 }
 
-                if (Songwriter.Trim() != "")
+                if (Songwriter.Trim() != string.Empty)
                 {
                     output.Append(Environment.NewLine + "    SONGWRITER \"" + Songwriter + "\"");
                 }
 
-                if (Title.Trim() != "")
+                if (Title.Trim() != string.Empty)
                 {
                     output.Append(Environment.NewLine + "    TITLE \"" + Title + "\"");
                 }
 
-                //write flags
+                // write flags
                 if (TrackFlags.Length > 0)
                 {
                     output.Append(Environment.NewLine + "    FLAGS");
@@ -1294,25 +1296,25 @@ namespace ChapterTool.Util
                     output.Append(" " + flag.ToString().Replace("CH4", "4CH"));
                 }
 
-                //write isrc
-                if (ISRC.Trim() != "")
+                // write isrc
+                if (ISRC.Trim() != string.Empty)
                 {
                     output.Append(Environment.NewLine + "    ISRC " + ISRC.Trim());
                 }
 
-                //write pregap
+                // write pregap
                 if (PreGap.Number != -1)
                 {
                     output.Append(Environment.NewLine + "    PREGAP " + PreGap.Minutes.ToString().PadLeft(2, '0') + ":" + PreGap.Seconds.ToString().PadLeft(2, '0') + ":" + PreGap.Frames.ToString().PadLeft(2, '0'));
                 }
 
-                //write Indices
+                // write Indices
                 for (var j = 0; j < Indices.Length; j++)
                 {
                     output.Append(Environment.NewLine + "    INDEX " + this[j].Number.ToString().PadLeft(2, '0') + " " + this[j].Minutes.ToString().PadLeft(2, '0') + ":" + this[j].Seconds.ToString().PadLeft(2, '0') + ":" + this[j].Frames.ToString().PadLeft(2, '0'));
                 }
 
-                //write postgap
+                // write postgap
                 if (PostGap.Number != -1)
                 {
                     output.Append(Environment.NewLine + "    POSTGAP " + PostGap.Minutes.ToString().PadLeft(2, '0') + ":" + PostGap.Seconds.ToString().PadLeft(2, '0') + ":" + PostGap.Frames.ToString().PadLeft(2, '0'));

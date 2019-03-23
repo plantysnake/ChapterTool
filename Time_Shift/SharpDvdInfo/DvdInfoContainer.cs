@@ -7,18 +7,17 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using ChapterTool.Util;
-
 namespace SharpDvdInfo
 {
-    using Model;
     using System;
-    using DvdTypes;
-    using System.IO;
     using System.Collections;
-    using System.Globalization;
     using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
     using System.Text.RegularExpressions;
+    using ChapterTool.Util;
+    using DvdTypes;
+    using Model;
 
     /// <summary>
     /// Container for DVD Specification
@@ -66,7 +65,7 @@ namespace SharpDvdInfo
                     TitleNumberInSet = 1
                 };
                 GetTitleInfo(titleSetNumber, ref list);
-                Titles = new List<TitleInfo> {list};
+                Titles = new List<TitleInfo> { list };
             }
             else
             {
@@ -103,24 +102,24 @@ namespace SharpDvdInfo
                 fs.Read(buffer, 0, 2);
 
                 item.VideoStream.DisplayFormat = (DvdVideoPermittedDisplayFormat)GetBits(buffer, 2, 0);
-                item.VideoStream.AspectRatio   = (DvdVideoAspectRatio)GetBits(buffer, 2, 2);
+                item.VideoStream.AspectRatio = (DvdVideoAspectRatio)GetBits(buffer, 2, 2);
                 item.VideoStream.VideoStandard = (DvdVideoStandard)GetBits(buffer, 2, 4);
 
                 switch (item.VideoStream.VideoStandard)
                 {
-                case DvdVideoStandard.NTSC:
-                    item.VideoStream.Framerate            = 30000f / 1001f;
-                    item.VideoStream.FrameRateNumerator   = 30000;
-                    item.VideoStream.FrameRateDenominator = 1001;
-                    break;
+                    case DvdVideoStandard.NTSC:
+                        item.VideoStream.Framerate = 30000f / 1001f;
+                        item.VideoStream.FrameRateNumerator = 30000;
+                        item.VideoStream.FrameRateDenominator = 1001;
+                        break;
 
-                case DvdVideoStandard.PAL:
-                    item.VideoStream.Framerate            = 25f;
-                    item.VideoStream.FrameRateNumerator   = 25;
-                    item.VideoStream.FrameRateDenominator = 1;
-                    break;
+                    case DvdVideoStandard.PAL:
+                        item.VideoStream.Framerate = 25f;
+                        item.VideoStream.FrameRateNumerator = 25;
+                        item.VideoStream.FrameRateDenominator = 1;
+                        break;
                 }
-                item.VideoStream.CodingMode      = (DvdVideoMpegVersion)GetBits(buffer, 2, 6);
+                item.VideoStream.CodingMode = (DvdVideoMpegVersion)GetBits(buffer, 2, 6);
                 item.VideoStream.VideoResolution = (DvdVideoResolution)GetBits(buffer, 3, 11) +
                                                    ((int)item.VideoStream.VideoStandard * 8);
 
@@ -133,18 +132,18 @@ namespace SharpDvdInfo
                     var codingMode = GetBits(buffer, 3, 5);
                     var audioStream = new AudioProperties
                     {
-                        CodingMode   = (DvdAudioFormat) codingMode,
-                        Channels     = GetBits(buffer, 3, 8) + 1,
-                        SampleRate   = 48000,
-                        Quantization = (DvdAudioQuantization) GetBits(buffer, 2, 14),
-                        StreamId     = DvdAudioId.ID[codingMode] + audioNum,
-                        StreamIndex  = audioNum + 1
+                        CodingMode = (DvdAudioFormat)codingMode,
+                        Channels = GetBits(buffer, 3, 8) + 1,
+                        SampleRate = 48000,
+                        Quantization = (DvdAudioQuantization)GetBits(buffer, 2, 14),
+                        StreamId = DvdAudioId.ID[codingMode] + audioNum,
+                        StreamIndex = audioNum + 1
                     };
 
                     if (langMode == 1)
                     {
-                        var langChar1 = (char) GetBits(buffer, 8, 16);
-                        var langChar2 = (char) GetBits(buffer, 8, 24);
+                        var langChar1 = (char)GetBits(buffer, 8, 16);
+                        var langChar2 = (char)GetBits(buffer, 8, 24);
 
                         audioStream.Language = LanguageSelectionContainer.LookupISOCode($"{langChar1}{langChar2}");
                     }
@@ -165,7 +164,7 @@ namespace SharpDvdInfo
                     var langMode = GetBits(buffer, 2, 0);
                     var sub = new SubpictureProperties
                     {
-                        Format = (DvdSubpictureFormat) GetBits(buffer, 3, 5),
+                        Format = (DvdSubpictureFormat)GetBits(buffer, 3, 5),
                         StreamId = 0x20 + subNum,
                         StreamIndex = subNum + 1
                     };
@@ -217,16 +216,16 @@ namespace SharpDvdInfo
 
                 fs.Seek(pgciAdress + cellmapOffset + offsetPgc, SeekOrigin.Begin);
 
-                var chapter = new TimeSpan();
+                var chapter = default(TimeSpan);
                 item.Chapters.Add(chapter);
 
                 for (var i = 0; i < numCells; i++)
                 {
                     fs.Read(buffer, 0, 24);
-                    var chapHour   = GetBits(buffer, 8, 4*8);
-                    var chapMinute = GetBits(buffer, 8, 5*8);
-                    var chapSecond = GetBits(buffer, 8, 6*8);
-                    var chapMsec   = GetBits(buffer, 8, 7*8);
+                    var chapHour = GetBits(buffer, 8, 4 * 8);
+                    var chapMinute = GetBits(buffer, 8, 5 * 8);
+                    var chapSecond = GetBits(buffer, 8, 6 * 8);
+                    var chapMsec = GetBits(buffer, 8, 7 * 8);
                     chapter = chapter.Add(DvdTime2TimeSpan(chapHour, chapMinute, chapSecond, chapMsec));
 
                     item.Chapters.Add(chapter);
@@ -263,14 +262,14 @@ namespace SharpDvdInfo
                     fs.Read(buffer, 0, 12);
                     var info = new TitleInfo
                     {
-                        TitleNumber = (byte) (i + 1),
-                        TitleType = (byte) GetBits(buffer, 8, 0),
-                        NumAngles = (byte) GetBits(buffer, 8, 1*8),
-                        NumChapters = (short) GetBits(buffer, 16, 2*8),
-                        ParentalMask = (short) GetBits(buffer, 16, 4*8),
-                        TitleSetNumber = (byte) GetBits(buffer, 8, 6*8),
-                        TitleNumberInSet = (byte) GetBits(buffer, 8, 7*8),
-                        StartSector = GetBits(buffer, 32, 8*8)
+                        TitleNumber = (byte)(i + 1),
+                        TitleType = (byte)GetBits(buffer, 8, 0),
+                        NumAngles = (byte)GetBits(buffer, 8, 1 * 8),
+                        NumChapters = (short)GetBits(buffer, 16, 2 * 8),
+                        ParentalMask = (short)GetBits(buffer, 16, 4 * 8),
+                        TitleSetNumber = (byte)GetBits(buffer, 8, 6 * 8),
+                        TitleNumberInSet = (byte)GetBits(buffer, 8, 7 * 8),
+                        StartSector = GetBits(buffer, 32, 8 * 8)
                     };
                     GetTitleInfo(info.TitleNumber, ref info);
                     Titles.Add(info);
@@ -300,7 +299,6 @@ namespace SharpDvdInfo
             return ret;
         }
 
-
         /// <summary>
         /// Reads up to 32 bits from a byte array and outputs an integer
         /// </summary>
@@ -311,7 +309,8 @@ namespace SharpDvdInfo
         public static int GetBits(byte[] buffer, byte length, byte start)
         {
             var result = 0;
-            //read bytes from left to right and every bit in byte from low to high
+
+            // read bytes from left to right and every bit in byte from low to high
             var ba = new BitArray(buffer);
 
             short j = 0;
@@ -337,14 +336,15 @@ namespace SharpDvdInfo
         {
             if (length > 8)
             {
-                length = (byte)(length/8*8);
+                length = (byte)(length / 8 * 8);
             }
             long temp = 0;
             long mask = 0xffffffffu >> (32 - length);
+
             // [b1] {s} [b2] {s+l} [b3]
             for (var i = 0; i < Math.Ceiling((start + length) / 8.0); ++i)
             {
-                temp |= (uint)buffer[i] << (24 - i*8);
+                temp |= (uint)buffer[i] << (24 - (i * 8));
             }
             return (int)((temp >> (32 - start - length)) & mask);
         }
@@ -362,13 +362,13 @@ namespace SharpDvdInfo
             var fpsMask = milliseconds >> 6;
             milliseconds &= 0x3f;
             var fps = fpsMask == 0x01 ? 25D : fpsMask == 0x03 ? (30D / 1.001D) : 0;
-            hours   = BcdToInt(hours);
+            hours = BcdToInt(hours);
             minutes = BcdToInt(minutes);
             seconds = BcdToInt(seconds);
-            milliseconds = fps > 0 ? (int) Math.Round(BcdToInt(milliseconds)/fps*1000) : 0;
-            return new TimeSpan(0 ,hours, minutes, seconds, milliseconds);
+            milliseconds = fps > 0 ? (int)Math.Round(BcdToInt(milliseconds) / fps * 1000) : 0;
+            return new TimeSpan(0, hours, minutes, seconds, milliseconds);
         }
 
-        private static int BcdToInt(int value) => (0xFF & (value >> 4)) * 10 + (value & 0x0F);
+        private static int BcdToInt(int value) => ((0xFF & (value >> 4)) * 10) + (value & 0x0F);
     }
 }

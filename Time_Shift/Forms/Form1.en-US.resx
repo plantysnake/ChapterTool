@@ -210,7 +210,7 @@
     <value>98</value>
   </data>
   <data name="cFrams.HeaderText" xml:space="preserve">
-    <value>Frams</value>
+    <value>Frames</value>
   </data>
   <data name="cFrams.Width" type="System.Int32, mscorlib">
     <value>48</value>
@@ -244,10 +244,9 @@
   </data>
   <data name="tsBtnExpand.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
-        iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABQSURBVEhLYxgFo2AUjILhAZiAuA+IDxCBQepA6ikCQkB8
-        Doj/48EgeZA6qgB8FlLVIhjAZiFNLIIBZAtpahEMgCxYAKVHwSgYBaOALoCBAQCARx+VJacCbgAAAABJ
-        RU5ErkJggg==
+        iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
+        wwAADsMBx2+oZAAAAFBJREFUSEtjGAWjYBSMguEBmIC4D4gPEIFB6kDqKQJCQHwOiP/jwSB5kDqqAHwW
+        UtUiGMBmIU0sggFkC2lqEQyALFgApUfBKBgFo4AugIEBAIBHH5UlpwJuAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="folderBrowserDialog1.Description" xml:space="preserve">
@@ -259,8 +258,8 @@
   <data name="btnLog.Text" xml:space="preserve">
     <value>LOG</value>
   </data>
-  <data name="InsertSplitToolStripMenuItem.Text" xml:space="preserve">
-    <value>Insert the separator</value>
+  <data name="InsertChapterToolStripMenuItem.Text" xml:space="preserve">
+    <value>Insert new Chapter</value>
   </data>
   <data name="cOrder.HeaderText" xml:space="preserve">
     <value> # </value>

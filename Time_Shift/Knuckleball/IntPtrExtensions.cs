@@ -12,11 +12,11 @@
 //
 // </copyright>
 // -----------------------------------------------------------------------
-using System;
-using System.Runtime.InteropServices;
-
 namespace Knuckleball
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     /// <summary>
     /// The <see cref="IntPtrExtensions"/> class contains extension methods used
     /// for marshaling data between managed and unmanaged code.

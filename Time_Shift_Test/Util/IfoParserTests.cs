@@ -15,7 +15,7 @@ namespace ChapterTool.Util.Tests
             int validValueCount = 0;
             for (int i = 0; i <= byte.MaxValue; i++)
             {
-                var hex    = $"{i:X2}";
+                var hex = $"{i:X2}";
                 var result = Regex.Match(hex, @"\d{2}");
                 if (result.Success)
                 {

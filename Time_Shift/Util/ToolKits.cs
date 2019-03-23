@@ -17,22 +17,22 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // ****************************************************************************
-using System;
-using System.IO;
-using System.Text;
-using System.Drawing;
-using Microsoft.Win32;
-using System.Reflection;
-using ChapterTool.Forms;
-using System.Diagnostics;
-using System.Windows.Forms;
-using System.Security.Principal;
-using System.Collections.Generic;
-using ChapterTool.Util.ChapterData;
-using System.Text.RegularExpressions;
-
 namespace ChapterTool.Util
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.IO;
+    using System.Reflection;
+    using System.Security.Principal;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Windows.Forms;
+    using ChapterTool.Forms;
+    using ChapterTool.Util.ChapterData;
+    using Microsoft.Win32;
+
     public static class ToolKits
     {
         /// <summary>
@@ -67,20 +67,20 @@ namespace ChapterTool.Util
         public static TimeSpan ToTimeSpan(this string input)
         {
             if (string.IsNullOrWhiteSpace(input)) return TimeSpan.Zero;
-            var        timeMatch = RTimeFormat.Match(input);
+            var timeMatch = RTimeFormat.Match(input);
             if (!timeMatch.Success) return TimeSpan.Zero;
-            var hour        = int.Parse(timeMatch.Groups["Hour"].Value);
-            var minute      = int.Parse(timeMatch.Groups["Minute"].Value);
-            var second      = int.Parse(timeMatch.Groups["Second"].Value);
+            var hour = int.Parse(timeMatch.Groups["Hour"].Value);
+            var minute = int.Parse(timeMatch.Groups["Minute"].Value);
+            var second = int.Parse(timeMatch.Groups["Second"].Value);
             var millisecond = int.Parse(timeMatch.Groups["Millisecond"].Value);
             return new TimeSpan(0, hour, minute, second, millisecond);
         }
 
         public static string ToCueTimeStamp(this TimeSpan input)
         {
-            var frames = (int) Math.Round(input.Milliseconds*75/1000F);
+            var frames = (int)Math.Round(input.Milliseconds * 75 / 1000F);
             if (frames > 99) frames = 99;
-            return $"{input.Hours*60 + input.Minutes:D2}:{input.Seconds:D2}:{frames:D2}";
+            return $"{(input.Hours * 60) + input.Minutes:D2}:{input.Seconds:D2}:{frames:D2}";
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace ChapterTool.Util
             if (buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
                 return new UTF8Encoding(false).GetString(buffer, 3, buffer.Length - 3);
             if (buffer[0] == 0xFF && buffer[1] == 0xFE)
-                return  Encoding.Unicode.GetString(buffer);
+                return Encoding.Unicode.GetString(buffer);
             if (buffer[0] == 0xFE && buffer[1] == 0xFF)
                 return Encoding.BigEndianUnicode.GetString(buffer);
             return Encoding.UTF8.GetString(buffer);
@@ -143,7 +143,7 @@ namespace ChapterTool.Util
             var json = new StringBuilder("[");
             colorList.ForEach(item => json.AppendFormat($"\"#{item.R:X2}{item.G:X2}{item.B:X2}\","));
             json[json.Length - 1] = ']';
-            var path = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath) ?? "", ColorProfile);
+            var path = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath) ?? string.Empty, ColorProfile);
             File.WriteAllText(path, json.ToString());
         }
 
@@ -154,15 +154,15 @@ namespace ChapterTool.Util
         public static void LoadColor(this Form1 window)
         {
             if (!File.Exists(ColorProfile)) return;
-            var json   = File.ReadAllText(ColorProfile);
+            var json = File.ReadAllText(ColorProfile);
             var rcolor = new Regex("\"(?<hex>.+?)\"", RegexOptions.Compiled);
             var matchesOfJson = rcolor.Matches(json);
-            if (matchesOfJson.Count < 6)  return;
-            window.BackChange     = ColorTranslator.FromHtml(matchesOfJson[0].Groups["hex"].Value);
-            window.TextBack       = ColorTranslator.FromHtml(matchesOfJson[1].Groups["hex"].Value);
+            if (matchesOfJson.Count < 6) return;
+            window.BackChange = ColorTranslator.FromHtml(matchesOfJson[0].Groups["hex"].Value);
+            window.TextBack = ColorTranslator.FromHtml(matchesOfJson[1].Groups["hex"].Value);
             window.MouseOverColor = ColorTranslator.FromHtml(matchesOfJson[2].Groups["hex"].Value);
             window.MouseDownColor = ColorTranslator.FromHtml(matchesOfJson[3].Groups["hex"].Value);
-            window.BordBackColor  = ColorTranslator.FromHtml(matchesOfJson[4].Groups["hex"].Value);
+            window.BorderBackColor = ColorTranslator.FromHtml(matchesOfJson[4].Groups["hex"].Value);
             window.TextFrontColor = ColorTranslator.FromHtml(matchesOfJson[5].Groups["hex"].Value);
         }
 
@@ -195,7 +195,7 @@ namespace ChapterTool.Util
             }
             catch (System.ComponentModel.Win32Exception)
             {
-                //Do nothing. Probably the user canceled the UAC window
+                // Do nothing. Probably the user canceled the UAC window
             }
             return false;
         }
@@ -229,11 +229,11 @@ namespace ChapterTool.Util
             var line = new StringBuilder();
             while (!reader.EndOfStream)
             {
-                var c = (char) reader.Read();
+                var c = (char)reader.Read();
                 switch (c)
                 {
                     case '\r':
-                        if ((char) reader.Peek() == '\n') reader.Read();// consume the next character
+                        if ((char)reader.Peek() == '\n') reader.Read(); // consume the next character
                         argHandler(argProcess, GetDataReceivedEventArgs(line.ToString()));
                         line.Clear();
                         break;
@@ -254,6 +254,7 @@ namespace ChapterTool.Util
         public static string Load(string subKey = @"Software\ChapterTool", string name = "SavingPath")
         {
             var path = string.Empty;
+
             // HKCU_CURRENT_USER\Software\
             var registryKey = Registry.CurrentUser.OpenSubKey(subKey);
             if (registryKey == null) return path;
@@ -286,7 +287,7 @@ namespace ChapterTool.Util
             subKey = subKey?.CreateSubKey("shell");
             subKey = subKey?.CreateSubKey("open");
             subKey = subKey?.CreateSubKey("command");
-            subKey?.SetValue("", $@"""{programFile}"" ""%1"" {argument}", RegistryValueKind.ExpandString);
+            subKey?.SetValue(string.Empty, $@"""{programFile}"" ""%1"" {argument}", RegistryValueKind.ExpandString);
             subKey?.Dispose();
             NativeMethods.RefreshNotify();
         }

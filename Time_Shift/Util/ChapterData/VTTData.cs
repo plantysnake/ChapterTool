@@ -18,18 +18,18 @@
 //
 // ****************************************************************************
 
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-
 namespace ChapterTool.Util.ChapterData
 {
+    using System;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+
     public static class VTTData
     {
         public static ChapterInfo GetChapterInfo(string text)
         {
-            var info  = new ChapterInfo { SourceType = "WebVTT", Tag = text, TagType = text.GetType() };
-            text = text.Replace("\r", "");
+            var info = new ChapterInfo { SourceType = "WebVTT", Tag = text, TagType = text.GetType() };
+            text = text.Replace("\r", string.Empty);
             var nodes = Regex.Split(text, "\n\n");
             if (nodes.Length < 1 || nodes[0].IndexOf("WEBVTT", StringComparison.Ordinal) < 0)
             {

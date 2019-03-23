@@ -7,10 +7,10 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.ComponentModel;
-
 namespace SharpDvdInfo.DvdTypes
 {
+    using System.ComponentModel;
+
     /// <summary>
     /// Enumerates valid formats for DVD audio streams
     /// </summary>
@@ -50,14 +50,16 @@ namespace SharpDvdInfo.DvdTypes
         /// <summary>
         /// stream start ids
         /// </summary>
-        public static int[] ID = {  0x80, // AC3
-                                    0,    // UNKNOWN
-                                    0xC0, // MPEG1
-                                    0xC0, // MPEG2
-                                    0xA0, // LPCM
-                                    0,    // UNKNOWN
-                                    0x88  // DTS
-                                };
+        public static int[] ID =
+        {
+            0x80, // AC3
+            0,    // UNKNOWN
+            0xC0, // MPEG1
+            0xC0, // MPEG2
+            0xA0, // LPCM
+            0,    // UNKNOWN
+            0x88  // DTS
+        };
     }
 
     /// <summary>

@@ -41,11 +41,11 @@ namespace Time_Shift_Test.Util
             {
                 total += time;
                 frames.Add(total.TotalFrames);
-                var tsp = (TimeSpan) total;
+                var tsp = (TimeSpan)total;
                 Console.WriteLine($"{tsp.Hours:D2}:{tsp.Minutes:D2}:{tsp.Seconds:D2}.{tsp.Milliseconds:D3} {total.TotalFrames}");
             }
             frames.Should().BeEquivalentTo(exceptedFrames);
-            ((int) Math.Round((decimal) ((TimeSpan) total).TotalSeconds * (30000M / 1001))).Should().Be(84876);
+            ((int)Math.Round((decimal)((TimeSpan)total).TotalSeconds * (30000M / 1001))).Should().Be(84876);
         }
     }
 }

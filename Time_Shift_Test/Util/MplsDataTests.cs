@@ -17,7 +17,7 @@ namespace ChapterTool.Util.Tests
             string mplsPath = @"..\..\[mpls_Sample]\00011_eva.mpls";
             if (!File.Exists(mplsPath)) mplsPath = @"..\" + mplsPath;
             var mplsRaw = new MplsData(mplsPath);
-            //mplsRaw.EntireTimeStamp.ForEach(item=>Console.Write($"{item}, "));
+            // mplsRaw.EntireTimeStamp.ForEach(item=>Console.Write($"{item}, "));
             Console.WriteLine(mplsRaw.ToString());
 
             mplsRaw.PlayItems[0].ClipName.ToString().Should().Be("00002.M2TS");
@@ -79,7 +79,7 @@ namespace ChapterTool.Util.Tests
                 var index = i;
                 mplsRaw.Marks.Where(mark => mark.RefToPlayItemID == index).Select(item => item.MarkTimeStamp).Should().Equal(expectedClip[i]);
             }
-            mplsRaw.PlayItems.Select(item=>item.FullName).Should().Equal("00005", "00006&00007", "00008", "00009&00010", "00011", "00012", "00013&00014", "00015", "00016");
+            mplsRaw.PlayItems.Select(item => item.FullName).Should().Equal("00005", "00006&00007", "00008", "00009&00010", "00011", "00012", "00013&00014", "00015", "00016");
             mplsRaw.PlayItems[0].STNTable.StreamEntries.First(item => item is PrimaryVideoStreamEntry).StreamAttributes.FrameRate.Should().Be(1);
         }
     }

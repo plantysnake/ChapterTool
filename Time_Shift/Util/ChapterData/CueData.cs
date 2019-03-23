@@ -18,17 +18,17 @@
 //
 // ****************************************************************************
 
-using ChapterTool.ChapterData;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-
 namespace ChapterTool.Util.ChapterData
 {
-    public class CueData: IData
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using ChapterTool.ChapterData;
+
+    public class CueData : IData
     {
         public ChapterInfo Chapter { get; private set; }
 
@@ -43,26 +43,26 @@ namespace ChapterTool.Util.ChapterData
             var ext = Path.GetExtension(path)?.ToLower();
             switch (ext)
             {
-            case ".cue":
-                cueData = File.ReadAllBytes(path).GetUTFString();
-                if (string.IsNullOrEmpty(cueData))
-                    throw new InvalidDataException("Empty cue file");
-                break;
+                case ".cue":
+                    cueData = File.ReadAllBytes(path).GetUTFString();
+                    if (string.IsNullOrEmpty(cueData))
+                        throw new InvalidDataException("Empty cue file");
+                    break;
 
-            case ".flac":
-                cueData = GetCueFromFlac(path, log);
-                break;
+                case ".flac":
+                    cueData = GetCueFromFlac(path, log);
+                    break;
 
-            case ".tak":
-                cueData = GetCueFromTak(path);
-                break;
+                case ".tak":
+                    cueData = GetCueFromTak(path);
+                    break;
 
-            default:
-                throw new Exception($"Invalid extension: {ext}");
+                default:
+                    throw new Exception($"Invalid extension: {ext}");
             }
             if (string.IsNullOrEmpty(cueData))
                 throw new Exception($"No Cue detected in {ext} file");
-            Chapter = PraseCue(cueData);
+            Chapter = ParseCue(cueData);
         }
 
         private enum NextState
@@ -74,115 +74,127 @@ namespace ChapterTool.Util.ChapterData
             NsFin
         }
 
-        private static readonly Regex RTitle      = new Regex(@"TITLE\s+\""(.+)\""", RegexOptions.Compiled);
-        private static readonly Regex RFile       = new Regex(@"FILE\s+\""(.+)\""\s+(WAVE|MP3|AIFF|BINARY|MOTOROLA)", RegexOptions.Compiled);
-        private static readonly Regex RTrack      = new Regex(@"TRACK\s+(\d+)", RegexOptions.Compiled);
-        private static readonly Regex RPerformer  = new Regex(@"PERFORMER\s+\""(.+)\""", RegexOptions.Compiled);
-        private static readonly Regex RTime       = new Regex(@"INDEX\s+(?<index>\d+)\s+(?<M>\d{2}):(?<S>\d{2}):(?<F>\d{2})", RegexOptions.Compiled);
+        private static readonly Regex RTitle = new Regex(@"TITLE\s+\""(.+)\""", RegexOptions.Compiled);
+        private static readonly Regex RFile = new Regex(@"FILE\s+\""(.+)\""\s+(WAVE|MP3|AIFF|BINARY|MOTOROLA)", RegexOptions.Compiled);
+        private static readonly Regex RTrack = new Regex(@"TRACK\s+(\d+)", RegexOptions.Compiled);
+        private static readonly Regex RPerformer = new Regex(@"PERFORMER\s+\""(.+)\""", RegexOptions.Compiled);
+        private static readonly Regex RTime = new Regex(@"INDEX\s+(?<index>\d+)\s+(?<M>\d{2}):(?<S>\d{2}):(?<F>\d{2})", RegexOptions.Compiled);
 
         /// <summary>
         /// 解析 cue 播放列表
         /// </summary>
         /// <param name="context">未分行的cue字符串</param>
         /// <returns></returns>
-        public static ChapterInfo PraseCue(string context)
+        public static ChapterInfo ParseCue(string context)
         {
-            var lines         = context.Split('\n');
-            var cue           = new ChapterInfo {SourceType = "CUE", Tag = context, TagType = context.GetType()};
+            var lines = context.Split('\n');
+            var cue = new ChapterInfo { SourceType = "CUE", Tag = context, TagType = context.GetType() };
             var nxState = NextState.NsStart;
-            Chapter chapter   = null;
+            Chapter chapter = null;
 
             foreach (var line in lines)
             {
                 switch (nxState)
                 {
-                case NextState.NsStart:
-                    var chapterTitleMatch = RTitle.Match(line);
-                    var fileMatch         = RFile.Match(line);
-                    if (chapterTitleMatch.Success)
-                    {
-                        cue.Title = chapterTitleMatch.Groups[1].Value;
-                        //nxState   = NextState.NsNewTrack;
-                        break;
-                    }
-                    if (fileMatch.Success)          //Title 为非必需项，故当读取到File行时跳出
-                    {
-                        cue.SourceName = fileMatch.Groups[1].Value;
-                        nxState = NextState.NsNewTrack;
-                    }
-                    break;
-
-                case NextState.NsNewTrack:
-                    if (string.IsNullOrWhiteSpace(line))    //读到空行，解析终止
-                    {
-                        nxState = NextState.NsFin;
-                        break;
-                    }
-                    var trackMatch = RTrack.Match(line);
-                    if (trackMatch.Success)         //读取到Track，获取其编号，跳至下一步
-                    {
-                        chapter = new Chapter { Number = int.Parse(trackMatch.Groups[1].Value) };
-                        nxState = NextState.NsTrack;
-                    }
-                    break;
-
-                case NextState.NsTrack:
-                    var trackTitleMatch = RTitle.Match(line);
-                    var performerMatch  = RPerformer.Match(line);
-                    var timeMatch       = RTime.Match(line);
-
-                    if (trackTitleMatch.Success)    //获取章节名
-                    {
-                        Debug.Assert(chapter != null);
-                        chapter.Name = trackTitleMatch.Groups[1].Value.Trim('\r');
-                        break;
-                    }
-                    if (performerMatch.Success)     //获取艺术家名
-                    {
-                        Debug.Assert(chapter != null);
-                        chapter.Name += $" [{performerMatch.Groups[1].Value.Trim('\r')}]";
-                        break;
-                    }
-                    if (timeMatch.Success)          //获取章节时间
-                    {
-                        var trackIndex = int.Parse(timeMatch.Groups["index"].Value);
-                        switch (trackIndex)
+                    case NextState.NsStart:
+                        var chapterTitleMatch = RTitle.Match(line);
+                        var fileMatch = RFile.Match(line);
+                        if (chapterTitleMatch.Success)
                         {
-                        case 0: //pre-gap of a track, just ignore it.
-                            break;
+                            cue.Title = chapterTitleMatch.Groups[1].Value;
 
-                        case 1: //beginning of a new track.
-                            Debug.Assert(chapter != null);
-                            var minute      = int.Parse(timeMatch.Groups["M"].Value);
-                            var second      = int.Parse(timeMatch.Groups["S"].Value);
-                            var millisecond = (int)Math.Round(int.Parse(timeMatch.Groups["F"].Value)*(1000F/75));//最后一项以帧(1s/75)而非以10毫秒为单位
-                            chapter.Time = new TimeSpan(0, 0, minute, second, millisecond);
-                            cue.Chapters.Add(chapter);
-                            nxState = NextState.NsNewTrack;//当前章节点的必要信息已获得，继续寻找下一章节
-                            break;
-
-                        default:
-                            nxState = NextState.NsError;
+                            // nxState   = NextState.NsNewTrack;
                             break;
                         }
-                    }
-                    break;
 
-                case NextState.NsError:
-                    throw new Exception("Unable to Prase this cue file");
-                case NextState.NsFin:
-                    goto EXIT_1;
-                default:
-                    nxState = NextState.NsError;
-                    break;
+                        // Title 为非必需项，故当读取到File行时跳出
+                        if (fileMatch.Success)
+                        {
+                            cue.SourceName = fileMatch.Groups[1].Value;
+                            nxState = NextState.NsNewTrack;
+                        }
+                        break;
+
+                    case NextState.NsNewTrack:
+
+                        // 读到空行，解析终止
+                        if (string.IsNullOrWhiteSpace(line))
+                        {
+                            nxState = NextState.NsFin;
+                            break;
+                        }
+                        var trackMatch = RTrack.Match(line);
+
+                        // 读取到Track，获取其编号，跳至下一步
+                        if (trackMatch.Success)
+                        {
+                            chapter = new Chapter { Number = int.Parse(trackMatch.Groups[1].Value) };
+                            nxState = NextState.NsTrack;
+                        }
+                        break;
+
+                    case NextState.NsTrack:
+                        var trackTitleMatch = RTitle.Match(line);
+                        var performerMatch = RPerformer.Match(line);
+                        var timeMatch = RTime.Match(line);
+
+                        // 获取章节名
+                        if (trackTitleMatch.Success)
+                        {
+                            Debug.Assert(chapter != null, "chapter must not be null");
+                            chapter.Name = trackTitleMatch.Groups[1].Value.Trim('\r');
+                            break;
+                        }
+
+                        // 获取艺术家名
+                        if (performerMatch.Success)
+                        {
+                            Debug.Assert(chapter != null, "chapter must not be null");
+                            chapter.Name += $" [{performerMatch.Groups[1].Value.Trim('\r')}]";
+                            break;
+                        }
+
+                        // 获取章节时间
+                        if (timeMatch.Success)
+                        {
+                            var trackIndex = int.Parse(timeMatch.Groups["index"].Value);
+                            switch (trackIndex)
+                            {
+                                case 0: // pre-gap of a track, just ignore it.
+                                    break;
+
+                                case 1: // beginning of a new track.
+                                    Debug.Assert(chapter != null, "chapter must not be null");
+                                    var minute = int.Parse(timeMatch.Groups["M"].Value);
+                                    var second = int.Parse(timeMatch.Groups["S"].Value);
+                                    var millisecond = (int)Math.Round(int.Parse(timeMatch.Groups["F"].Value) * (1000F / 75)); // 最后一项以帧(1s/75)而非以10毫秒为单位
+                                    chapter.Time = new TimeSpan(0, 0, minute, second, millisecond);
+                                    cue.Chapters.Add(chapter);
+                                    nxState = NextState.NsNewTrack; // 当前章节点的必要信息已获得，继续寻找下一章节
+                                    break;
+
+                                default:
+                                    nxState = NextState.NsError;
+                                    break;
+                            }
+                        }
+                        break;
+
+                    case NextState.NsError:
+                        throw new Exception("Unable to Parse this cue file");
+                    case NextState.NsFin:
+                        goto EXIT_1;
+                    default:
+                        nxState = NextState.NsError;
+                        break;
                 }
             }
-            EXIT_1:
+        EXIT_1:
             if (cue.Chapters.Count < 1)
             {
                 throw new Exception("Empty cue file");
             }
-            cue.Chapters.Sort((c1, c2) => c1.Number.CompareTo(c2.Number));//确保无乱序
+            cue.Chapters.Sort((c1, c2) => c1.Number.CompareTo(c2.Number)); // 确保无乱序
             cue.Duration = cue.Chapters.Last().Time;
             return cue;
         }
@@ -202,7 +214,8 @@ namespace ChapterTool.Util.ChapterData
                 throw new ArgumentException($"Invalid parameter: [{nameof(type)}], which must be 'flac' or 'tak'");
             }
             var length = buffer.Length;
-            //查找 Cuesheet 标记,自动机模型,大小写不敏感
+
+            // 查找 Cuesheet 标记,自动机模型,大小写不敏感
             int state = 0, beginPos = 0;
             for (var i = 0; i < length; ++i)
             {
@@ -210,22 +223,22 @@ namespace ChapterTool.Util.ChapterData
                     buffer[i] = (byte)(buffer[i] - 'A' + 'a');
                 switch ((char)buffer[i])
                 {
-                case 'c': state = 1; break;//C
-                case 'u': state = state == 1 ? 2 : 0; break;//Cu
-                case 'e':
-                    switch (state)
-                    {
-                    case 2: state = 3;  break;//Cue
-                    case 5: state = 6;  break;//Cueshe
-                    case 6: state = 7;  break;//Cueshee
-                    default: state = 0; break;
-                    }
-                    break;
+                    case 'c': state = 1; break; // C
+                    case 'u': state = state == 1 ? 2 : 0; break; // Cu
+                    case 'e':
+                        switch (state)
+                        {
+                            case 2: state = 3; break; // Cue
+                            case 5: state = 6; break; // Cueshe
+                            case 6: state = 7; break; // Cueshee
+                            default: state = 0; break;
+                        }
+                        break;
 
-                case 's': state = state == 3 ? 4 : 0; break;//Cues
-                case 'h': state = state == 4 ? 5 : 0; break;//Cuesh
-                case 't': state = state == 7 ? 8 : 0; break;//Cuesheet
-                default: state = 0; break;
+                    case 's': state = state == 3 ? 4 : 0; break; // Cues
+                    case 'h': state = state == 4 ? 5 : 0; break; // Cuesh
+                    case 't': state = state == 7 ? 8 : 0; break; // Cuesheet
+                    default: state = 0; break;
                 }
                 if (state != 8) continue;
                 beginPos = i + 2;
@@ -234,16 +247,17 @@ namespace ChapterTool.Util.ChapterData
             var controlCount = type == "flac" ? 3 : type == "tak" ? 6 : 0;
             var endPos = 0;
             state = 0;
-            //查找终止符 0D 0A ? 00 00 00 (连续 controlCount 个终止符以上) (flac为3, tak为6)
+
+            // 查找终止符 0D 0A ? 00 00 00 (连续 controlCount 个终止符以上) (flac为3, tak为6)
             for (var i = beginPos; i < length; ++i)
             {
                 switch (buffer[i])
                 {
-                case 0:  state++;   break;
-                default: state = 0; break;
+                    case 0: state++; break;
+                    default: state = 0; break;
                 }
                 if (state != controlCount) continue;
-                endPos = i - controlCount; //指向0D 0A后的第一个字符
+                endPos = i - controlCount; // 指向0D 0A后的第一个字符
                 break;
             }
             if (beginPos == 0 || endPos <= 1) return string.Empty;
@@ -253,9 +267,9 @@ namespace ChapterTool.Util.ChapterData
 
             var cueLength = endPos - beginPos + 1;
             if (cueLength <= 10) return string.Empty;
-            var cueSheet  = Encoding.UTF8.GetString(buffer, beginPos, cueLength);
-            //Debug.WriteLine(cueSheet);
+            var cueSheet = Encoding.UTF8.GetString(buffer, beginPos, cueLength);
 
+            // Debug.WriteLine(cueSheet);
             return cueSheet;
         }
 

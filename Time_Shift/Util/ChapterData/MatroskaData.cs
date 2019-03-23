@@ -18,15 +18,15 @@
 //
 // ****************************************************************************
 
-using System;
-using System.IO;
-using System.Xml;
-using System.Linq;
-using Microsoft.Win32;
-using System.Diagnostics;
-
 namespace ChapterTool.Util.ChapterData
 {
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Xml;
+    using Microsoft.Win32;
+
     internal class MatroskaData
     {
         private readonly XmlDocument _result = new XmlDocument();
@@ -38,18 +38,23 @@ namespace ChapterTool.Util.ChapterData
         public MatroskaData()
         {
             var mkvToolnixPath = RegistryStorage.Load(@"Software\ChapterTool", "mkvToolnixPath");
-            if (string.IsNullOrEmpty(mkvToolnixPath)) //saved path not found.
+
+            // saved path not found.
+            if (string.IsNullOrEmpty(mkvToolnixPath))
             {
                 try
                 {
                     mkvToolnixPath = GetMkvToolnixPathViaRegistry();
                     RegistryStorage.Save(mkvToolnixPath, @"Software\ChapterTool", "mkvToolnixPath");
                 }
-                catch (Exception exception) //no valid path found in Registry
+                catch (Exception exception)
                 {
+                    // no valid path found in Registry
                     OnLog?.Invoke($"Warning: {exception.Message}");
                 }
-                if (string.IsNullOrEmpty(mkvToolnixPath)) //Installed path not found.
+
+                // Installed path not found.
+                if (string.IsNullOrEmpty(mkvToolnixPath))
                 {
                     mkvToolnixPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 }
@@ -85,7 +90,6 @@ namespace ChapterTool.Util.ChapterData
             return output;
         }
 
-
         /// <summary>
         /// Returns the path from MKVToolnix.
         /// It tries to find it via the registry keys.
@@ -95,9 +99,9 @@ namespace ChapterTool.Util.ChapterData
         private static string GetMkvToolnixPathViaRegistry()
         {
             RegistryKey regMkvToolnix = null;
-            var valuePath            = string.Empty;
-            var subKeyFound          = false;
-            var valueFound           = false;
+            var valuePath = string.Empty;
+            var subKeyFound = false;
+            var valueFound = false;
 
             // First check for Installed MkvToolnix
             // First check Win32 registry
@@ -112,6 +116,7 @@ namespace ChapterTool.Util.ChapterData
                 subKeyFound = true;
                 regMkvToolnix = regUninstall.OpenSubKey("MKVToolNix");
             }
+
             // if sub key was found, try to get the executable path
             if (subKeyFound)
             {
@@ -173,6 +178,7 @@ namespace ChapterTool.Util.ChapterData
                     foundGuiKey = true;
                     regGui = regMkvToolnix.OpenSubKey("GUI");
                 }
+
                 // if we didn't find the GUI key, all hope is lost
                 if (!foundGuiKey)
                 {
@@ -184,6 +190,7 @@ namespace ChapterTool.Util.ChapterData
                     valueFound = true;
                     valuePath = (string)regGui.GetValue("mkvmerge_executable");
                 }
+
                 // if we didn't find the mkvmerge_executable value, all hope is lost
                 if (!valueFound)
                 {

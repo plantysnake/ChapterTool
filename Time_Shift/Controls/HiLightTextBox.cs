@@ -1,15 +1,16 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-
-namespace ChapterTool.Controls
+﻿namespace ChapterTool.Controls
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Drawing;
+    using System.Text.RegularExpressions;
+    using System.Windows.Forms;
+
     public struct Pattern
     {
         public Regex PatRegex { set; get; }
+
         public Color PatColor { set; get; }
 
         public Pattern(string pat, Color color)
@@ -58,7 +59,7 @@ namespace ChapterTool.Controls
                 };
                 text.SelectionLength = text.Text.Length;
                 text.SelectionColor = OriginalColor;
-                text.SelectionFont = Font;// new Font("Consolas", 9, FontStyle.Regular);
+                text.SelectionFont = Font; // new Font("Consolas", 9, FontStyle.Regular);
 
                 foreach (var pattern in _patterns)
                 {

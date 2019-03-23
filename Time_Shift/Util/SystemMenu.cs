@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
-
-namespace ChapterTool.Util
+﻿namespace ChapterTool.Util
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.InteropServices;
+    using System.Windows.Forms;
+
     /// <summary>
     /// Extends the system menu of a window with additional commands.
     /// </summary>
@@ -90,7 +90,7 @@ namespace ChapterTool.Util
                 // The form is created, add the command now
                 if (separatorBeforeCommand)
                 {
-                    AppendMenu(hSysMenu, MF_SEPARATOR, 0, "");
+                    AppendMenu(hSysMenu, MF_SEPARATOR, 0, string.Empty);
                 }
                 AppendMenu(hSysMenu, MF_STRING, id, text);
             }
@@ -130,7 +130,7 @@ namespace ChapterTool.Util
                 {
                     if (command.Separator)
                     {
-                        AppendMenu(hSysMenu, MF_SEPARATOR, 0, "");
+                        AppendMenu(hSysMenu, MF_SEPARATOR, 0, string.Empty);
                     }
                     AppendMenu(hSysMenu, MF_STRING, command.Id, command.Text);
                 }
@@ -153,8 +153,11 @@ namespace ChapterTool.Util
         private class CommandInfo
         {
             public int Id { get; set; }
+
             public string Text { get; set; }
+
             public Action Action { get; set; }
+
             public bool Separator { get; set; }
         }
 

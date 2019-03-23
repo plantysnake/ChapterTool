@@ -11,7 +11,6 @@ namespace SharpDvdInfo.DvdTypes
 {
     using System.ComponentModel;
 
-
     public enum DvdVideoStandard
     {
         [Description("NTSC")]
@@ -46,7 +45,6 @@ namespace SharpDvdInfo.DvdTypes
         /// </summary>
         [Description("352x240")]
         Res352By240 = 3,
-
 
         /// <summary>
         /// PAL 720x576
