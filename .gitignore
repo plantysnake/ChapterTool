@@ -198,3 +198,9 @@ FakesAssemblies/
 # toaru database
 *.VC.db
 *.opendb
+
+dist/windows/*.exe
+dist/windows/*.config
+dist/windows/*.dll
+dist/windows/en-US/
+dist/windows/LICENSE
