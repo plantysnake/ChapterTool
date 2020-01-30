@@ -622,7 +622,7 @@ namespace ChapterTool.Forms
             {
                 Knuckleball.MP4File.OnLog += Log;
                 NativeMethods.CreateHardLinkCMD(linkedFile, FilePath);
-                _info = new Mp4Data(linkedFile).Chapter;
+                _info = File.Exists(linkedFile) ? new Mp4Data(linkedFile).Chapter : new Mp4Data(FilePath).Chapter;
             }
             catch (Exception exception)
             {
