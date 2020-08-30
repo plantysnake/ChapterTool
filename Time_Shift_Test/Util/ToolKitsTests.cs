@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ChapterTool.Util.ChapterData;
 using FluentAssertions;
 
 namespace ChapterTool.Util.Tests
@@ -40,6 +41,17 @@ namespace ChapterTool.Util.Tests
             var expected = new List<int> { 0, 1, 2, 3, 4, 6, 7 };
             frameRate.Select(ToolKits.ConvertFr2Index).ToList().ForEach(Console.Write);
             frameRate.Select(ToolKits.ConvertFr2Index).Should().Equal(expected);
+        }
+
+        [TestMethod]
+        public void MillisecondRoundUp()
+        {
+            const int frame = 30989; // DVD NTSC
+            var timespan = new IfoTimeSpan(true) {TotalFrames = frame};
+            var timespanString = ((TimeSpan) timespan).Time2String();
+            timespanString.Should().Be("00:17:14.000");
+
+
         }
     }
 }

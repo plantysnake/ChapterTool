@@ -43,7 +43,11 @@ namespace ChapterTool.Util
         public static string Time2String(this TimeSpan time)
         {
             var millisecond = (int)Math.Round((time.TotalSeconds - Math.Floor(time.TotalSeconds)) * 1000);
-            return $"{time.Hours:D2}:{time.Minutes:D2}:{time.Seconds:D2}.{millisecond:D3}";
+            return $"{time.Hours:D2}:{time.Minutes:D2}:" +
+                   (millisecond == 1000 ?
+                       $"{time.Seconds + 1:D2}.000" :
+                       $"{time.Seconds:D2}.{millisecond:D3}"
+                   );
         }
 
         /// <summary>
