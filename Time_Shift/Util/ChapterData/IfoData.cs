@@ -267,7 +267,7 @@ namespace ChapterTool.Util.ChapterData
 
         public override string ToString()
         {
-            return $"{Hours:D2}:{Minutes:D2}:{Second:D2}.{TotalFrames} [{(IsNTSC ? 'N' : 'P')}]";
+            return $"{Hours:D2}:{Minutes:D2}:{Second:D2}.{TotalFrames % RawFrameRate}f [{TotalFrames}{(IsNTSC ? 'N' : 'P')}]";
         }
     }
 }
