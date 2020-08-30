@@ -6,6 +6,8 @@ Section "un.$(remove_files)" ;"un.Remove files"
   Delete "$INSTDIR\ChapterTool.exe.config"
   Delete "$INSTDIR\libmp4v2.dll"
   Delete "$INSTDIR\en-US\ChapterTool.resources.dll"
+  Delete "$INSTDIR\LICENSE"
+  Delete "$INSTDIR\uninst.exe"
 
   ; Remove directories used
   RMDir /r "$INSTDIR\en-US"

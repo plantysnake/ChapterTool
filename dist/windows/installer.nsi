@@ -29,10 +29,10 @@ Section $(inst_ct_req) ;"ChapterTool (required)"
   CreateDirectory $INSTDIR\en-US
 
   ; Put file there
-  File "ChapterTool.exe"
-  File "ChapterTool.exe.config"
-  File "libmp4v2.dll"
-  File /oname=en-US\ChapterTool.resources.dll "en-US\ChapterTool.resources.dll"
+  File "..\..\Time_Shift\bin\Release\ChapterTool.exe"
+  File "..\..\Time_Shift\bin\Release\ChapterTool.exe.config"
+  File "..\..\Time_Shift\libmp4v2.dll"
+  File /oname=en-US\ChapterTool.resources.dll "..\..\Time_Shift\bin\Release\en-US\ChapterTool.resources.dll"
 
 
   ; Write the installation path into the registry
