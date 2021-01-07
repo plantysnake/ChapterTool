@@ -28,6 +28,7 @@ namespace ChapterTool.Util
     using System.Text;
     using System.Windows.Forms;
     using System.Xml;
+    using Jil;
 
     public class ChapterInfo
     {
@@ -358,14 +359,31 @@ namespace ChapterTool.Util
             return cueBuilder;
         }
 
+        class ChapterItemJson
+        {
+            [JilDirective(Name="name")]
+            public string Name { get; set; }
+
+            [JilDirective(Name = "time")]
+            public double Time { get; set; }
+        }
+
+        class ChapterJson
+        {
+            [JilDirective(Name = "sourceName")]
+            public string SourceName { get; set; }
+
+            [JilDirective(Name = "chapter")]
+            public List<ChapterItemJson> Chapter { get; set; }
+        }
+
         public StringBuilder GetJson(bool autoGenName)
         {
-            var jsonBuilder = new StringBuilder();
-            jsonBuilder.Append("{");
-            jsonBuilder.Append("\"sourceName\":");
-            jsonBuilder.Append(SourceType == "MPLS" ? $"\"{SourceName}.m2ts\"," : "\"undefined\",");
-            jsonBuilder.Append("\"chapter\":");
-            jsonBuilder.Append("[[");
+            var jsonObject = new ChapterJson
+            {
+                SourceName = SourceType == "MPLS" ? $"{SourceName}.m2ts" : null,
+                Chapter = new List<ChapterItemJson>()
+            };
 
             var baseTime = TimeSpan.Zero;
             Chapter prevChapter = null;
@@ -377,20 +395,24 @@ namespace ChapterTool.Util
                     baseTime = prevChapter.Time; // update base time
                     name = ChapterName.GetChapterName();
                     var initChapterName = autoGenName ? name() : prevChapter.Name;
-                    jsonBuilder.Remove(jsonBuilder.Length - 1, 1);
-                    jsonBuilder.Append("],[");
-                    jsonBuilder.Append($"{{\"name\":\"{initChapterName}\",\"time\":0}},");
+                    jsonObject.Chapter.Add(new ChapterItemJson
+                    {
+                        Name = initChapterName,
+                        Time = 0
+                    });
                     continue;
                 }
                 var time = chapter.Time - baseTime;
                 var chapterName = (autoGenName ? name() : chapter.Name);
-                jsonBuilder.Append($"{{\"name\":\"{chapterName}\",\"time\":{time.TotalSeconds}}},");
+                jsonObject.Chapter.Add(new ChapterItemJson
+                {
+                    Name = chapterName,
+                    Time = time.TotalSeconds
+                });
                 prevChapter = chapter;
             }
-            jsonBuilder.Remove(jsonBuilder.Length - 1, 1);
-            jsonBuilder.Append("]]");
-            jsonBuilder.Append("}");
-            return jsonBuilder;
+            var ret = Jil.JSON.Serialize(jsonObject);
+            return new StringBuilder(ret);
         }
     }
 }
