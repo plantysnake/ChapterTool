@@ -40,7 +40,7 @@
             MDT_EFFECTIVE_DPI = 0,
             MDT_ANGULAR_DPI,
             MDT_RAW_DPI,
-            MDT_DEFAULT = MDT_EFFECTIVE_DPI
+            MDT_DEFAULT = MDT_EFFECTIVE_DPI,
         }
 
         [DllImport("user32.dll")]
@@ -105,8 +105,8 @@
                     Arguments = $"hardlink create \"{lpFileName}\" \"{lpExistingFileName}\"",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
-                    CreateNoWindow = true
-                }
+                    CreateNoWindow = true,
+                },
             };
             process.Start();
             process.WaitForExit();

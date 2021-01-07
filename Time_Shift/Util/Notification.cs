@@ -85,7 +85,7 @@ namespace ChapterTool.Util
             var form = new Form
             {
                 AutoScaleMode = AutoScaleMode.Font,
-                Font = SystemFonts.IconTitleFont
+                Font = SystemFonts.IconTitleFont,
             };
 
             var dialogUnits = form.AutoScaleDimensions;
@@ -107,7 +107,7 @@ namespace ChapterTool.Util
                 AutoSize = true,
                 Left = MulDiv(8, dialogUnits.Width, 4),
                 Top = MulDiv(8, dialogUnits.Height, 8),
-                Text = prompt
+                Text = prompt,
             };
 
             var edInput = new TextBox
@@ -116,7 +116,7 @@ namespace ChapterTool.Util
                 Left = lblPrompt.Left,
                 Top = MulDiv(19, dialogUnits.Height, 8),
                 Width = MulDiv(164, dialogUnits.Width, 4),
-                Text = value
+                Text = value,
             };
             edInput.SelectAll();
 
@@ -129,7 +129,7 @@ namespace ChapterTool.Util
             {
                 Parent = form,
                 Text = "OK",
-                DialogResult = DialogResult.OK
+                DialogResult = DialogResult.OK,
             };
             form.AcceptButton = bbOk;
             bbOk.Location = new Point(MulDiv(38, dialogUnits.Width, 4), buttonTop);
@@ -139,7 +139,7 @@ namespace ChapterTool.Util
             {
                 Parent = form,
                 Text = "Cancel",
-                DialogResult = DialogResult.Cancel
+                DialogResult = DialogResult.Cancel,
             };
             form.CancelButton = bbCancel;
             bbCancel.Location = new Point(MulDiv(92, dialogUnits.Width, 4), buttonTop);

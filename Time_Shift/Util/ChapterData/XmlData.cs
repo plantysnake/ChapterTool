@@ -152,7 +152,7 @@ namespace ChapterTool.Util.ChapterData
                 {
                     Number = index,
                     Time = ToolKits.RTimeFormat.Match(atom.ChapterTimeStart).Value.ToTimeSpan(),
-                    Name = atom.ChapterDisplay.ChapterString ?? string.Empty
+                    Name = atom.ChapterDisplay.ChapterString ?? string.Empty,
                 };
                 yield return startChapter;
             }
@@ -173,7 +173,7 @@ namespace ChapterTool.Util.ChapterData
                 {
                     Number = index,
                     Time = ToolKits.RTimeFormat.Match(atom.ChapterTimeEnd).Value.ToTimeSpan(),
-                    Name = atom.ChapterDisplay.ChapterString ?? string.Empty
+                    Name = atom.ChapterDisplay.ChapterString ?? string.Empty,
                 };
                 yield return endChapter;
             }

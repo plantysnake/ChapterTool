@@ -37,7 +37,7 @@ namespace ChapterTool.Util
             {
                 var ret = new Expression
                 {
-                    PostExpression = new List<Token> { new Token { TokenType = Token.Symbol.Variable, Value = "t" } }
+                    PostExpression = new List<Token> { new Token { TokenType = Token.Symbol.Variable, Value = "t" } },
                 };
                 return ret;
             }
@@ -120,7 +120,7 @@ namespace ChapterTool.Util
             ["sign"] = 1,
             ["pow"] = 2,
             ["max"] = 2,
-            ["min"] = 2
+            ["min"] = 2,
         };
 
         private static readonly Dictionary<string, decimal> MathDefines = new Dictionary<string, decimal>
@@ -137,7 +137,7 @@ namespace ChapterTool.Util
             ["M_2_PI"] = 0.63661977236758134308M, // 2/pi
             ["M_2_SQRTPI"] = 1.12837916709551257390M, // 2/sqrt(pi)
             ["M_SQRT2"] = 1.41421356237309504880M, // sqrt(2)
-            ["M_SQRT1_2"] = 0.70710678118654752440M  // 1/sqrt(2)
+            ["M_SQRT1_2"] = 0.70710678118654752440M,  // 1/sqrt(2)
         };
 
         private static readonly Random Rnd = new Random();
@@ -273,7 +273,7 @@ namespace ChapterTool.Util
                 ["*"] = 1,
                 ["/"] = 1,
                 ["%"] = 1,
-                ["^"] = 2
+                ["^"] = 2,
             };
             if (string.IsNullOrEmpty(token.Value) || token.TokenType == Token.Symbol.Blank) return -2;
             if (!precedence.ContainsKey(token.Value))
@@ -450,7 +450,7 @@ namespace ChapterTool.Util
                 return Eval(new Dictionary<string, decimal>
                 {
                     ["t"] = (decimal)time,
-                    ["fps"] = fps
+                    ["fps"] = fps,
                 });
             }
             catch (Exception exception)
@@ -605,7 +605,14 @@ namespace ChapterTool.Util
 
             public enum Symbol
             {
-                Blank, Number, Variable, Operator, Bracket, Function, Comma, Boolean
+                Blank,
+                Number,
+                Variable,
+                Operator,
+                Bracket,
+                Function,
+                Comma,
+                Boolean,
             }
 
             public override string ToString()

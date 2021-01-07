@@ -15,9 +15,9 @@
                 {
                     FileName = fileName, Arguments = args,
                     UseShellExecute = false, CreateNoWindow = true,
-                    RedirectStandardOutput = true, RedirectStandardError = true
+                    RedirectStandardOutput = true, RedirectStandardError = true,
                 },
-                EnableRaisingEvents = true
+                EnableRaisingEvents = true,
             })
             {
                 if (!string.IsNullOrEmpty(workingDirectory))

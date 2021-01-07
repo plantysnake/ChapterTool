@@ -39,7 +39,7 @@ namespace SharpDvdInfo.DvdTypes
         /// <summary>
         /// Format DTS
         /// </summary>
-        DTS = 6
+        DTS = 6,
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ namespace SharpDvdInfo.DvdTypes
             0xC0, // MPEG2
             0xA0, // LPCM
             0,    // UNKNOWN
-            0x88  // DTS
+            0x88,  // DTS
         };
     }
 
@@ -89,7 +89,7 @@ namespace SharpDvdInfo.DvdTypes
         /// Dynamic Range Control
         /// </summary>
         [Description("DRC")]
-        DRC
+        DRC,
     }
 
     /// <summary>
@@ -125,6 +125,6 @@ namespace SharpDvdInfo.DvdTypes
         /// Alternate director's comments
         /// </summary>
         [Description("Alternate director's comments")]
-        Comments2
+        Comments2,
     }
 }

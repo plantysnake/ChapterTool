@@ -387,7 +387,20 @@ namespace ChapterTool.Forms
 
         private enum FileType
         {
-            Mpls, Xml, Txt, Ifo, Mkv, Mka, Tak, Flac, Cue, Xpl, Mp4, M4a, M4v, VTT
+            Mpls,
+            Xml,
+            Txt,
+            Ifo,
+            Mkv,
+            Mka,
+            Tak,
+            Flac,
+            Cue,
+            Xpl,
+            Mp4,
+            M4a,
+            M4v,
+            VTT,
         }
 
         private static readonly Dictionary<string, string[]> SupportTypes = new Dictionary<string, string[]>
@@ -396,7 +409,7 @@ namespace ChapterTool.Forms
             [Resources.File_Filter_Cue_File] = new[] { "cue", "tak", "flac" },
             [Resources.File_Filter_Matroska_File] = new[] { "mkv", "mka" },
             [Resources.File_Filter_Mp4_File] = new[] { "mp4", "m4a", "m4v" },
-            [Resources.File_Filter_VTT_File] = new[] { "vtt" }
+            [Resources.File_Filter_VTT_File] = new[] { "vtt" },
         };
 
         private static readonly Lazy<string> MainFilter = new Lazy<string>(() =>
@@ -864,7 +877,13 @@ namespace ChapterTool.Forms
         [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Reviewed.")]
         private enum SaveTypeEnum
         {
-            TXT, XML, QPF, TimeCodes, TsmuxerMeta, CUE, JSON
+            TXT,
+            XML,
+            QPF,
+            TimeCodes,
+            TsmuxerMeta,
+            CUE,
+            JSON,
         }
 
         private static readonly Dictionary<SaveTypeEnum, string> SaveTypeSuffix = new Dictionary<SaveTypeEnum, string>
@@ -875,7 +894,7 @@ namespace ChapterTool.Forms
             [SaveTypeEnum.TimeCodes] = ".TimeCodes.txt",
             [SaveTypeEnum.TsmuxerMeta] = ".TsMuxeR_Meta.txt",
             [SaveTypeEnum.CUE] = ".cue",
-            [SaveTypeEnum.JSON] = ".json"
+            [SaveTypeEnum.JSON] = ".json",
         };
 
         private void LoadSaveType()
@@ -1236,7 +1255,7 @@ namespace ChapterTool.Forms
             MouseOverColor,
             MouseDownColor,
             BorderBackColor,
-            TextFrontColor
+            TextFrontColor,
         };
 
         public Color BackChange
@@ -1575,7 +1594,7 @@ namespace ChapterTool.Forms
             {
                 _previewForm = new FormPreview(this)
                 {
-                    TopMost = true
+                    TopMost = true,
                 };
             }
             _previewForm.UpdateText(_info.GetText(AutoGenName));

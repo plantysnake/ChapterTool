@@ -71,7 +71,7 @@ namespace ChapterTool.Util.ChapterData
             NsNewTrack,
             NsTrack,
             NsError,
-            NsFin
+            NsFin,
         }
 
         private static readonly Regex RTitle = new Regex(@"TITLE\s+\""(.+)\""", RegexOptions.Compiled);

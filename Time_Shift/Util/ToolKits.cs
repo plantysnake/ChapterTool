@@ -193,7 +193,7 @@ namespace ChapterTool.Util
                 Process.Start(new ProcessStartInfo
                 {
                     Verb = "runas",
-                    FileName = fileName
+                    FileName = fileName,
                 });
                 return true;
             }

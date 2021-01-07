@@ -36,7 +36,7 @@ namespace ChapterTool.Util.ChapterData
             LTimeCode,
             LName,
             LError,
-            LFin
+            LFin,
         }
 
         public static ChapterInfo GetChapterInfo(string text)

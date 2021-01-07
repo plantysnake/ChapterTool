@@ -9,7 +9,7 @@
 
 namespace SharpDvdInfo.Model
 {
-    using DvdTypes;
+    using SharpDvdInfo.DvdTypes;
 
     /// <summary>
     /// The subpicture properties

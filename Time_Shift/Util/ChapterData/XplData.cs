@@ -23,7 +23,7 @@
                         SourceName = title.Element(ns + "PrimaryAudioVideoClip")?.Attribute("src")?.Value ?? string.Empty,
                         SourceType = "HD-DVD",
                         FramesPerSecond = 24M,
-                        Chapters = new List<Chapter>()
+                        Chapters = new List<Chapter>(),
                     };
                     var tickBaseDivisor = (int?)title.Attribute("tickBaseDivisor") ?? 1; // optional
                     pgc.Duration = GetTimeSpan((string)title.Attribute("titleDuration"), timeBase, tickBase, tickBaseDivisor);
@@ -39,7 +39,7 @@
                         pgc.Chapters.Add(new Chapter
                         {
                             Name = chapterName,
-                            Time = GetTimeSpan((string)chapter.Attribute("titleTimeBegin"), timeBase, tickBase, tickBaseDivisor) // required
+                            Time = GetTimeSpan((string)chapter.Attribute("titleTimeBegin"), timeBase, tickBase, tickBaseDivisor), // required
                         });
                     }
                     yield return pgc;
