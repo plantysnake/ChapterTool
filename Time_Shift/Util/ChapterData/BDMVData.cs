@@ -70,7 +70,7 @@
                 {
                     Duration = TimeSpan.Parse(time),
                     SourceIndex = index,
-                    SourceName = file
+                    SourceName = file,
                 });
             }
             var toBeRemove = new List<ChapterInfo>();

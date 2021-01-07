@@ -58,7 +58,7 @@ namespace Knuckleball
             /// <summary>
             /// Nero chapter type
             /// </summary>
-            Nero = 4
+            Nero = 4,
         }
 
         [DllImport("libMP4V2.dll", CharSet = CharSet.Auto, ExactSpelling = true, BestFitMapping = false, SetLastError = true, CallingConvention = CallingConvention.Cdecl)]

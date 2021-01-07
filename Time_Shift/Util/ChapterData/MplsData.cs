@@ -88,7 +88,7 @@ namespace ChapterTool.Util.ChapterData
                     SourceType = "MPLS",
                     SourceName = PlayItems[i].FullName,
                     Duration = Pts2Time(playItem.TimeInfo.DeltaTime),
-                    FramesPerSecond = FrameRate[attr.StreamAttributes.FrameRate]
+                    FramesPerSecond = FrameRate[attr.StreamAttributes.FrameRate],
                 };
 
                 var index = i;
@@ -109,7 +109,7 @@ namespace ChapterTool.Util.ChapterData
                 {
                     Time = Pts2Time(mark.MarkTimeStamp - offset),
                     Number = name.Index,
-                    Name = name.Get()
+                    Name = name.Get(),
                 }).ToList();
                 ret.Add(info);
             }
@@ -856,7 +856,7 @@ namespace ChapterTool.Util.ChapterData
             [0xA2] = "DTS-HD audio stream",
             [0x90] = "Presentation Graphics Stream",
             [0x91] = "Interactive Graphics Stream",
-            [0x92] = "Text Subtitle stream"
+            [0x92] = "Text Subtitle stream",
         };
 
         private static readonly Dictionary<int, string> Resolution = new Dictionary<int, string>
@@ -869,7 +869,7 @@ namespace ChapterTool.Util.ChapterData
             [0x05] = "1280*720p",
             [0x06] = "1920*1080p",
             [0x07] = "720*576p",
-            [0x08] = "3840*2160p"
+            [0x08] = "3840*2160p",
         };
 
         private static readonly Dictionary<int, string> FrameRate = new Dictionary<int, string>
@@ -881,7 +881,7 @@ namespace ChapterTool.Util.ChapterData
             [0x04] = "30000/1001 FPS",
             [0x05] = "res.",
             [0x06] = "50 FPS",
-            [0x07] = "60000/1001 FPS"
+            [0x07] = "60000/1001 FPS",
         };
 
         private static readonly Dictionary<int, string> Channel = new Dictionary<int, string>
@@ -890,7 +890,7 @@ namespace ChapterTool.Util.ChapterData
             [0x01] = "mono",
             [0x03] = "stereo",
             [0x06] = "multichannel",
-            [0x0C] = "stereo and multichannel"
+            [0x0C] = "stereo and multichannel",
         };
 
         private static readonly Dictionary<int, string> SampleRate = new Dictionary<int, string>
@@ -900,7 +900,7 @@ namespace ChapterTool.Util.ChapterData
             [0x04] = "96 KHz",
             [0x05] = "192 KHz",
             [0x0C] = "48 & 192 KHz",
-            [0x0E] = "48 & 96 KHz"
+            [0x0E] = "48 & 96 KHz",
         };
 
         private static readonly Dictionary<int, string> CharacterCode = new Dictionary<int, string>
@@ -912,7 +912,7 @@ namespace ChapterTool.Util.ChapterData
             [0x04] = "EUC KR",
             [0x05] = "GB18030-2000",
             [0x06] = "GB2312",
-            [0x07] = "BIG5"
+            [0x07] = "BIG5",
         };
     }
 }

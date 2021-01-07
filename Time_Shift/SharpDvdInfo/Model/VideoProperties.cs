@@ -10,7 +10,7 @@
 namespace SharpDvdInfo.Model
 {
     using System;
-    using DvdTypes;
+    using SharpDvdInfo.DvdTypes;
 
     /// <summary>
     /// The video stream properties

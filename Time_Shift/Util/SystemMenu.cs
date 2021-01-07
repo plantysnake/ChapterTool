@@ -82,7 +82,7 @@
                     Id = id,
                     Text = text,
                     Action = action,
-                    Separator = separatorBeforeCommand
+                    Separator = separatorBeforeCommand,
                 });
             }
             else

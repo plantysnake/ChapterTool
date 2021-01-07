@@ -63,7 +63,7 @@ namespace ChapterTool.Util.ChapterData
             SEEKTABLE,
             VORBIS_COMMENT,
             CUESHEET,
-            PICTURE
+            PICTURE,
         }
 
         public static FlacInfo GetMetadataFromFlac(string flacPath)
@@ -169,7 +169,7 @@ namespace ChapterTool.Util.ChapterData
             "Lyricist/text writer", "Recording Location", "During recording",
             "During performance", "Movie/video screen capture", "A bright coloured fish",
             "Illustration", "Band/artist logotype", "Publisher/Studio logotype",
-            "Reserved"
+            "Reserved",
         };
 
         private static void ParsePicture(Stream fs, ref FlacInfo info)

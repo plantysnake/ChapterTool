@@ -110,6 +110,7 @@ namespace ChapterTool.Util.ChapterData
             var ifoStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             var offset = ToInt32(GetFileBlock(ifoStream, 0xCC, 4));    // Read PGC offset
             ifoStream.Seek((2048 * offset) + 0x01, SeekOrigin.Begin);               // Move to beginning of PGC
+
             // long VTS_PGCITI_start_position = ifoStream.Position - 1;
             var nPGCs = ifoStream.ReadByte();       // Number of PGCs
             ifoStream.Close();

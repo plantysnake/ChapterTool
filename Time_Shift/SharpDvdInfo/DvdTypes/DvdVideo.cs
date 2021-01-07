@@ -17,7 +17,7 @@ namespace SharpDvdInfo.DvdTypes
         NTSC,
 
         [Description("PAL")]
-        PAL
+        PAL,
     }
 
     public enum DvdVideoResolution
@@ -83,7 +83,7 @@ namespace SharpDvdInfo.DvdTypes
         Letterbox,
 
         [Description("None")]
-        None
+        None,
     }
 
     public enum DvdVideoMpegVersion
@@ -92,7 +92,7 @@ namespace SharpDvdInfo.DvdTypes
         Mpeg1,
 
         [Description("MPEG-2")]
-        Mpeg2
+        Mpeg2,
     }
 
     public enum DvdVideoAspectRatio
@@ -110,6 +110,6 @@ namespace SharpDvdInfo.DvdTypes
         AspectUnknown,
 
         [Description("16/9")]
-        Aspect16By9
+        Aspect16By9,
     }
 }

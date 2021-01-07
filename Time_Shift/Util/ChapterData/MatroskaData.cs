@@ -81,7 +81,7 @@ namespace ChapterTool.Util.ChapterData
         {
             var process = new Process
             {
-                StartInfo = { FileName = program, Arguments = arguments, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, StandardOutputEncoding = System.Text.Encoding.UTF8 }
+                StartInfo = { FileName = program, Arguments = arguments, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, StandardOutputEncoding = System.Text.Encoding.UTF8 },
             };
             process.Start();
             var output = process.StandardOutput.ReadToEnd();

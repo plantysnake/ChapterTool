@@ -26,7 +26,7 @@ namespace SharpDvdInfo.DvdTypes
         /// Unknown format
         /// </summary>
         [Description("Unknown")]
-        Unknown
+        Unknown,
     }
 
     /// <summary>
@@ -128,6 +128,6 @@ namespace SharpDvdInfo.DvdTypes
         /// Director comments for children
         /// </summary>
         [Description("Director comments for children")]
-        ChildrenDirector
+        ChildrenDirector,
     }
 }

@@ -16,8 +16,8 @@ namespace SharpDvdInfo
     using System.IO;
     using System.Text.RegularExpressions;
     using ChapterTool.Util;
-    using DvdTypes;
-    using Model;
+    using SharpDvdInfo.DvdTypes;
+    using SharpDvdInfo.Model;
 
     /// <summary>
     /// Container for DVD Specification
@@ -62,7 +62,7 @@ namespace SharpDvdInfo
                 {
                     TitleNumber = titleSetNumber,
                     TitleSetNumber = titleSetNumber,
-                    TitleNumberInSet = 1
+                    TitleNumberInSet = 1,
                 };
                 GetTitleInfo(titleSetNumber, ref list);
                 Titles = new List<TitleInfo> { list };
@@ -137,7 +137,7 @@ namespace SharpDvdInfo
                         SampleRate = 48000,
                         Quantization = (DvdAudioQuantization)GetBits(buffer, 2, 14),
                         StreamId = DvdAudioId.ID[codingMode] + audioNum,
-                        StreamIndex = audioNum + 1
+                        StreamIndex = audioNum + 1,
                     };
 
                     if (langMode == 1)
@@ -166,7 +166,7 @@ namespace SharpDvdInfo
                     {
                         Format = (DvdSubpictureFormat)GetBits(buffer, 3, 5),
                         StreamId = 0x20 + subNum,
-                        StreamIndex = subNum + 1
+                        StreamIndex = subNum + 1,
                     };
 
                     if (langMode == 1)
@@ -269,7 +269,7 @@ namespace SharpDvdInfo
                         ParentalMask = (short)GetBits(buffer, 16, 4 * 8),
                         TitleSetNumber = (byte)GetBits(buffer, 8, 6 * 8),
                         TitleNumberInSet = (byte)GetBits(buffer, 8, 7 * 8),
-                        StartSector = GetBits(buffer, 32, 8 * 8)
+                        StartSector = GetBits(buffer, 32, 8 * 8),
                     };
                     GetTitleInfo(info.TitleNumber, ref info);
                     Titles.Add(info);

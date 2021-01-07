@@ -79,7 +79,7 @@ namespace ChapterTool.Util
             var row = new DataGridViewRow
             {
                 Tag = Chapters[index], // 绑定对象，以便删除行时可以得知对应的 Chapter
-                DefaultCellStyle = { BackColor = (Chapters[index].Number - 1) % 2 == 0 ? EVEN_COLOR : ODD_COLOR }
+                DefaultCellStyle = { BackColor = (Chapters[index].Number - 1) % 2 == 0 ? EVEN_COLOR : ODD_COLOR },
             };
             if (Chapters[index].Number == -1)
             {
@@ -125,7 +125,7 @@ namespace ChapterTool.Util
             {
                 Title = "FULL Chapter",
                 SourceType = type,
-                FramesPerSecond = source.First().FramesPerSecond
+                FramesPerSecond = source.First().FramesPerSecond,
             };
             var duration = TimeSpan.Zero;
             var name = new ChapterName();
@@ -137,7 +137,7 @@ namespace ChapterTool.Util
                     {
                         Time = duration + item.Time,
                         Number = name.Index,
-                        Name = name.Get()
+                        Name = name.Get(),
                     });
                 }
                 duration += chapterClip.Duration; // 每次加上当前段的总时长作为下一段位移的基准
@@ -160,7 +160,7 @@ namespace ChapterTool.Util
                 Chapters[i] = new Chapter
                 {
                     Name = c.Name,
-                    Time = new TimeSpan((long)Math.Round(frames / fps * TimeSpan.TicksPerSecond))
+                    Time = new TimeSpan((long)Math.Round(frames / fps * TimeSpan.TicksPerSecond)),
                 };
             }
 
@@ -382,7 +382,7 @@ namespace ChapterTool.Util
             var jsonObject = new ChapterJson
             {
                 SourceName = SourceType == "MPLS" ? $"{SourceName}.m2ts" : null,
-                Chapter = new List<ChapterItemJson>()
+                Chapter = new List<ChapterItemJson>(),
             };
 
             var baseTime = TimeSpan.Zero;
@@ -398,7 +398,7 @@ namespace ChapterTool.Util
                     jsonObject.Chapter.Add(new ChapterItemJson
                     {
                         Name = initChapterName,
-                        Time = 0
+                        Time = 0,
                     });
                     continue;
                 }
@@ -407,7 +407,7 @@ namespace ChapterTool.Util
                 jsonObject.Chapter.Add(new ChapterItemJson
                 {
                     Name = chapterName,
-                    Time = time.TotalSeconds
+                    Time = time.TotalSeconds,
                 });
                 prevChapter = chapter;
             }

@@ -538,7 +538,7 @@ namespace ChapterTool.Util
             Tracks[Tracks.Length - 1] = new Track(Tracks.Length, string.Empty)
             {
                 Performer = performer,
-                Title = title
+                Title = title,
             };
         }
 
@@ -549,7 +549,7 @@ namespace ChapterTool.Util
             {
                 Performer = performer,
                 Title = title,
-                DataFile = new AudioFile(filename, fType)
+                DataFile = new AudioFile(filename, fType),
             };
         }
 
@@ -565,7 +565,7 @@ namespace ChapterTool.Util
             Tracks[Tracks.Length - 1] = new Track(Tracks.Length, datatype)
             {
                 Performer = performer,
-                Title = title
+                Title = title,
             };
         }
 
@@ -752,7 +752,7 @@ namespace ChapterTool.Util
                 Title = Title,
                 SourceType = "CUE",
                 Tag = this,
-                TagType = typeof(CueSheet)
+                TagType = typeof(CueSheet),
             };
             foreach (var track in Tracks)
             {
@@ -776,7 +776,12 @@ namespace ChapterTool.Util
         /// </summary>
         public enum Flags
         {
-            DCP, CH4, PRE, SCMS, DATA, NONE
+            DCP,
+            CH4,
+            PRE,
+            SCMS,
+            DATA,
+            NONE,
         }
 
         /// <summary>
@@ -788,7 +793,11 @@ namespace ChapterTool.Util
         /// </summary>
         public enum FileType
         {
-            BINARY, MOTOROLA, AIFF, WAVE, MP3
+            BINARY,
+            MOTOROLA,
+            AIFF,
+            WAVE,
+            MP3,
         }
 
         /// <summary>
@@ -805,7 +814,14 @@ namespace ChapterTool.Util
         /// </summary>
         public enum DataType
         {
-            AUDIO, CDG, MODE1_2048, MODE1_2352, MODE2_2336, MODE2_2352, CDI_2336, CDI_2352
+            AUDIO,
+            CDG,
+            MODE1_2048,
+            MODE1_2352,
+            MODE2_2336,
+            MODE2_2352,
+            CDI_2336,
+            CDI_2352,
         }
 
         /// <summary>

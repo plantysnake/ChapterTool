@@ -55,7 +55,7 @@
                 var text = new RichTextBox
                 {
                     Rtf = e.Argument as string,
-                    SelectionStart = 0
+                    SelectionStart = 0,
                 };
                 text.SelectionLength = text.Text.Length;
                 text.SelectionColor = OriginalColor;
