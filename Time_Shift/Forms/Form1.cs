@@ -1111,14 +1111,9 @@ namespace ChapterTool.Forms
                 default:
                     break;
             }
-            try
-            {
-                UpdateGridView(fpsIndex);
-            }
-            catch (InvalidOperationException ex)
-            {
-                Log(ex.Message);
-            }
+
+            BeginInvoke(new MethodInvoker(() =>
+                UpdateGridView(fpsIndex)));
 
             void UpdateTime(TimeSpan time)
             {
