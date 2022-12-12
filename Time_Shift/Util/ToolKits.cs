@@ -31,6 +31,7 @@ namespace ChapterTool.Util
     using System.Windows.Forms;
     using ChapterTool.Forms;
     using ChapterTool.Util.ChapterData;
+    using Jil;
     using Microsoft.Win32;
 
     public static class ToolKits
@@ -255,24 +256,47 @@ namespace ChapterTool.Util
 
     public static class RegistryStorage
     {
+        private static readonly string ConfigFile = "chaptertool.json";
+        private static readonly string WorkDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static readonly string ConfigPath = Path.Combine(WorkDir, ConfigFile);
+
         public static string Load(string subKey = @"Software\ChapterTool", string name = "SavingPath")
         {
-            var path = string.Empty;
-
-            // HKCU_CURRENT_USER\Software\
-            var registryKey = Registry.CurrentUser.OpenSubKey(subKey);
-            if (registryKey == null) return path;
-            path = (string)registryKey.GetValue(name);
-            registryKey.Close();
-            return path;
+            if (!File.Exists(ConfigPath))
+            {
+                return null;
+            }
+            var configText = File.ReadAllText(ConfigPath);
+            try
+            {
+                var config = JSON.Deserialize<Dictionary<string, string>>(configText);
+                config.TryGetValue($"{subKey}.{name}", out string value);
+                return value;
+            }
+            catch (DeserializationException)
+            {
+                File.Delete(ConfigPath);
+            }
+            return null;
         }
 
         public static void Save(string value, string subKey = @"Software\ChapterTool", string name = "SavingPath")
         {
-            // HKCU_CURRENT_USER\Software\
-            var registryKey = Registry.CurrentUser.CreateSubKey(subKey);
-            registryKey?.SetValue(name, value);
-            registryKey?.Close();
+            Dictionary<string, string> config = new Dictionary<string, string>();
+            if (File.Exists(ConfigPath))
+            {
+                try
+                {
+                    var configText = File.ReadAllText(Path.Combine(WorkDir, ConfigFile));
+                    config = JSON.Deserialize<Dictionary<string, string>>(configText);
+                }
+                catch (DeserializationException)
+                {
+                    File.Delete(ConfigPath);
+                }
+            }
+            config[$"{subKey}.{name}"] = value;
+            File.WriteAllText(Path.Combine(WorkDir, ConfigFile), JSON.Serialize(config, new Jil.Options(true)));
         }
 
         /// <summary>
@@ -303,6 +327,12 @@ namespace ChapterTool.Util
             count += delta;
             Save(count.ToString(), subKey, name);
             return count - delta;
+        }
+
+        public static void RegistryAddTime(string subKey, string name, TimeSpan time)
+        {
+            var currentTime = Load(subKey, name).ToTimeSpan() + time;
+            Save(currentTime.Time2String(), subKey, name);
         }
     }
 }
