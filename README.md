@@ -1,16 +1,18 @@
-# ChapterTool [![Build status](https://ci.appveyor.com/api/projects/status/rtc76h5ulveafj5f?svg=true)](https://ci.appveyor.com/project/tautcony/chaptertool)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftautcony%2FChapterTool.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftautcony%2FChapterTool?ref=badge_shield)
+<div align="center">
 
-- ChapterTool is made for extracting chapter from various types of files and edit it.
+# ChapterTool </br> ![License: GPL v3](https://img.shields.io/github/license/tautcony/chaptertool.svg) [![Build status](https://ci.appveyor.com/api/projects/status/rtc76h5ulveafj5f?svg=true)](https://ci.appveyor.com/project/tautcony/chaptertool) ![](https://img.shields.io/github/downloads/tautcony/chaptertool/total.svg)
+
+A simple tool for extracting chapters from various types of files and editing them.
+</div>
 
 ## Feature
 
-- Extract chapter file from various types of file
-- Freely time adjustment(expression in Infix notation or Reverse Polish notation)
-- Move all chapter number backward optionally(for OGM format)
-- Load chapter name from a text file as template
+- Extract chapter file from different file types
+- Multiple time adjustments (expression in Infix notation or Reverse Polish notation)
+- Move all chapter numbers backwards optionally (for OGM format)
+- Load chapter name from text file as template
 - Calculate frames from chapter time
-- Supported save formats: `.txt`, `.xml`, `.qpf`, `.json`
+- Supported saving formats: `.txt`, `.xml`, `.qpf`, `.json`.
 
 ### Supported file type
 
@@ -27,7 +29,7 @@
 ## Thanks to
 
  - [Chapters file time Editor](https://www.nmm-hd.org/newbbs/viewtopic.php?f=16&t=24)
- - [BD Chapters MOD](https://www.nmm-hd.org/newbbs/viewtopic.php?f=16&t=517) (no longer in use)
+ - [BD Chapters MOD](https://www.nmm-hd.org/newbbs/viewtopic.php?f=16&t=517)
  - [gMKVExtractGUI](http://sourceforge.net/projects/gmkvextractgui/)
  - [Chapter Grabber](http://jvance.com/pages/ChapterGrabber.xhtml)
  - [MKVToolNix](https://www.bunkus.org/videotools/mkvtoolnix/links.html)
@@ -40,17 +42,14 @@
 
 ## Requirements
 
-- You must have `.NET Framework 4.7` available from Windows Update.
-- The matroska file's support is powerd by [`MKVToolNix`](https://mkvtoolnix.download/downloads.html#windows).
-- The mp4 file's support is powerd by `libmp4v2`, you need get the dll before using this feature.
+- You must have the `.NET Framework 4.8` available from Windows Update.
+- The matroska file support is powered by [`MKVToolNix`](https://mkvtoolnix.download/downloads.html#windows).
+- The mp4 file support is powered by `libmp4v2`, you need to get the dll before using this feature.
+
+## License
+
+Distributed under the GPLv3+ License. See LICENSE for more information.
 
 ## Source Code
-
- - [BitBucket](https://bitbucket.org/TautCony/chaptertool)
  - [GitHub](https://github.com/tautcony/ChapterTool)
-
- ![](https://img.shields.io/github/downloads/tautcony/chaptertool/total.svg)
- ![](https://img.shields.io/github/license/tautcony/chaptertool.svg)
-
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftautcony%2FChapterTool.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftautcony%2FChapterTool?ref=badge_large)
+ - [BitBucket](https://bitbucket.org/TautCony/chaptertool)
