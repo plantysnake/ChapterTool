@@ -1,5 +1,0 @@
-language: csharp
-solution: Time_Shift.sln
-install:
-    - nuget restore Time_Shift.sln
-

@@ -95,6 +95,8 @@ namespace ChapterTool.Util.ChapterData
                 Func<Mark, bool> filter = item => item.MarkType == 0x01 && item.RefToPlayItemID == index;
                 if (!Marks.Any(filter))
                 {
+                    OnLog?.Invoke($"PlayItem without any marks, index: {index}");
+                    info.Chapters = new List<Chapter> { new Chapter { Time = Pts2Time(0), Number = 1, Name = "Chapter 1" } };
                     ret.Add(info);
                     continue;
                 }
@@ -275,6 +277,11 @@ namespace ChapterTool.Util.ChapterData
 
             br.Skip(30);
         }
+
+        public override string ToString()
+        {
+            return $"{{MenuCall: {MenuCall}, TitleSearch: {TitleSearch}, ChapterSearch: {ChapterSearch}, TimeSearch: {TimeSearch}, SkipToNextPoint: {SkipToNextPoint}, SkipToPrevPoint: {SkipToPrevPoint}, Stop: {Stop}, PauseOn: {PauseOn}, StillOff: {StillOff}, ForwardPlay: {ForwardPlay}, BackwardPlay: {BackwardPlay}, Resume: {Resume}, MoveUpSelectedButton: {MoveUpSelectedButton}, MoveDownSelectedButton: {MoveDownSelectedButton}, MoveLeftSelectedButton: {MoveLeftSelectedButton}, MoveRightSelectedButton: {MoveRightSelectedButton}, SelectButton: {SelectButton}, ActivateButton: {ActivateButton}, SelectAndActivateButton: {SelectAndActivateButton}, PrimaryAudioStreamNumberChange: {PrimaryAudioStreamNumberChange}, AngleNumberChange: {AngleNumberChange}, PopupOn: {PopupOn}, PopupOff: {PopupOff}, PGEnableDisable: {PGEnableDisable}, PGStreamNumberChange: {PGStreamNumberChange}, SecondaryVideoEnableDisable: {SecondaryVideoEnableDisable}, SecondaryVideoStreamNumberChange: {SecondaryVideoStreamNumberChange}, SecondaryAudioEnableDisable: {SecondaryAudioEnableDisable}, SecondaryAudioStreamNumberChange: {SecondaryAudioStreamNumberChange}, SecondaryPGStreamNumberChange: {SecondaryPGStreamNumberChange}}}";
+        }
     }
 
     internal class PlayList
@@ -353,6 +360,11 @@ namespace ChapterTool.Util.ChapterData
         {
             INTime = stream.BEInt32();
             OUTTime = stream.BEInt32();
+        }
+
+        public override string ToString()
+        {
+            return $"{{INTime: {INTime}, OUTTime: {OUTTime}}}";
         }
     }
 
@@ -563,6 +575,11 @@ namespace ChapterTool.Util.ChapterData
             for (var i = 0; i < NumberOfSecondaryAudioStreamEntries; ++i) StreamEntries[index++] = new SecondaryAudioStreamEntry(stream);
             for (var i = 0; i < NumberOfSecondaryVideoStreamEntries; ++i) StreamEntries[index++] = new SecondaryVideoStreamEntry(stream);
             stream.Skip(Length - (stream.Position - position));
+        }
+
+        public override string ToString()
+        {
+            return $"{{PrimaryVideo: {NumberOfPrimaryVideoStreamEntries}, PrimaryAudio: {NumberOfPrimaryAudioStreamEntries}, PrimaryPG: {NumberOfPrimaryPGStreamEntries}, PrimaryIG: {NumberOfPrimaryIGStreamEntries}, SecondaryAudio: {NumberOfSecondaryAudioStreamEntries}, SecondaryVideo: {NumberOfSecondaryVideoStreamEntries}, SecondaryPG: {NumberOfSecondaryPGStreamEntries}}}";
         }
     }
 
