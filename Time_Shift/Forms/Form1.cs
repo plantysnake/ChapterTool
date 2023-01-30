@@ -180,7 +180,8 @@ namespace ChapterTool.Forms
             lbPath.Height = (int)(lbPath.Height / factor);
             lbPath.Width = (int)(lbPath.Width / factor);
 
-            Text = $@"[VCB-Studio] ChapterTool v{Assembly.GetExecutingAssembly().GetName().Version}";
+            var arch = IntPtr.Size == 8 ? "x64" : "x86";
+            Text = $@"[VCB-Studio] ChapterTool {arch} v{Assembly.GetExecutingAssembly().GetName().Version}";
             InitialLog();
             if (!IsRunningOnMono)
             {
