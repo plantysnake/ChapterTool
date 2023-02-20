@@ -62,7 +62,7 @@ namespace ChapterTool.Util
             return new TimeSpan((long)(info.Expr.Eval(item.Time.TotalSeconds, info.FramesPerSecond) * TimeSpan.TicksPerSecond)).Time2String();
         }
 
-        public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+)\s*:\s*(?<Minute>\d+)\s*:\s*(?<Second>\d+)\s*[\.,]\s*(?<Millisecond>\d{3})", RegexOptions.Compiled);
+        public static readonly Regex RTimeFormat = new Regex(@"(?<Hour>\d+)\s*:\s*(?<Minute>\d+)\s*:\s*(?<Second>\d+)\s*[\.,]\s*(?<Millisecond>\d{3,9})", RegexOptions.Compiled);
 
         /// <summary>
         /// 将符合 hh:mm:ss.sss 形式的字符串转换为TimeSpan对象
@@ -77,8 +77,11 @@ namespace ChapterTool.Util
             var hour = int.Parse(timeMatch.Groups["Hour"].Value);
             var minute = int.Parse(timeMatch.Groups["Minute"].Value);
             var second = int.Parse(timeMatch.Groups["Second"].Value);
-            var millisecond = int.Parse(timeMatch.Groups["Millisecond"].Value);
-            return new TimeSpan(0, hour, minute, second, millisecond);
+            var rawMillisecond = timeMatch.Groups["Millisecond"].Value;
+            var millisecond = long.Parse(rawMillisecond) / Math.Pow(10, rawMillisecond.Length - 3);
+
+            var tick = (long)(millisecond * TimeSpan.TicksPerMillisecond);
+            return new TimeSpan(0, hour, minute, second).Add(TimeSpan.FromTicks(tick));
         }
 
         public static string ToCueTimeStamp(this TimeSpan input)
