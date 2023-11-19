@@ -247,7 +247,7 @@ namespace ChapterTool.Util
             var variable = varRet.ToString();
             if (IsDigit(varRet[0]))
             {
-                if (!decimal.TryParse(variable, out decimal number))
+                if (!decimal.TryParse(variable, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal number))
                     throw new Exception($"Invalid number token [{variable}]");
                 return new Token(number) { Value = variable };
             }
